@@ -85,19 +85,18 @@ void fit_get_photometry_data(fits *fit) {
 	__tryToFindKeywords(fit->fptr, TDOUBLE, Exposure, &fit->exposure);
 }
 
-static int fit_stats(fits *fit, double *mini, double *maxi) {
+static int fit_stats(fits *fit, float *mini, float *maxi) {
 	int status = 0;
-	int ii, anaxis;
+	int ii;
 	long npixels = 1L;
-	long anaxes[3] = {1,1,1}, firstpix[3] = {1,1,1};
-	float *pix, sum = 0.;
-	double meanval = 0., minval = 1.E33, maxval = -1.E33;
+	long anaxes[3] = { 1L, 1L, 1L }, firstpix[3] = { 1L, 1L, 1L };
+	float *pix, sum = 0.f;
+	float meanval = 0.f, minval = 1.E33, maxval = -1.E33;
 
 	/* initialize value in case where it does not work */
 	*mini = 0;
 	*maxi = 0;
 
-	fits_get_img_dim(fit->fptr, &anaxis, &status);
 	fits_get_img_size(fit->fptr, 3, anaxes, &status);
 
 	if (status) {
@@ -137,10 +136,10 @@ static int fit_stats(fits *fit, double *mini, double *maxi) {
 	} else {
 		if (npixels > 0)
 			meanval = sum / npixels;
-		siril_debug_print("  sum of pixels = %g\n", sum);
-		siril_debug_print("  mean value    = %g\n", meanval);
-		siril_debug_print("  minimum value = %g\n", minval);
-		siril_debug_print("  maximum value = %g\n", maxval);
+		siril_debug_print("  sum of pixels = %f\n", sum);
+		siril_debug_print("  mean value    = %f\n", meanval);
+		siril_debug_print("  minimum value = %f\n", minval);
+		siril_debug_print("  maximum value = %f\n", maxval);
 		*maxi = maxval;
 		*mini = minval;
 	}
@@ -216,7 +215,8 @@ static int try_read_float_lo_hi(fitsfile *fptr, WORD *lo, WORD *hi) {
 void read_fits_header(fits *fit) {
 	/* about the status argument: http://heasarc.gsfc.nasa.gov/fitsio/c/c_user/node28.html */
 	int status = 0;
-	double mini, maxi, scale, zero;
+	double scale, zero;
+	float mini, maxi;
 
 	fit_stats(fit, &mini, &maxi);
 
@@ -253,7 +253,7 @@ void read_fits_header(fits *fit) {
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "DATAMAX", &(fit->data_max), NULL, &status);
 	if (status == KEY_NO_EXIST) {
-		fit->data_max = maxi;
+		fit->data_max = (double) maxi;
 	}
 
 	/*******************************************************************
@@ -1313,7 +1313,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	int status;
 	size_t nbdata;
 	double data_max = 0.0;
-	double mini, maxi;
+	float mini, maxi;
 
 	status = 0;
 	if (siril_fits_open_diskfile(&(fit->fptr), filename, READONLY, &status)) {
@@ -1391,7 +1391,7 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 			status = 0;
 			fits_read_key(fit->fptr, TDOUBLE, "DATAMAX", &data_max, NULL, &status);
 			if (status == KEY_NO_EXIST) {
-				data_max = maxi;
+				data_max = (double) maxi;
 			}
 		}
 
@@ -2224,11 +2224,11 @@ void keep_first_channel_from_fits(fits *fit) {
 		fit->fpdata[GLAYER] = fit->fdata;
 		fit->fpdata[BLAYER] = fit->fdata;
 	}
-	if (fit->maxi > 0) {
-		if (fit->maxi != fit_get_max(fit, 0))
-			fit->maxi = 0;
-		if (fit->mini != fit_get_min(fit, 0))
-			fit->mini = 0;
+	if (fit->maxi > 0.0) {
+		if (fit->maxi != fit_get_max(fit, RLAYER))
+			fit->maxi = 0.0;
+		if (fit->mini != fit_get_min(fit, RLAYER))
+			fit->mini = 0.0;
 	}
 }
 

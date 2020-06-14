@@ -19,6 +19,7 @@
  */
 
 #include "core/siril.h"
+#include "core/proto.h"
 #include "core/processing.h"
 #include "algos/PSF.h"
 #include "io/sequence.h"

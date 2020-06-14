@@ -18,5 +18,6 @@ void mirrorx(fits *fit, gboolean verbose);
 void mirrory(fits *fit, gboolean verbose);
 
 int crop(fits *fit, rectangle *bounds);
+gpointer crop_sequence(struct crop_sequence_data *crop_sequence_data);
 
 #endif /* SRC_ALGOS_GEOMETRY_H_ */

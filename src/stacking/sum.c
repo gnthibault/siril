@@ -22,8 +22,8 @@
 #include <stdio.h>
 #include <assert.h>
 #include "core/siril.h"
+#include "core/proto.h"
 #include "core/processing.h"
-#include "core/proto.h"		// FITS functions
 #include "io/sequence.h"
 #include "io/image_format_fits.h"
 #include "stacking.h"

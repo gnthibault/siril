@@ -24,8 +24,8 @@
 #include <math.h>
 
 #include "core/siril.h"
-#include "core/processing.h"
 #include "core/proto.h"
+#include "core/processing.h"
 #include "core/OS_utils.h"
 #include "algos/star_finder.h"
 #include "algos/statistics.h"
@@ -433,6 +433,7 @@ int register_star_alignment(struct registration_args *regargs) {
 		args->filtering_criterion = seq_filter_included;
 		args->nb_filtered_images = regargs->seq->selnum;
 	}
+	args->compute_size_hook = NULL;
 	args->prepare_hook = star_align_prepare_hook;
 	args->image_hook = star_align_image_hook;
 	args->save_hook = NULL;
