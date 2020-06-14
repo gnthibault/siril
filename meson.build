@@ -97,6 +97,7 @@ siril_cpp_flag = []
 siril_c_flag = []
 siril_link_arg = []
 
+siril_c_flag += ['-DHAVE_CONFIG_H']
 siril_cpp_flag += ['-DHAVE_CONFIG_H']
 
 if platform_linux
@@ -182,7 +183,19 @@ else
 endif
 
 ## Optionnal dependencies
-openmp_dep = dependency('openmp', required : false)
+
+openmp_dep = []
+if platform_windows or platform_linux
+  openmp_dep = dependency('openmp', required : false)
+else
+  if get_option('openmp_darwin')
+    message('Set OpenMP flags for macOS')
+    siril_link_arg += ['-lomp']
+    siril_cpp_flag += ['-Xpreprocessor', '-fopenmp']
+    siril_c_flag += ['-Xpreprocessor', '-fopenmp']
+  endif
+endif
+
 libraw_dep = dependency('libraw', required : false)
 libtiff_dep = dependency('libtiff-4', required : false)
 libjpeg_dep = dependency('libjpeg', required : false)
