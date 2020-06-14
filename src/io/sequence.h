@@ -43,7 +43,6 @@ sequence *create_internal_sequence(int size);
 void	internal_sequence_set(sequence *seq, int index, fits *fit);
 int	internal_sequence_find_index(sequence *seq, fits *fit);
 fits	*internal_sequence_get(sequence *seq, int index);
-gpointer crop_sequence(gpointer p);
 gboolean sequence_is_rgb(sequence *seq);
 void	enforce_area_in_image(rectangle *area, sequence *seq);
 

@@ -1122,6 +1122,7 @@ void apply_mtf_to_sequence(struct mtf_data *mtf_args) {
 	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = mtf_args->seq->selnum;
+	args->compute_size_hook = NULL;
 	args->prepare_hook = seq_prepare_hook;
 	args->finalize_hook = seq_finalize_hook;
 	args->save_hook = NULL;

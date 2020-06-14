@@ -164,6 +164,7 @@ int upscale_sequence(struct stacking_args *stackargs) {
 		args->filtering_parameter = stackargs->filtering_parameter;
 		args->nb_filtered_images = stackargs->nb_images_to_stack;
 	}
+	args->compute_size_hook = NULL;
 	args->prepare_hook = seq_prepare_hook;
 	args->finalize_hook = seq_finalize_hook;
 	args->image_hook = upscale_image_hook;

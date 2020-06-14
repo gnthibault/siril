@@ -27,6 +27,7 @@
 #include <gsl/gsl_version.h>
 
 #include "core/siril.h"
+#include "core/proto.h"
 #include "core/processing.h"
 #include "core/undo.h"
 #include "core/OS_utils.h"
@@ -703,6 +704,7 @@ void apply_background_extraction_to_sequence(struct background_data *background_
 	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = background_args->seq->selnum;
+	args->compute_size_hook = NULL;
 	args->prepare_hook = seq_prepare_hook;
 	args->finalize_hook = seq_finalize_hook;
 	args->save_hook = NULL;
