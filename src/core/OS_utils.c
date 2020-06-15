@@ -234,8 +234,14 @@ gchar *pretty_print_memory(int64_t bytes) {
 int test_available_space(int64_t req_size) {
 	int64_t free_space = find_space(com.wd);
 	int res = -1;
-	if (free_space < 0 || req_size <= 0)
+	if (free_space < 0) {
+		siril_log_message(_("Error while computing available free disk space.\n"));
 		return res;
+	}
+	if (req_size <= 0) {
+		siril_log_message(_("Error in requested space disk.\n"));
+		return res;
+	}
 
 	if (req_size > free_space) {
 		char * msg;
@@ -243,7 +249,7 @@ int test_available_space(int64_t req_size) {
 		gchar *required = pretty_print_memory(req_size);
 		gchar *missing = pretty_print_memory(req_size - free_space);
 		if (com.pref.comp.fits_enabled) {
-			if (req_size/free_space < MAX_COMP_FREESPACE_RATIO) {
+			if (req_size / free_space < MAX_COMP_FREESPACE_RATIO) {
 				msg = siril_log_message(_("Compression enabled: There may no be enough free disk space to perform this operation: "
 						"%sB available for %sB needed (missing %sB)\n"),
 						avail, required, missing);

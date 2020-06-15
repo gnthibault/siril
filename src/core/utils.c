@@ -1116,6 +1116,12 @@ gchar *siril_truncate_str(gchar *str, gint size) {
 	return g_string_free(trunc_str, FALSE);
 }
 
+/**
+ * Create a popover with icon and text
+ * @param widget is the parent widget where the popover arises from
+ * @param text will be shown in the popover
+ * @return the GtkWidget of popover
+ */
 GtkWidget* popover_new(GtkWidget *widget, const gchar *text) {
 	GtkWidget *popover, *box, *image, *label;
 
