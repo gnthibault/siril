@@ -155,7 +155,7 @@ exiv_dep = dependency('exiv2', required : true)
 fftw3f_dep = dependency('fftw3f', required : true)
 cfitsio_dep = dependency('cfitsio', required : true)
 cairo_dep = dependency('cairo', required : true)
-kplot_dep = dependency('kplot', fallback : ['kplot', 'kplot_dep'])
+kplot_dep = dependency('kplot', fallback : ['kplot', 'kplot_dep'], required : true)
 
 # TODO: Prefered OpenCV version???
 opencv4_dep = dependency('opencv4', required : false)
