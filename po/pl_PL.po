@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-12 13:00+0200\n"
+"POT-Creation-Date: 2020-06-15 08:47+0200\n"
 "PO-Revision-Date: 2018-12-21 14:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -2473,7 +2473,7 @@ msgstr ""
 msgid "Use RGB working space"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:560 ../src/algos/background_extraction.c:712
+#: ../src/gui/siril3.glade.h:560 ../src/algos/background_extraction.c:714
 msgid "Background Extraction"
 msgstr "Ekstrakcja tła"
 
@@ -2613,7 +2613,7 @@ msgid ""
 "Prefix of the image names resulting from the background extraction process."
 msgstr "Przedrostek nazw obrazów powstałych w procesie korekty kosmetycznej."
 
-#: ../src/gui/siril3.glade.h:589 ../src/filters/banding.c:65
+#: ../src/gui/siril3.glade.h:589 ../src/filters/banding.c:67
 msgid "Banding Reduction"
 msgstr "Redukcja banding"
 
@@ -2746,7 +2746,7 @@ msgstr ""
 msgid "Luminance"
 msgstr "Luminancja"
 
-#: ../src/gui/siril3.glade.h:616 ../src/filters/cosmetic_correction.c:365
+#: ../src/gui/siril3.glade.h:616 ../src/filters/cosmetic_correction.c:367
 msgid "Cosmetic Correction"
 msgstr "Korekta kosmetyczna"
 
@@ -3518,7 +3518,7 @@ msgstr ""
 msgid "Quality"
 msgstr "Jakość"
 
-#: ../src/gui/siril3.glade.h:784 ../src/algos/demosaicing.c:1607
+#: ../src/gui/siril3.glade.h:784 ../src/algos/demosaicing.c:1608
 msgid "Split CFA"
 msgstr ""
 
@@ -3544,7 +3544,7 @@ msgstr ""
 msgid "Split CFA Channels"
 msgstr ""
 
-#: ../src/gui/siril3.glade.h:790 ../src/algos/demosaicing.c:1278
+#: ../src/gui/siril3.glade.h:790 ../src/algos/demosaicing.c:1279
 #, fuzzy
 msgid "Extract Ha"
 msgstr "Ekstrakcja"
@@ -4742,31 +4742,31 @@ msgctxt "shortcut window"
 msgid "Quit the application"
 msgstr "Kalibracja kolorów"
 
-#: ../src/algos/background_extraction.c:117
+#: ../src/algos/background_extraction.c:118
 msgid ""
 "There are not enough background samples. The background to be extracted "
 "cannot be computed.\n"
 msgstr ""
 
-#: ../src/algos/background_extraction.c:620
+#: ../src/algos/background_extraction.c:621
 msgid "Not enough samples."
 msgstr ""
 
-#: ../src/algos/background_extraction.c:627
+#: ../src/algos/background_extraction.c:628
 #, fuzzy, c-format
 msgid "Background extraction from channel %s.\n"
 msgstr "Ekstrakcja tła: przetwarzanie...\n"
 
-#: ../src/algos/background_extraction.c:648
+#: ../src/algos/background_extraction.c:649
 #, fuzzy
 msgid "Out of memory - aborting"
 msgstr "Brak pamięci - przerwanie\n"
 
-#: ../src/algos/background_extraction.c:772
+#: ../src/algos/background_extraction.c:774
 msgid "Polynomial order seems too high."
 msgstr ""
 
-#: ../src/algos/background_extraction.c:773
+#: ../src/algos/background_extraction.c:775
 msgid ""
 "You are about to process a sequence of preprocessed files with a polynomial "
 "degree greater than 1. This is unlikely because such gradients are often "
@@ -4802,10 +4802,10 @@ msgstr "Wybierz najpierw obszar tła"
 #: ../src/algos/colors.c:748 ../src/algos/colors.c:904 ../src/algos/noise.c:69
 #: ../src/algos/star_finder.c:53 ../src/algos/star_finder.c:74
 #: ../src/core/command.c:2453 ../src/core/preprocess.c:74
-#: ../src/core/preprocess.c:228 ../src/core/siril.c:351
-#: ../src/filters/banding.c:163 ../src/filters/banding.c:245
-#: ../src/filters/cosmetic_correction.c:193
-#: ../src/filters/cosmetic_correction.c:432 ../src/filters/saturation.c:154
+#: ../src/core/preprocess.c:221 ../src/core/siril.c:351
+#: ../src/filters/banding.c:165 ../src/filters/banding.c:247
+#: ../src/filters/cosmetic_correction.c:194
+#: ../src/filters/cosmetic_correction.c:434 ../src/filters/saturation.c:154
 #: ../src/filters/saturation.c:216 ../src/gui/histogram.c:736
 #: ../src/gui/photometric_cc.c:395 ../src/gui/statistics_list.c:321
 #, fuzzy
@@ -4864,19 +4864,19 @@ msgid ""
 msgstr ""
 
 #: ../src/algos/demosaicing.c:1120 ../src/algos/demosaicing.c:1169
-#: ../src/algos/demosaicing.c:1297
+#: ../src/algos/demosaicing.c:1298
 msgid "Extract_Ha does not work on non-Bayer filter camera images!\n"
 msgstr ""
 
-#: ../src/algos/demosaicing.c:1351
+#: ../src/algos/demosaicing.c:1352
 msgid "Extract_HaOIII does not work on non-Bayer filter camera images!\n"
 msgstr ""
 
-#: ../src/algos/demosaicing.c:1465
+#: ../src/algos/demosaicing.c:1466
 msgid "Extract Ha and OIII"
 msgstr ""
 
-#: ../src/algos/demosaicing.c:1484 ../src/algos/demosaicing.c:1524
+#: ../src/algos/demosaicing.c:1485 ../src/algos/demosaicing.c:1525
 msgid "Split CFA does not work on non-Bayer filter camera images!\n"
 msgstr ""
 
@@ -4926,12 +4926,17 @@ msgid ""
 "active. Please consider to close the filter dialog first."
 msgstr ""
 
-#: ../src/algos/geometry.c:657
+#: ../src/algos/geometry.c:677
+#, fuzzy
+msgid "Crop Sequence"
+msgstr "Sekwencja przycinania..."
+
+#: ../src/algos/geometry.c:705
 msgid ""
 "Crop does not work with avi film. Please, convert your file to SER first.\n"
 msgstr "Przycinanie nie działa z filmem AVI. Skonwertuj swój plik do SER.\n"
 
-#: ../src/algos/geometry.c:663
+#: ../src/algos/geometry.c:711
 msgid "Not a valid sequence for cropping.\n"
 msgstr "Niepoprawna sekwencja dla przycinania.\n"
 
@@ -4982,12 +4987,12 @@ msgid "Error"
 msgstr "Błąd"
 
 #. Matching information
-#: ../src/algos/plateSolver.c:768 ../src/registration/global.c:511
+#: ../src/algos/plateSolver.c:768 ../src/registration/global.c:512
 #, c-format
 msgid "%d pair matches.\n"
 msgstr "%d dopasowanych par.\n"
 
-#: ../src/algos/plateSolver.c:770 ../src/registration/global.c:513
+#: ../src/algos/plateSolver.c:770 ../src/registration/global.c:514
 #, c-format
 msgid "Inliers:%*.3f\n"
 msgstr ""
@@ -5249,8 +5254,8 @@ msgstr "Niezapisany wynik kompozycyji"
 msgid "You must at least load two layers before!\n"
 msgstr "Musisz wczytać wcześniej przynajmniej dwie warstwy !\n"
 
-#: ../src/compositing/compositing.c:565 ../src/filters/wavelets.c:254
-#: ../src/filters/wavelets.c:263 ../src/filters/wavelets.c:332
+#: ../src/compositing/compositing.c:565 ../src/filters/wavelets.c:255
+#: ../src/filters/wavelets.c:264 ../src/filters/wavelets.c:333
 #: ../src/registration/registration.c:885
 msgid "Warning"
 msgstr "Ostrzeżenie"
@@ -5367,12 +5372,12 @@ msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Przytnij: wybierz regionu lub podaj x, y, szerokość, wysokość\n"
 
 #: ../src/core/command.c:588 ../src/core/command.c:3307
-#: ../src/filters/wavelets.c:252 ../src/filters/wavelets.c:330
+#: ../src/filters/wavelets.c:253 ../src/filters/wavelets.c:331
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
 msgstr ""
 
-#: ../src/core/command.c:594 ../src/filters/wavelets.c:261
+#: ../src/core/command.c:594 ../src/filters/wavelets.c:262
 #, c-format
 msgid "Wavelet: type must be %d or %d\n"
 msgstr "Wavelet: typ musi być %d lub %d\n"
@@ -5447,7 +5452,7 @@ msgstr ""
 "pojedynczej gwiazdy\n"
 
 #: ../src/core/command.c:967 ../src/core/command.c:1097
-#: ../src/core/command.c:1119 ../src/io/sequence.c:1668
+#: ../src/core/command.c:1119 ../src/io/sequence.c:1545
 msgid "Select an area first\n"
 msgstr "Najpierw wybierz obszar\n"
 
@@ -5733,7 +5738,7 @@ msgid "-stretch option is now deprecated.\n"
 msgstr ""
 
 #. sets most properties
-#: ../src/core/command.c:3148 ../src/core/preprocess.c:568
+#: ../src/core/command.c:3148 ../src/core/preprocess.c:565
 msgid "Preprocessing...\n"
 msgstr "Wstępne przetwarzanie ...\n"
 
@@ -6690,17 +6695,17 @@ msgstr ""
 msgid "Dark optimization: k0=%.3f\n"
 msgstr "Optymalizacja dark: %.3lf\n"
 
-#: ../src/core/preprocess.c:234
+#: ../src/core/preprocess.c:227
 #, fuzzy, c-format
 msgid "Normalisation value auto evaluated: %.2f\n"
 msgstr "Automatyczna ocena wartości normalizacji: %.2lf\n"
 
-#: ../src/core/preprocess.c:244
+#: ../src/core/preprocess.c:237
 #, fuzzy, c-format
 msgid "%ld pixels corrected (%ld + %ld)\n"
 msgstr "Nieznany format obrazu FITS (%ld osi).\n"
 
-#: ../src/core/preprocess.c:247
+#: ../src/core/preprocess.c:240
 #, fuzzy
 msgid ""
 "Darkmap cosmetic correction is only supported with single channel images\n"
@@ -6708,95 +6713,95 @@ msgstr ""
 "Korekcja kosmetyczna Darkmap jest obsługiwana tylko w przypadku obrazów "
 "jednokanałowych\n"
 
-#: ../src/core/preprocess.c:276
+#: ../src/core/preprocess.c:269
 msgid "Cannot apply cosmetic correction on XTRANS sensor yet\n"
 msgstr ""
 
-#: ../src/core/preprocess.c:345
+#: ../src/core/preprocess.c:339
 #, fuzzy
 msgid "Preprocessing"
 msgstr "Wstępne przetwarzanie"
 
-#: ../src/core/preprocess.c:373
+#: ../src/core/preprocess.c:370
 #, c-format
 msgid "Pre-processing image %s"
 msgstr "Wstępne przetwarzanie obrazu %s"
 
-#: ../src/core/preprocess.c:391
+#: ../src/core/preprocess.c:388
 #, c-format
 msgid "Saving image %s"
 msgstr "Zapisywanie obrazu %s"
 
-#: ../src/core/preprocess.c:429
+#: ../src/core/preprocess.c:426
 msgid "Opening offset image..."
 msgstr "Otwieranie obrazu przesunięcia..."
 
-#: ../src/core/preprocess.c:433
+#: ../src/core/preprocess.c:430
 #, fuzzy
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "BEZ Użycia  PRZESUNIĘCIA: liczba kanałów jest inna"
 
-#: ../src/core/preprocess.c:436
+#: ../src/core/preprocess.c:433
 #, fuzzy
 msgid "NOT USING OFFSET: image dimensions are different"
 msgstr "BEZ Użycia  PRZESUNIĘCIA: liczba kanałów jest inna"
 
-#: ../src/core/preprocess.c:441
+#: ../src/core/preprocess.c:438
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "NOT USING OFFSET: cannot open the file\n"
 
-#: ../src/core/preprocess.c:461
+#: ../src/core/preprocess.c:458
 #, fuzzy
 msgid "Opening dark image..."
 msgstr "Błąd otwarcia pliku BMP.\n"
 
-#: ../src/core/preprocess.c:465
+#: ../src/core/preprocess.c:462
 msgid "NOT USING DARK: number of channels is different"
 msgstr ""
 
-#: ../src/core/preprocess.c:468
+#: ../src/core/preprocess.c:465
 #, fuzzy
 msgid "NOT USING DARK: image dimensions are different"
 msgstr "BEZ Użycia  PRZESUNIĘCIA: liczba kanałów jest inna"
 
-#: ../src/core/preprocess.c:473
+#: ../src/core/preprocess.c:470
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "BRAK UŻYCIA DARK: nie można otworzyć pliku\n"
 
-#: ../src/core/preprocess.c:517
+#: ../src/core/preprocess.c:514
 #, fuzzy
 msgid "Opening flat image..."
 msgstr "Błąd otwarcia pliku BMP.\n"
 
-#: ../src/core/preprocess.c:521
+#: ../src/core/preprocess.c:518
 msgid "NOT USING FLAT: number of channels is different"
 msgstr ""
 
-#: ../src/core/preprocess.c:524
+#: ../src/core/preprocess.c:521
 #, fuzzy
 msgid "NOT USING FLAT: image dimensions are different"
 msgstr "BEZ Użycia  PRZESUNIĘCIA: liczba kanałów jest inna"
 
-#: ../src/core/preprocess.c:529
+#: ../src/core/preprocess.c:526
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "NOT USING FLAT: cannot open the file\n"
 
-#: ../src/core/preprocess.c:603
+#: ../src/core/preprocess.c:600
 #, fuzzy
 msgid "Error in preprocessing."
 msgstr "Wstępne przetwarzanie ...\n"
 
-#: ../src/core/preprocess.c:634 ../src/core/preprocess.c:635
+#: ../src/core/preprocess.c:631 ../src/core/preprocess.c:632
 #, c-format
 msgid "<span foreground=\"red\">ERROR</span>"
 msgstr ""
 
-#: ../src/core/preprocess.c:647
+#: ../src/core/preprocess.c:644
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr ""
 
-#: ../src/core/preprocess.c:648 ../src/core/preprocess.c:660
+#: ../src/core/preprocess.c:645 ../src/core/preprocess.c:657
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
@@ -6804,17 +6809,17 @@ msgstr ""
 "Ta wartość może być za wysoka. Proszę rozważyć zmianę wartości sigma lub "
 "odznaczenie tego pola."
 
-#: ../src/core/preprocess.c:651
+#: ../src/core/preprocess.c:648
 #, c-format
 msgid "Cold: %ld px"
 msgstr "Zimny :%ld px"
 
-#: ../src/core/preprocess.c:659
+#: ../src/core/preprocess.c:656
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr ""
 
-#: ../src/core/preprocess.c:663
+#: ../src/core/preprocess.c:660
 #, fuzzy, c-format
 msgid "Hot: %ld px"
 msgstr "dx:%+*.2f px\n"
@@ -6834,60 +6839,60 @@ msgstr "Przygotowanie przetwarzania sekwencji nie powiodło się.\n"
 msgid "Output index mapping failed (%d/%d).\n"
 msgstr ""
 
-#: ../src/core/processing.c:120
+#: ../src/core/processing.c:123
 msgid ": processing...\n"
 msgstr ": przetwarzanie...\n"
 
-#: ../src/core/processing.c:247
+#: ../src/core/processing.c:250
 #, c-format
 msgid "%s. Processing image %d (%s)"
 msgstr "%s. Przetwarzanie obrazu %d (% s)"
 
-#: ../src/core/processing.c:253
+#: ../src/core/processing.c:256
 msgid "Sequence processing failed. Check the log."
 msgstr "Przetwarzanie sekwencji nie powiodło się. Sprawdź dziennik."
 
-#: ../src/core/processing.c:254
+#: ../src/core/processing.c:257
 msgid "Sequence processing failed.\n"
 msgstr ""
 "Przetwarzanie sekwencji nie powiodło się.\n"
 "\n"
 
-#: ../src/core/processing.c:259
+#: ../src/core/processing.c:262
 #, fuzzy
 msgid "Sequence processing partially succeeded. Check the log."
 msgstr "Przetwarzanie sekwencji nie powiodło się. Sprawdź dziennik."
 
-#: ../src/core/processing.c:260
+#: ../src/core/processing.c:263
 #, c-format
 msgid ""
 "Sequence processing partially succeeded, with %d images that failed and that "
 "were temporarily excluded from the sequence.\n"
 msgstr ""
 
-#: ../src/core/processing.c:262
+#: ../src/core/processing.c:265
 msgid "Sequence processing succeeded."
 msgstr "Przetwarzanie sekwencji zakończone sukcesem."
 
-#: ../src/core/processing.c:263
+#: ../src/core/processing.c:266
 msgid "Sequence processing succeeded.\n"
 msgstr ""
 "Przetwarzanie sekwencji zakończono sukcesem.\n"
 "\n"
 
-#: ../src/core/processing.c:275
+#: ../src/core/processing.c:278
 msgid "Finalizing sequence processing failed.\n"
 msgstr ""
 "Finalizowanie przetwarzania sekwencji nie powiodło się.\n"
 "\n"
 
-#: ../src/core/processing.c:352
+#: ../src/core/processing.c:355
 msgid ""
 "Configured memory limits do not seem to allow these images to be processed, "
 "aborting\n"
 msgstr ""
 
-#: ../src/core/processing.c:515
+#: ../src/core/processing.c:518
 msgid "Process aborted by user\n"
 msgstr "Proces przerwany przez użytkownika\n"
 
@@ -7145,7 +7150,7 @@ msgstr[0] "Kanał czerwony"
 msgstr[1] "Kanał czerwony"
 msgstr[2] "Kanał czerwony"
 
-#: ../src/filters/banding.c:133
+#: ../src/filters/banding.c:135
 msgid "Banding Reducing: processing...\n"
 msgstr "Redukcja Banding: przetwarzanie…\n"
 
@@ -7153,16 +7158,16 @@ msgstr "Redukcja Banding: przetwarzanie…\n"
 msgid "Upgrade your system"
 msgstr ""
 
-#: ../src/filters/cosmetic_correction.c:347
+#: ../src/filters/cosmetic_correction.c:348
 #, fuzzy, c-format
 msgid "Image %d: %ld pixel corrected (%ld + %ld)\n"
 msgstr "Obraz %d: %ld Poprawiono pikseli (%ld +%ld)\n"
 
-#: ../src/filters/cosmetic_correction.c:401
+#: ../src/filters/cosmetic_correction.c:403
 msgid "Cosmetic Correction: processing...\n"
 msgstr "Korekta kosmetyczna: przetwarzanie...\n"
 
-#: ../src/filters/cosmetic_correction.c:413
+#: ../src/filters/cosmetic_correction.c:415
 #, fuzzy, c-format
 msgid "%ld pixel corrected (%ld + %ld)\n"
 msgstr "Nieznany format obrazu FITS (%ld osi).\n"
@@ -7228,7 +7233,7 @@ msgstr ""
 msgid "SCNR: processing...\n"
 msgstr "SCNR: przetwarzanie …\n"
 
-#: ../src/filters/wavelets.c:172
+#: ../src/filters/wavelets.c:173
 #, fuzzy, c-format
 msgid "Extracting %s..."
 msgstr "Ekstrakcja"
@@ -7394,22 +7399,22 @@ msgid ""
 "Do you want to continue?"
 msgstr ""
 
-#: ../src/gui/callbacks.c:1641
+#: ../src/gui/callbacks.c:1640
 #, fuzzy
 msgid "Closing application"
 msgstr "Kalibracja kolorów"
 
-#: ../src/gui/callbacks.c:1642
+#: ../src/gui/callbacks.c:1641
 #, fuzzy
 msgid "Are you sure you want to quit?"
 msgstr "Czy na pewno chcesz zakończyć?"
 
-#: ../src/gui/callbacks.c:1819
+#: ../src/gui/callbacks.c:1818
 #, fuzzy, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Wybrano %s, %d zdjęć"
 
-#: ../src/gui/callbacks.c:1880
+#: ../src/gui/callbacks.c:1879
 msgid "Searching for sequences in the current working directory..."
 msgstr "Wyszukiwanie sekwencji w bieżącym katalogu roboczym..."
 
@@ -7542,7 +7547,7 @@ msgstr "faza"
 msgid "Gray channel"
 msgstr "Kanał zielony"
 
-#: ../src/gui/histogram.c:1131
+#: ../src/gui/histogram.c:1132
 #, fuzzy
 msgid "Midtone Transfer Function"
 msgstr "Wykonuje transformację"
@@ -7986,39 +7991,40 @@ msgstr "Uwzględnij wszystkie"
 
 #: ../src/gui/siril_intro.c:33
 msgid ""
-"Welcome to the new Siril version. Please take a moment to read tips about "
-"this release"
+"Welcome to the newest version of Siril. Please take a moment to read some "
+"tips about this release"
 msgstr ""
 
 #: ../src/gui/siril_intro.c:34
 msgid ""
-"All the application windows have been merged into this window. In the left "
-"panel, you can see the image preview with the Red, Green, Blue channels and "
-"the RGB mix"
+"All of the application windows have been merged into this window. In the "
+"left panel, you can see the image preview with the Red, Green, and Blue "
+"channels and the RGB Mix"
 msgstr ""
 
 #: ../src/gui/siril_intro.c:35
 msgid ""
-"The RGB tab is only for visualization. Operation must be done on R, G and B "
-"channels"
+"The RGB tab is only for visualization. Operations must be done on R, G, and "
+"B channels"
 msgstr ""
 
 #: ../src/gui/siril_intro.c:36
 msgid ""
-"Pre-processing steps are grouped in the right panel. You can reach each step "
-"with the F1, F2, ... F7 keys"
+"Pre-processing steps are grouped together in the right panel. You can reach "
+"each step with the F1…F7 keys"
 msgstr ""
 
 #: ../src/gui/siril_intro.c:37
 msgid ""
-"Hitting this button will hide the right panel. You can also try the full "
-"screen mode (Control-F)"
+"This button will hide the right panel. You can also try the full screen mode "
+"(Control - F)"
 msgstr ""
 
 #: ../src/gui/siril_intro.c:38
 msgid ""
-"Press F10 or click on this button to open the menu. You can find here the "
-"shortcut list and the preference dialogs where many options are available"
+"Press F10 or click on this button to open the menu. Here you can find the "
+"shortcut list and the preferences dialog where many of the options are "
+"available"
 msgstr ""
 
 #: ../src/gui/siril_intro.c:39
@@ -8035,7 +8041,7 @@ msgstr "Nie można załadować obrazu %d z sekwencji %s\n"
 
 #: ../src/gui/siril_intro.c:41
 #, fuzzy
-msgid "Here are listed the most recent FITS files you have opened"
+msgid "Here’s listed the most recent FITS files you’ve opened"
 msgstr "Nazwa drugiego pliku FITS do zapisania."
 
 #: ../src/gui/siril_intro.c:42
@@ -8050,14 +8056,14 @@ msgid "Use this button to undo an operation"
 msgstr ""
 
 #: ../src/gui/siril_intro.c:44
-msgid "This one to redo an operation"
+msgid "Use this button to redo an operation"
 msgstr ""
 
 #: ../src/gui/siril_intro.c:45
 msgid ""
-"Now Siril works in the 32-bit per channel precision by default. You can "
-"change it in Preferences and you can change the currently loaded single "
-"image precision too with this selector"
+"Siril now works in 32-bit per channel precision by default. You can change "
+"it in Preferences and you can change the currently loaded image precision "
+"with this selector"
 msgstr ""
 
 #: ../src/gui/siril_intro.c:46
@@ -8201,7 +8207,6 @@ msgid "Supported file types: %s\n"
 msgstr "Obsługiwane typy plików: %s\n"
 
 #: ../src/io/conversion.c:424 ../src/io/conversion.c:643
-#: ../src/io/sequence.c:1373 ../src/io/sequence.c:1390
 #: ../src/io/sequence_export.c:115
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "Tworzenie pliku SER nie powiodło się, przerwanie.\n"
@@ -8893,28 +8898,13 @@ msgstr "Sekwencja zamykania: %s\n"
 msgid "internal sequence"
 msgstr "wewnętrzna sekwencja"
 
-#: ../src/io/sequence.c:1398
-#, fuzzy
-msgid "Processing..."
-msgstr "Wstępne przetwarzanie ...\n"
-
-#: ../src/io/sequence.c:1421
-#, fuzzy
-msgid "Error while cropping to SER (no space left?)\n"
-msgstr "Błąd podczas konwersji do SER (brak wolnego miejsca?)\n"
-
-#: ../src/io/sequence.c:1429
-#, fuzzy
-msgid "Error while cropping to FITS sequence (no space left?)\n"
-msgstr "Błąd podczas konwersji do FITS (brak wolnego miejsca?)\n"
-
-#: ../src/io/sequence.c:1543
+#: ../src/io/sequence.c:1420
 #, c-format
 msgid "No star found in the area image %d around %d,%d (use a larger area?)\n"
 msgstr ""
 "Nie znaleziono gwiazdy w obszarze %d wokoło %d,%d (użyć większego obszaru?)\n"
 
-#: ../src/io/sequence.c:1547
+#: ../src/io/sequence.c:1424
 #, c-format
 msgid ""
 "No star found in the area image %d around %d,%d (use 'follow star' option?)\n"
@@ -8922,7 +8912,7 @@ msgstr ""
 "Nie znaleziono gwiazdy w obszarze %d wokoło %d,%d (użyj opcji 'śledź "
 "gwiazdę'?)\n"
 
-#: ../src/io/sequence.c:1596
+#: ../src/io/sequence.c:1473
 msgid ""
 "Star analysis does not give consistent results when exposure changes across "
 "the sequence.\n"
@@ -8930,7 +8920,7 @@ msgstr ""
 "Analiza gwiazdy nie daje spójnych wyników, gdy ekspozycja zmienia się w "
 "sekwencji.\n"
 
-#: ../src/io/sequence.c:1672
+#: ../src/io/sequence.c:1549
 msgid ""
 "The sequence analysis of the PSF will use a sliding selection area centred "
 "on the previous found star; this disables parallel processing.\n"
@@ -8939,7 +8929,7 @@ msgstr ""
 "wycentrowany względem poprzedniej znalezionej gwiazdy; to wyłącza "
 "przetwarzanie równoległe.\n"
 
-#: ../src/io/sequence.c:1674
+#: ../src/io/sequence.c:1551
 #, fuzzy
 msgid ""
 "The sequence analysis of the PSF will use registration data to move the "
@@ -8949,7 +8939,7 @@ msgstr ""
 "wycentrowany względem poprzedniej znalezionej gwiazdy; to wyłącza "
 "przetwarzanie równoległe.\n"
 
-#: ../src/io/sequence.c:1697
+#: ../src/io/sequence.c:1574
 msgid "PSF on area"
 msgstr "PSF na obszarze"
 
@@ -9240,34 +9230,34 @@ msgstr "Nieznany format obrazu FITS (%ld osi).\n"
 msgid "Deconvolution applied"
 msgstr "Dekonwolucja"
 
-#: ../src/registration/comet.c:154 ../src/registration/comet.c:183
+#: ../src/registration/comet.c:155 ../src/registration/comet.c:184
 #, fuzzy
 msgid "There is no timestamp stored in the file"
 msgstr "Ostrzeżenie: brak znaczników czasowych w sekwencji SER.\n"
 
-#: ../src/registration/comet.c:155 ../src/registration/comet.c:184
+#: ../src/registration/comet.c:156 ../src/registration/comet.c:185
 msgid ""
 "Siril cannot perform the registration without date information in the file."
 msgstr ""
 
-#: ../src/registration/comet.c:160 ../src/registration/comet.c:189
+#: ../src/registration/comet.c:161 ../src/registration/comet.c:190
 msgid "Unable to convert DATE-OBS to a valid date"
 msgstr ""
 
-#: ../src/registration/comet.c:161 ../src/registration/comet.c:190
+#: ../src/registration/comet.c:162 ../src/registration/comet.c:191
 msgid ""
 "Siril cannot convert the DATE-OBS keyword into a valid date needed in the "
 "alignment."
 msgstr ""
 
-#: ../src/registration/comet.c:243 ../src/registration/global.c:90
+#: ../src/registration/comet.c:244 ../src/registration/global.c:90
 #: ../src/registration/registration.c:550
 msgid "Could not load reference image\n"
 msgstr ""
 "Nie można załadować obrazu referencyjnego\n"
 "\n"
 
-#: ../src/registration/comet.c:315
+#: ../src/registration/comet.c:316
 #, fuzzy
 msgid "Moving object registration"
 msgstr "Rejestracja obrazu"
@@ -9296,12 +9286,12 @@ msgstr ""
 msgid "Reference Image: Limiting to %d brightest stars\n"
 msgstr "Obraz odniesienia: Ograniczanie do%d najjaśniejszych gwiazd\n"
 
-#: ../src/registration/global.c:167 ../src/registration/global.c:532
+#: ../src/registration/global.c:167 ../src/registration/global.c:533
 #, fuzzy, c-format
 msgid "FWHMx:%*.2f %s\n"
 msgstr "FWHMx:%*.2f px\n"
 
-#: ../src/registration/global.c:168 ../src/registration/global.c:533
+#: ../src/registration/global.c:168 ../src/registration/global.c:534
 #, fuzzy, c-format
 msgid "FWHMy:%*.2f %s\n"
 msgstr "FWHMy:%*.2f px\n"
@@ -9352,43 +9342,43 @@ msgstr "Łącznie: %d nieudanych, %d zarejestrowane.\n"
 msgid "Registration aborted.\n"
 msgstr "Rejestracja została anulowana.\n"
 
-#: ../src/registration/global.c:442
+#: ../src/registration/global.c:443
 #, fuzzy
 msgid "Global star registration"
 msgstr "Ręczna rejestracja"
 
 #. Matching information
-#: ../src/registration/global.c:510
+#: ../src/registration/global.c:511
 #, fuzzy, c-format
 msgid "Matching stars in image %d: done\n"
 msgstr "Dopasowane gwiazd: gotowe\n"
 
-#: ../src/registration/global.c:519
+#: ../src/registration/global.c:520
 #, c-format
 msgid "scaleX:%*.3f\n"
 msgstr "skalaX:%*.3f\n"
 
-#: ../src/registration/global.c:520
+#: ../src/registration/global.c:521
 #, c-format
 msgid "scaleY:%*.3f\n"
 msgstr "skalaY:%*.3f\n"
 
-#: ../src/registration/global.c:521
+#: ../src/registration/global.c:522
 #, c-format
 msgid "scale:%*.3f\n"
 msgstr "skala:%*.3f\n"
 
-#: ../src/registration/global.c:525
+#: ../src/registration/global.c:526
 #, fuzzy, c-format
 msgid "rotation:%+*.3f deg\n"
 msgstr "obrót:%+*.2f stopnia\n"
 
-#: ../src/registration/global.c:530
+#: ../src/registration/global.c:531
 #, c-format
 msgid "dx:%+*.2f px\n"
 msgstr "dx:%+*.2f px\n"
 
-#: ../src/registration/global.c:531
+#: ../src/registration/global.c:532
 #, c-format
 msgid "dy:%+*.2f px\n"
 msgstr "dy:%+*.2f px\n"
@@ -9932,9 +9922,21 @@ msgstr ""
 msgid "Stacking will be done without up-scaling (disabling 'drizzle')\n"
 msgstr ""
 
-#: ../src/stacking/upscaling.c:173
+#: ../src/stacking/upscaling.c:174
 msgid "Up-scaling sequence for stacking"
 msgstr "Skalowanie w górę dla stackowania"
+
+#, fuzzy
+#~ msgid "Processing..."
+#~ msgstr "Wstępne przetwarzanie ...\n"
+
+#, fuzzy
+#~ msgid "Error while cropping to SER (no space left?)\n"
+#~ msgstr "Błąd podczas konwersji do SER (brak wolnego miejsca?)\n"
+
+#, fuzzy
+#~ msgid "Error while cropping to FITS sequence (no space left?)\n"
+#~ msgstr "Błąd podczas konwersji do FITS (brak wolnego miejsca?)\n"
 
 #~ msgid "Store resulting sequence with prefix:"
 #~ msgstr "Zapisz wynikową sekwencję z prefiksem:"
