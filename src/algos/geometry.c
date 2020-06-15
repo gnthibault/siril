@@ -647,7 +647,7 @@ void on_menu_gray_crop_seq_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 int64_t crop_compute_size_hook(struct generic_seq_args *args, int nb_frames) {
 	struct crop_sequence_data *c_args = (struct crop_sequence_data*) args->user;
-	double ratio = (c_args->area.h * c_args->area.w) / (args->seq->rx * args->seq->ry);
+	double ratio = (double)(c_args->area.h * c_args->area.w) / (double)(args->seq->rx * args->seq->ry);
 	double fullseqsize = seq_compute_size(args->seq, nb_frames, args->output_type);
 	return (int64_t)(fullseqsize * ratio);
 }

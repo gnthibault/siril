@@ -30,7 +30,7 @@ static guint tip_index;
 static gboolean go_next;
 
 const SirilTipIntro intro_tips[] = {
-		{"headerbar", N_("Welcome to the newest version of Siril. Plate take a moment to read some tips about this release"), 8},
+		{"headerbar", N_("Welcome to the newest version of Siril. Please take a moment to read some tips about this release"), 8},
 		{"notebook1", N_("All of the application windows have been merged into this window. In the left panel, you can see the image preview with the Red, Green, and Blue channels and the RGB Mix"), 9},
 		{"labelRGB", N_("The RGB tab is only for visualization. Operations must be done on R, G, and B channels"), 8},
 		{"label22", N_("Pre-processing steps are grouped together in the right panel. You can reach each step with the F1…F7 keys"), 8},
