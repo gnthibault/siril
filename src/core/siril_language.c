@@ -45,6 +45,7 @@ parsed_code locale_str[] = {
 	{"es_ES", "Espanol"},
 	{"fr", "Français"},
 	{"it_IT", "Italiano"},
+	{"ja_JP", "日本語"},
 	{"nl_BE", "Nederlands"},
 	{"pl_PL", "Polish"},
 	{"pt_PT", "Português"},
@@ -99,6 +100,8 @@ void siril_language_parser_init() {
 	l10n_lang_list = g_hash_table_new_full(g_str_hash, g_str_equal,
 			(GDestroyNotify) g_free, (GDestroyNotify) g_free);
 
+	/* By default Siril is written in english */
+	g_hash_table_insert(l10n_lang_list, g_strdup("en"), NULL);
 	/* Check all locales we have translations for. */
 	locales_dir = g_dir_open(siril_get_locale_dir(), 0, NULL);
 	if (locales_dir) {
@@ -163,7 +166,12 @@ void language_init(const gchar *language) {
 	if ((!language) || (language[0] == '\0'))
 		return;
 
-	g_setenv("LANGUAGE", language, TRUE);
+	/* This is default language */
+	if (!g_ascii_strcasecmp(language, "en")) {
+		g_setenv("LANGUAGE", "C", TRUE);
+	} else {
+		g_setenv("LANGUAGE", language, TRUE);
+	}
 	setlocale(LC_ALL, "");
 }
 

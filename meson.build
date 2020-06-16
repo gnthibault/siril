@@ -25,7 +25,17 @@
 ################################################################################
 # Define project
 
-project('siril', ['c','cpp'], version : '0.99.2', license : ['GPL3'], meson_version: '>=0.51.0', default_options : ['c_std=gnu11','cpp_std=c++11'])
+project('siril',
+  ['c','cpp'],
+  version : '0.99.2',
+  license : ['GPL3'],
+  meson_version: '>=0.51.0',
+  default_options : [
+    'c_std=gnu11',
+    'cpp_std=c++11',
+    'buildtype=debugoptimized',
+  ],
+)
 
 # General version
 siril_version = meson.project_version()
@@ -34,6 +44,8 @@ version_array = siril_version.split('.')
 siril_version_major = version_array[0].to_int()
 siril_version_minor = version_array[1].to_int()
 siril_version_micro = version_array[2].to_int()
+
+stable = (siril_version_minor % 2 == 0)
 
 ## Get version from git
 r = run_command('git', 'show', '-s', '--format="%ci %h"','-n1')
@@ -97,6 +109,7 @@ siril_cpp_flag = []
 siril_c_flag = []
 siril_link_arg = []
 
+siril_c_flag += ['-DHAVE_CONFIG_H']
 siril_cpp_flag += ['-DHAVE_CONFIG_H']
 
 if platform_linux
@@ -106,6 +119,9 @@ elif platform_windows
   siril_link_arg += '-Wl,--export-all-symbols'
   siril_link_arg += '-lpsapi'
   siril_link_arg += '-ldbghelp'
+  if stable
+    siril_link_arg += '-mwindows'
+  endif
 elif platform_osx
   # on OSX ObjC and C sources are mixed so adding objc to the linkflags
   siril_link_arg += ['-Wl,-framework,Foundation', '-Wl,-framework,AppKit', '-ObjC']
@@ -154,7 +170,7 @@ exiv_dep = dependency('exiv2', required : true)
 fftw3f_dep = dependency('fftw3f', required : true)
 cfitsio_dep = dependency('cfitsio', required : true)
 cairo_dep = dependency('cairo', required : true)
-kplot_dep = dependency('kplot', fallback : ['kplot', 'kplot_dep'])
+kplot_dep = dependency('kplot', fallback : ['kplot', 'kplot_dep'], required : true)
 
 # TODO: Prefered OpenCV version???
 opencv4_dep = dependency('opencv4', required : false)
@@ -182,7 +198,19 @@ else
 endif
 
 ## Optionnal dependencies
-openmp_dep = dependency('openmp', required : false)
+
+openmp_dep = []
+if platform_windows or platform_linux
+  openmp_dep = dependency('openmp', required : false)
+else
+  if get_option('openmp_darwin')
+    message('Set OpenMP flags for macOS')
+    siril_link_arg += ['-lomp']
+    siril_cpp_flag += ['-Xpreprocessor', '-fopenmp']
+    siril_c_flag += ['-Xpreprocessor', '-fopenmp']
+  endif
+endif
+
 libraw_dep = dependency('libraw', required : false)
 libtiff_dep = dependency('libtiff-4', required : false)
 libjpeg_dep = dependency('libjpeg', required : false)
@@ -197,10 +225,9 @@ libcurl_dep = dependency('libcurl', required : false)
 ## General and package configuration
 conf_data = configuration_data()
 
-stable = (siril_version_minor % 2 == 0)
 conf_data.set10('SIRIL_UNSTABLE', not stable)
-
-conf_data.set('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle)
+conf_data.set10('SIRIL_OUTPUT_DEBUG', get_option('buildtype').startswith('debug'))
+conf_data.set10('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle)
 
 if platform_osx
   conf_data.set('OS_OSX', 1)

@@ -1208,7 +1208,7 @@ int process_seq_crop(int nb) {
 
 	set_cursor_waiting(TRUE);
 
-	start_in_new_thread(crop_sequence, args);
+	crop_sequence(args);
 	return 0;
 }
 

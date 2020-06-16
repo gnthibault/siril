@@ -180,26 +180,20 @@ static int darkOptimization(fits *raw, struct preprocessing_data *args) {
 	return ret;
 }
 
+static int64_t prepro_compute_size_hook(struct generic_seq_args *args, int nb_images) {
+	struct preprocessing_data *prepro = args->user;
+	remove_prefixed_sequence_files(args->seq, prepro->ppprefix);
+
+	int64_t size = seq_compute_size(args->seq, nb_images, args->output_type);
+	if (prepro->debayer)
+		size *= 3;
+	return size;
+}
+
 static int prepro_prepare_hook(struct generic_seq_args *args) {
 	struct preprocessing_data *prepro = args->user;
 
 	if (prepro->seq) {
-		// checking disk space: removing old sequence and computing free space
-		remove_prefixed_sequence_files(args->seq, prepro->ppprefix);
-
-		// float output is always used in case of FITS sequence
-		data_type output_depth;
-		if (args->force_ser_output || com.pref.force_to_16bit ||
-			(args->seq->type == SEQ_SER && !args->force_fitseq_output))
-			output_depth = DATA_USHORT;
-		else output_depth = DATA_FLOAT;
-		int64_t size = seq_compute_size(args->seq, args->seq->number, output_depth);
-		if (prepro->debayer)
-			size *= 3;
-		if (test_available_space(size))
-			return 1;
-		// another generic disk check is done in the generic function after this one
-
 		// handling SER and FITSEQ
 		if (seq_prepare_hook(args))
 			return 1;
@@ -211,7 +205,6 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 			compute_grey_flat(prepro->flat);
 		}
 		if (prepro->autolevel) {
-
 			const unsigned int width = prepro->flat->rx;
 			const unsigned int height = prepro->flat->ry;
 
@@ -336,6 +329,7 @@ void start_sequence_preprocessing(struct preprocessing_data *prepro) {
 	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_all;
 	args->nb_filtered_images = prepro->seq->number;
+	args->compute_size_hook = prepro_compute_size_hook;
 	args->prepare_hook = prepro_prepare_hook;
 	args->image_hook = prepro_image_hook;
 	args->save_hook = NULL;
@@ -344,7 +338,10 @@ void start_sequence_preprocessing(struct preprocessing_data *prepro) {
 	args->stop_on_error = TRUE;
 	args->description = _("Preprocessing");
 	args->has_output = TRUE;
-	args->output_type = DATA_USHORT; // we don't need it, minimize it
+	// float output is always used in case of FITS sequence
+	args->output_type = (args->force_ser_output || com.pref.force_to_16bit ||
+			(args->seq->type == SEQ_SER && !args->force_fitseq_output)) ?
+		DATA_USHORT : DATA_FLOAT;
 	args->upscale_ratio = 1.0;
 	args->new_seq_prefix = prepro->ppprefix;
 	args->load_new_sequence = TRUE;
