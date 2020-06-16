@@ -44,7 +44,7 @@ build-image:
 
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-debian-latest --cache=true --cache-ttl=120h
   except:
-    - branches
+    - schedules
 
 # Image for Windows64 build
 build-image-win64:
@@ -64,7 +64,7 @@ build-image-win64:
     - echo "build-essential cmake cpio g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64 git intltool libglib2.0-bin meson pkg-config python3 python3-distutils python3-docutils python3-pip rpm xsltproc" >> Dockerfile
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-win64-latest --cache=true --cache-ttl=120h
   except:
-    - branches
+    - schedules
 
 ################################################################################
 # GNU/Linux 64-bit CIs
@@ -346,4 +346,4 @@ cppcheck:
       - report
   needs: []
   except:
-    - branches
+    - schedules
