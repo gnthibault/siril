@@ -25,7 +25,17 @@
 ################################################################################
 # Define project
 
-project('siril', ['c','cpp'], version : '0.99.2', license : ['GPL3'], meson_version: '>=0.51.0', default_options : ['c_std=gnu11','cpp_std=c++11'])
+project('siril',
+  ['c','cpp'],
+  version : '0.99.2',
+  license : ['GPL3'],
+  meson_version: '>=0.51.0',
+  default_options : [
+    'c_std=gnu11',
+    'cpp_std=c++11',
+    'buildtype=debugoptimized',
+  ],
+)
 
 # General version
 siril_version = meson.project_version()
