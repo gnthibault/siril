@@ -318,6 +318,8 @@ flatpak:
       - ".flatpak-builder/downloads"
       - ".flatpak-builder/git"
   needs: []
+  only: 
+   - schedules
 
 ################################################################################
 # Analysis
