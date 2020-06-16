@@ -35,6 +35,8 @@ siril_version_major = version_array[0].to_int()
 siril_version_minor = version_array[1].to_int()
 siril_version_micro = version_array[2].to_int()
 
+stable = (siril_version_minor % 2 == 0)
+
 ## Get version from git
 r = run_command('git', 'show', '-s', '--format="%ci %h"','-n1')
 
@@ -213,7 +215,6 @@ libcurl_dep = dependency('libcurl', required : false)
 ## General and package configuration
 conf_data = configuration_data()
 
-stable = (siril_version_minor % 2 == 0)
 conf_data.set10('SIRIL_UNSTABLE', not stable)
 conf_data.set10('SIRIL_OUTPUT_DEBUG', get_option('buildtype').startswith('debug'))
 conf_data.set10('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle)
