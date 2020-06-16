@@ -107,6 +107,9 @@ elif platform_windows
   siril_link_arg += '-Wl,--export-all-symbols'
   siril_link_arg += '-lpsapi'
   siril_link_arg += '-ldbghelp'
+  if stable
+    siril_link_arg += '-mwindows'
+  endif
 elif platform_osx
   # on OSX ObjC and C sources are mixed so adding objc to the linkflags
   siril_link_arg += ['-Wl,-framework,Foundation', '-Wl,-framework,AppKit', '-ObjC']
@@ -212,8 +215,8 @@ conf_data = configuration_data()
 
 stable = (siril_version_minor % 2 == 0)
 conf_data.set10('SIRIL_UNSTABLE', not stable)
-
-conf_data.set('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle)
+conf_data.set10('SIRIL_OUTPUT_DEBUG', get_option('buildtype').startswith('debug'))
+conf_data.set10('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle)
 
 if platform_osx
   conf_data.set('OS_OSX', 1)
