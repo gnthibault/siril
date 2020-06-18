@@ -27,6 +27,8 @@ variables:
 
 # Image for GNU/Linux build
 build-image:
+  except:
+    - schedules
   stage: prepare
   variables:
     GIT_STRATEGY: none
@@ -44,8 +46,11 @@ build-image:
 
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-debian-latest --cache=true --cache-ttl=120h
 
+
 # Image for Windows64 build
 build-image-win64:
+  except:
+    - schedules
   stage: prepare
   variables:
     GIT_STRATEGY: none
@@ -88,6 +93,8 @@ build-image-win64:
 #   needs: ["build-image"]
 
 .siril-debian/testing-base:
+  except:
+    - schedules
   stage: siril
   image: $CI_REGISTRY_IMAGE:build-debian-latest
   dependencies:
@@ -132,6 +139,8 @@ siril-debian/testing-meson:
 # WINDOWS 64-bit CI
 
 deps-win64:
+  except:
+    - schedules
   stage: dependencies
   image: $CI_REGISTRY_IMAGE:build-win64-latest
   variables:
@@ -159,6 +168,8 @@ deps-win64:
   needs: ["build-image-win64"]
 
 siril-win64/testing-meson:
+  except:
+    - schedules
   stage: siril
   image: $CI_REGISTRY_IMAGE:build-win64-latest
   dependencies:
@@ -191,6 +202,8 @@ siril-win64/testing-meson:
       - ${INSTALL_DIR}
 
 siril-win64/testing-autotools:
+  except:
+    - schedules
   stage: siril
   image: $CI_REGISTRY_IMAGE:build-win64-latest
   dependencies:
@@ -226,6 +239,8 @@ siril-win64/testing-autotools:
 # Packaging
 
 siril-win64/packaging-meson:
+  except:
+    - schedules
   stage: packaging
   image: $CI_REGISTRY_IMAGE:build-win64-latest
   dependencies:
@@ -274,6 +289,8 @@ siril-win64/packaging-meson:
 
 flatpak:
   # Update the image URL whenever the runtime version in the flatpak manifest is changed
+  only: 
+   - schedules
   image: "registry.gitlab.gnome.org/gnome/gnome-runtime-images/gnome:3.36"
   stage: "packaging"
   variables:
@@ -323,6 +340,8 @@ flatpak:
 # Analysis
 
 cppcheck:
+  except:
+    - schedules
   stage: analysis
   before_script:
     - apt-get update
@@ -339,4 +358,5 @@ cppcheck:
     paths:
       - report
   needs: []
-  
+  except:
+    - schedules
