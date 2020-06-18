@@ -228,7 +228,10 @@ conf_data = configuration_data()
 conf_data.set10('SIRIL_UNSTABLE', not stable)
 conf_data.set10('SIRIL_OUTPUT_DEBUG', get_option('buildtype').startswith('debug'))
 conf_data.set10('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle)
-conf_data.set10('OS_OSX', platform_osx)
+
+if platform_osx
+  conf_data.set('OS_OSX', 1)
+endif
 
 conf_data.set_quoted('PACKAGE', meson.project_name(), description : 'Name of package.')
 conf_data.set_quoted('PACKAGE_NAME', meson.project_name(), description : 'Define to the full name of this package.')
