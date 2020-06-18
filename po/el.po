@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-15 14:48+0200\n"
-"PO-Revision-Date: 2020-05-08 22:44+0300\n"
+"POT-Creation-Date: 2020-06-18 10:10+0200\n"
+"PO-Revision-Date: 2020-06-18 11:03+0300\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
 "Language: el\n"
@@ -310,12 +310,12 @@ msgstr "Εξαγωγή"
 #: ../src/gui/siril3.glade.h:69
 #, fuzzy
 msgid "Split Channels..."
-msgstr "Διαχωρισμός CFA"
+msgstr "Κανάλια..."
 
 #: ../src/gui/siril3.glade.h:70
 #, fuzzy
 msgid "Split CFA Channels..."
-msgstr "Διαχωρισμός CFA"
+msgstr "Διαχωρισμός CFA..."
 
 #: ../src/gui/siril3.glade.h:71
 msgid "Wavelet Layers..."
@@ -1549,7 +1549,6 @@ msgid "Sequence stacking"
 msgstr "Αλληλουχία σώρευσης"
 
 #: ../src/gui/siril3.glade.h:327
-#, fuzzy
 msgid ""
 "If one of these items is selected, a normalisation process will be applied "
 "to all input\n"
@@ -1575,7 +1574,7 @@ msgstr ""
 "θα εφαρμοστεί σε όλες τις εισαγόμενες\n"
 "εικόνες πριν από την σώρευση.\n"
 "-Η ομαλοποίηση ταιριάζει την μέση τιμή του υποβάθρου όλων των εισαγόμενων "
-"τιμών, τότε,\n"
+"εικόνων, τότε,\n"
 "η ομαλοποίηση επεξεργάζεται πολλαπλασιαστικά ή προσθετικά. Έχετε υπόψη ότι "
 "και ο δύο\n"
 "διαδικασίες γενικά οδηγούν σε παρόμοια αποτελέσματα αλλά η πολλαπλασιαστική "
@@ -1586,12 +1585,11 @@ msgstr ""
 "εικόνων. Αυτό\n"
 "τείνει να βελτιώνει τον λόγο σήματος-προς-θόρυβο και έτσι αυτή είναι η "
 "επιλογή η οποία χρησιμοποιείται\n"
-"με την προσθετική ομαλοποίηση.\n"
+"σαν προεπιλεγμένη με την προσθετική ομαλοποίηση.\n"
 "\n"
-"Τα κυρίως offset και dark δεν θα πρέπει να επεξεργαστούν με την "
-"ομαλοποίηση.\n"
+"<b>Τα κυρίως offset και dark δεν θα πρέπει να επεξεργαστούν με ομαλοποίηση.\n"
 "Όμως, η πολλαπλασιαστική ομαλοποίηση θα πρέπει να χρησιμοποιηθεί με flat "
-"καρέ."
+"καρέ.<b>"
 
 #: ../src/gui/siril3.glade.h:339
 msgid "No normalisation"
@@ -1636,7 +1634,6 @@ msgid "Sigma high: "
 msgstr "Άνω Σίγμα: "
 
 #: ../src/gui/siril3.glade.h:348
-#, fuzzy
 msgid ""
 "Five rejection algorithms are available.\n"
 "- <b>Percentile Clipping</b> is a one-step rejection algorithm ideal for "
@@ -1664,19 +1661,20 @@ msgid ""
 "[2] Juan Conejero, ImageIntegration, Pixinsight Tutorial"
 msgstr ""
 "Πέντε αλγόριθμοι απόρριψης είναι διαθέσιμοι.\n"
-"- Η Εκατοστιαία Αποκοπή είναι ένας αλγόριθμός ενός βήματος ιδανικός για "
-"μικρά σετ δεδομένων (μέχρι 6 εικόνες)\n"
-"- Αποκοπή Σίγμα, είναι ένας επαναληπτικός αλγόριθμος ο οποίος απορρίπτει "
-"εικονοστοιχεία τα οποία απέχουν από\n"
+"- <b>Η Εκατοστιαία Αποκοπή<b> είναι ένας αλγόριθμός ενός βήματος ιδανικός "
+"για μικρά σετ δεδομένων\n"
+" (μέχρι 6 εικόνες)\n"
+"- <b>Αποκοπή Σίγμα<b>, είναι ένας επαναληπτικός αλγόριθμος ο οποίος "
+"απορρίπτει εικονοστοιχεία τα οποία απέχουν από\n"
 "την διάμεση τιμή πάνω από δύο δεδομένες τιμές σίγμα.\n"
-"- Αποκοπή Διάμεσου Σίγμα, είναι ο ίδιος αλγόριθμος εκτός του ότι τα "
-"απορριπτέα εικονοστοιχεία\n"
-"αντικαθιστώνται με την διάμεση τιμή.\n"
-"- Αποκοπή Σίγμα Winsor, είναι παρόμοια με την μέθοδο Αποκοπή Σίγμα αλλά "
-"χρησιμοποιεί ένα\n"
-"αλγόριθμο βασισμένο στην δουλεία του Huber [1] [2].\n"
-"- Αποκοπή Γραμμικού Fit, είναι ένας αλγόριθμος που αναπτύχθηκε από τον Juan "
-"Conejero, κύριο προγραμματιστή του\n"
+"- <b>Αποκοπή Διάμεσου Σίγμα<b>, είναι ο ίδιος αλγόριθμος εκτός του ότι τα "
+"απορριφθέντα εικονοστοιχεία\n"
+"αντικαθιστώντα με την διάμεση τιμή.\n"
+"- <b>Αποκοπή Σίγμα Winsor<b>, είναι παρόμοια με την μέθοδο Αποκοπή Σίγμα "
+"αλλά χρησιμοποιεί ένα\n"
+"αλγόριθμο βασισμένο στην εργασία του Huber [1] [2].\n"
+"- <b>Αποκοπή Γραμμικού Fit<b>, είναι ένας αλγόριθμος που αναπτύχθηκε από τον "
+"Juan Conejero, κύριο προγραμματιστή του\n"
 "PixInsight [2]. Ταιριάζει καλύτερα στην ευθεία γραμμή (y=ax+b) της σώρευσης "
 "εικονοστοιχείων και απορρίπτει τις\n"
 "ακραίες τιμές. Αυτός ο αλγόριθμος έχει πολύ καλή απόδοση με μεγάλους σωρούς "
@@ -1720,7 +1718,6 @@ msgid "Normalisation:"
 msgstr "Ομαλοποίηση:"
 
 #: ../src/gui/siril3.glade.h:372
-#, fuzzy
 msgid ""
 "<b>Sum</b>: This is the simplest method.\n"
 "Pixel values are added in an image normalized to 16-bit values.\n"
@@ -1753,14 +1750,14 @@ msgid ""
 "Pixels of the image are replaced by pixels at the same coordinates if "
 "intensity is lower."
 msgstr ""
-"Αθροιστική: Αυτή είναι η πιο απλή μέθοδος.\n"
+"<b>Αθροιστική<b>: Αυτή είναι η πιο απλή μέθοδος.\n"
 "Οι τιμές των εικονοστοιχείων προστίθενται σε μια εικόνα ομαλοποιημένες σε "
 "τιμές 16-bit.\n"
-"Αυξάνει τον λόγο σήματος προς θόρυβο (SNR) σαν την τετραγωνική ρίζα του "
+"Αυξάνει τον λόγο σήματος προς θόρυβο (SNR) με την τετραγωνική ρίζα του "
 "αριθμού των εικόνων.\n"
 "\n"
-"Μέσου όρου με απόρριψη: Αυτή η μέθοδος χρησιμοποιείται για την απόρριψη "
-"αποκλίνων εικονοστοιχείων επαναληπτικά.\n"
+"<b>Μέσου όρου με απόρριψη<b>: Αυτή η μέθοδος χρησιμοποιείται για την "
+"απόρριψη αποκλίνων εικονοστοιχείων επαναληπτικά.\n"
 "Πέντε μέθοδοι έχουν εφαρμοστεί:\n"
 "- Εκατοστιαία Αποκοπή\n"
 "- Αποκοπή Σίγμα\n"
@@ -1769,21 +1766,22 @@ msgstr ""
 "- Αποκοπή Γραμμικού fit\n"
 "Μετά την απόρριψη εικονοστοιχείων, υπολογίζεται ο μέσος όρος του σωρού.\n"
 "\n"
-"Διαμέσου: Αυτή η μέθοδος χρησιμοποιείται κυρίως για σώρευση dark/flat/offset "
-"παρόλο που προτείνουμε τώρα την χρήση μέσου όρου με σωρευτική απόρριψη \n"
+"<b>Διαμέσου<b>: Αυτή η μέθοδος χρησιμοποιείται κυρίως για σώρευση dark/flat/"
+"offset παρόλο που προτείνουμε τώρα την χρήση μέσου όρου με σωρευτική "
+"απόρριψη \n"
 "Υπολογίζεται η τιμή διαμέσου των εικονοστοιχείων του σωρού για κάθε "
 "εικονοστοιχείο.\n"
-"Καθώς αυτή η μέθοδος θα έπρεπε να χρησιμοποιείται για σώρευση dark/flat/"
+"Καθώς αυτή η μέθοδος θα πρέπει να χρησιμοποιείται για σώρευση dark/flat/"
 "offset δεν\n"
 "λαμβάνει υπόψη μετατοπίσεις που υπολογίζονται κατά την εγγραφή.\n"
 "\n"
-"Μέγιστο εικονοστοιχείο: Αυτή η περίπτωση χρησιμοποιείται κυρίως για την "
-"κατασκευή εικόνων μεγάλων εκθέσεων αστρικών ιχνών.\n"
+"<b>Μέγιστο εικονοστοιχείο<b>: Αυτή η περίπτωση χρησιμοποιείται κυρίως για "
+"την κατασκευή εικόνων μεγάλων εκθέσεων αστρικών ιχνών.\n"
 "Τα εικονοστοιχεία της εικόνας αντικαθιστώνται από εικονοστοιχεία στις ίδιες "
 "συντεταγμένες αν η ένταση είναι μεγαλύτερη.\n"
 "\n"
-"Ελάχιστο εικονοστοιχείο: Αυτή η περίπτωση θα είναι χρήσιμη για την επιλογή "
-"περιοχής που θα περικοπεί μετά την λειτουργία σώρευσης.\n"
+"<b>Ελάχιστο εικονοστοιχείο<b>: Αυτή η περίπτωση είναι χρήσιμη για την "
+"επιλογή περιοχής που θα περικοπεί μετά την λειτουργία σώρευσης.\n"
 "Τα εικονοστοιχεία στην εικόνα αντικαθιστώνται από εικονοστοιχεία στις ίδιες "
 "συντεταγμένες αν η ένταση είναι χαμηλότερη."
 
@@ -3199,7 +3197,7 @@ msgstr "Προβολή καμπύλης MTF"
 
 #: ../src/gui/siril3.glade.h:692
 msgid "Apply autostretch algorithm to image"
-msgstr "Εφαρμογή αυτόματου τεντώματος στην εικόνα"
+msgstr "Εφαρμογή αλγόριθμου αυτόματου τεντώματος στην εικόνα"
 
 #: ../src/gui/siril3.glade.h:693
 msgid "Highlights: "
@@ -3452,7 +3450,7 @@ msgstr "Ακέραιος 16-bit χωρίς πρόσημο"
 
 #: ../src/gui/siril3.glade.h:752
 msgid "32-bit floating point"
-msgstr "Κινητό υποσημείο 32-bit"
+msgstr "32-bit κινητής υποδιαστολής"
 
 #: ../src/gui/siril3.glade.h:753
 msgid "<b>Sample Format</b>"
@@ -4118,6 +4116,7 @@ msgid "Bayer/mosaic pattern: "
 msgstr "Διάταξη Bayer/mosaic: "
 
 #: ../src/gui/siril3.glade.h:889
+#, fuzzy
 msgid ""
 "Select an interpolation method to perform demosaicing.\n"
 "\n"
@@ -4148,6 +4147,37 @@ msgid ""
 "For the XTRANS sensor, a special algorithm called <b>Markesteijn</b> is used "
 "regardless of the method selected in the preferences."
 msgstr ""
+"Επιλέξτε μια μέθοδο παρεμβολής για την εκτέλεση του demosaic.\n"
+"\n"
+"* <b>Fast Debayer</b> είναι ο ταχύτερος αλγόριθμος που διατίθεται στο Siril. "
+"Ωστόσο, άλλοι αλγόριθμοι που αναφέρονται παρακάτω είναι συχνά αρκετά "
+"καλύτεροι.\n"
+"* <b>VNG4</b>, Threshold-Based Variable Number of Gradient, λειτουργεί σε "
+"μια περιοχή 5x5 εικονοστοιχείων γύρω από το κάθε πηγαίο εικονοστοιχείο. "
+"Είναι ένας πολύ καλός αλγόριθμος για επίπεδες περιοχές της εικόνας (όπως το "
+"φόντο του ουρανού), αλλά παράγει αντικείμενα σε περιοχές υψηλής αντίθεσης "
+"(όπως αστέρια).\n"
+"* <b>AHD</b>, Adaptive Homogeneity-Directed, είναι ένας άλλο γνωστός "
+"αλγόριθμος debayer. Όμως παρουσιάζει συνήθως αντικείμενα στο υπόβαθρο και "
+"κακές μορφές αστεριών.\n"
+"* <b>DCB</b>, ένας πιο πρόσφατος αλγόριθμος, μπορεί να δείξει κάποια "
+"αντικείμενα στο παρασκήνιο, όπως το AHD.\n"
+"* <b>HPHD</b>, Heterogeneity-Projection Hard-Decision, είναι ένας παλιός "
+"αλγόριθμος δίνοντας μερικά ωραία αποτελέσματα, αλλά αυτό είναι αρκετά "
+"αργός.\n"
+"* <b>IGV</b> και <b>LMMSE</b> είναι πολύ καλοί όταν λειτουργούν με πολύ "
+"θορυβώδεις εικόνες. Όμως, το IGV τείνει να χάνει μερικές χρωματικές "
+"πληροφορίες, ενώ το LMMSE είναι ένα από τα πιό υπολογιστικά ακριβά "
+"demosaicers και χρειάζεται πολλή μνήμη.\n"
+"* <b>RCD</b>, Ratio Corrected Demosaicing, προτίθεται να εξομαλύνει τα "
+"σφάλματα διόρθωσης χρώματος που είναι κοινά σε πολλές άλλες μεθόδους "
+"παρεμβολής. Κάνει εξαιρετική δουλειά για στρογγυλές άκρες, για παράδειγμα "
+"στα αστέρια, και ως εκ τούτου είναι ο προεπιλεγμένος αλγόριθμος που "
+"χρησιμοποιείται στο Siril.\n"
+"\n"
+"Για τον αισθητήρα XTRANS, χρησιμοποιείται ένας ειδικός αλγόριθμος που "
+"ονομάζεται <b>Markesteijn</b> και χρησιμοποιείται ανεξάρτητα από τη μέθοδο "
+"που επιλέγεται στις προτιμήσεις."
 
 #: ../src/gui/siril3.glade.h:901
 msgid "Fast Debayer"
@@ -4425,9 +4455,8 @@ msgid "Image Thumbnails"
 msgstr "Μικρογραφίες εικόνων"
 
 #: ../src/gui/siril3.glade.h:959
-#, fuzzy
 msgid "Performances"
-msgstr "Ρυθμίσεις"
+msgstr "Επιδόσεις"
 
 #: ../src/gui/siril3.glade.h:960
 msgid "Ratio of available"
@@ -4520,6 +4549,18 @@ msgid ""
 "however, it preserves too much of the noise (or even amplifies the noise) in "
 "the pixel values, resulting in poor compression."
 msgstr ""
+"Ενώ οι εικόνες κινητής υποδιαστολής μπορεί να συμπιεστούν χωρίς απώλειες "
+"(χρησιμοποιώντας gzip, δεδομένου ότι το Rice και το Hcompress συμπιέζουν "
+"μόνο τις ακέραιους πίνακες), αυτές οι εικόνες συχνά δεν συμπιέζονται πολύ "
+"καλά επειδή οι τιμές του εικονοστοιχείου είναι πάρα πολύ θορυβώδεις. Τα "
+"λιγότερο σημαντικά bit στη mantissa των τιμών του εικονοστοιχείου περιέχουν "
+"αποτελεσματικά μη συμπιέσιμα μοτίβα τυχαίων bit. Προκειμένου να επιτευχθεί "
+"υψηλότερη συμπίεση, πρέπει να αφαιρεθεί μέρος αυτού του θορύβου, αλλά χωρίς "
+"να χάσει το χρήσιμο περιεχόμενο πληροφοριών. Εάν είναι πολύ μεγάλο, μπορεί "
+"να ληφθούν λιγότερα δείγματα των τιμών εικονοστοιχείου με αποτέλεσμα την "
+"απώλεια των πληροφοριών στην εικόνα. Εάν είναι πάρα πολύ μικρό, εντούτοις, "
+"συντηρεί πάρα πολύ θορύβο (ή ακόμα και ενισχύεται ο θόρυβος) στις τιμές του "
+"εικονοστοιχείου, με συνέπεια την κακή συμπίεση."
 
 #: ../src/gui/siril3.glade.h:973
 msgid ""
@@ -4545,6 +4586,30 @@ msgid ""
 "either lossy or lossless compression, with no special approach needed for "
 "the lossless case (e.g. there is no need for a file of residuals.)"
 msgstr ""
+"Επιλέξτε μια μέθοδο αλγορίθμου για τη συμπίεση FITS:\n"
+"\n"
+"* <b>Rice</b>:Ο αλγόριθμος Rice είναι απλός και πολύ γρήγορος \n"
+"* <b>GZIP 1</b>: Ο αλγόριθμος gzip χρησιμοποιείται για να συμπιέσει και να "
+"αποσυμπιέσει τα εικονοστοιχεία της εικόνας. Το Gzip είναι ο αλγόριθμος "
+"συμπίεσης που χρησιμοποιείται στο δωρεάν πρόγραμμα λογισμικού GNU με το ίδιο "
+"όνομα. \n"
+"* <b>GZIP 2</b>: Τα bytes στον πίνακα των τιμών του εικονοστοιχείου της "
+"εικόνας ανακατεύονται στη φθίνουσα σειρά της σημασίας πρίν συμπιέστούν με "
+"τον αλγόριθμο gzip. Αυτό είναι συνήθως ιδιαίτερα αποτελεσματικό κατά τη "
+"συμπίεση των πινάκων κινητής υποδιαστολής.\n"
+"* <b>Hcompress</b>: Εν συντομία, η μέθοδος που χρησιμοποιείται είναι:\n"
+"\t- 1. ένας μετασχηματισμός κυματοειδούς που ονομάζεται μετασχηματισμός - H "
+"(ένας μετασχηματισμός Haar γενικευμένος σε δύο διαστάσεις), ακολουθούμενο "
+"από\n"
+"\t- 2. κβαντοποίηση που απορρίπτει το θόρυβο στην εικόνα διατηρώντας το σήμα "
+"σε όλες τις κλίμακες, ακολουθούμενο από\n"
+"\t- 3. κωδικοποίηση τετραδικών δέντρων των ποσοστικοποιημένων συντελεστών.\n"
+"Η τεχνική δίνει πολύ καλή συμπίεση για αστρονομικές εικόνες και είναι "
+"σχετικά γρήγορη. Οι υπολογισμοί πραγματοποιούνται με τη χρήση ακέραιων "
+"αριθμητικών και είναι πλήρως αναστρέψιμοι. Συνεπώς, το πρόγραμμα μπορεί να "
+"χρησιμοποιηθεί είτε για συμπίεση με απώλιες ή χωρίς, χωρίς να απαιτείται "
+"ειδική προσέγγιση για την περίπτωση χωρίς απώλειες (π.χ. δεν υπάρχει ανάγκη "
+"για αρχείο υπολειμμάτων.)"
 
 #: ../src/gui/siril3.glade.h:983
 msgid "GZIP1"
@@ -4556,7 +4621,7 @@ msgstr "GZIP2"
 
 #: ../src/gui/siril3.glade.h:985
 msgid "Hcompress"
-msgstr ""
+msgstr "Hcompress"
 
 #: ../src/gui/siril3.glade.h:986
 msgid "Method"
@@ -4572,7 +4637,7 @@ msgstr "Διαστάσεις πλακιδίου"
 
 #: ../src/gui/siril3.glade.h:989
 msgid "HCompress scale factor"
-msgstr ""
+msgstr "Συντελεστής κλίμακας HCompress"
 
 #: ../src/gui/siril3.glade.h:990
 msgid ""
@@ -4587,6 +4652,17 @@ msgid ""
 "(i.e. the compressed image requires about 1.5 bits/pixel), while producing a "
 "decompressed image that is nearly indistinguishable from the original."
 msgstr ""
+"Η παράμετρος ακέραιας κλίμακας καθορίζει την ποσότητα συμπίεσης. Κλίμακα = 0 "
+"ή 1 οδηγεί σε συμπίεση χωρίς απώλειες. Εάν ο συντελεστής κλίμακας είναι "
+"μεγαλύτερος από 1, τότε η συμπίεση είναι απωλεστική. Για αστρονομικές "
+"εικόνες, η συμπίεση χωρίς απώλειες είναι γενικά μάλλον αναποτελεσματική "
+"επειδή οι εικόνες έχουν πολύ θόρυβο, ο οποίος είναι εγγενώς ασυμπίεστος. "
+"Ωστόσο, εάν κάποιος από αυτόν τον θόρυβο απορρίπτεται τότε οι εικόνες "
+"συμπιέζονται πολύ καλά. Ο συντελεστής κλίμακας καθορίζει πόσος θόρυβος "
+"απορρίπτεται. Ρύθμιση της κλίμακας σε 2 φορές σίγμα, τον θόρυβο RMS στην "
+"εικόνα, συνήθως οδηγεί σε συμπίεση κατά περίπου με συντελεστή 10 (δηλ. η "
+"συμπιεσμένη εικόνα απαιτεί περίπου 1,5 bits/pixel), ενώ παράγει μια "
+"αποσυμπιεσμένη εικόνα που είναι σχεδόν δυσδιάκριτη από το πρωτότυπο."
 
 #: ../src/gui/siril3.glade.h:991
 msgid "<b>FITS Compression</b>"
@@ -4639,6 +4715,7 @@ msgid "Extension:"
 msgstr "Προέκταση:"
 
 #: ../src/gui/siril3.glade.h:1002
+#, fuzzy
 msgid ""
 "Choose the type of FITS that will be used by default. 32-bit floating point "
 "is the format giving the best precision, however it takes twice as much disk "
@@ -4646,6 +4723,9 @@ msgid ""
 "chosen format except the RGB compositing tool that always will convert "
 "images in 32-bit."
 msgstr ""
+"Επιλέξτε τον τύπο του FITS που θα χρησιμοποιηθεί σαν προεπιλογή. Το 32-bit "
+"floating point είναι η μορφή που δίνει την καλύτερη ακρίβεια, ωστόσο παίρνει "
+"το διπλάσιο χώρο στο δίσκο από 16-bit ακέραιους αριθμούς χωρίς πρόσημο."
 
 #: ../src/gui/siril3.glade.h:1003
 msgid "Default Type:"
@@ -4879,7 +4959,7 @@ msgstr "Κάντε μια επιλογή της περιοχής υποβάθρ�
 #: ../src/algos/colors.c:748 ../src/algos/colors.c:904 ../src/algos/noise.c:69
 #: ../src/algos/star_finder.c:53 ../src/algos/star_finder.c:74
 #: ../src/core/command.c:2453 ../src/core/preprocess.c:74
-#: ../src/core/preprocess.c:221 ../src/core/siril.c:351
+#: ../src/core/preprocess.c:219 ../src/core/siril.c:351
 #: ../src/filters/banding.c:165 ../src/filters/banding.c:247
 #: ../src/filters/cosmetic_correction.c:194
 #: ../src/filters/cosmetic_correction.c:434 ../src/filters/saturation.c:154
@@ -5878,7 +5958,7 @@ msgstr "Έγινε σώρευση της αλληλουχίας με επιτυ�
 
 #: ../src/core/command.c:3132
 msgid "-stretch option is now deprecated.\n"
-msgstr "Εντοπίστηκε αστρομετρική λύση\n"
+msgstr "-η επιλογή τεντώματος καταργήθηκε.\n"
 
 #. sets most properties
 #: ../src/core/command.c:3148 ../src/core/preprocess.c:565
@@ -6326,11 +6406,11 @@ msgstr "Περιστρέφει την εικόνα γύρω από ένα ορι
 #: ../src/core/command_def.h:62
 msgid "Applies midtone transfer function to the current loaded image"
 msgstr ""
+"Εφαρμόζει συνάρτηση μεταφοράς ενδιάμεσου τόνου στην τρέχουσα φορτωμένη εικόνα"
 
 #: ../src/core/command_def.h:64
-#, fuzzy
 msgid "Shows the negative view of the current image"
-msgstr "Αποθήκευση της τρέχουσας εικόνας FITS"
+msgstr "Εμφανίζει την αρνητική προβολή της τρέχουσας εικόνας"
 
 #: ../src/core/command_def.h:65
 msgid ""
@@ -6388,7 +6468,9 @@ msgstr ""
 "debayer\". Η επιλογή \"-flip\" λέει στο Siril να διαβάσει τις εικόνες από "
 "πάνω προς τα κάτω για την λειτουργία demosaic και η επιλογή \"-equalize_cfa"
 "\" εξισώνει την μέση ένταση των επιπέδων RGB του κυρίως CFA flat. Επίσης "
-"είναι δυνατόν να βελτιστοποιηθεί η αφαίρεση dark με το \"-opt\".\n"
+"είναι δυνατόν να βελτιστοποιηθεί η αφαίρεση dark με το \"-opt\". Το όνομα "
+"της ακολουθίας εξόδου ξεκινάει με το πρόθεμα \"pp_\" εκτός αν οριστεί "
+"διαφορετικά με την επιλογή \"-prefix=\".\n"
 "\n"
 "Να σημειωθεί πως μόνο τα θερμά εικονοστοιχεία διορθώνονται στη διαδικασία "
 "κοσμητικής διόρθωσης"
@@ -6399,7 +6481,6 @@ msgstr ""
 "Πραγματοποιεί ένα PSF (Συνάρτηση Διασποράς Σημείου) στο επιλεγμένο αστέρι"
 
 #: ../src/core/command_def.h:73
-#, fuzzy
 msgid ""
 "Performs geometric transforms on images of the sequence given in argument so "
 "that they may be superimposed on the reference image. The output sequence "
@@ -6412,13 +6493,14 @@ msgid ""
 msgstr ""
 "Εκτελεί γεωμετρικούς μετασχηματισμούς σε εικόνες της ακολουθίας που δίνονται "
 "στο όρισμα, έτσι ώστε να μπορούν να επιβληθούν στην εικόνα αναφοράς. Το "
-"όνομα ακολουθίας εξόδου ξεκινά με το πρόθεμα \"r_\". Χρησιμοποιώντας τα "
-"αστέρια για την εγγραφή, αυτός ο αλγόριθμος λειτουργεί μόνο με εικόνες βαθύ "
-"ουρανού. Η εγγραφή γίνεται στο πράσινο κανάλι για τις εικόνες RGB. Η επιλογή "
-"\"-drizzle\" ενεργοποιεί την σώρευση sub-pixel, είτε με την αύξηση της "
-"κλίμακας επί 2 τις εικόνες που δημιουργήθηκαν στην περιστρεφόμενη αλληλουχία "
-"ή θέτοντας μια σημαία η οποία θα προβεί της αύξησης της κλίμακας κατά την "
-"σώρευση αν το \"-norot\" περαστεί"
+"όνομα ακολουθίας εξόδου ξεκινά με το πρόθεμα \"r_\" εκτός αν οριστεί "
+"διαφορετικά με την επιλογή \"-prefix=\". Χρησιμοποιώντας τα αστέρια για την "
+"εγγραφή, αυτός ο αλγόριθμος λειτουργεί μόνο με εικόνες βαθύ ουρανού. Η "
+"εγγραφή γίνεται στο πράσινο κανάλι για τις εικόνες RGB. Η επιλογή \"-drizzle"
+"\" ενεργοποιεί την σώρευση sub-pixel, είτε με την αύξηση της κλίμακας επί 2 "
+"των εικόνων που δημιουργήθηκαν στην περιστρεφόμενη αλληλουχία ή θέτοντας μια "
+"σημαία η οποία θα προβεί της αύξησης της κλίμακας κατά την σώρευση αν το \"-"
+"norot\" περαστεί"
 
 #: ../src/core/command_def.h:74
 msgid "Resamples image with a factor \"factor\""
@@ -6582,9 +6664,9 @@ msgid ""
 "output sequence name starts with the prefix \"Ha_\" unless otherwise "
 "specified with option \"-prefix=\""
 msgstr ""
-"Ίδια εντολή με το SUBSKY, αλλά για την ακολουθία \"sequencename\".  Το όνομα "
-"ακολουθίας εξόδου ξεκινά με το πρόθεμα \"bkg_\", εκτός εάν ορίζεται αλλιώς "
-"με την επιλογή \"-prefix=\""
+"Ίδια εντολή με τη MTF αλλά για την ακολουθία \"sequencename\".  Το όνομα "
+"ακολουθίας εξόδου ξεκινά με το πρόθεμα \"mtf_\", εκτός εάν οριστεί "
+"διαφορετικά με την επιλογή \"-prefix=\""
 
 #: ../src/core/command_def.h:94
 #, fuzzy
@@ -6592,9 +6674,9 @@ msgid ""
 "Same command than EXTRACT_HAOIII but for the sequence \"sequencename\". The "
 "output sequence name start with the prefix \"Ha_\" and \"OIII_\""
 msgstr ""
-"Ίδια εντολή με το SUBSKY, αλλά για την ακολουθία \"sequencename\".  Το όνομα "
-"ακολουθίας εξόδου ξεκινά με το πρόθεμα \"bkg_\", εκτός εάν ορίζεται αλλιώς "
-"με την επιλογή \"-prefix=\""
+"Ίδια εντολή με τη SPLIT_CFA αλλά για την ακολουθία \"sequencename\". Το "
+"όνομα ακολουθίας εξόδου ξεκινά με το πρόθεμα \"CFA_\", εκτός εάν οριστεί "
+"διαφορετικά με την επιλογή \"-prefix=\""
 
 #: ../src/core/command_def.h:95
 msgid ""
@@ -6602,6 +6684,9 @@ msgid ""
 "output sequence name starts with the prefix \"cc_\" unless otherwise "
 "specified with \"-prefix=\" option"
 msgstr ""
+"Ίδια εντολή με τη FIND_COSME αλλά για την ακολουθία \"sequencename\". Το "
+"όνομα ακολουθίας εξόδου ξεκινά με το πρόθεμα \"cc_\", εκτός εάν οριστεί "
+"διαφορετικά με την επιλογή \"-prefix=\""
 
 #: ../src/core/command_def.h:96
 msgid ""
@@ -6609,6 +6694,9 @@ msgid ""
 "output sequence name starts with the prefix \"cc_\" unless otherwise "
 "specified with \"-prefix=\" option"
 msgstr ""
+"Ίδια εντολή με τη FIND_COSME_CFA αλλά για την ακολουθία \"sequencename\". Το "
+"όνομα ακολουθίας εξόδου ξεκινά με το πρόθεμα \"cc_\", εκτός εάν οριστεί "
+"διαφορετικά με την επιλογή \"-prefix=\""
 
 #: ../src/core/command_def.h:97
 msgid ""
@@ -6616,6 +6704,9 @@ msgid ""
 "sequence name starts with the prefix \"mtf_\" unless otherwise specified "
 "with \"-prefix=\" option"
 msgstr ""
+"Ίδια εντολή με τη MTF αλλά για την ακολουθία \"sequencename\".  Το όνομα "
+"ακολουθίας εξόδου ξεκινά με το πρόθεμα \"mtf_\", εκτός εάν οριστεί "
+"διαφορετικά με την επιλογή \"-prefix=\""
 
 #: ../src/core/command_def.h:98
 msgid ""
@@ -6632,17 +6723,19 @@ msgid ""
 "output sequence name starts with the prefix \"CFA_\" unless otherwise "
 "specified with \"-prefix=\" option"
 msgstr ""
+"Ίδια εντολή με τη SPLIT_CFA αλλά για την ακολουθία \"sequencename\". Το "
+"όνομα ακολουθίας εξόδου ξεκινά με το πρόθεμα \"CFA_\", εκτός εάν οριστεί "
+"διαφορετικά με την επιλογή \"-prefix=\""
 
 #: ../src/core/command_def.h:100
-#, fuzzy
 msgid ""
 "Same command that SUBSKY but for the sequence \"sequencename\".  The output "
 "sequence name starts with the prefix \"bkg_\" unless otherwise specified "
 "with \"-prefix=\" option"
 msgstr ""
-"Ίδια εντολή με το SUBSKY, αλλά για την ακολουθία \"sequencename\".  Το όνομα "
-"ακολουθίας εξόδου ξεκινά με το πρόθεμα \"bkg_\", εκτός εάν ορίζεται αλλιώς "
-"με την επιλογή \"-prefix=\""
+"Ίδια εντολή με τη SUBSKY, αλλά για την ακολουθία \"sequencename\".  Το όνομα "
+"ακολουθίας εξόδου ξεκινά με το πρόθεμα \"bkg_\", εκτός εάν ορίζεται "
+"διαφορετικά με την επιλογή \"-prefix=\""
 
 #: ../src/core/command_def.h:101
 msgid ""
@@ -6993,13 +7086,14 @@ msgid "Error in requested space disk.\n"
 msgstr ""
 
 #: ../src/core/OS_utils.c:253
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Compression enabled: There may no be enough free disk space to perform this "
 "operation: %sB available for %sB needed (missing %sB)\n"
 msgstr ""
-"Δεν υπάρχει αρκετός διαθέσιμος χώρος στον δίσκο για την εκτέλεση της "
-"λειτουργίας: %sB διαθέσιμα ενώ %sB χρειάζονται (λείπουν %sB)\n"
+"Ενεργοποιημένη συμπίεση: Ενδέχεται να μην υπάρχει αρκετός ελεύθερος χώρος "
+"στο δίσκο για την εκτέλεση αυτής της λειτουργίας: %sB διαθέσιμα για %sB που "
+"απαιτούνται (λείπουν %sB)\n"
 
 #: ../src/core/OS_utils.c:256
 msgid ""
@@ -7010,13 +7104,14 @@ msgstr ""
 "στο δίσκο για την εκτέλεση αυτής της λειτουργίας"
 
 #: ../src/core/OS_utils.c:258
-#, fuzzy, c-format
+#, c-format
 msgid ""
 "Compression enabled: It is likely that there is not enough free disk space "
 "to perform this operation: %sB available for %sB needed (missing %sB)\n"
 msgstr ""
-"Δεν υπάρχει αρκετός διαθέσιμος χώρος στον δίσκο για την εκτέλεση της "
-"λειτουργίας: %sB διαθέσιμα ενώ %sB χρειάζονται (λείπουν %sB)\n"
+"Ενεργοποιημένη συμπίεση: Είναι πιθανό να μην υπάρχει αρκετός ελεύθερος χώρος "
+"στο δίσκο για την εκτέλεση αυτής της λειτουργίας: %sB διαθέσιμα για %sB που "
+"απαιτούνται (λείπουν %sB)\n"
 
 #: ../src/core/OS_utils.c:261
 msgid ""
@@ -7111,29 +7206,29 @@ msgstr "η εντολή διακόπηκε\n"
 msgid "Dark optimization: k0=%.3f\n"
 msgstr "Βελτιστοποίηση dark: k0=%.3lf\n"
 
-#: ../src/core/preprocess.c:227
+#: ../src/core/preprocess.c:225
 #, c-format
 msgid "Normalisation value auto evaluated: %.2f\n"
 msgstr "Η τιμή ομαλοποίησης αξιολογήθηκε αυτόματα: %.2lf\n"
 
-#: ../src/core/preprocess.c:237
+#: ../src/core/preprocess.c:235
 #, c-format
 msgid "%ld pixels corrected (%ld + %ld)\n"
 msgstr "%ld εικονοστοιχεία διορθώθηκαν (%ld + %ld)\n"
 
-#: ../src/core/preprocess.c:240
+#: ../src/core/preprocess.c:238
 msgid ""
 "Darkmap cosmetic correction is only supported with single channel images\n"
 msgstr ""
 "Η αισθητική διόρθωση Darkmap υποστηρίζεται μόνο με εικόνες μονού καναλιού\n"
 
-#: ../src/core/preprocess.c:269
+#: ../src/core/preprocess.c:267
 msgid "Cannot apply cosmetic correction on XTRANS sensor yet\n"
 msgstr ""
 "Δεν είναι ακόμα δυνατή η εφαρμογή κοσμητικής διόρθωσης στον αισθητήρα "
 "XTRANS\n"
 
-#: ../src/core/preprocess.c:339
+#: ../src/core/preprocess.c:337
 msgid "Preprocessing"
 msgstr "Γίνεται Προ-επεξεργασία"
 
@@ -8483,9 +8578,8 @@ msgid "You can open a single image or FITS/SER sequence"
 msgstr "Άνοιγμα εικόνας ή αλληλουχίας SER/AVI"
 
 #: ../src/gui/siril_intro.c:41
-#, fuzzy
 msgid "Here’s listed the most recent FITS files you’ve opened"
-msgstr "Όνομα αρχείου για το δεύτερο αρχείο FITS που θα σωθεί."
+msgstr ""
 
 #: ../src/gui/siril_intro.c:42
 #, fuzzy
@@ -8850,9 +8944,8 @@ msgid "FITS error: %s\n"
 msgstr "Σφάλμα FITS: %s\n"
 
 #: ../src/io/image_format_fits.c:632
-#, fuzzy
 msgid "Cannot move to first image in FITS file\n"
-msgstr "Δεν είναι δυνατή η μετατροπή ενός αρχείου ακολουθίας"
+msgstr "Δεν είναι δυνατή η μετακίνηση στην πρώτη εικόνα στο αρχείο FITS\n"
 
 #: ../src/io/image_format_fits.c:642
 msgid "Cannot get dimension of FITS file\n"
@@ -8918,9 +9011,8 @@ msgid "Loaded partial FITS file %s\n"
 msgstr "Έγινε μερική φόρτωση του αρχείου FITS %s\n"
 
 #: ../src/io/image_format_fits.c:1537
-#, fuzzy
 msgid "Unknown FITS compression method in internal conversion\n"
-msgstr "Άγνωστα δεδομένα FITS κατά την εσωτερική μετατροπή\n"
+msgstr "Άγνωστη μέθοδος συμπίεσης FITS στην εσωτερική μετατροπή\n"
 
 #: ../src/io/image_format_fits.c:1575
 #, c-format
@@ -10174,6 +10266,9 @@ msgid ""
 "Input sequence is in 32-bit format but preferences are set to 16-bit output "
 "format. Please, change your preference settings and retry.\n"
 msgstr ""
+"Η ακολουθία εισόδου είναι σε μορφή 32-bit, αλλά οι προτιμήσεις έχουν οριστεί "
+"σε μορφή εξόδου 16-bit. Παρακαλώ αλλάξτε τις ρυθμίσεις προτίμησής σας και "
+"προσπαθήστε ξανά.\n"
 
 #: ../src/stacking/stacking.c:137
 #, c-format
@@ -10400,28 +10495,8 @@ msgstr ""
 msgid "Up-scaling sequence for stacking"
 msgstr "Αλληλουχία αύξησης της κλίμακας για σώρευση"
 
-#~ msgid "Processing..."
-#~ msgstr "Γίνεται επεξεργασία..."
-
-#, fuzzy
-#~ msgid "Error while cropping to SER (no space left?)\n"
-#~ msgstr "Σφάλμα κατά την μετατροπή σε SER (δεν υπάρχει χώρος;)\n"
-
-#, fuzzy
-#~ msgid "Error while cropping to FITS sequence (no space left?)\n"
-#~ msgstr "Σφάλμα κατά την μετατροπή σε FITS (δεν υπάρχει χώρος;)\n"
-
-#~ msgid "Channels..."
-#~ msgstr "Κανάλια..."
-
-#~ msgid "Split CFA..."
-#~ msgstr "Διαχωρισμός CFA..."
-
 #~ msgid "Store resulting sequence with prefix:"
 #~ msgstr "Αποθήκευση της επακόλουθης αλληλουχίας με πρόθεμα:"
-
-#~ msgid "run the siril commands script in console mode"
-#~ msgstr "εκτέλεση της δέσμης εντολών του siril σε λειτουργία κονσόλας"
 
 #~ msgid "High-speed, low-quality bilinear"
 #~ msgstr "Υψηλής ταχύτητας, διγραμμική χαμηλής ποιότητας"
@@ -10434,6 +10509,12 @@ msgstr "Αλληλουχία αύξησης της κλίμακας για σώ�
 
 #~ msgid "Patterned Pixel Grouping (PPG)"
 #~ msgstr "Patterned Pixel Grouping (PPG)"
+
+#~ msgid "Processing..."
+#~ msgstr "Γίνεται επεξεργασία..."
+
+#~ msgid "run the siril commands script in console mode"
+#~ msgstr "εκτέλεση της δέσμης εντολών του siril σε λειτουργία κονσόλας"
 
 #~ msgid "Colour image target"
 #~ msgstr "Στόχος έγχρωμης εικόνας"
