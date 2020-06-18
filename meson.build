@@ -87,6 +87,10 @@ platform_osx = (
   host_os.contains('darwin')
 )
 
+platform_bsd = (
+  host_os.contains('bsd')
+)
+
 ################################################################################
 # Meson modules and compilers
 
@@ -114,6 +118,8 @@ siril_cpp_flag += ['-DHAVE_CONFIG_H']
 
 if platform_linux
   siril_link_arg += '-rdynamic'
+elif platform_bsd
+  siril_link_arg += '-lexecinfo'
 elif platform_windows
   #TODO: Do Meson provide more elegant way?
   siril_link_arg += '-Wl,--export-all-symbols'
@@ -200,15 +206,15 @@ endif
 ## Optionnal dependencies
 
 openmp_dep = []
-if platform_windows or platform_linux
-  openmp_dep = dependency('openmp', required : false)
-else
+if platform_osx
   if get_option('openmp_darwin')
     message('Set OpenMP flags for macOS')
     siril_link_arg += ['-lomp']
     siril_cpp_flag += ['-Xpreprocessor', '-fopenmp']
     siril_c_flag += ['-Xpreprocessor', '-fopenmp']
   endif
+else
+  openmp_dep = dependency('openmp', required : false)
 endif
 
 libraw_dep = dependency('libraw', required : false)
@@ -255,13 +261,38 @@ foreach header : [
   conf_data.set(header['m'], cc.has_header(header['v']) ? 1 : false)
 endforeach
 
+## Check for libbacktrace
 
-## System configuration
-if platform_linux
-  conf_data.set('HAVE_BACKTRACE', 1, description : 'Define to 1 if you have the backtrace function.')
-else 
-  conf_data.set('HAVE_BACKTRACE', 0, description : 'Define to 1 if you have the backtrace function.')
+libbacktrace = cc.find_library('backtrace', required: false)
+
+if libbacktrace.found()
+  libbacktrace_links = cc.links('''
+      #include <stddef.h>
+      #include <backtrace.h>
+      #include <backtrace-supported.h>
+
+      #if ! BACKTRACE_SUPPORTED
+      #   error ! BACKTRACE_SUPPORTED
+      #endif
+
+      int main() {
+        (void) backtrace_create_state (NULL, 0, NULL, NULL);
+        return 0;
+      }
+    ''',
+    dependencies: libbacktrace,
+  )
+
+  if not libbacktrace_links
+    warning(
+      'libbacktrace was found, but the test compilation failed.\n' +
+      'You can find more info in meson-logs/meson-logs.txt.'
+    )
+    libbacktrace = no_dep
+  endif
+
 endif
+conf_data.set('HAVE_BACKTRACE', libbacktrace.found())
 
 ## Dependencies configuration
 if gsl_dep.found()

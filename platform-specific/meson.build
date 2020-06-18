@@ -10,7 +10,7 @@ win_res = []
 ################################################################################
 # Then add the correct folder
 
-if platform_linux
+if platform_linux or platform_bsd
   subdir('linux')
 elif platform_windows
   subdir('windows')
