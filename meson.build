@@ -228,10 +228,7 @@ conf_data = configuration_data()
 conf_data.set10('SIRIL_UNSTABLE', not stable)
 conf_data.set10('SIRIL_OUTPUT_DEBUG', get_option('buildtype').startswith('debug'))
 conf_data.set10('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle)
-
-if platform_osx
-  conf_data.set('OS_OSX', 1)
-endif
+conf_data.set10('OS_OSX', platform_osx)
 
 conf_data.set_quoted('PACKAGE', meson.project_name(), description : 'Name of package.')
 conf_data.set_quoted('PACKAGE_NAME', meson.project_name(), description : 'Define to the full name of this package.')
@@ -245,13 +242,22 @@ conf_data.set_quoted('PACKAGE_BUGREPORT', 'https://gitlab.com/free-astro/siril/i
 conf_data.set_quoted('PACKAGE_DATA_DIR', siril_datadir, description : 'Define to the data directory.')
 conf_data.set_quoted('LOCALEDIR', siril_locale, description : 'Define to the locale directory.')
 
+# Check for available headers
+foreach header : [
+    { 'm': 'HAVE_EXECINFO_H',     'v': 'execinfo.h' },
+    { 'm': 'HAVE_SYS_STATVFS_H',  'v': 'sys/statvfs.h' },
+    { 'm': 'HAVE_SYS_VFS_H',      'v': 'sys/vfs.h' },
+    { 'm': 'HAVE_SYS_PARAM_H',    'v': 'sys/param.h' },
+  ]
+  conf_data.set(header['m'], cc.has_header(header['v']) ? 1 : false)
+endforeach
+
+
 ## System configuration
-if target_machine.system() == 'linux'
+if platform_linux
   conf_data.set('HAVE_BACKTRACE', 1, description : 'Define to 1 if you have the backtrace function.')
-  conf_data.set('HAVE_EXECINFO_H', 1, description : 'Define to 1 if you have the backtrace function.')
 else 
   conf_data.set('HAVE_BACKTRACE', 0, description : 'Define to 1 if you have the backtrace function.')
-  conf_data.set('HAVE_EXECINFO_H', 0, description : 'Define to 1 if you have the backtrace function.')
 endif
 
 ## Dependencies configuration
