@@ -232,9 +232,17 @@ libcurl_dep = dependency('libcurl', required : false)
 ## General and package configuration
 conf_data = configuration_data()
 
-conf_data.set10('SIRIL_UNSTABLE', not stable)
-conf_data.set10('SIRIL_OUTPUT_DEBUG', get_option('buildtype').startswith('debug'))
-conf_data.set10('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle)
+if not stable
+  conf_data.set('SIRIL_UNSTABLE', 1)
+endif
+
+if get_option('buildtype').startswith('debug')
+  conf_data.set('SIRIL_OUTPUT_DEBUG', 1)
+endif
+
+if relocatable_bundle
+  conf_data.set('ENABLE_RELOCATABLE_RESOURCES', 1)
+endif
 
 if platform_osx
   conf_data.set('OS_OSX', 1)
