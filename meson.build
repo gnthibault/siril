@@ -262,39 +262,6 @@ foreach header : [
   conf_data.set(header['m'], cc.has_header(header['v']) ? 1 : false)
 endforeach
 
-## Check for libbacktrace
-
-libbacktrace = cc.find_library('backtrace', required: false)
-
-if libbacktrace.found()
-  libbacktrace_links = cc.links('''
-      #include <stddef.h>
-      #include <backtrace.h>
-      #include <backtrace-supported.h>
-
-      #if ! BACKTRACE_SUPPORTED
-      #   error ! BACKTRACE_SUPPORTED
-      #endif
-
-      int main() {
-        (void) backtrace_create_state (NULL, 0, NULL, NULL);
-        return 0;
-      }
-    ''',
-    dependencies: libbacktrace,
-  )
-
-  if not libbacktrace_links
-    warning(
-      'libbacktrace was found, but the test compilation failed.\n' +
-      'You can find more info in meson-logs/meson-logs.txt.'
-    )
-    libbacktrace = no_dep
-  endif
-
-endif
-conf_data.set('HAVE_BACKTRACE', libbacktrace.found())
-
 ## Dependencies configuration
 if gsl_dep.found()
   if gsl_dep.version().version_compare('>=2.0')
