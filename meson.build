@@ -225,6 +225,7 @@ libpng_dep = dependency('libpng', required : false)
 libheif_dep = dependency('libheif', required : false)
 ffms2_dep = dependency('ffms2', required : false)
 libcurl_dep = dependency('libcurl', required : false)
+criterion_dep = dependency('criterion', required : false)
 
 ################################################################################
 # Configuration
@@ -339,6 +340,35 @@ conf_data.set('HAVE_CXX11', true, description : 'Define to 1 if cpp compiler is 
 git_data = configuration_data()
 git_data.set_quoted('SIRIL_GIT_VERSION_ABBREV', git_version)
 git_data.set_quoted('SIRIL_GIT_LAST_COMMIT_YEAR', git_last_commit_year)
+
+################################################################################
+# Externals dependencies
+
+externals_dep = declare_dependency(
+  dependencies: [
+    dbghelp,
+    m_dep,
+    glib_dep,
+    gtk_dep,
+    gsl_dep,
+    opencv_dep,
+    rtprocess_dep,
+    exiv_dep,
+    libconfig_dep,
+    fftw3f_dep,
+    cfitsio_dep,
+    libraw_dep,
+    libtiff_dep,
+    libjpeg_dep,
+    libpng_dep,
+    libcurl_dep,
+    libheif_dep,
+    ffms2_dep,
+    libcurl_dep,
+    openmp_dep,
+    kplot_dep
+  ]
+)
 
 ################################################################################
 # Sources directories
