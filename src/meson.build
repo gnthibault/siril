@@ -161,7 +161,7 @@ src_files = [
 ]
 
 siril_lib = static_library('siril',
-                           src_files, win_res,
+                           src_files,
                            dependencies: externals_dep,
                            include_directories: siril_inc_dir,
                            c_args : siril_c_flag,
@@ -175,7 +175,7 @@ siril_dep = declare_dependency(link_with: siril_lib,
 ################################################################################
 # Build gui executable
 
-siril_gui = executable('siril', 'main.c',
+siril_gui = executable('siril', 'main.c', win_res,
                       dependencies : siril_dep,
                       link_args : siril_link_arg,
                       c_args : siril_c_flag,
@@ -186,7 +186,7 @@ siril_gui = executable('siril', 'main.c',
 ################################################################################
 # Build cli executable
 
-siril_cli = executable('siril-cli', 'main-cli.c',
+siril_cli = executable('siril-cli', 'main-cli.c', win_res,
                       dependencies : siril_dep,
                       link_args : siril_link_arg,
                       c_args : siril_c_flag,
