@@ -176,22 +176,24 @@ siril_dep = declare_dependency(link_with: siril_lib,
 # Build gui executable
 
 siril_gui = executable('siril', 'main.c', win_res,
-                      dependencies : siril_dep,
-                      link_args : siril_link_arg,
-                      c_args : siril_c_flag,
-                      cpp_args : siril_cpp_flag,
-                      install : true
+                       dependencies: siril_dep,
+                       link_whole: siril_lib,
+                       link_args : siril_link_arg,
+                       c_args : siril_c_flag,
+                       cpp_args : siril_cpp_flag,
+                       install : true,
                       )
 
 ################################################################################
 # Build cli executable
 
 siril_cli = executable('siril-cli', 'main-cli.c', win_res,
-                      dependencies : siril_dep,
-                      link_args : siril_link_arg,
-                      c_args : siril_c_flag,
-                      cpp_args : siril_cpp_flag,
-                      install : true
+                       dependencies: siril_dep,
+                       link_whole: siril_lib,
+                       link_args : siril_link_arg,
+                       c_args : siril_c_flag,
+                       cpp_args : siril_cpp_flag,
+                       install : true
                       )
 
 ################################################################################
