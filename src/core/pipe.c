@@ -49,6 +49,7 @@
 #endif
 
 #include "core/siril.h"
+#include "core/siril_log.h"
 #include "pipe.h"
 #include "command_line_processor.h"
 //#include "processing.h"
