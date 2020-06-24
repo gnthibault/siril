@@ -122,6 +122,7 @@ src_files = [
   'gui/image_interactions.c',
   'gui/linear_match.c',
   'gui/message_dialog.c',
+  'gui/menu_gray_psf.c',
   'gui/open_dialog.c',
   'gui/photometric_cc.c',
   'gui/plot.c',

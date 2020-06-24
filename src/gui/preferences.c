@@ -514,3 +514,30 @@ void on_apply_settings_button_clicked(GtkButton *button, gpointer user_data) {
 	siril_close_dialog("settings_window");
 }
 
+void on_spinInner_value_changed(GtkSpinButton *inner, gpointer user_data) {
+	GtkSpinButton *outer;
+	double in, out;
+
+	outer = GTK_SPIN_BUTTON(lookup_widget("spinOuter"));
+	in = gtk_spin_button_get_value(inner);
+	out = gtk_spin_button_get_value(outer);
+
+	if (in >= out) {
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("Wrong value"),
+				_("Inner radius value must be less than outer. Please change the value."));
+	}
+}
+
+void on_spinOuter_value_changed(GtkSpinButton *outer, gpointer user_data) {
+	GtkSpinButton *inner;
+	double in, out;
+
+	inner = GTK_SPIN_BUTTON(lookup_widget("spinInner"));
+	in = gtk_spin_button_get_value(inner);
+	out = gtk_spin_button_get_value(outer);
+
+	if (in >= out) {
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("Wrong value"),
+				_("Inner radius value must be less than outer. Please change the value."));
+	}
+}
