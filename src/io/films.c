@@ -29,6 +29,7 @@
 #include <string.h>
 
 #include "core/siril.h"
+#include "core/siril_log.h"
 #include "gui/progress_and_log.h"
 #include "io/films.h"
 #include "io/image_format_fits.h"

@@ -24,6 +24,7 @@
 #include <string.h>
 #include "callbacks.h"
 #include "core/pipe.h"
+#include "core/siril_log.h"
 
 #include "progress_and_log.h"
 
