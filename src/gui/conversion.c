@@ -474,13 +474,13 @@ void update_statusbar_convert() {
 	else {
 		int selected = count_selected_files();
 		gchar *str, *total;
-		str = ngettext("%d file loaded", "%d files loaded", nb_files);
-		str = g_strdup_printf(str, nb_files);
+		str = ngettext("file loaded", "files loaded", nb_files);
+		str = g_strdup_printf("%d %s", nb_files, str);
 		if (selected == 0) {
 			total = g_strdup(str);
 		} else {
-			total = ngettext("%d file selected", "%d files selected", selected);
-			total = g_strdup_printf(selected, str);
+			total = ngettext("file selected", "files selected", selected);
+			total = g_strdup_printf("%d %s, %s", selected, total, str);
 		}
 		gtk_label_set_text(status_label, total);
 		g_free(str);

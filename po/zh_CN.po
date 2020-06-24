@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-19 22:26+0200\n"
+"POT-Creation-Date: 2020-06-24 22:41+0200\n"
 "PO-Revision-Date: 2019-10-11 01:32+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -185,7 +185,7 @@ msgid "RGB Align"
 msgstr "RGB对齐"
 
 #: ../src/gui/siril3.glade.h:40 ../src/compositing/align_rgb.c:47
-#: ../src/compositing/compositing.c:368
+#: ../src/compositing/compositing.c:369
 msgid "Image pattern alignment (planetary/deep-sky)"
 msgstr "图像模式对齐（行星/深空）"
 
@@ -193,7 +193,7 @@ msgstr "图像模式对齐（行星/深空）"
 #. * should be done in the same way as in registration.c, but it
 #. * woud be easier if the two glades are merged.
 #: ../src/gui/siril3.glade.h:41 ../src/compositing/align_rgb.c:45
-#: ../src/compositing/compositing.c:367
+#: ../src/compositing/compositing.c:368
 msgid "One star registration (deep-sky)"
 msgstr "单星对齐（深空）"
 
@@ -427,7 +427,7 @@ msgid "Disk Space: N/A"
 msgstr "磁盘空间：N/A"
 
 #. no color, undefined value is <0
-#: ../src/gui/siril3.glade.h:96 ../src/compositing/compositing.c:469
+#: ../src/gui/siril3.glade.h:96 ../src/compositing/compositing.c:470
 #: ../src/gui/callbacks.c:60 ../src/gui/callbacks.c:1025
 msgid "Red"
 msgstr "红色"
@@ -1191,7 +1191,7 @@ msgstr "彗星速率（像素/小时）。"
 msgid "Velocity: "
 msgstr "速率: "
 
-#: ../src/gui/siril3.glade.h:272 ../src/registration/registration.c:730
+#: ../src/gui/siril3.glade.h:272 ../src/registration/registration.c:731
 #, fuzzy
 msgid "Load a sequence first"
 msgstr "请先载入队列。"
@@ -1802,7 +1802,7 @@ msgstr "Siril输出窗口，显示各种程序执行过程的信息，并且对�
 msgid "Export the log"
 msgstr "导出日志"
 
-#: ../src/gui/siril3.glade.h:432 ../src/core/siril_log.c:166
+#: ../src/gui/siril3.glade.h:432 ../src/core/siril_log.c:187
 msgid "Clear the log"
 msgstr "清除日志"
 
@@ -1840,7 +1840,7 @@ msgstr "停止正在执行的处理"
 msgid "Command line"
 msgstr "command interrupted\n"
 
-#: ../src/gui/siril3.glade.h:440 ../src/gui/progress_and_log.c:42
+#: ../src/gui/siril3.glade.h:440 ../src/gui/progress_and_log.c:43
 msgid "Ready."
 msgstr "就绪。"
 
@@ -2551,8 +2551,8 @@ msgid "Layer alignments"
 msgstr "通道对齐"
 
 #. don't destroy it on removal from grid
-#: ../src/gui/siril3.glade.h:598 ../src/compositing/compositing.c:189
-#: ../src/compositing/compositing.c:1093
+#: ../src/gui/siril3.glade.h:598 ../src/compositing/compositing.c:190
+#: ../src/compositing/compositing.c:1094
 msgid "not loaded"
 msgstr "未载入"
 
@@ -4760,24 +4760,16 @@ msgid "Background noise value (channel: #%d): %0.3f (%.3e)\n"
 msgstr "背景噪声值（通道：#%d）: %0.3lf（%.3e）\n"
 
 #. Translator note: radii is plural for radius
-#: ../src/algos/photometry.c:272
+#: ../src/algos/photometry.c:268
 msgid ""
 "Inner and outer radii are too small. Please update values in setting box.\n"
 msgstr "内/外半径太小。请重新设置。\n"
 
-#: ../src/algos/photometry.c:327
+#: ../src/algos/photometry.c:323
 msgid ""
 "Warning: There aren't enough pixels in the sky annulus. You need to make a "
 "larger selection.\n"
 msgstr "警告：环形区域的像素数量不足，请选取更大的区域，\n"
-
-#: ../src/algos/photometry.c:369 ../src/algos/photometry.c:383
-msgid "Wrong value"
-msgstr "无效值"
-
-#: ../src/algos/photometry.c:370 ../src/algos/photometry.c:384
-msgid "Inner radius value must be less than outer. Please change the value."
-msgstr "内半径必须小于外半径，请更改参数。"
 
 #: ../src/algos/plateSolver.c:499
 #, c-format
@@ -4929,7 +4921,7 @@ msgid ""
 "geometric transformation and no undo will be possible."
 msgstr "图像中已包含的天体测量信息会被几何光学计算数据所覆盖，并且无法撤销。"
 
-#: ../src/algos/PSF.c:709
+#: ../src/algos/PSF.c:700
 #, c-format
 msgid ""
 "PSF fit Result:\n"
@@ -4949,71 +4941,6 @@ msgstr ""
 "Maximal intensity=%0.6f\n"
 "Magnitude (%s)=%0.2f\n"
 "RMSE=%.3e\n"
-
-#: ../src/algos/PSF.c:763 ../src/algos/PSF.c:808
-msgid "Current selection is too large"
-msgstr "当前所选区域太大"
-
-#: ../src/algos/PSF.c:764 ../src/algos/PSF.c:809
-msgid "To determine the PSF, please make a selection around a star."
-msgstr "若要计算PSF，请选择一个星点周围的区域。"
-
-#: ../src/algos/PSF.c:776
-#, c-format
-msgid ""
-"Centroid Coordinates:\n"
-"\t\tx0=%.2fpx\n"
-"\t\ty0=%.2fpx\n"
-"\n"
-"Full Width Half Maximum:\n"
-"\t\tFWHMx=%.2f%s\n"
-"\t\tFWHMy=%.2f%s\n"
-"\n"
-"Angle:\n"
-"\t\t%0.2fdeg\n"
-"\n"
-"Background Value:\n"
-"\t\tB=%.6f\n"
-"\n"
-"Maximal Intensity:\n"
-"\t\tA=%.6f\n"
-"\n"
-"Magnitude (%s):\n"
-"\t\tm=%.4f±%.4f\n"
-"\n"
-"RMSE:\n"
-"\t\tRMSE=%.3e"
-msgstr ""
-"Centroid Coordinates:\n"
-"\t\tx0=%.2fpx\n"
-"\t\ty0=%.2fpx\n"
-"\n"
-"Full Width Half Maximum:\n"
-"\t\tFWHMx=%.2f%s\n"
-"\t\tFWHMy=%.2f%s\n"
-"\n"
-"Angle:\n"
-"\t\t%0.2fdeg\n"
-"\n"
-"Background Value:\n"
-"\t\tB=%.6f\n"
-"\n"
-"Maximal Intensity:\n"
-"\t\tA=%.6f\n"
-"\n"
-"Magnitude (%s):\n"
-"\t\tm=%.4f±%.4f\n"
-"\n"
-"RMSE:\n"
-"\t\tRMSE=%.3e"
-
-#: ../src/algos/PSF.c:793
-msgid "PSF for the sequence only applies on sequences"
-msgstr "只能于队列上执行队列PSF操作"
-
-#: ../src/algos/PSF.c:794
-msgid "Please load a sequence before trying to apply the PSF for the sequence."
-msgstr "请于执行PSF操作前载入一个队列。"
 
 #: ../src/algos/reconstr.c:201
 msgid "Unknown transform\n"
@@ -5035,84 +4962,84 @@ msgstr "峰化"
 msgid "wavelet_transform_data: bad plane number\n"
 msgstr "wavelet_transform_data: bad plane number\n"
 
-#: ../src/compositing/align_rgb.c:133 ../src/compositing/compositing.c:619
+#: ../src/compositing/align_rgb.c:133 ../src/compositing/compositing.c:620
 msgid "Error in layers alignment."
 msgstr "通道对齐错误。"
 
-#: ../src/compositing/align_rgb.c:135 ../src/compositing/compositing.c:620
-#: ../src/registration/registration.c:993
+#: ../src/compositing/align_rgb.c:135 ../src/compositing/compositing.c:621
+#: ../src/registration/registration.c:994
 msgid "Registration complete."
 msgstr "对齐完成。"
 
-#: ../src/compositing/compositing.c:464
+#: ../src/compositing/compositing.c:465
 msgid "ERROR"
 msgstr "ERROR"
 
-#: ../src/compositing/compositing.c:481
+#: ../src/compositing/compositing.c:482
 msgid "The first loaded image should have the greatest sizes for now\n"
 msgstr "第一个载入的图像需要有最大的尺寸\n"
 
-#: ../src/compositing/compositing.c:482
+#: ../src/compositing/compositing.c:483
 #, c-format
 msgid "NOT OK %ux%u"
 msgstr "NOT OK %ux%u"
 
-#: ../src/compositing/compositing.c:486
+#: ../src/compositing/compositing.c:487
 #, c-format
 msgid "Resizing the loaded image from %dx%d to %dx%d\n"
 msgstr "将当前载入图像尺寸从 %dx%d 改变为 %dx%d\n"
 
-#: ../src/compositing/compositing.c:489
+#: ../src/compositing/compositing.c:490
 #, c-format
 msgid "OK upscaled from %ux%u"
 msgstr "OK upscaled from %ux%u"
 
-#: ../src/compositing/compositing.c:496
+#: ../src/compositing/compositing.c:497
 #, c-format
 msgid "OK %ux%u"
 msgstr "OK %ux%u"
 
-#: ../src/compositing/compositing.c:529
+#: ../src/compositing/compositing.c:530
 msgid "Compositing result image"
 msgstr "合成最终目标图像"
 
-#: ../src/compositing/compositing.c:530
+#: ../src/compositing/compositing.c:531
 msgid "Unsaved compositing result"
 msgstr "未保存的合成结果"
 
-#: ../src/compositing/compositing.c:564
+#: ../src/compositing/compositing.c:565
 msgid "You must at least load two layers before!\n"
 msgstr "必须先期载入至少两个通道！\n"
 
-#: ../src/compositing/compositing.c:565 ../src/filters/wavelets.c:255
+#: ../src/compositing/compositing.c:566 ../src/filters/wavelets.c:255
 #: ../src/filters/wavelets.c:264 ../src/filters/wavelets.c:333
-#: ../src/registration/registration.c:885
+#: ../src/registration/registration.c:886
 msgid "Warning"
 msgstr "警告"
 
 #. fix for the cancelling check in processing
-#: ../src/compositing/compositing.c:614
+#: ../src/compositing/compositing.c:615
 #, c-format
 msgid "Starting registration using method: %s\n"
 msgstr "开始对齐，使用方法：%s\n"
 
-#: ../src/compositing/compositing.c:710
+#: ../src/compositing/compositing.c:711
 msgid "An image area must be selected for align"
 msgstr "必须选定一个区域用于对齐"
 
-#: ../src/compositing/compositing.c:716
+#: ../src/compositing/compositing.c:717
 msgid "At least 2 channels must be loaded for align"
 msgstr "必须载入至少两个通道用于对齐"
 
-#: ../src/compositing/compositing.c:1133
+#: ../src/compositing/compositing.c:1134
 msgid "No overflow with the current colours, redrawing only\n"
 msgstr "当前色彩无溢出，仅执行重绘\n"
 
-#: ../src/compositing/compositing.c:1136
+#: ../src/compositing/compositing.c:1137
 msgid "Nothing to adjust, no overflow\n"
 msgstr "Nothing to adjust, no overflow\n"
 
-#: ../src/compositing/compositing.c:1169
+#: ../src/compositing/compositing.c:1170
 #, c-format
 msgid "Readjusting layer %d to %g times bright\n"
 msgstr "Readjusting layer %d to %g times bright\n"
@@ -5476,7 +5403,7 @@ msgid "Global Star Alignment (deep-sky)"
 msgstr "全局星点对齐（深空）"
 
 #. only TRUE for global registration. Will be updated in this case
-#: ../src/core/command.c:2674 ../src/registration/registration.c:945
+#: ../src/core/command.c:2674 ../src/registration/registration.c:946
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "对齐：处理中，使用方法：%s\n"
@@ -7024,11 +6951,11 @@ msgstr "模糊化：处理中...\n"
 msgid "ddp level argument must be [0, 65535]\n"
 msgstr ""
 
-#: ../src/core/siril_log.c:127
+#: ../src/core/siril_log.c:128
 msgid "Log files (*.log)"
 msgstr "日志文件 (*.log)"
 
-#: ../src/core/siril_log.c:167
+#: ../src/core/siril_log.c:188
 msgid "Are you sure you want to clear the log? There is no possible undo."
 msgstr ""
 
@@ -7508,25 +7435,17 @@ msgid ""
 "are ignored."
 msgstr "未知扩展名的文件无法被加入到这里，因此它们将被忽略。"
 
-#: ../src/gui/conversion.c:478
-#, c-format
-msgid "%d file loaded"
-msgstr "%d个文件已载入"
+#: ../src/gui/conversion.c:477
+#, fuzzy
+msgid "file loaded"
+msgid_plural "files loaded"
+msgstr[0] "%d个文件已载入"
 
-#: ../src/gui/conversion.c:480
-#, c-format
-msgid "%d files loaded"
-msgstr "%d个文件已载入"
-
-#: ../src/gui/conversion.c:485
-#, c-format
-msgid "%d file selected, %s"
-msgstr "%d个文件已选择，%s"
-
-#: ../src/gui/conversion.c:487
-#, c-format
-msgid "%d files selected, %s"
-msgstr "%d个文件已选择，%s"
+#: ../src/gui/conversion.c:482
+#, fuzzy
+msgid "file selected"
+msgid_plural "files selected"
+msgstr[0] "%d个文件已选择，%s"
 
 #: ../src/gui/dialog_preview.c:81
 #, fuzzy
@@ -7572,6 +7491,71 @@ msgstr "linear fit clipping"
 #: ../src/gui/linear_match.c:218
 msgid "Cannot compute linear coefficients."
 msgstr ""
+
+#: ../src/gui/menu_gray_psf.c:46 ../src/gui/menu_gray_psf.c:91
+msgid "Current selection is too large"
+msgstr "当前所选区域太大"
+
+#: ../src/gui/menu_gray_psf.c:47 ../src/gui/menu_gray_psf.c:92
+msgid "To determine the PSF, please make a selection around a star."
+msgstr "若要计算PSF，请选择一个星点周围的区域。"
+
+#: ../src/gui/menu_gray_psf.c:59
+#, c-format
+msgid ""
+"Centroid Coordinates:\n"
+"\t\tx0=%.2fpx\n"
+"\t\ty0=%.2fpx\n"
+"\n"
+"Full Width Half Maximum:\n"
+"\t\tFWHMx=%.2f%s\n"
+"\t\tFWHMy=%.2f%s\n"
+"\n"
+"Angle:\n"
+"\t\t%0.2fdeg\n"
+"\n"
+"Background Value:\n"
+"\t\tB=%.6f\n"
+"\n"
+"Maximal Intensity:\n"
+"\t\tA=%.6f\n"
+"\n"
+"Magnitude (%s):\n"
+"\t\tm=%.4f±%.4f\n"
+"\n"
+"RMSE:\n"
+"\t\tRMSE=%.3e"
+msgstr ""
+"Centroid Coordinates:\n"
+"\t\tx0=%.2fpx\n"
+"\t\ty0=%.2fpx\n"
+"\n"
+"Full Width Half Maximum:\n"
+"\t\tFWHMx=%.2f%s\n"
+"\t\tFWHMy=%.2f%s\n"
+"\n"
+"Angle:\n"
+"\t\t%0.2fdeg\n"
+"\n"
+"Background Value:\n"
+"\t\tB=%.6f\n"
+"\n"
+"Maximal Intensity:\n"
+"\t\tA=%.6f\n"
+"\n"
+"Magnitude (%s):\n"
+"\t\tm=%.4f±%.4f\n"
+"\n"
+"RMSE:\n"
+"\t\tRMSE=%.3e"
+
+#: ../src/gui/menu_gray_psf.c:76
+msgid "PSF for the sequence only applies on sequences"
+msgstr "只能于队列上执行队列PSF操作"
+
+#: ../src/gui/menu_gray_psf.c:77
+msgid "Please load a sequence before trying to apply the PSF for the sequence."
+msgstr "请于执行PSF操作前载入一个队列。"
 
 #: ../src/gui/message_dialog.c:187
 msgid "_Do not show this dialog again"
@@ -7728,26 +7712,34 @@ msgstr "当前用户对目录%s没有写权限\n"
 msgid "Cannot refresh script list"
 msgstr ""
 
-#: ../src/gui/progress_and_log.c:243
+#: ../src/gui/preferences.c:526 ../src/gui/preferences.c:540
+msgid "Wrong value"
+msgstr "无效值"
+
+#: ../src/gui/preferences.c:527 ../src/gui/preferences.c:541
+msgid "Inner radius value must be less than outer. Please change the value."
+msgstr "内半径必须小于外半径，请更改参数。"
+
+#: ../src/gui/progress_and_log.c:224
 msgid "Execution time"
 msgstr "执行时间"
 
-#: ../src/gui/progress_and_log.c:259
+#: ../src/gui/progress_and_log.c:240
 #, c-format
 msgid "%s: %d h %02d min %.2d s.\n"
 msgstr "%s: %d h %02d min %.2d s.\n"
 
-#: ../src/gui/progress_and_log.c:264
+#: ../src/gui/progress_and_log.c:245
 #, c-format
 msgid "%s: %d min %02d s.\n"
 msgstr "%s: %d min %02d s.\n"
 
-#: ../src/gui/progress_and_log.c:268
+#: ../src/gui/progress_and_log.c:249
 #, c-format
 msgid "%s: %.2lf ms.\n"
 msgstr "%s: %.2lf ms.\n"
 
-#: ../src/gui/progress_and_log.c:270
+#: ../src/gui/progress_and_log.c:251
 #, c-format
 msgid "%s: %.2lf s.\n"
 msgstr "%s: %.2lf s.\n"
@@ -8285,21 +8277,21 @@ msgstr "将一个队列文件转化为单个FITS文件的请求是违法的\n"
 msgid "Error opening %s: file type not supported.\n"
 msgstr "文件打开错误 %s: 文件类型不支持。\n"
 
-#: ../src/io/films.c:250
+#: ../src/io/films.c:251
 msgid "FILM ERROR: incompatible format\n"
 msgstr "视频错误：不兼容的格式\n"
 
-#: ../src/io/fits_sequence.c:146
+#: ../src/io/fits_sequence.c:147
 #, fuzzy, c-format
 msgid "Cannot open FITS file %s\n"
 msgstr "无法打开文件: %s\n"
 
-#: ../src/io/fits_sequence.c:151
+#: ../src/io/fits_sequence.c:152
 #, c-format
 msgid "Cannot open FITS file %s: doesn't seem to be a FITS sequence\n"
 msgstr ""
 
-#: ../src/io/fits_sequence.c:176 ../src/io/image_format_fits.c:1250
+#: ../src/io/fits_sequence.c:177 ../src/io/image_format_fits.c:1250
 msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
@@ -8307,61 +8299,61 @@ msgstr ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
 
-#: ../src/io/fits_sequence.c:196 ../src/stacking/median_and_mean.c:689
+#: ../src/io/fits_sequence.c:197 ../src/stacking/median_and_mean.c:689
 msgid "Your version of cfitsio does not support multi-threading\n"
 msgstr "Your version of cfitsio does not support multi-threading\n"
 
-#: ../src/io/fits_sequence.c:245 ../src/io/image_format_fits.c:528
+#: ../src/io/fits_sequence.c:246 ../src/io/image_format_fits.c:528
 #: ../src/io/image_format_fits.c:588 ../src/io/image_format_fits.c:1367
 msgid "Unknown FITS data format in internal conversion\n"
 msgstr "内部转化中有不可识别的FITS数据格式\n"
 
-#: ../src/io/fits_sequence.c:357
+#: ../src/io/fits_sequence.c:358
 msgid "Cannot save image in sequence not opened for writing\n"
 msgstr ""
 
-#: ../src/io/fits_sequence.c:391
+#: ../src/io/fits_sequence.c:392
 msgid ""
 "Cannot add an image with different properties to an existing sequence.\n"
 msgstr ""
 
-#: ../src/io/fits_sequence.c:398
+#: ../src/io/fits_sequence.c:399
 msgid "Failed to initialize the FITS sequence, aborting\n"
 msgstr ""
 
-#: ../src/io/fits_sequence.c:407
+#: ../src/io/fits_sequence.c:408
 #, fuzzy, c-format
 msgid "Could not write image %d of the FITS sequence\n"
 msgstr "无法载入图像%d位于队列%s\n"
 
-#: ../src/io/fits_sequence.c:420
+#: ../src/io/fits_sequence.c:421
 #, fuzzy, c-format
 msgid "Saving FITS: image %d, %ld layer(s), %ux%u pixels, %d bits\n"
 msgstr "保存FITS：文件名 %s, %ld layer(s), %ux%u pixels\n"
 
-#: ../src/io/fits_sequence.c:445
+#: ../src/io/fits_sequence.c:446
 #, c-format
 msgid ""
 "Frame number mismatch at the end of sequence saving (%d saved for %d "
 "written)\n"
 msgstr ""
 
-#: ../src/io/fits_sequence.c:453
+#: ../src/io/fits_sequence.c:454
 #, c-format
 msgid "Successfully saved FITS sequence with %d images\n"
 msgstr ""
 
-#: ../src/io/fits_sequence.c:486 ../src/io/fits_sequence.c:492
+#: ../src/io/fits_sequence.c:487 ../src/io/fits_sequence.c:493
 #, fuzzy
 msgid "Failed to remove failed images from the sequence\n"
 msgstr "已选择队列中所有的图像\n"
 
-#: ../src/io/fits_sequence.c:530
+#: ../src/io/fits_sequence.c:531
 #, fuzzy, c-format
 msgid "Removing failed FITS sequence file: %s\n"
 msgstr "已创建 SER 文件 %s\n"
 
-#: ../src/io/fits_sequence.c:599
+#: ../src/io/fits_sequence.c:600
 #, c-format
 msgid "Number of images allowed in the FITS write queue: %d\n"
 msgstr ""
@@ -9242,10 +9234,11 @@ msgstr "无法执行星点匹配：尝试#%d。跳过图像 %d \n"
 msgid "Registration finished.\n"
 msgstr "对齐结束。\n"
 
-#: ../src/registration/global.c:403
-#, c-format
-msgid "%d images processed.\n"
-msgstr "%d 图像已完成处理。\n"
+#: ../src/registration/global.c:404
+#, fuzzy
+msgid "image processed"
+msgid_plural "images processed"
+msgstr[0] "_图像处理"
 
 #: ../src/registration/global.c:405
 #, c-format
@@ -9396,7 +9389,7 @@ msgid "Register: processing image %s"
 msgstr "对齐：处理图像 %s"
 
 #: ../src/registration/registration.c:429
-#: ../src/registration/registration.c:653
+#: ../src/registration/registration.c:654
 #, c-format
 msgid "Best frame: #%d.\n"
 msgstr "最佳帧： #%d.\n"
@@ -9416,27 +9409,28 @@ msgid "Cannot perform ECC alignment for frame %d\n"
 msgstr "无法在帧%d中执行ECC对齐\n"
 
 #: ../src/registration/registration.c:651
-#, c-format
-msgid "%d frames were excluded.\n"
-msgstr "%d 帧被排除。\n"
+#, fuzzy
+msgid "file was ignored and excluded"
+msgid_plural "files were ignored and excluded"
+msgstr[0] "文件"
 
-#: ../src/registration/registration.c:752
-#: ../src/registration/registration.c:758
+#: ../src/registration/registration.c:753
+#: ../src/registration/registration.c:759
 #, fuzzy
 msgid "Select images in the sequence"
 msgstr "在队列里选定一幅图像。"
 
-#: ../src/registration/registration.c:754
+#: ../src/registration/registration.c:755
 #, fuzzy
 msgid "Select an area in image first, and select images in the sequence"
 msgstr "先在图像中选定一个区域，再于队列中选定一幅图像。"
 
-#: ../src/registration/registration.c:760
+#: ../src/registration/registration.c:761
 #, fuzzy
 msgid "Select an area in image first"
 msgstr "请先在图像上选择一个区域。"
 
-#: ../src/registration/registration.c:884
+#: ../src/registration/registration.c:885
 msgid ""
 "All prerequisites are not filled for registration. Select a rectangle "
 "first.\n"
@@ -9803,6 +9797,25 @@ msgstr "叠加将不会使用超采样（ ‘drizzle’关闭）\n"
 msgid "Up-scaling sequence for stacking"
 msgstr "超采样叠加"
 
+#, fuzzy
+#~ msgid "%d %s were excluded.\n"
+#~ msgstr "%d 帧被排除。\n"
+
+#, fuzzy
+#~ msgid "%d %s processed.\n"
+#~ msgstr "%d 图像已完成处理。\n"
+
+#, fuzzy
+#~ msgid "image"
+#~ msgid_plural "images"
+#~ msgstr[0] "RGB图像"
+
+#~ msgid "%d files loaded"
+#~ msgstr "%d个文件已载入"
+
+#~ msgid "%d files selected, %s"
+#~ msgstr "%d个文件已选择，%s"
+
 #~ msgid "Processing..."
 #~ msgstr "预处理..."
 
@@ -10122,16 +10135,8 @@ msgstr "超采样叠加"
 #~ msgid "High"
 #~ msgstr "高"
 
-#, fuzzy
-#~ msgctxt "shortcut window"
-#~ msgid "Image processing"
-#~ msgstr "_图像处理"
-
 #~ msgid "Parallel processing %s: Using %d logical processor(s).\n"
 #~ msgstr "并行计算%s：当前使用 %d个 逻辑处理器\n"
-
-#~ msgid "RGB image"
-#~ msgstr "RGB图像"
 
 #~ msgid "Zoom level"
 #~ msgstr "缩放程度"

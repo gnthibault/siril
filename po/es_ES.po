@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-19 22:26+0200\n"
+"POT-Creation-Date: 2020-06-24 22:41+0200\n"
 "PO-Revision-Date: 2020-04-17 22:50+0100\n"
 "Last-Translator: David Vazquez Garcia <davidvazquezgijon@gmail.com>\n"
 "Language-Team: \n"
@@ -186,7 +186,7 @@ msgid "RGB Align"
 msgstr "Alinear RGB"
 
 #: ../src/gui/siril3.glade.h:40 ../src/compositing/align_rgb.c:47
-#: ../src/compositing/compositing.c:368
+#: ../src/compositing/compositing.c:369
 msgid "Image pattern alignment (planetary/deep-sky)"
 msgstr "Patrón de alineamiento (planetario/espacio profundo)"
 
@@ -194,7 +194,7 @@ msgstr "Patrón de alineamiento (planetario/espacio profundo)"
 #. * should be done in the same way as in registration.c, but it
 #. * woud be easier if the two glades are merged.
 #: ../src/gui/siril3.glade.h:41 ../src/compositing/align_rgb.c:45
-#: ../src/compositing/compositing.c:367
+#: ../src/compositing/compositing.c:368
 msgid "One star registration (deep-sky)"
 msgstr "Registro de una estrella (espacio profundo)"
 
@@ -431,7 +431,7 @@ msgid "Disk Space: N/A"
 msgstr "[GUI] Espacio en disco: N/A"
 
 #. no color, undefined value is <0
-#: ../src/gui/siril3.glade.h:96 ../src/compositing/compositing.c:469
+#: ../src/gui/siril3.glade.h:96 ../src/compositing/compositing.c:470
 #: ../src/gui/callbacks.c:60 ../src/gui/callbacks.c:1025
 msgid "Red"
 msgstr "Rojo"
@@ -1252,7 +1252,7 @@ msgstr "Velocidad del cometa en píxeles por hora."
 msgid "Velocity: "
 msgstr "Velocidad: "
 
-#: ../src/gui/siril3.glade.h:272 ../src/registration/registration.c:730
+#: ../src/gui/siril3.glade.h:272 ../src/registration/registration.c:731
 msgid "Load a sequence first"
 msgstr "Cargar una secuencia primero"
 
@@ -1920,7 +1920,7 @@ msgstr ""
 msgid "Export the log"
 msgstr "Exportar el log"
 
-#: ../src/gui/siril3.glade.h:432 ../src/core/siril_log.c:166
+#: ../src/gui/siril3.glade.h:432 ../src/core/siril_log.c:187
 msgid "Clear the log"
 msgstr "Limpiar el log"
 
@@ -1956,7 +1956,7 @@ msgstr "Parar el proceso en ejecución"
 msgid "Command line"
 msgstr "Línea de comandos"
 
-#: ../src/gui/siril3.glade.h:440 ../src/gui/progress_and_log.c:42
+#: ../src/gui/siril3.glade.h:440 ../src/gui/progress_and_log.c:43
 msgid "Ready."
 msgstr "Listo."
 
@@ -2707,8 +2707,8 @@ msgid "Layer alignments"
 msgstr "Alineación de las capas"
 
 #. don't destroy it on removal from grid
-#: ../src/gui/siril3.glade.h:598 ../src/compositing/compositing.c:189
-#: ../src/compositing/compositing.c:1093
+#: ../src/gui/siril3.glade.h:598 ../src/compositing/compositing.c:190
+#: ../src/compositing/compositing.c:1094
 msgid "not loaded"
 msgstr "sin cargar"
 
@@ -4981,30 +4981,20 @@ msgid "Background noise value (channel: #%d): %0.3f (%.3e)\n"
 msgstr "Valor del ruido de fondo (canal: #%d): %0.3lf (%.3e)\n"
 
 #. Translator note: radii is plural for radius
-#: ../src/algos/photometry.c:272
+#: ../src/algos/photometry.c:268
 msgid ""
 "Inner and outer radii are too small. Please update values in setting box.\n"
 msgstr ""
 "El radio interior y exterior son demasiado pequeños. Por favor actualice los "
 "valores en la caja de ajustes.\n"
 
-#: ../src/algos/photometry.c:327
+#: ../src/algos/photometry.c:323
 msgid ""
 "Warning: There aren't enough pixels in the sky annulus. You need to make a "
 "larger selection.\n"
 msgstr ""
 "Precaución: no hay suficientes píxeles en el anillo del cielo. Necesita "
 "realizar una selección mayor.\n"
-
-#: ../src/algos/photometry.c:369 ../src/algos/photometry.c:383
-msgid "Wrong value"
-msgstr "Valor erróneo"
-
-#: ../src/algos/photometry.c:370 ../src/algos/photometry.c:384
-msgid "Inner radius value must be less than outer. Please change the value."
-msgstr ""
-"El valor del radio interior debe ser menor que el exterior. Por favor "
-"modifique el valor."
 
 #: ../src/algos/plateSolver.c:499
 #, c-format
@@ -5165,7 +5155,7 @@ msgstr ""
 "La solución astronométrica que contiene la imagen se borrará con la "
 "transformación geométrica y no será posible deshacer."
 
-#: ../src/algos/PSF.c:709
+#: ../src/algos/PSF.c:700
 #, c-format
 msgid ""
 "PSF fit Result:\n"
@@ -5185,75 +5175,6 @@ msgstr ""
 "Intensidad máxima=%0.6f\n"
 "Magnitud (%s)=%0.2f\n"
 "RMSE=%.3e\n"
-
-#: ../src/algos/PSF.c:763 ../src/algos/PSF.c:808
-msgid "Current selection is too large"
-msgstr "La selección actual es demasiado grande"
-
-#: ../src/algos/PSF.c:764 ../src/algos/PSF.c:809
-msgid "To determine the PSF, please make a selection around a star."
-msgstr ""
-"Para determinar el PSF, por favor realice una selección alrededor de una "
-"estrella."
-
-#: ../src/algos/PSF.c:776
-#, c-format
-msgid ""
-"Centroid Coordinates:\n"
-"\t\tx0=%.2fpx\n"
-"\t\ty0=%.2fpx\n"
-"\n"
-"Full Width Half Maximum:\n"
-"\t\tFWHMx=%.2f%s\n"
-"\t\tFWHMy=%.2f%s\n"
-"\n"
-"Angle:\n"
-"\t\t%0.2fdeg\n"
-"\n"
-"Background Value:\n"
-"\t\tB=%.6f\n"
-"\n"
-"Maximal Intensity:\n"
-"\t\tA=%.6f\n"
-"\n"
-"Magnitude (%s):\n"
-"\t\tm=%.4f±%.4f\n"
-"\n"
-"RMSE:\n"
-"\t\tRMSE=%.3e"
-msgstr ""
-"Coordenadas del Centroide:\n"
-"t\tx0=%.2fpx\n"
-"\t\ty0=%.2fpx\n"
-"\n"
-"Ancho total Mitad del máximo:\n"
-"\t\tATMMx=%.2f%s\n"
-"\t\tATMMy=%.2f%s\n"
-"\n"
-"Ángulo:\n"
-"\t\t%0.2fdeg\n"
-"\n"
-"Valor de Fondo:\n"
-"\t\tB=%.6f\n"
-"\n"
-"Intensidad Máxima:\n"
-"\t\tA=%.6f\n"
-"\n"
-"Magnitud (%s):\n"
-"\t\tm=%.4f±%.4f\n"
-"\n"
-"RMSE:\n"
-"\t\tRMSE=%.3e"
-
-#: ../src/algos/PSF.c:793
-msgid "PSF for the sequence only applies on sequences"
-msgstr "El PSF de la secuencia sólo es aplicable en secuencias"
-
-#: ../src/algos/PSF.c:794
-msgid "Please load a sequence before trying to apply the PSF for the sequence."
-msgstr ""
-"Por favor cargue una secuencia antes de intentar aplicar el PSF a la "
-"secuencia."
 
 #: ../src/algos/reconstr.c:201
 msgid "Unknown transform\n"
@@ -5275,84 +5196,84 @@ msgstr "Picos"
 msgid "wavelet_transform_data: bad plane number\n"
 msgstr "datos_transformacion_wavelet: número de plano incorrecto\n"
 
-#: ../src/compositing/align_rgb.c:133 ../src/compositing/compositing.c:619
+#: ../src/compositing/align_rgb.c:133 ../src/compositing/compositing.c:620
 msgid "Error in layers alignment."
 msgstr "Error en alineación de las capas."
 
-#: ../src/compositing/align_rgb.c:135 ../src/compositing/compositing.c:620
-#: ../src/registration/registration.c:993
+#: ../src/compositing/align_rgb.c:135 ../src/compositing/compositing.c:621
+#: ../src/registration/registration.c:994
 msgid "Registration complete."
 msgstr "Registro completado."
 
-#: ../src/compositing/compositing.c:464
+#: ../src/compositing/compositing.c:465
 msgid "ERROR"
 msgstr "ERROR"
 
-#: ../src/compositing/compositing.c:481
+#: ../src/compositing/compositing.c:482
 msgid "The first loaded image should have the greatest sizes for now\n"
 msgstr "La primera imagen cargada deber tener el mayor tamaño por ahora\n"
 
-#: ../src/compositing/compositing.c:482
+#: ../src/compositing/compositing.c:483
 #, c-format
 msgid "NOT OK %ux%u"
 msgstr "No OK %u%u"
 
-#: ../src/compositing/compositing.c:486
+#: ../src/compositing/compositing.c:487
 #, c-format
 msgid "Resizing the loaded image from %dx%d to %dx%d\n"
 msgstr "Cambiando el tamaño de la imagen cargada de %dx%d a %dx%d\n"
 
-#: ../src/compositing/compositing.c:489
+#: ../src/compositing/compositing.c:490
 #, c-format
 msgid "OK upscaled from %ux%u"
 msgstr "Correcto escalada de %ux%ux"
 
-#: ../src/compositing/compositing.c:496
+#: ../src/compositing/compositing.c:497
 #, c-format
 msgid "OK %ux%u"
 msgstr "Ok %ux%u"
 
-#: ../src/compositing/compositing.c:529
+#: ../src/compositing/compositing.c:530
 msgid "Compositing result image"
 msgstr "Imagen resultado de la composición"
 
-#: ../src/compositing/compositing.c:530
+#: ../src/compositing/compositing.c:531
 msgid "Unsaved compositing result"
 msgstr "Resultado de la composición no guardado"
 
-#: ../src/compositing/compositing.c:564
+#: ../src/compositing/compositing.c:565
 msgid "You must at least load two layers before!\n"
 msgstr "¡Debería cargar como mínimo dos capas antes!\n"
 
-#: ../src/compositing/compositing.c:565 ../src/filters/wavelets.c:255
+#: ../src/compositing/compositing.c:566 ../src/filters/wavelets.c:255
 #: ../src/filters/wavelets.c:264 ../src/filters/wavelets.c:333
-#: ../src/registration/registration.c:885
+#: ../src/registration/registration.c:886
 msgid "Warning"
 msgstr "Alerta"
 
 #. fix for the cancelling check in processing
-#: ../src/compositing/compositing.c:614
+#: ../src/compositing/compositing.c:615
 #, c-format
 msgid "Starting registration using method: %s\n"
 msgstr "Comenzando registro usando el método: %s\n"
 
-#: ../src/compositing/compositing.c:710
+#: ../src/compositing/compositing.c:711
 msgid "An image area must be selected for align"
 msgstr "Se debe seleccionar un área de la imagen para alinear"
 
-#: ../src/compositing/compositing.c:716
+#: ../src/compositing/compositing.c:717
 msgid "At least 2 channels must be loaded for align"
 msgstr "Deben cargarse al menos 2 canales para alinear"
 
-#: ../src/compositing/compositing.c:1133
+#: ../src/compositing/compositing.c:1134
 msgid "No overflow with the current colours, redrawing only\n"
 msgstr "No hay desbordamiento con los colores actuales, sólo redibujando\n"
 
-#: ../src/compositing/compositing.c:1136
+#: ../src/compositing/compositing.c:1137
 msgid "Nothing to adjust, no overflow\n"
 msgstr "Nada que ajustar, no hay desbordamiento\n"
 
-#: ../src/compositing/compositing.c:1169
+#: ../src/compositing/compositing.c:1170
 #, c-format
 msgid "Readjusting layer %d to %g times bright\n"
 msgstr "Reajustando capa %d a %g veces más brillante\n"
@@ -5732,7 +5653,7 @@ msgid "Global Star Alignment (deep-sky)"
 msgstr "Alineación Global de Estrellas (espacio profundo)"
 
 #. only TRUE for global registration. Will be updated in this case
-#: ../src/core/command.c:2674 ../src/registration/registration.c:945
+#: ../src/core/command.c:2674 ../src/registration/registration.c:946
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "Registro: procesando usando el método: %s\n"
@@ -7329,11 +7250,11 @@ msgstr "Enfoque: procesando...\n"
 msgid "ddp level argument must be [0, 65535]\n"
 msgstr "el argumento del nivel ddp tiene que estar en el rango [0, 65535]\n"
 
-#: ../src/core/siril_log.c:127
+#: ../src/core/siril_log.c:128
 msgid "Log files (*.log)"
 msgstr "FIcheros LOG (*.log)"
 
-#: ../src/core/siril_log.c:167
+#: ../src/core/siril_log.c:188
 msgid "Are you sure you want to clear the log? There is no possible undo."
 msgstr "Está seguro de que quiere borrar el log? No es posible deshacer."
 
@@ -7836,25 +7757,19 @@ msgstr ""
 "Los ficheros con extensión desconocida no se pueden depositar en este área. "
 "Por lo tanto se ignoran."
 
-#: ../src/gui/conversion.c:478
-#, c-format
-msgid "%d file loaded"
-msgstr "Archivo %d cargado"
+#: ../src/gui/conversion.c:477
+#, fuzzy
+msgid "file loaded"
+msgid_plural "files loaded"
+msgstr[0] "Archivo %d cargado"
+msgstr[1] "Archivo %d cargado"
 
-#: ../src/gui/conversion.c:480
-#, c-format
-msgid "%d files loaded"
-msgstr "%d archivos cargados"
-
-#: ../src/gui/conversion.c:485
-#, c-format
-msgid "%d file selected, %s"
-msgstr "%d archivos seleccionados, %s"
-
-#: ../src/gui/conversion.c:487
-#, c-format
-msgid "%d files selected, %s"
-msgstr "%d archivos seleccionados, %s"
+#: ../src/gui/conversion.c:482
+#, fuzzy
+msgid "file selected"
+msgid_plural "files selected"
+msgstr[0] "%d archivos seleccionados, %s"
+msgstr[1] "%d archivos seleccionados, %s"
 
 #: ../src/gui/dialog_preview.c:81
 msgid "Folder"
@@ -7907,6 +7822,75 @@ msgstr "recorte de ajuste lineal"
 #: ../src/gui/linear_match.c:218
 msgid "Cannot compute linear coefficients."
 msgstr ""
+
+#: ../src/gui/menu_gray_psf.c:46 ../src/gui/menu_gray_psf.c:91
+msgid "Current selection is too large"
+msgstr "La selección actual es demasiado grande"
+
+#: ../src/gui/menu_gray_psf.c:47 ../src/gui/menu_gray_psf.c:92
+msgid "To determine the PSF, please make a selection around a star."
+msgstr ""
+"Para determinar el PSF, por favor realice una selección alrededor de una "
+"estrella."
+
+#: ../src/gui/menu_gray_psf.c:59
+#, c-format
+msgid ""
+"Centroid Coordinates:\n"
+"\t\tx0=%.2fpx\n"
+"\t\ty0=%.2fpx\n"
+"\n"
+"Full Width Half Maximum:\n"
+"\t\tFWHMx=%.2f%s\n"
+"\t\tFWHMy=%.2f%s\n"
+"\n"
+"Angle:\n"
+"\t\t%0.2fdeg\n"
+"\n"
+"Background Value:\n"
+"\t\tB=%.6f\n"
+"\n"
+"Maximal Intensity:\n"
+"\t\tA=%.6f\n"
+"\n"
+"Magnitude (%s):\n"
+"\t\tm=%.4f±%.4f\n"
+"\n"
+"RMSE:\n"
+"\t\tRMSE=%.3e"
+msgstr ""
+"Coordenadas del Centroide:\n"
+"t\tx0=%.2fpx\n"
+"\t\ty0=%.2fpx\n"
+"\n"
+"Ancho total Mitad del máximo:\n"
+"\t\tATMMx=%.2f%s\n"
+"\t\tATMMy=%.2f%s\n"
+"\n"
+"Ángulo:\n"
+"\t\t%0.2fdeg\n"
+"\n"
+"Valor de Fondo:\n"
+"\t\tB=%.6f\n"
+"\n"
+"Intensidad Máxima:\n"
+"\t\tA=%.6f\n"
+"\n"
+"Magnitud (%s):\n"
+"\t\tm=%.4f±%.4f\n"
+"\n"
+"RMSE:\n"
+"\t\tRMSE=%.3e"
+
+#: ../src/gui/menu_gray_psf.c:76
+msgid "PSF for the sequence only applies on sequences"
+msgstr "El PSF de la secuencia sólo es aplicable en secuencias"
+
+#: ../src/gui/menu_gray_psf.c:77
+msgid "Please load a sequence before trying to apply the PSF for the sequence."
+msgstr ""
+"Por favor cargue una secuencia antes de intentar aplicar el PSF a la "
+"secuencia."
 
 #: ../src/gui/message_dialog.c:187
 msgid "_Do not show this dialog again"
@@ -8062,26 +8046,36 @@ msgstr ""
 msgid "Cannot refresh script list"
 msgstr ""
 
-#: ../src/gui/progress_and_log.c:243
+#: ../src/gui/preferences.c:526 ../src/gui/preferences.c:540
+msgid "Wrong value"
+msgstr "Valor erróneo"
+
+#: ../src/gui/preferences.c:527 ../src/gui/preferences.c:541
+msgid "Inner radius value must be less than outer. Please change the value."
+msgstr ""
+"El valor del radio interior debe ser menor que el exterior. Por favor "
+"modifique el valor."
+
+#: ../src/gui/progress_and_log.c:224
 msgid "Execution time"
 msgstr "Tiempo de ejecución"
 
-#: ../src/gui/progress_and_log.c:259
+#: ../src/gui/progress_and_log.c:240
 #, c-format
 msgid "%s: %d h %02d min %.2d s.\n"
 msgstr "%s: %d h %02d min %.2d s.\n"
 
-#: ../src/gui/progress_and_log.c:264
+#: ../src/gui/progress_and_log.c:245
 #, c-format
 msgid "%s: %d min %02d s.\n"
 msgstr "%s: %d min %02d s.\n"
 
-#: ../src/gui/progress_and_log.c:268
+#: ../src/gui/progress_and_log.c:249
 #, c-format
 msgid "%s: %.2lf ms.\n"
 msgstr "%s: %.2lf ms.\n"
 
-#: ../src/gui/progress_and_log.c:270
+#: ../src/gui/progress_and_log.c:251
 #, c-format
 msgid "%s: %.2lf s.\n"
 msgstr "%s: %.2lf s.\n"
@@ -8634,21 +8628,21 @@ msgstr ""
 msgid "Error opening %s: file type not supported.\n"
 msgstr "Error abriendo %s: tipo de archivo no soportado.\n"
 
-#: ../src/io/films.c:250
+#: ../src/io/films.c:251
 msgid "FILM ERROR: incompatible format\n"
 msgstr "ERROR en PELíCULA: formato no compatible\n"
 
-#: ../src/io/fits_sequence.c:146
+#: ../src/io/fits_sequence.c:147
 #, fuzzy, c-format
 msgid "Cannot open FITS file %s\n"
 msgstr "No se puede abrir el fichero: %s\n"
 
-#: ../src/io/fits_sequence.c:151
+#: ../src/io/fits_sequence.c:152
 #, c-format
 msgid "Cannot open FITS file %s: doesn't seem to be a FITS sequence\n"
 msgstr ""
 
-#: ../src/io/fits_sequence.c:176 ../src/io/image_format_fits.c:1250
+#: ../src/io/fits_sequence.c:177 ../src/io/image_format_fits.c:1250
 msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
@@ -8656,61 +8650,61 @@ msgstr ""
 "Las imágenes FITS con enteros con signo de 64bits por píxeles. No soportan "
 "canales.\n"
 
-#: ../src/io/fits_sequence.c:196 ../src/stacking/median_and_mean.c:689
+#: ../src/io/fits_sequence.c:197 ../src/stacking/median_and_mean.c:689
 msgid "Your version of cfitsio does not support multi-threading\n"
 msgstr "Su versión de cfitsio no soporta multi hilo\n"
 
-#: ../src/io/fits_sequence.c:245 ../src/io/image_format_fits.c:528
+#: ../src/io/fits_sequence.c:246 ../src/io/image_format_fits.c:528
 #: ../src/io/image_format_fits.c:588 ../src/io/image_format_fits.c:1367
 msgid "Unknown FITS data format in internal conversion\n"
 msgstr "Datos FITS desconocidos en la conversión interna\n"
 
-#: ../src/io/fits_sequence.c:357
+#: ../src/io/fits_sequence.c:358
 msgid "Cannot save image in sequence not opened for writing\n"
 msgstr ""
 
-#: ../src/io/fits_sequence.c:391
+#: ../src/io/fits_sequence.c:392
 msgid ""
 "Cannot add an image with different properties to an existing sequence.\n"
 msgstr ""
 
-#: ../src/io/fits_sequence.c:398
+#: ../src/io/fits_sequence.c:399
 msgid "Failed to initialize the FITS sequence, aborting\n"
 msgstr ""
 
-#: ../src/io/fits_sequence.c:407
+#: ../src/io/fits_sequence.c:408
 #, fuzzy, c-format
 msgid "Could not write image %d of the FITS sequence\n"
 msgstr "No se puede cargar la imagen %d de la secuencia %s\n"
 
-#: ../src/io/fits_sequence.c:420
+#: ../src/io/fits_sequence.c:421
 #, fuzzy, c-format
 msgid "Saving FITS: image %d, %ld layer(s), %ux%u pixels, %d bits\n"
 msgstr "Guardando archivo FITS: archivo %s, %ld capa(s), %ux%u píxeles\n"
 
-#: ../src/io/fits_sequence.c:445
+#: ../src/io/fits_sequence.c:446
 #, c-format
 msgid ""
 "Frame number mismatch at the end of sequence saving (%d saved for %d "
 "written)\n"
 msgstr ""
 
-#: ../src/io/fits_sequence.c:453
+#: ../src/io/fits_sequence.c:454
 #, c-format
 msgid "Successfully saved FITS sequence with %d images\n"
 msgstr ""
 
-#: ../src/io/fits_sequence.c:486 ../src/io/fits_sequence.c:492
+#: ../src/io/fits_sequence.c:487 ../src/io/fits_sequence.c:493
 #, fuzzy
 msgid "Failed to remove failed images from the sequence\n"
 msgstr "Seleccionadas todas la imágenes de la secuencia\n"
 
-#: ../src/io/fits_sequence.c:530
+#: ../src/io/fits_sequence.c:531
 #, fuzzy, c-format
 msgid "Removing failed FITS sequence file: %s\n"
 msgstr "Borrando archivo SER fallido: %s\n"
 
-#: ../src/io/fits_sequence.c:599
+#: ../src/io/fits_sequence.c:600
 #, c-format
 msgid "Number of images allowed in the FITS write queue: %d\n"
 msgstr ""
@@ -9627,10 +9621,12 @@ msgstr ""
 msgid "Registration finished.\n"
 msgstr "Registro terminado.\n"
 
-#: ../src/registration/global.c:403
-#, c-format
-msgid "%d images processed.\n"
-msgstr "%d imágenes procesadas.\n"
+#: ../src/registration/global.c:404
+#, fuzzy
+msgid "image processed"
+msgid_plural "images processed"
+msgstr[0] "_Procesado de imagen"
+msgstr[1] "_Procesado de imagen"
 
 #: ../src/registration/global.c:405
 #, c-format
@@ -9793,7 +9789,7 @@ msgid "Register: processing image %s"
 msgstr "Registro: procesando imagen %s"
 
 #: ../src/registration/registration.c:429
-#: ../src/registration/registration.c:653
+#: ../src/registration/registration.c:654
 #, c-format
 msgid "Best frame: #%d.\n"
 msgstr "Mejor frame: #%d.\n"
@@ -9814,26 +9810,28 @@ msgid "Cannot perform ECC alignment for frame %d\n"
 msgstr "No se puede realizar alineación ECC para el frame %d\n"
 
 #: ../src/registration/registration.c:651
-#, c-format
-msgid "%d frames were excluded.\n"
-msgstr "%d frames excluídos.\n"
+#, fuzzy
+msgid "file was ignored and excluded"
+msgid_plural "files were ignored and excluded"
+msgstr[0] "archivo"
+msgstr[1] "archivo"
 
-#: ../src/registration/registration.c:752
-#: ../src/registration/registration.c:758
+#: ../src/registration/registration.c:753
+#: ../src/registration/registration.c:759
 msgid "Select images in the sequence"
 msgstr "Seleccione imágenes en la secuencia"
 
-#: ../src/registration/registration.c:754
+#: ../src/registration/registration.c:755
 msgid "Select an area in image first, and select images in the sequence"
 msgstr ""
 "Seleccione un área de la imagen primero, y seleccione imágenes en la "
 "secuencia"
 
-#: ../src/registration/registration.c:760
+#: ../src/registration/registration.c:761
 msgid "Select an area in image first"
 msgstr "Seleccione un área de la imagen primero"
 
-#: ../src/registration/registration.c:884
+#: ../src/registration/registration.c:885
 msgid ""
 "All prerequisites are not filled for registration. Select a rectangle "
 "first.\n"
@@ -10219,6 +10217,26 @@ msgstr "Se hará el apilado sin escaldo (deshabilitando `drizzle`)\n"
 msgid "Up-scaling sequence for stacking"
 msgstr "Secuencia de escalado para el apilado"
 
+#, fuzzy
+#~ msgid "%d %s were excluded.\n"
+#~ msgstr "%d frames excluídos.\n"
+
+#, fuzzy
+#~ msgid "%d %s processed.\n"
+#~ msgstr "%d imágenes procesadas.\n"
+
+#, fuzzy
+#~ msgid "image"
+#~ msgid_plural "images"
+#~ msgstr[0] "Imagen RGB"
+#~ msgstr[1] "Imagen RGB"
+
+#~ msgid "%d files loaded"
+#~ msgstr "%d archivos cargados"
+
+#~ msgid "%d files selected, %s"
+#~ msgstr "%d archivos seleccionados, %s"
+
 #~ msgid "Processing..."
 #~ msgstr "Procesando..."
 
@@ -10569,16 +10587,8 @@ msgstr "Secuencia de escalado para el apilado"
 #~ msgid "High"
 #~ msgstr "Alto"
 
-#, fuzzy
-#~ msgctxt "shortcut window"
-#~ msgid "Image processing"
-#~ msgstr "_Procesado de imagen"
-
 #~ msgid "Parallel processing %s: Using %d logical processor(s).\n"
 #~ msgstr "Proceso paralelo %s: Usando %d procesador(es) lógico(s).\n"
-
-#~ msgid "RGB image"
-#~ msgstr "Imagen RGB"
 
 #~ msgid "Zoom level"
 #~ msgstr "Nivel de zoom"

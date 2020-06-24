@@ -400,8 +400,8 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 
 	if (!args->retval) {
 		siril_log_message(_("Registration finished.\n"));
-		siril_log_color_message(_("%d %s processed.\n"), "green",
-				args->nb_filtered_images, ngettext("image", "images", args->nb_filtered_images));
+		siril_log_color_message("%d %s.\n", "green",
+				args->nb_filtered_images, ngettext("image processed", "images processed", args->nb_filtered_images));
 		siril_log_color_message(_("Total: %d failed, %d registered.\n"), "green",
 				failed, regargs->new_total);
 		if (!regargs->translation_only) {
