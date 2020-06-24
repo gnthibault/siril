@@ -473,17 +473,20 @@ void update_statusbar_convert() {
 		gtk_label_set_text(status_label, " ");
 	else {
 		int selected = count_selected_files();
-		gchar *str, *total;
-		str = ngettext("file loaded", "files loaded", nb_files);
-		str = g_strdup_printf("%d %s", nb_files, str);
+		gchar *str1, *total;
+
+		str1 = ngettext("%d file loaded", "%d files loaded", nb_files);
+		str1 = g_strdup_printf(str1, nb_files);
 		if (selected == 0) {
-			total = g_strdup(str);
+			total = g_strdup(str1);
 		} else {
-			total = ngettext("file selected", "files selected", selected);
-			total = g_strdup_printf("%d %s, %s", selected, total, str);
+			gchar *str2 = ngettext("%d file selected", "%d files selected", selected);
+			str2 = g_strdup_printf(str2, selected);
+			total = g_strdup_printf("%s, %s", str1, str2);
+			g_free(str2);
 		}
 		gtk_label_set_text(status_label, total);
-		g_free(str);
+		g_free(str1);
 		g_free(total);
 	}
 }

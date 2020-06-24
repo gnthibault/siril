@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: siril 0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-24 22:41+0200\n"
-"PO-Revision-Date: 2020-06-24 22:40+0200\n"
+"POT-Creation-Date: 2020-06-24 22:56+0200\n"
+"PO-Revision-Date: 2020-06-24 22:57+0200\n"
 "Last-Translator: Cyril Richard\n"
 "Language-Team: French <cyril@free-astro.fr>\n"
 "Language: fr\n"
@@ -5260,7 +5260,7 @@ msgstr "Cette étoile a déjà été choisie !\n"
 msgid "Peaker"
 msgstr "Pointage"
 
-#: ../src/algos/transform.c:246
+#: ../src/algos/transform.c:247
 msgid "wavelet_transform_data: bad plane number\n"
 msgstr "wavelet_transform_data : mauvais nombre de plans\n"
 
@@ -7031,34 +7031,34 @@ msgstr "Enregistrer le fichier"
 msgid "_Save"
 msgstr "_Enregistrer"
 
-#: ../src/core/pipe.c:99
+#: ../src/core/pipe.c:100
 #, c-format
 msgid "Output pipe creation failed with error %d\n"
 msgstr "La création du tube de sortie a échoué avec l'erreur %d\n"
 
-#: ../src/core/pipe.c:116
+#: ../src/core/pipe.c:117
 #, c-format
 msgid "Input pipe creation failed with error %d\n"
 msgstr "La création du tube d'entré a échoué avec l'erreur %d\n"
 
-#: ../src/core/pipe.c:135 ../src/core/pipe.c:147
+#: ../src/core/pipe.c:136 ../src/core/pipe.c:148
 msgid "Could not create the named pipe "
 msgstr "Impossible de créer le tube nommé "
 
-#: ../src/core/pipe.c:141 ../src/core/pipe.c:153
+#: ../src/core/pipe.c:142 ../src/core/pipe.c:154
 msgid "The named pipe file "
 msgstr "Le fichier du tube nommé "
 
-#: ../src/core/pipe.c:270 ../src/core/pipe.c:346 ../src/core/pipe.c:458
-#: ../src/core/pipe.c:464
+#: ../src/core/pipe.c:271 ../src/core/pipe.c:347 ../src/core/pipe.c:459
+#: ../src/core/pipe.c:465
 msgid "Could not open the named pipe\n"
 msgstr "Impossible d'ouvrir le tube nommé\n"
 
-#: ../src/core/pipe.c:298 ../src/core/pipe.c:375
+#: ../src/core/pipe.c:299 ../src/core/pipe.c:376
 msgid "command too long or malformed\n"
 msgstr "commande trop longue ou mal formée\n"
 
-#: ../src/core/pipe.c:335 ../src/core/pipe.c:412
+#: ../src/core/pipe.c:336 ../src/core/pipe.c:413
 msgid "command interrupted\n"
 msgstr "commande interrompue\n"
 
@@ -7916,17 +7916,19 @@ msgstr ""
 "Les fichiers avec une extension inconnue ne peuvent pas être déposés dans "
 "cette zone. Par conséquent ils sont ignorés."
 
-#: ../src/gui/conversion.c:477
-msgid "file loaded"
-msgid_plural "files loaded"
-msgstr[0] "fichier chargé"
-msgstr[1] "fichiers chargés"
+#: ../src/gui/conversion.c:478
+#, c-format
+msgid "%d file loaded"
+msgid_plural "%d files loaded"
+msgstr[0] "%d fichier chargé"
+msgstr[1] "%d fichiers chargés"
 
-#: ../src/gui/conversion.c:482
-msgid "file selected"
-msgid_plural "files selected"
-msgstr[0] "fichier sélectionné"
-msgstr[1] "fichiers sélectionnés"
+#: ../src/gui/conversion.c:483
+#, c-format
+msgid "%d file selected"
+msgid_plural "%d files selected"
+msgstr[0] "%d fichier sélectionné"
+msgstr[1] "%d fichiers sélectionnés"
 
 #: ../src/gui/dialog_preview.c:81
 msgid "Folder"
@@ -10414,6 +10416,11 @@ msgstr ""
 msgid "Up-scaling sequence for stacking"
 msgstr "Mise à l'échelle de la séquence pour l’empilement"
 
+#~ msgid "file loaded"
+#~ msgid_plural "files loaded"
+#~ msgstr[0] "fichier chargé"
+#~ msgstr[1] "fichiers chargés"
+
 #, fuzzy
 #~ msgid "%d %s were excluded.\n"
 #~ msgstr "%d images sont exclues.\n"
@@ -10427,9 +10434,6 @@ msgstr "Mise à l'échelle de la séquence pour l’empilement"
 #~ msgid_plural "images"
 #~ msgstr[0] "Images RVB"
 #~ msgstr[1] "Images RVB"
-
-#~ msgid "%d files loaded"
-#~ msgstr "%d fichiers chargés"
 
 #~ msgid "%d files selected, %s"
 #~ msgstr "%d fichiers sélectionnés, %s"
