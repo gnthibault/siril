@@ -24,6 +24,7 @@
 #include "core/OS_utils.h"
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
+#include "gui/progress_and_log.h"
 
 
 #if !GLIB_CHECK_VERSION(2,62,0)
@@ -158,6 +159,26 @@ static void save_log_dialog() {
 	}
 	siril_widget_destroy(widgetdialog);
 	g_free(filename);
+}
+
+char* siril_log_message(const char* format, ...) {
+	va_list args;
+	va_start(args, format);
+	g_mutex_lock(&com.mutex);
+	char *msg = siril_log_internal(format, NULL, args);
+	g_mutex_unlock(&com.mutex);
+	va_end(args);
+	return msg;
+}
+
+char* siril_log_color_message(const char* format, const char* color, ...) {
+	va_list args;
+	va_start(args, color);
+	g_mutex_lock(&com.mutex);
+	char *msg = siril_log_internal(format, color, args);
+	g_mutex_unlock(&com.mutex);
+	va_end(args);
+	return msg;
 }
 
 /************** Callbacks function ***********/

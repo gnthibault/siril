@@ -25,7 +25,6 @@
 #include <assert.h>
 #include <stdlib.h>
 
-#include "compositing/compositing.h"
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/command.h" // process_close
@@ -43,9 +42,11 @@
 #include "gui/progress_and_log.h"
 #include "gui/sequence_list.h"
 #include "registration/registration.h"
-#include "compositing/filters.h"
 #include "stacking/stacking.h"
 #include "opencv/opencv.h"
+
+#include "compositing.h"
+#include "filters.h"
 
 #undef DEBUG
 

@@ -143,6 +143,7 @@ siril_common_SOURCES = \
 	gui/image_interactions.h \
 	gui/linear_match.c \
 	gui/linear_match.h \
+	gui/menu_gray_psf.c \
 	gui/message_dialog.c \
 	gui/message_dialog.h \
 	gui/open_dialog.c \

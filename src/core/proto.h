@@ -10,6 +10,10 @@
 #undef int64
 #endif
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /****************** image_formats_internal.h ******************/
 /* BMP */
 int readbmp(const char*, fits*);
@@ -167,5 +171,13 @@ void on_spinbut_shift_value_change(GtkSpinButton *spinbutton,
 
 /****************** statistics_list.h ******************/
 void computeStat();
+
+/****************** siril_log.h ******************/
+char* siril_log_message(const char* format, ...);
+char* siril_log_color_message(const char* format, const char* color, ...);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif

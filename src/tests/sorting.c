@@ -1,9 +1,12 @@
+#include <criterion/criterion.h>
+
 #include "../core/siril.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
+
 #define USE_ALL_SORTING_ALGOS
 #include "../algos/sorting.h"
+
+#include <stdlib.h>
+#include <time.h>
 
 /* This program tests the new implementation of the quickselect from Emmanuel
  * and the old from statistics.
@@ -12,177 +15,63 @@
 #define NBTRIES 200	// for result checking, unit test of implementations
 #define USE_MULTITHREADING TRUE
 
-double median_from_sorted_array(WORD *arr, int size) {
+cominfo com;	// the main data struct
+
+double median_from_sorted_array(WORD *arr, int size)
+{
 	if (size % 2)
 		return arr[(size-1)/2];
 	int sum = (int)arr[(size-1)/2] + (int)arr[size/2];
 	return (double)sum/2.0;
 }
 
-int test_quickselect(int datasize) {
-	WORD *data1, *data2, *data3;
+int compare_median_algos(int datasize)
+{
+	WORD *data, *data_backup;
 	double result_qsel1, result_qsel2, result_qsort;
 	int i, retval = 0;
 
-	data1 = malloc(datasize * sizeof(WORD));
-	data2 = malloc(datasize * sizeof(WORD));
-	data3 = malloc(datasize * sizeof(WORD));
-	for (i=0; i<datasize; i++) {
-		int val = rand() % USHRT_MAX;
-		data1[i] = (WORD)val;
-		data2[i] = (WORD)val;
-		data3[i] = (WORD)val;
-	}
-
-	quicksort_s(data1, datasize);
-	result_qsort = median_from_sorted_array(data1, datasize);
-	result_qsel1 = quickmedian(data2, datasize);
-	result_qsel2 = histogram_median(data3, datasize, USE_MULTITHREADING);
-
-	if (result_qsel1 != result_qsort || result_qsel2 != result_qsort) {
-		for (i=0; i<datasize; i++)
-			fprintf(stdout, "%hu ", data1[i]);
-		fputc('\n', stdout);
-		fprintf(stdout, "got %g (qsel1), %g (qsel2) and %g (qsort)\n",
-				result_qsel1, result_qsel2, result_qsort);
-		retval = 1;
-	}
-	else {
-		//fprintf(stdout, "OK (size %d) got %hu (qsel1), %hu (qsel2) and %hu (qsort)\n",
-		//		datasize, result_qsel1, result_qsel2, result_qsort);
-	}
-	free(data1);
-	free(data2);
-	free(data3);
-	return retval;
-}
-
-void measure_big() {
-	WORD *data1, *data2, *data3, result_qsel1, result_qsel2, result_qsort;
-	int i, datasize = 30000000;
-	clock_t t1, t2, t3, t4;
-
-	data1 = malloc(datasize * sizeof(WORD));
-	data2 = malloc(datasize * sizeof(WORD));
-	data3 = malloc(datasize * sizeof(WORD));
-	for (i=0; i<datasize; i++) {
-		int val = rand() % USHRT_MAX;
-		data1[i] = (WORD)val;
-		data2[i] = (WORD)val;
-		data3[i] = (WORD)val;
-	}
-
-	t1 = clock();
-	quicksort_s(data1, datasize);
-	result_qsort = median_from_sorted_array(data1, datasize);
-	t2 = clock();
-	result_qsel1 = quickmedian(data2, datasize);
-	t3 = clock();
-	result_qsel2 = histogram_median(data3, datasize, USE_MULTITHREADING);
-	t4 = clock();
-	fprintf(stdout, "large dataset (%d elements, same for each)\n", datasize);
-	fprintf(stdout, "siril quicksort time:\t%ld\n", t2-t1);
-	fprintf(stdout, "quickmedian time:\t%ld\n", t3-t2);
-	fprintf(stdout, "histogram_median time:\t%ld\n", t4-t3);
-
-	free(data1);
-	free(data2);
-	free(data3);
-}
-
-void measure_small() {
-	WORD *data, *data_backup, result_qsel1, result_qsel2, result_qsort;
-	int i, draws, times, datasize = 8, nb_draws = 100, nb_times_each = 200000;
-	clock_t t1, t2, t3, t4;
-
 	data = malloc(datasize * sizeof(WORD));
 	data_backup = malloc(datasize * sizeof(WORD));
-	t1 = clock();
-
-	for (draws = 0; draws < nb_draws; draws++) {
-		for (i=0; i<datasize; i++) {
-			int val = rand() % USHRT_MAX;
-			data[i] = (WORD)val;
-			data_backup[i] = (WORD)val;
-		}
-
-		for (times = 0; times < nb_times_each; times++) {
-			quicksort_s(data, datasize);
-			result_qsort = median_from_sorted_array(data, datasize);
-
-			for (i=0; i<datasize; i++)
-				data[i] = data_backup[i];
-			data[times % datasize] = times % USHRT_MAX;
-		}
+	for (i=0; i<datasize; i++) {
+		int val = rand() % USHRT_MAX;
+		data[i] = (WORD)val;
+		data_backup[i] = (WORD)val;
 	}
-	t2 = clock();
 
-	for (draws = 0; draws < nb_draws; draws++) {
-		for (i=0; i<datasize; i++) {
-			int val = rand() % USHRT_MAX;
-			data[i] = (WORD)val;
-			data_backup[i] = (WORD)val;
-		}
+	quicksort_s(data, datasize);
+	result_qsort = median_from_sorted_array(data, datasize);
+	memcpy(data_backup, data, datasize * sizeof(WORD));
 
-		for (times = 0; times < nb_times_each; times++) {
-			result_qsel1 = quickmedian(data, datasize);
+	result_qsel1 = quickmedian(data, datasize);
+	memcpy(data_backup, data, datasize * sizeof(WORD));
 
-			for (i=0; i<datasize; i++)
-				data[i] = data_backup[i];
-			data[times % datasize] = times % USHRT_MAX;
-		}
+	result_qsel2 = histogram_median(data, datasize, USE_MULTITHREADING);
+	memcpy(data_backup, data, datasize * sizeof(WORD));
+
+	if (result_qsel1 != result_qsort || result_qsel2 != result_qsort) {
+		cr_log_error("got %g (quickmedian), %g (histogram_median) and %g (qsort)\n",
+					 result_qsel1, result_qsel2, result_qsort);
+		retval = 1;
 	}
-	t3 = clock();
-
-	for (draws = 0; draws < nb_draws; draws++) {
-		for (i=0; i<datasize; i++) {
-			int val = rand() % USHRT_MAX;
-			data[i] = (WORD)val;
-			data_backup[i] = (WORD)val;
-		}
-
-		for (times = 0; times < nb_times_each; times++) {
-			result_qsel2 = histogram_median(data, datasize, FALSE);
-
-			for (i=0; i<datasize; i++)
-				data[i] = data_backup[i];
-			data[times % datasize] = times % USHRT_MAX;
-		}
-	}
-	t4 = clock();
-
-	fprintf(stdout, "small dataset (%d elements, %d different draws run %d times)\n",
-			datasize, nb_draws, nb_times_each);
-	fprintf(stdout, "siril quicksort time:\t%ld\n", t2-t1);
-	fprintf(stdout, "quickmedian time:\t%ld\n", t3-t2);
-	fprintf(stdout, "histogram_median time:\t%ld\n", t4-t3);
 
 	free(data);
 	free(data_backup);
+	return retval;
 }
 
-
-cominfo com;	// the main data struct
-
-int main(void)
+void common_setup()
 {
-	int i, size = 1;
 	srand(time(NULL));
 	com.max_thread = g_get_num_processors();
-
-	//  verify that the sorting works
-	for (i = 0; i < NBTRIES; i++, size++) {
-		if (test_quickselect(size)) {
-			fprintf(stderr, "FAILED\n");
-			exit(1);
-		}
-	}
-	exit(0); // testing validity only, comment to test performance
-
-	// measure performances, big dataset and small dataset
-	measure_big();
-	measure_small();
-	return 0;
 }
 
+TestSuite(Sorting, .init=common_setup);
 
+Test(Sorting, Median)
+{
+	int size = 0;
+	for (int i = 0; i < NBTRIES; i++, size++) {
+		cr_assert(compare_median_algos(size) == 0, "Failed at size=%u", size);
+	}
+}

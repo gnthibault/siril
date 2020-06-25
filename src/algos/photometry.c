@@ -24,10 +24,6 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
-#include "gui/callbacks.h"
-#include "gui/progress_and_log.h"
-#include "gui/message_dialog.h"
-#include "gui/preferences.h"
 #include "algos/PSF.h"
 #include "algos/photometry.h"
 
@@ -356,32 +352,3 @@ void initialize_photometric_param() {
 	com.pref.phot_set.minval = 0;
 	com.pref.phot_set.maxval = 65535;
 }
-
-void on_spinInner_value_changed(GtkSpinButton *inner, gpointer user_data) {
-	GtkSpinButton *outer;
-	double in, out;
-
-	outer = GTK_SPIN_BUTTON(lookup_widget("spinOuter"));
-	in = gtk_spin_button_get_value(inner);
-	out = gtk_spin_button_get_value(outer);
-
-	if (in >= out) {
-		siril_message_dialog(GTK_MESSAGE_ERROR, _("Wrong value"),
-				_("Inner radius value must be less than outer. Please change the value."));
-	}
-}
-
-void on_spinOuter_value_changed(GtkSpinButton *outer, gpointer user_data) {
-	GtkSpinButton *inner;
-	double in, out;
-
-	inner = GTK_SPIN_BUTTON(lookup_widget("spinInner"));
-	in = gtk_spin_button_get_value(inner);
-	out = gtk_spin_button_get_value(outer);
-
-	if (in >= out) {
-		siril_message_dialog(GTK_MESSAGE_ERROR, _("Wrong value"),
-				_("Inner radius value must be less than outer. Please change the value."));
-	}
-}
-

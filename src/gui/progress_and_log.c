@@ -24,6 +24,7 @@
 #include <string.h>
 #include "callbacks.h"
 #include "core/pipe.h"
+#include "core/siril_log.h"
 
 #include "progress_and_log.h"
 
@@ -159,7 +160,7 @@ static gboolean idle_messaging(gpointer p) {
  * only newline. It is an allocated string and must not be freed. It can be
  * reused until next call to this function.
  */
-static char* siril_log_internal(const char* format, const char* color, va_list arglist) {
+char* siril_log_internal(const char* format, const char* color, va_list arglist) {
 	static char *msg = NULL;
 	struct tm *now;
 	time_t now_sec;
@@ -217,26 +218,6 @@ void initialize_log_tags() {
 	gtk_text_buffer_create_tag (tbuf, "green", "foreground", "#01b301", NULL);
 	gtk_text_buffer_create_tag (tbuf, "blue", "foreground", "#7a7af8", NULL);
 	gtk_text_buffer_create_tag (tbuf, "plum", "foreground", "#8e4585", NULL);
-}
-
-char* siril_log_message(const char* format, ...) {
-	va_list args;
-	va_start(args, format);
-	g_mutex_lock(&com.mutex);
-	char *msg = siril_log_internal(format, NULL, args);
-	g_mutex_unlock(&com.mutex);
-	va_end(args);
-	return msg;
-}
-
-char* siril_log_color_message(const char* format, const char* color, ...) {
-	va_list args;
-	va_start(args, color);
-	g_mutex_lock(&com.mutex);
-	char *msg = siril_log_internal(format, color, args);
-	g_mutex_unlock(&com.mutex);
-	va_end(args);
-	return msg;
 }
 
 void show_time(struct timeval t_start, struct timeval t_end) {

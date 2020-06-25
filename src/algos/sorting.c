@@ -524,7 +524,7 @@ double histogram_median(WORD *a, size_t n, gboolean mutlithread) {
 		sum += h[i];
 
 	free(h);
-	return (n % 2 == 0) ? (double) (i + j) / 2.0 : (double) i;
+	return (n % 2 == 0) ? (double) (i + j - 2) / 2.0 : (double) (i - 1);
 }
 
 double histogram_median_float(float *a, size_t n, gboolean multithread) {

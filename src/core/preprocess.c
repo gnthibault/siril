@@ -182,8 +182,6 @@ static int darkOptimization(fits *raw, struct preprocessing_data *args) {
 
 static int64_t prepro_compute_size_hook(struct generic_seq_args *args, int nb_images) {
 	struct preprocessing_data *prepro = args->user;
-	remove_prefixed_sequence_files(args->seq, prepro->ppprefix);
-
 	int64_t size = seq_compute_size(args->seq, nb_images, args->output_type);
 	if (prepro->debayer)
 		size *= 3;
@@ -351,6 +349,8 @@ void start_sequence_preprocessing(struct preprocessing_data *prepro) {
 	args->new_fitseq = NULL;
 	args->parallel = TRUE;
 	args->user = prepro;
+
+	remove_prefixed_sequence_files(prepro->seq, prepro->ppprefix);
 
 	if (com.script) {
 		args->already_in_a_thread = TRUE;

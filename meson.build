@@ -87,6 +87,10 @@ platform_osx = (
   host_os.contains('darwin')
 )
 
+platform_bsd = (
+  host_os.contains('bsd')
+)
+
 ################################################################################
 # Meson modules and compilers
 
@@ -114,6 +118,9 @@ siril_cpp_flag += ['-DHAVE_CONFIG_H']
 
 if platform_linux
   siril_link_arg += '-rdynamic'
+elif platform_bsd
+  siril_link_arg += '-rdynamic'
+  siril_link_arg += '-lexecinfo'
 elif platform_windows
   #TODO: Do Meson provide more elegant way?
   siril_link_arg += '-Wl,--export-all-symbols'
@@ -200,15 +207,15 @@ endif
 ## Optionnal dependencies
 
 openmp_dep = []
-if platform_windows or platform_linux
-  openmp_dep = dependency('openmp', required : false)
-else
+if platform_osx
   if get_option('openmp_darwin')
     message('Set OpenMP flags for macOS')
     siril_link_arg += ['-lomp']
     siril_cpp_flag += ['-Xpreprocessor', '-fopenmp']
     siril_c_flag += ['-Xpreprocessor', '-fopenmp']
   endif
+else
+  openmp_dep = dependency('openmp', required : false)
 endif
 
 libraw_dep = dependency('libraw', required : false)
@@ -218,6 +225,7 @@ libpng_dep = dependency('libpng', required : false)
 libheif_dep = dependency('libheif', required : false)
 ffms2_dep = dependency('ffms2', required : false)
 libcurl_dep = dependency('libcurl', required : false)
+criterion_dep = dependency('criterion', required : false)
 
 ################################################################################
 # Configuration
@@ -225,9 +233,17 @@ libcurl_dep = dependency('libcurl', required : false)
 ## General and package configuration
 conf_data = configuration_data()
 
-conf_data.set10('SIRIL_UNSTABLE', not stable)
-conf_data.set10('SIRIL_OUTPUT_DEBUG', get_option('buildtype').startswith('debug'))
-conf_data.set10('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle)
+if not stable
+  conf_data.set('SIRIL_UNSTABLE', 1)
+endif
+
+if get_option('buildtype').startswith('debug')
+  conf_data.set('SIRIL_OUTPUT_DEBUG', 1)
+endif
+
+if relocatable_bundle
+  conf_data.set('ENABLE_RELOCATABLE_RESOURCES', 1)
+endif
 
 if platform_osx
   conf_data.set('OS_OSX', 1)
@@ -245,14 +261,15 @@ conf_data.set_quoted('PACKAGE_BUGREPORT', 'https://gitlab.com/free-astro/siril/i
 conf_data.set_quoted('PACKAGE_DATA_DIR', siril_datadir, description : 'Define to the data directory.')
 conf_data.set_quoted('LOCALEDIR', siril_locale, description : 'Define to the locale directory.')
 
-## System configuration
-if target_machine.system() == 'linux'
-  conf_data.set('HAVE_BACKTRACE', 1, description : 'Define to 1 if you have the backtrace function.')
-  conf_data.set('HAVE_EXECINFO_H', 1, description : 'Define to 1 if you have the backtrace function.')
-else 
-  conf_data.set('HAVE_BACKTRACE', 0, description : 'Define to 1 if you have the backtrace function.')
-  conf_data.set('HAVE_EXECINFO_H', 0, description : 'Define to 1 if you have the backtrace function.')
-endif
+# Check for available headers
+foreach header : [
+    { 'm': 'HAVE_EXECINFO_H',     'v': 'execinfo.h' },
+    { 'm': 'HAVE_SYS_STATVFS_H',  'v': 'sys/statvfs.h' },
+    { 'm': 'HAVE_SYS_VFS_H',      'v': 'sys/vfs.h' },
+    { 'm': 'HAVE_SYS_PARAM_H',    'v': 'sys/param.h' },
+  ]
+  conf_data.set(header['m'], cc.has_header(header['v']) ? 1 : false)
+endforeach
 
 ## Dependencies configuration
 if gsl_dep.found()
@@ -323,6 +340,35 @@ conf_data.set('HAVE_CXX11', true, description : 'Define to 1 if cpp compiler is 
 git_data = configuration_data()
 git_data.set_quoted('SIRIL_GIT_VERSION_ABBREV', git_version)
 git_data.set_quoted('SIRIL_GIT_LAST_COMMIT_YEAR', git_last_commit_year)
+
+################################################################################
+# Externals dependencies
+
+externals_dep = declare_dependency(
+  dependencies: [
+    dbghelp,
+    m_dep,
+    glib_dep,
+    gtk_dep,
+    gsl_dep,
+    opencv_dep,
+    rtprocess_dep,
+    exiv_dep,
+    libconfig_dep,
+    fftw3f_dep,
+    cfitsio_dep,
+    libraw_dep,
+    libtiff_dep,
+    libjpeg_dep,
+    libpng_dep,
+    libcurl_dep,
+    libheif_dep,
+    ffms2_dep,
+    libcurl_dep,
+    openmp_dep,
+    kplot_dep
+  ]
+)
 
 ################################################################################
 # Sources directories

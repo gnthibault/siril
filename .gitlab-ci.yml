@@ -21,6 +21,7 @@ variables:
   INSTALL_PREFIX: "${CI_PROJECT_DIR}/${INSTALL_DIR}"
   CROSSROAD_OUT: "crossroad-out"
   APT_CACHE: "$CI_PROJECT_DIR/apt-cache"
+  CRITERION_GIT_SHA1: "e258c4787d91b26c3466f117d678ec7103392607"
 
 ################################################################################
 # Prepare Dockers images
@@ -43,6 +44,13 @@ build-image:
     - echo "RUN apt-get update" >> Dockerfile
     - echo "RUN apt-get install -y --no-install-recommends \\" >> Dockerfile
     - echo "at-spi2-core build-essential desktop-file-utils cmake hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev libopencv-dev librsvg2-dev libraw-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev libcurl4-gnutls-dev python3 ninja-build meson" >> Dockerfile
+    - echo "RUN git clone --recurse-submodules --depth=1 -b bleeding https://github.com/Snaipe/Criterion.git \\" >> Dockerfile
+    - echo " && cd Criterion \\" >> Dockerfile
+    - echo " && git checkout $CRITERION_GIT_SHA1 \\" >> Dockerfile
+    - echo " && meson build --prefix /usr \\" >> Dockerfile
+    - echo " && ninja -C build install \\" >> Dockerfile
+    - echo " && cd .. \\" >> Dockerfile
+    - echo " && rm -rf Criterion" >> Dockerfile
 
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-debian-latest --cache=true --cache-ttl=120h
 
@@ -134,6 +142,12 @@ siril-debian/testing-meson:
   script:
     - meson --prefix="${INSTALL_PREFIX}" ${BUILD_DIR}
     - ninja -C ${BUILD_DIR} install
+    - meson test -C ${BUILD_DIR} -v --no-suite perfs --test-args="--xml=tests_results.xml"
+  artifacts:
+    paths:
+      - ${BUILD_DIR}/tests_results.xml
+    reports:
+      junit: ${BUILD_DIR}/tests_results.xml
 
 ################################################################################
 # WINDOWS 64-bit CI
@@ -340,6 +354,8 @@ flatpak:
 # Analysis
 
 cppcheck:
+  except:
+    - schedules
   stage: analysis
   before_script:
     - apt-get update

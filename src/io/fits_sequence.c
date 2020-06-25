@@ -27,6 +27,7 @@
 #include "fits_sequence.h"
 #include "image_format_fits.h"
 #include "gui/progress_and_log.h"
+#include "core/siril_log.h"
 
 static void *write_worker(void *a);
 static void notify_data_freed();

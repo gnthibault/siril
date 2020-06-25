@@ -2,6 +2,8 @@
 # Meson siril file
 ################################################################################
 
+siril_inc_dir = include_directories('.')
+
 ################################################################################
 # Generate configuration files
 
@@ -12,7 +14,7 @@ configure_file(output : 'config.h',
                configuration : conf_data)
 
 ################################################################################
-# List sources
+# Generate Siril static library with all sources
 
 src_files = [ 
   'algos/background_extraction.c',
@@ -120,6 +122,7 @@ src_files = [
   'gui/image_interactions.c',
   'gui/linear_match.c',
   'gui/message_dialog.c',
+  'gui/menu_gray_psf.c',
   'gui/open_dialog.c',
   'gui/photometric_cc.c',
   'gui/plot.c',
@@ -158,55 +161,40 @@ src_files = [
   'rt/rt_algo.cc'
 ]
 
-################################################################################
-# List dependencies
+siril_lib = static_library('siril',
+                           src_files,
+                           dependencies: externals_dep,
+                           include_directories: siril_inc_dir,
+                           c_args : siril_c_flag,
+                           cpp_args : siril_cpp_flag)
 
-siril_dep = declare_dependency(
-  dependencies: [
-    dbghelp,
-    m_dep,
-    glib_dep,
-    gtk_dep,
-    gsl_dep,
-    opencv_dep,
-    rtprocess_dep,
-    exiv_dep,
-    libconfig_dep,
-    fftw3f_dep,
-    cfitsio_dep,
-    libraw_dep,
-    libtiff_dep,
-    libjpeg_dep,
-    libpng_dep,
-    libcurl_dep,
-    libheif_dep,
-    ffms2_dep,
-    libcurl_dep,
-    openmp_dep,
-    kplot_dep
-  ]
-)
+siril_dep = declare_dependency(link_with: siril_lib,
+                               dependencies: externals_dep,
+                               include_directories: siril_inc_dir)
+
 
 ################################################################################
 # Build gui executable
 
-siril_gui = executable('siril', 'main.c', src_files, win_res,
-                      dependencies : siril_dep,
-                      link_args : siril_link_arg,
-                      c_args : siril_c_flag,
-                      cpp_args : siril_cpp_flag,
-                      install : true
+siril_gui = executable('siril', 'main.c', win_res,
+                       dependencies: siril_dep,
+                       link_whole: siril_lib,
+                       link_args : siril_link_arg,
+                       c_args : siril_c_flag,
+                       cpp_args : siril_cpp_flag,
+                       install : true,
                       )
 
 ################################################################################
 # Build cli executable
 
-siril_cli = executable('siril-cli', 'main-cli.c', src_files, win_res,
-                      dependencies : siril_dep,
-                      link_args : siril_link_arg,
-                      c_args : siril_c_flag,
-                      cpp_args : siril_cpp_flag,
-                      install : true
+siril_cli = executable('siril-cli', 'main-cli.c', win_res,
+                       dependencies: siril_dep,
+                       link_whole: siril_lib,
+                       link_args : siril_link_arg,
+                       c_args : siril_c_flag,
+                       cpp_args : siril_cpp_flag,
+                       install : true
                       )
 
 ################################################################################
@@ -214,3 +202,9 @@ siril_cli = executable('siril-cli', 'main-cli.c', src_files, win_res,
 
 install_data(['gui/siril.css', 'gui/siril_old.css', 'gui/siril3.glade', 'gui/siril-shortcuts.ui'],
              install_dir : siril_datadir)
+
+
+################################################################################
+# Tests
+
+subdir('tests')
