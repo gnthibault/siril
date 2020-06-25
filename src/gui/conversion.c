@@ -392,11 +392,13 @@ void on_treeview_convert_drag_data_received(GtkWidget *widget,
 	list = g_slist_sort(list, (GCompareFunc) strcompare);
 	fill_convert_list(list);
 	if (bad_files) {
-		char *msg = siril_log_message(_("%d %s while drag and drop\n"), bad_files,
-				ngettext("file was ignored", "files were ignored", bad_files));
+		gchar *loc_str = ngettext("%d file was ignored", "%d files were ignored", bad_files);
+		loc_str = g_strdup_printf(loc_str, bad_files);
+		char *msg = siril_log_message(_("%s while drag and drop\n"), loc_str);
 		siril_message_dialog(GTK_MESSAGE_INFO, msg,
 				_("Files with unknown extension cannot be dropped in this area. "
 						"Therefore they are ignored."));
+		g_free(loc_str);
 	}
 	g_strfreev(uris);
 	g_slist_free(list);

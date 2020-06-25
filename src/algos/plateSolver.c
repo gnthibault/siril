@@ -765,7 +765,10 @@ static void print_platesolving_results(Homography H, image_solved image) {
 	char field_y[256] = { 0 };
 
 	/* Matching information */
-	siril_log_message(_("%d pair matches.\n"), H.pair_matched);
+	gchar *str = ngettext("%d pair match.\n", "%d pair matches.\n", H.pair_matched);
+	str = g_strdup_printf(str, H.pair_matched);
+	siril_log_message(str);
+	g_free(str);
 	inliers = 1.0 - ((((double) H.pair_matched - (double) H.Inliers)) / (double) H.pair_matched);
 	siril_log_message(_("Inliers:%*.3f\n"), 14, inliers);
 

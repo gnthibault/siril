@@ -648,8 +648,10 @@ int register_ecc(struct registration_args *args) {
 
 	siril_log_message(_("Registration finished.\n"));
 	if (failed) {
-		gchar *str = ngettext("file was ignored and excluded", "files were ignored and excluded", failed);
-		siril_log_color_message("%d %s\n", "red", failed, str);
+		gchar *str = ngettext("%d file was ignored and excluded\n", "%d files were ignored and excluded\n", failed);
+		str = g_strdup_printf(str, failed);
+		siril_log_color_message(str, "red");
+		g_free(str);
 	}
 	siril_log_color_message(_("Best frame: #%d.\n"), "bold", q_index + 1);
 

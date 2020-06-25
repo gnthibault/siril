@@ -400,10 +400,12 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 
 	if (!args->retval) {
 		siril_log_message(_("Registration finished.\n"));
-		siril_log_color_message("%d %s.\n", "green",
-				args->nb_filtered_images, ngettext("image processed", "images processed", args->nb_filtered_images));
-		siril_log_color_message(_("Total: %d failed, %d registered.\n"), "green",
-				failed, regargs->new_total);
+		gchar *str = ngettext("%d image processed.\n", "%d images processed.\n", args->nb_filtered_images);
+		str = g_strdup_printf(str, args->nb_filtered_images);
+		siril_log_color_message(str, "green");
+		siril_log_color_message(_("Total: %d failed, %d registered.\n"), "green", failed, regargs->new_total);
+
+		g_free(str);
 		if (!regargs->translation_only) {
 			// explicit sequence creation to copy imgparam and regparam
 			create_output_sequence_for_global_star(regargs);
@@ -509,7 +511,10 @@ static void print_alignment_results(Homography H, int filenum, float FWHMx, floa
 
 	/* Matching information */
 	siril_log_color_message(_("Matching stars in image %d: done\n"), "green", filenum);
-	siril_log_message(_("%d pair matches.\n"), H.pair_matched);
+	gchar *str = ngettext("%d pair match.\n", "%d pair matches.\n", H.pair_matched);
+	str = g_strdup_printf(str, H.pair_matched);
+	siril_log_message(str);
+	g_free(str);
 	inliers = 1.0 - ((((double) H.pair_matched - (double) H.Inliers)) / (double) H.pair_matched);
 	siril_log_message(_("Inliers:%*.3f\n"), 11, inliers);
 
