@@ -2,13 +2,13 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-# 
+#
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-06-25 16:51+0200\n"
-"PO-Revision-Date: 2020-06-19 21:58+0200\n"
+"PO-Revision-Date: 2020-06-25 21:45+0200\n"
 "Last-Translator: Stefan Beck <stefan@cometchaser.de>\n"
 "Language-Team: \n"
 "Language: de\n"
@@ -5060,7 +5060,7 @@ msgstr "Error"
 
 #. Matching information
 #: ../src/algos/plateSolver.c:768 ../src/registration/global.c:514
-#, fuzzy, c-format
+#, c-format
 msgid "%d pair match.\n"
 msgid_plural "%d pair matches.\n"
 msgstr[0] "%d korrespondierende Paare.\n"
@@ -6972,11 +6972,11 @@ msgstr "Öffne Datei"
 #: ../src/core/OS_utils.c:531 ../src/core/OS_utils.c:540
 #: ../src/core/OS_utils.c:546 ../src/io/image_formats_libraries.c:1644
 msgid "_Cancel"
-msgstr "_Cancel"
+msgstr "Abbruch"
 
 #: ../src/core/OS_utils.c:532
 msgid "_Open"
-msgstr "_Open"
+msgstr "Öffnen"
 
 #: ../src/core/OS_utils.c:539
 msgid "Add Files"
@@ -6984,7 +6984,7 @@ msgstr "Dateien hinzufügen"
 
 #: ../src/core/OS_utils.c:540
 msgid "_Add"
-msgstr "hinzufügen"
+msgstr "Hinzufügen"
 
 #: ../src/core/OS_utils.c:545
 msgid "Save File"
@@ -7735,9 +7735,9 @@ msgid "This binning is not handled yet\n"
 msgstr "Dieses Binning wird noch nicht unterstützt\n"
 
 #: ../src/gui/callbacks.c:1386
-#, fuzzy, c-format
+#, c-format
 msgid "Welcome to %s"
-msgstr "Wilkommen zu "
+msgstr "Wilkommen zu %s"
 
 #: ../src/gui/callbacks.c:1389
 msgid ""
@@ -7863,11 +7863,15 @@ msgid "Conversion: processing %d files...\n"
 msgstr "Konvertierung: bearbeite %d Dateien... \n"
 
 #: ../src/gui/conversion.c:395
-#, fuzzy, c-format
+#, c-format
 msgid "%d file was ignored while drag and drop\n"
 msgid_plural "%d files were ignored while drag and drop\n"
-msgstr[0] "%d %s Datei(en) wurde(n) beim Drag&Drop-Vorgang ignoriert\n"
-msgstr[1] "%d %s Datei(en) wurde(n) beim Drag&Drop-Vorgang ignoriert\n"
+msgstr[0] ""
+"%d Datei wurde beim Drag und Drop ignoriert\n"
+"\n"
+msgstr[1] ""
+"%d Dateien wurden beim Drag und Drop ignoriert\n"
+"\n"
 
 #: ../src/gui/conversion.c:400
 msgid ""
@@ -7878,18 +7882,18 @@ msgstr ""
 "wurden daher ignoriert."
 
 #: ../src/gui/conversion.c:481
-#, fuzzy, c-format
+#, c-format
 msgid "%d file loaded"
 msgid_plural "%d files loaded"
 msgstr[0] "%d Dateien geladen"
 msgstr[1] "%d Dateien geladen"
 
 #: ../src/gui/conversion.c:486
-#, fuzzy, c-format
+#, c-format
 msgid "%d file selected"
 msgid_plural "%d files selected"
-msgstr[0] "%d Dateien ausgewählt, %s"
-msgstr[1] "%d Dateien ausgewählt, %s"
+msgstr[0] "%d Dateien ausgewählt"
+msgstr[1] "%d Dateien ausgewählt"
 
 #: ../src/gui/dialog_preview.c:81
 msgid "Folder"
@@ -8071,11 +8075,11 @@ msgid "Photometry color calibration in progress..."
 msgstr "Photometrische Farbkalibrierung in arbeit..."
 
 #: ../src/gui/photometric_cc.c:347
-#, fuzzy, c-format
+#, c-format
 msgid "%d star excluded from the calculation"
 msgid_plural "%d stars excluded from the calculation"
-msgstr[0] "%d Sterne von der Berechnung ausgeschlossen.\n"
-msgstr[1] "%d Sterne von der Berechnung ausgeschlossen.\n"
+msgstr[0] "%d Stern von der Berechnung ausgeschlossen"
+msgstr[1] "%d Sterne von der Berechnung ausgeschlossen"
 
 #: ../src/gui/photometric_cc.c:353
 msgid "No valid stars found.\n"
@@ -8227,7 +8231,7 @@ msgid "Average Star Data"
 msgstr "Durchschnittliche Stern Daten"
 
 #: ../src/gui/PSF_list.c:266
-#, fuzzy, c-format
+#, c-format
 msgid "%d star"
 msgid_plural "%d stars"
 msgstr[0] "%d Sterne"
@@ -9768,11 +9772,15 @@ msgid "Registration finished.\n"
 msgstr "Registrierung abgeschlossen.\n"
 
 #: ../src/registration/global.c:403
-#, fuzzy, c-format
+#, c-format
 msgid "%d image processed.\n"
 msgid_plural "%d images processed.\n"
-msgstr[0] "Bildbearbeitung"
-msgstr[1] "Bildbearbeitung"
+msgstr[0] ""
+"%d Bild verarbeitet.\n"
+"\n"
+msgstr[1] ""
+"%d Bilder verarbeitet.\n"
+"\n"
 
 #: ../src/registration/global.c:406
 #, c-format
@@ -9954,11 +9962,15 @@ msgid "Cannot perform ECC alignment for frame %d\n"
 msgstr "Kann ECC Ausrichtung für Frame %d nicht durchführen\n"
 
 #: ../src/registration/registration.c:651
-#, fuzzy, c-format
+#, c-format
 msgid "%d file was ignored and excluded\n"
 msgid_plural "%d files were ignored and excluded\n"
-msgstr[0] "Datei wurde verworfen"
-msgstr[1] "Datei"
+msgstr[0] ""
+"%d Datei wurde ignoriert und ausgeschlossen\n"
+"\n"
+msgstr[1] ""
+"%d Dateien wurde ignoriert und ausgeschlossen\n"
+"\n"
 
 #: ../src/registration/registration.c:755
 #: ../src/registration/registration.c:761
