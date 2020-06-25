@@ -70,7 +70,7 @@ TestSuite(Sorting, .init=common_setup);
 
 Test(Sorting, Median)
 {
-	int size = 0;
+	int size = 1;
 	for (int i = 0; i < NBTRIES; i++, size++) {
 		cr_assert(compare_median_algos(size) == 0, "Failed at size=%u", size);
 	}
