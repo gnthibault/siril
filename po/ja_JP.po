@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-24 22:56+0200\n"
+"POT-Creation-Date: 2020-06-25 16:51+0200\n"
 "PO-Revision-Date: 2020-06-14 00:16+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -1099,7 +1099,7 @@ msgstr ""
 msgid "Velocity: "
 msgstr "速度: "
 
-#: ../src/gui/siril3.glade.h:272 ../src/registration/registration.c:731
+#: ../src/gui/siril3.glade.h:272 ../src/registration/registration.c:733
 msgid "Load a sequence first"
 msgstr ""
 
@@ -4214,14 +4214,14 @@ msgstr ""
 
 #: ../src/algos/colors.c:669 ../src/algos/colors.c:798
 #: ../src/algos/colors.c:834 ../src/algos/colors.c:1028
-#: ../src/algos/colors.c:1039 ../src/gui/photometric_cc.c:650
-#: ../src/gui/photometric_cc.c:668
+#: ../src/algos/colors.c:1039 ../src/gui/photometric_cc.c:653
+#: ../src/gui/photometric_cc.c:671
 msgid "There is no selection"
 msgstr ""
 
 #: ../src/algos/colors.c:670 ../src/algos/colors.c:799
-#: ../src/algos/colors.c:1029 ../src/gui/photometric_cc.c:651
-#: ../src/gui/photometric_cc.c:669
+#: ../src/algos/colors.c:1029 ../src/gui/photometric_cc.c:654
+#: ../src/gui/photometric_cc.c:672
 msgid "Make a selection of the background area"
 msgstr ""
 
@@ -4233,7 +4233,7 @@ msgstr ""
 #: ../src/filters/cosmetic_correction.c:194
 #: ../src/filters/cosmetic_correction.c:434 ../src/filters/saturation.c:154
 #: ../src/filters/saturation.c:216 ../src/gui/histogram.c:736
-#: ../src/gui/photometric_cc.c:395 ../src/gui/statistics_list.c:321
+#: ../src/gui/photometric_cc.c:398 ../src/gui/statistics_list.c:321
 msgid "Error: statistics computation failed.\n"
 msgstr "エラー: 統計計算失敗\n"
 
@@ -4241,7 +4241,7 @@ msgstr "エラー: 統計計算失敗\n"
 msgid "Make a selection of the white reference area"
 msgstr ""
 
-#: ../src/algos/colors.c:900 ../src/gui/photometric_cc.c:391
+#: ../src/algos/colors.c:900 ../src/gui/photometric_cc.c:394
 msgid "Background reference:\n"
 msgstr ""
 
@@ -4249,7 +4249,7 @@ msgstr ""
 msgid "White reference:\n"
 msgstr ""
 
-#: ../src/algos/colors.c:928 ../src/gui/photometric_cc.c:377
+#: ../src/algos/colors.c:928 ../src/gui/photometric_cc.c:380
 msgid "Color calibration factors:\n"
 msgstr ""
 
@@ -4391,88 +4391,89 @@ msgid "Error"
 msgstr "エラー"
 
 #. Matching information
-#: ../src/algos/plateSolver.c:768 ../src/registration/global.c:512
+#: ../src/algos/plateSolver.c:768 ../src/registration/global.c:514
 #, c-format
-msgid "%d pair matches.\n"
-msgstr ""
+msgid "%d pair match.\n"
+msgid_plural "%d pair matches.\n"
+msgstr[0] ""
 
-#: ../src/algos/plateSolver.c:770 ../src/registration/global.c:514
+#: ../src/algos/plateSolver.c:773 ../src/registration/global.c:519
 #, c-format
 msgid "Inliers:%*.3f\n"
 msgstr ""
 
 #. we assume square pixels
-#: ../src/algos/plateSolver.c:776
+#: ../src/algos/plateSolver.c:779
 #, c-format
 msgid "Resolution:%*.3lf arcsec/px\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:790
+#: ../src/algos/plateSolver.c:793
 #, c-format
 msgid "Rotation:%+*.2lf deg %s\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:790
+#: ../src/algos/plateSolver.c:793
 msgid "(flipped)"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:804
+#: ../src/algos/plateSolver.c:807
 #, c-format
 msgid "Focal:%*.2lf mm\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:805
+#: ../src/algos/plateSolver.c:808
 #, c-format
 msgid "Pixel size:%*.2lf µm\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:808
+#: ../src/algos/plateSolver.c:811
 #, c-format
 msgid "Field of view:    %s x %s\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:811
+#: ../src/algos/plateSolver.c:814
 #, c-format
 msgid "Image center: RA: %s, DEC: %s\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:846
+#: ../src/algos/plateSolver.c:849
 #, c-format
 msgid "Catalog NOMAD size: %d objects\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:880
+#: ../src/algos/plateSolver.c:883
 #, c-format
 msgid "Catalog TYCHO-2 size: %d objects\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:914
+#: ../src/algos/plateSolver.c:917
 #, c-format
 msgid "Catalog Gaia DR2 size: %d objects\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:948
+#: ../src/algos/plateSolver.c:951
 #, c-format
 msgid "Catalog PPMXL size: %d objects\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:982
+#: ../src/algos/plateSolver.c:985
 #, c-format
 msgid "Catalog Bright stars size: %d objects\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1016
+#: ../src/algos/plateSolver.c:1019
 #, c-format
 msgid "Catalog APASS size: %d objects\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1069
+#: ../src/algos/plateSolver.c:1072
 msgid ""
 "Plate Solving failed. The image could not be aligned with the reference "
 "stars.\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1072
+#: ../src/algos/plateSolver.c:1075
 msgid ""
 "This is usually because the initial parameters (pixel size, focal length, "
 "initial coordinates) are too far from the real metadata of the image.\n"
@@ -4481,41 +4482,41 @@ msgid ""
 "linear image."
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1121
+#: ../src/algos/plateSolver.c:1124
 #, c-format
 msgid ""
 "There are not enough stars picked in the image. At least %d stars are needed."
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1337
+#: ../src/algos/plateSolver.c:1340
 msgid "There are no keywords stored in the FITS header.\n"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1338
+#: ../src/algos/plateSolver.c:1341
 msgid "No metadata"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1391
+#: ../src/algos/plateSolver.c:1394
 msgid "No coordinates"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1391
+#: ../src/algos/plateSolver.c:1394
 msgid "Please enter object coordinates."
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1399
+#: ../src/algos/plateSolver.c:1402
 msgid "No catalog"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1399
+#: ../src/algos/plateSolver.c:1402
 msgid "Cannot download the online star catalog."
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1415
+#: ../src/algos/plateSolver.c:1418
 msgid "Astrometric solution detected"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1416
+#: ../src/algos/plateSolver.c:1419
 msgid ""
 "The astrometric solution contained in the image will be erased by the "
 "geometric transformation and no undo will be possible."
@@ -4559,7 +4560,7 @@ msgid "Error in layers alignment."
 msgstr ""
 
 #: ../src/compositing/align_rgb.c:135 ../src/compositing/compositing.c:621
-#: ../src/registration/registration.c:994
+#: ../src/registration/registration.c:996
 msgid "Registration complete."
 msgstr "登録完了."
 
@@ -4605,7 +4606,7 @@ msgstr ""
 
 #: ../src/compositing/compositing.c:566 ../src/filters/wavelets.c:255
 #: ../src/filters/wavelets.c:264 ../src/filters/wavelets.c:333
-#: ../src/registration/registration.c:886
+#: ../src/registration/registration.c:888
 msgid "Warning"
 msgstr "警告"
 
@@ -4885,7 +4886,7 @@ msgstr ""
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr ""
 
-#: ../src/core/command.c:1494 ../src/gui/PSF_list.c:498
+#: ../src/core/command.c:1494 ../src/gui/PSF_list.c:499
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr ""
@@ -4981,7 +4982,7 @@ msgid "Global Star Alignment (deep-sky)"
 msgstr ""
 
 #. only TRUE for global registration. Will be updated in this case
-#: ../src/core/command.c:2674 ../src/registration/registration.c:946
+#: ../src/core/command.c:2674 ../src/registration/registration.c:948
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr ""
@@ -6561,15 +6562,15 @@ msgid ""
 "This sequence name already exists!! Please change the name before converting."
 msgstr ""
 
-#: ../src/gui/callbacks.c:679 ../src/gui/photometric_cc.c:520
+#: ../src/gui/callbacks.c:679 ../src/gui/photometric_cc.c:523
 msgid "red"
 msgstr "赤"
 
-#: ../src/gui/callbacks.c:681 ../src/gui/photometric_cc.c:520
+#: ../src/gui/callbacks.c:681 ../src/gui/photometric_cc.c:523
 msgid "green"
 msgstr "緑"
 
-#: ../src/gui/callbacks.c:683 ../src/gui/photometric_cc.c:520
+#: ../src/gui/callbacks.c:683 ../src/gui/photometric_cc.c:523
 msgid "blue"
 msgstr "青"
 
@@ -6763,28 +6764,24 @@ msgid "Conversion: processing %d files...\n"
 msgstr ""
 
 #: ../src/gui/conversion.c:395
-#, c-format
-msgid "%d %s while drag and drop\n"
-msgstr ""
+#, fuzzy, c-format
+msgid "%d file was ignored while drag and drop\n"
+msgid_plural "%d files were ignored while drag and drop\n"
+msgstr[0] "選択"
 
-#: ../src/gui/conversion.c:396
-msgid "file was ignored"
-msgid_plural "files were ignored"
-msgstr[0] ""
-
-#: ../src/gui/conversion.c:398
+#: ../src/gui/conversion.c:400
 msgid ""
 "Files with unknown extension cannot be dropped in this area. Therefore they "
 "are ignored."
 msgstr ""
 
-#: ../src/gui/conversion.c:478
+#: ../src/gui/conversion.c:481
 #, c-format
 msgid "%d file loaded"
 msgid_plural "%d files loaded"
 msgstr[0] ""
 
-#: ../src/gui/conversion.c:483
+#: ../src/gui/conversion.c:486
 #, fuzzy, c-format
 msgid "%d file selected"
 msgid_plural "%d files selected"
@@ -6938,23 +6935,24 @@ msgstr ""
 
 #: ../src/gui/photometric_cc.c:347
 #, c-format
-msgid "%d stars excluded from the calculation.\n"
-msgstr ""
+msgid "%d star excluded from the calculation"
+msgid_plural "%d stars excluded from the calculation"
+msgstr[0] ""
 
-#: ../src/gui/photometric_cc.c:350
+#: ../src/gui/photometric_cc.c:353
 msgid "No valid stars found.\n"
 msgstr ""
 
-#: ../src/gui/photometric_cc.c:520
+#: ../src/gui/photometric_cc.c:523
 #, c-format
 msgid "Normalizing on %s channel.\n"
 msgstr ""
 
-#: ../src/gui/photometric_cc.c:527
+#: ../src/gui/photometric_cc.c:530
 msgid "Photometric Color Calibration applied"
 msgstr ""
 
-#: ../src/gui/photometric_cc.c:529
+#: ../src/gui/photometric_cc.c:532
 msgid "Photometric Color Calibration failed"
 msgstr ""
 
@@ -7080,23 +7078,24 @@ msgstr ""
 
 #: ../src/gui/PSF_list.c:266
 #, c-format
-msgid "%d stars"
-msgstr ""
+msgid "%d star"
+msgid_plural "%d stars"
+msgstr[0] ""
 
-#: ../src/gui/PSF_list.c:271
+#: ../src/gui/PSF_list.c:272
 #, c-format
 msgid "Star %d of %d"
 msgstr ""
 
-#: ../src/gui/PSF_list.c:316
+#: ../src/gui/PSF_list.c:317
 msgid "The file stars.lst has been created.\n"
 msgstr ""
 
-#: ../src/gui/PSF_list.c:323
+#: ../src/gui/PSF_list.c:324
 msgid "Star list file (*.lst)"
 msgstr ""
 
-#: ../src/gui/PSF_list.c:490
+#: ../src/gui/PSF_list.c:491
 msgid "Load an image first, aborted.\n"
 msgstr ""
 
@@ -8451,12 +8450,12 @@ msgstr ""
 msgid "Reference Image: Limiting to %d brightest stars\n"
 msgstr ""
 
-#: ../src/registration/global.c:167 ../src/registration/global.c:533
+#: ../src/registration/global.c:167 ../src/registration/global.c:538
 #, c-format
 msgid "FWHMx:%*.2f %s\n"
 msgstr ""
 
-#: ../src/registration/global.c:168 ../src/registration/global.c:534
+#: ../src/registration/global.c:168 ../src/registration/global.c:539
 #, c-format
 msgid "FWHMy:%*.2f %s\n"
 msgstr ""
@@ -8492,57 +8491,57 @@ msgstr ""
 msgid "Registration finished.\n"
 msgstr ""
 
-#: ../src/registration/global.c:404
-#, fuzzy
-msgid "image processed"
-msgid_plural "images processed"
+#: ../src/registration/global.c:403
+#, fuzzy, c-format
+msgid "%d image processed.\n"
+msgid_plural "%d images processed.\n"
 msgstr[0] "画像処理"
 
-#: ../src/registration/global.c:405
+#: ../src/registration/global.c:406
 #, c-format
 msgid "Total: %d failed, %d registered.\n"
 msgstr ""
 
-#: ../src/registration/global.c:415
+#: ../src/registration/global.c:417
 msgid "Registration aborted.\n"
 msgstr ""
 
-#: ../src/registration/global.c:443
+#: ../src/registration/global.c:445
 msgid "Global star registration"
 msgstr ""
 
 #. Matching information
-#: ../src/registration/global.c:511
+#: ../src/registration/global.c:513
 #, c-format
 msgid "Matching stars in image %d: done\n"
 msgstr ""
 
-#: ../src/registration/global.c:520
+#: ../src/registration/global.c:525
 #, c-format
 msgid "scaleX:%*.3f\n"
 msgstr ""
 
-#: ../src/registration/global.c:521
+#: ../src/registration/global.c:526
 #, c-format
 msgid "scaleY:%*.3f\n"
 msgstr ""
 
-#: ../src/registration/global.c:522
+#: ../src/registration/global.c:527
 #, c-format
 msgid "scale:%*.3f\n"
 msgstr ""
 
-#: ../src/registration/global.c:526
+#: ../src/registration/global.c:531
 #, c-format
 msgid "rotation:%+*.3f deg\n"
 msgstr ""
 
-#: ../src/registration/global.c:531
+#: ../src/registration/global.c:536
 #, c-format
 msgid "dx:%+*.2f px\n"
 msgstr ""
 
-#: ../src/registration/global.c:532
+#: ../src/registration/global.c:537
 #, c-format
 msgid "dy:%+*.2f px\n"
 msgstr ""
@@ -8627,7 +8626,7 @@ msgid "Register: processing image %s"
 msgstr ""
 
 #: ../src/registration/registration.c:429
-#: ../src/registration/registration.c:654
+#: ../src/registration/registration.c:656
 #, c-format
 msgid "Best frame: #%d.\n"
 msgstr ""
@@ -8647,24 +8646,25 @@ msgid "Cannot perform ECC alignment for frame %d\n"
 msgstr ""
 
 #: ../src/registration/registration.c:651
-msgid "file was ignored and excluded"
-msgid_plural "files were ignored and excluded"
+#, c-format
+msgid "%d file was ignored and excluded\n"
+msgid_plural "%d files were ignored and excluded\n"
 msgstr[0] ""
 
-#: ../src/registration/registration.c:753
-#: ../src/registration/registration.c:759
+#: ../src/registration/registration.c:755
+#: ../src/registration/registration.c:761
 msgid "Select images in the sequence"
 msgstr ""
 
-#: ../src/registration/registration.c:755
+#: ../src/registration/registration.c:757
 msgid "Select an area in image first, and select images in the sequence"
 msgstr ""
 
-#: ../src/registration/registration.c:761
+#: ../src/registration/registration.c:763
 msgid "Select an area in image first"
 msgstr ""
 
-#: ../src/registration/registration.c:885
+#: ../src/registration/registration.c:887
 msgid ""
 "All prerequisites are not filled for registration. Select a rectangle "
 "first.\n"

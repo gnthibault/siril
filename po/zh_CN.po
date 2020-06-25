@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril 0.9.8\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-06-24 22:56+0200\n"
+"POT-Creation-Date: 2020-06-25 16:51+0200\n"
 "PO-Revision-Date: 2019-10-11 01:32+0800\n"
 "Last-Translator: yecloud@me.com\n"
 "Language-Team: astronomy.com.cn <yecloud@me.com>\n"
@@ -1191,7 +1191,7 @@ msgstr "彗星速率（像素/小时）。"
 msgid "Velocity: "
 msgstr "速率: "
 
-#: ../src/gui/siril3.glade.h:272 ../src/registration/registration.c:731
+#: ../src/gui/siril3.glade.h:272 ../src/registration/registration.c:733
 #, fuzzy
 msgid "Load a sequence first"
 msgstr "请先载入队列。"
@@ -4606,14 +4606,14 @@ msgstr "%s通道提取：执行中...\n"
 
 #: ../src/algos/colors.c:669 ../src/algos/colors.c:798
 #: ../src/algos/colors.c:834 ../src/algos/colors.c:1028
-#: ../src/algos/colors.c:1039 ../src/gui/photometric_cc.c:650
-#: ../src/gui/photometric_cc.c:668
+#: ../src/algos/colors.c:1039 ../src/gui/photometric_cc.c:653
+#: ../src/gui/photometric_cc.c:671
 msgid "There is no selection"
 msgstr "无效选择"
 
 #: ../src/algos/colors.c:670 ../src/algos/colors.c:799
-#: ../src/algos/colors.c:1029 ../src/gui/photometric_cc.c:651
-#: ../src/gui/photometric_cc.c:669
+#: ../src/algos/colors.c:1029 ../src/gui/photometric_cc.c:654
+#: ../src/gui/photometric_cc.c:672
 msgid "Make a selection of the background area"
 msgstr "请先选择一个背景区域"
 
@@ -4625,7 +4625,7 @@ msgstr "请先选择一个背景区域"
 #: ../src/filters/cosmetic_correction.c:194
 #: ../src/filters/cosmetic_correction.c:434 ../src/filters/saturation.c:154
 #: ../src/filters/saturation.c:216 ../src/gui/histogram.c:736
-#: ../src/gui/photometric_cc.c:395 ../src/gui/statistics_list.c:321
+#: ../src/gui/photometric_cc.c:398 ../src/gui/statistics_list.c:321
 msgid "Error: statistics computation failed.\n"
 msgstr "错误：数据统计计算失败。\n"
 
@@ -4633,7 +4633,7 @@ msgstr "错误：数据统计计算失败。\n"
 msgid "Make a selection of the white reference area"
 msgstr "请先选择一个白点参考区域"
 
-#: ../src/algos/colors.c:900 ../src/gui/photometric_cc.c:391
+#: ../src/algos/colors.c:900 ../src/gui/photometric_cc.c:394
 msgid "Background reference:\n"
 msgstr "背景参考:\n"
 
@@ -4641,7 +4641,7 @@ msgstr "背景参考:\n"
 msgid "White reference:\n"
 msgstr "白点参考:\n"
 
-#: ../src/algos/colors.c:928 ../src/gui/photometric_cc.c:377
+#: ../src/algos/colors.c:928 ../src/gui/photometric_cc.c:380
 msgid "Color calibration factors:\n"
 msgstr "色彩校准因子:\n"
 
@@ -4786,90 +4786,91 @@ msgid "Error"
 msgstr "错误"
 
 #. Matching information
-#: ../src/algos/plateSolver.c:768 ../src/registration/global.c:512
-#, c-format
-msgid "%d pair matches.\n"
-msgstr "%d （星点）模式匹配。\n"
+#: ../src/algos/plateSolver.c:768 ../src/registration/global.c:514
+#, fuzzy, c-format
+msgid "%d pair match.\n"
+msgid_plural "%d pair matches.\n"
+msgstr[0] "%d （星点）模式匹配。\n"
 
-#: ../src/algos/plateSolver.c:770 ../src/registration/global.c:514
+#: ../src/algos/plateSolver.c:773 ../src/registration/global.c:519
 #, c-format
 msgid "Inliers:%*.3f\n"
 msgstr "缩放：%*.3f\n"
 
 #. we assume square pixels
-#: ../src/algos/plateSolver.c:776
+#: ../src/algos/plateSolver.c:779
 #, c-format
 msgid "Resolution:%*.3lf arcsec/px\n"
 msgstr "分辨率：%*.3lf 角秒/像素\n"
 
-#: ../src/algos/plateSolver.c:790
+#: ../src/algos/plateSolver.c:793
 #, c-format
 msgid "Rotation:%+*.2lf deg %s\n"
 msgstr "旋转：%+*.2lf 度 %s\n"
 
-#: ../src/algos/plateSolver.c:790
+#: ../src/algos/plateSolver.c:793
 msgid "(flipped)"
 msgstr "(翻转)"
 
-#: ../src/algos/plateSolver.c:804
+#: ../src/algos/plateSolver.c:807
 #, c-format
 msgid "Focal:%*.2lf mm\n"
 msgstr "焦距：%*.2lf mm\n"
 
-#: ../src/algos/plateSolver.c:805
+#: ../src/algos/plateSolver.c:808
 #, c-format
 msgid "Pixel size:%*.2lf µm\n"
 msgstr "像素尺寸：%*.2lf µm\n"
 
-#: ../src/algos/plateSolver.c:808
+#: ../src/algos/plateSolver.c:811
 #, c-format
 msgid "Field of view:    %s x %s\n"
 msgstr "视场：    %s x %s\n"
 
-#: ../src/algos/plateSolver.c:811
+#: ../src/algos/plateSolver.c:814
 #, c-format
 msgid "Image center: RA: %s, DEC: %s\n"
 msgstr "图像中心： RA: %s, DEC: %s\n"
 
-#: ../src/algos/plateSolver.c:846
+#: ../src/algos/plateSolver.c:849
 #, c-format
 msgid "Catalog NOMAD size: %d objects\n"
 msgstr "星表 NOMAD 样本量： %d 对象\n"
 
-#: ../src/algos/plateSolver.c:880
+#: ../src/algos/plateSolver.c:883
 #, c-format
 msgid "Catalog TYCHO-2 size: %d objects\n"
 msgstr ""
 "星表 TYCHO-2 样本量： %d 对象\n"
 "\n"
 
-#: ../src/algos/plateSolver.c:914
+#: ../src/algos/plateSolver.c:917
 #, c-format
 msgid "Catalog Gaia DR2 size: %d objects\n"
 msgstr "星表 Gaia DR2 样本量： %d 对象\n"
 
-#: ../src/algos/plateSolver.c:948
+#: ../src/algos/plateSolver.c:951
 #, c-format
 msgid "Catalog PPMXL size: %d objects\n"
 msgstr "星表 PPMXL 样本量： %d 对象\n"
 
-#: ../src/algos/plateSolver.c:982
+#: ../src/algos/plateSolver.c:985
 #, c-format
 msgid "Catalog Bright stars size: %d objects\n"
 msgstr "星表 Bright stars 样本量： %d 对象\n"
 
-#: ../src/algos/plateSolver.c:1016
+#: ../src/algos/plateSolver.c:1019
 #, c-format
 msgid "Catalog APASS size: %d objects\n"
 msgstr "星表 APASS 样本量： %d 对象\n"
 
-#: ../src/algos/plateSolver.c:1069
+#: ../src/algos/plateSolver.c:1072
 msgid ""
 "Plate Solving failed. The image could not be aligned with the reference "
 "stars.\n"
 msgstr "解析失败。图像无法与参考坐标相对齐。\n"
 
-#: ../src/algos/plateSolver.c:1072
+#: ../src/algos/plateSolver.c:1075
 msgid ""
 "This is usually because the initial parameters (pixel size, focal length, "
 "initial coordinates) are too far from the real metadata of the image.\n"
@@ -4881,41 +4882,41 @@ msgstr ""
 "您可以尝试使用另外的星表。\n"
 "最后，请注意解析算法只能作用于线性图像。"
 
-#: ../src/algos/plateSolver.c:1121
+#: ../src/algos/plateSolver.c:1124
 #, c-format
 msgid ""
 "There are not enough stars picked in the image. At least %d stars are needed."
 msgstr "图像中没有足够数量的被选星点，至少需要 %d 个星点。"
 
-#: ../src/algos/plateSolver.c:1337
+#: ../src/algos/plateSolver.c:1340
 msgid "There are no keywords stored in the FITS header.\n"
 msgstr "在FITS文件头中无法找到关键字。\n"
 
-#: ../src/algos/plateSolver.c:1338
+#: ../src/algos/plateSolver.c:1341
 msgid "No metadata"
 msgstr "没有元数据"
 
-#: ../src/algos/plateSolver.c:1391
+#: ../src/algos/plateSolver.c:1394
 msgid "No coordinates"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1391
+#: ../src/algos/plateSolver.c:1394
 msgid "Please enter object coordinates."
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1399
+#: ../src/algos/plateSolver.c:1402
 msgid "No catalog"
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1399
+#: ../src/algos/plateSolver.c:1402
 msgid "Cannot download the online star catalog."
 msgstr ""
 
-#: ../src/algos/plateSolver.c:1415
+#: ../src/algos/plateSolver.c:1418
 msgid "Astrometric solution detected"
 msgstr "发现天体测量信息"
 
-#: ../src/algos/plateSolver.c:1416
+#: ../src/algos/plateSolver.c:1419
 msgid ""
 "The astrometric solution contained in the image will be erased by the "
 "geometric transformation and no undo will be possible."
@@ -4967,7 +4968,7 @@ msgid "Error in layers alignment."
 msgstr "通道对齐错误。"
 
 #: ../src/compositing/align_rgb.c:135 ../src/compositing/compositing.c:621
-#: ../src/registration/registration.c:994
+#: ../src/registration/registration.c:996
 msgid "Registration complete."
 msgstr "对齐完成。"
 
@@ -5013,7 +5014,7 @@ msgstr "必须先期载入至少两个通道！\n"
 
 #: ../src/compositing/compositing.c:566 ../src/filters/wavelets.c:255
 #: ../src/filters/wavelets.c:264 ../src/filters/wavelets.c:333
-#: ../src/registration/registration.c:886
+#: ../src/registration/registration.c:888
 msgid "Warning"
 msgstr "警告"
 
@@ -5302,7 +5303,7 @@ msgstr "参数错误。\n"
 msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr "Fill2: select a region or provide x, y, width, height\n"
 
-#: ../src/core/command.c:1494 ../src/gui/PSF_list.c:498
+#: ../src/core/command.c:1494 ../src/gui/PSF_list.c:499
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr "Found %d stars in image, channel #%d\n"
@@ -5403,7 +5404,7 @@ msgid "Global Star Alignment (deep-sky)"
 msgstr "全局星点对齐（深空）"
 
 #. only TRUE for global registration. Will be updated in this case
-#: ../src/core/command.c:2674 ../src/registration/registration.c:946
+#: ../src/core/command.c:2674 ../src/registration/registration.c:948
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "对齐：处理中，使用方法：%s\n"
@@ -7213,15 +7214,15 @@ msgid ""
 "This sequence name already exists!! Please change the name before converting."
 msgstr "队列名称已存在！请更名。"
 
-#: ../src/gui/callbacks.c:679 ../src/gui/photometric_cc.c:520
+#: ../src/gui/callbacks.c:679 ../src/gui/photometric_cc.c:523
 msgid "red"
 msgstr "红色"
 
-#: ../src/gui/callbacks.c:681 ../src/gui/photometric_cc.c:520
+#: ../src/gui/callbacks.c:681 ../src/gui/photometric_cc.c:523
 msgid "green"
 msgstr "绿色"
 
-#: ../src/gui/callbacks.c:683 ../src/gui/photometric_cc.c:520
+#: ../src/gui/callbacks.c:683 ../src/gui/photometric_cc.c:523
 msgid "blue"
 msgstr "蓝色"
 
@@ -7420,28 +7421,23 @@ msgstr "转化：处理中...\n"
 
 #: ../src/gui/conversion.c:395
 #, fuzzy, c-format
-msgid "%d %s while drag and drop\n"
-msgstr "%d个文件于拖拽操作中被忽略\n"
+msgid "%d file was ignored while drag and drop\n"
+msgid_plural "%d files were ignored while drag and drop\n"
+msgstr[0] "%d个文件于拖拽操作中被忽略\n"
 
-#: ../src/gui/conversion.c:396
-#, fuzzy
-msgid "file was ignored"
-msgid_plural "files were ignored"
-msgstr[0] "文件"
-
-#: ../src/gui/conversion.c:398
+#: ../src/gui/conversion.c:400
 msgid ""
 "Files with unknown extension cannot be dropped in this area. Therefore they "
 "are ignored."
 msgstr "未知扩展名的文件无法被加入到这里，因此它们将被忽略。"
 
-#: ../src/gui/conversion.c:478
+#: ../src/gui/conversion.c:481
 #, fuzzy, c-format
 msgid "%d file loaded"
 msgid_plural "%d files loaded"
 msgstr[0] "%d个文件已载入"
 
-#: ../src/gui/conversion.c:483
+#: ../src/gui/conversion.c:486
 #, fuzzy, c-format
 msgid "%d file selected"
 msgid_plural "%d files selected"
@@ -7622,25 +7618,26 @@ msgid "Photometry color calibration in progress..."
 msgstr "测光式色彩校准..."
 
 #: ../src/gui/photometric_cc.c:347
-#, c-format
-msgid "%d stars excluded from the calculation.\n"
-msgstr "%d星点被排除于统计。\n"
+#, fuzzy, c-format
+msgid "%d star excluded from the calculation"
+msgid_plural "%d stars excluded from the calculation"
+msgstr[0] "%d星点被排除于统计。\n"
 
-#: ../src/gui/photometric_cc.c:350
+#: ../src/gui/photometric_cc.c:353
 msgid "No valid stars found.\n"
 msgstr "未能发现有效的星点。\n"
 
-#: ../src/gui/photometric_cc.c:520
+#: ../src/gui/photometric_cc.c:523
 #, c-format
 msgid "Normalizing on %s channel.\n"
 msgstr "归一化于 %s 通道。\n"
 
-#: ../src/gui/photometric_cc.c:527
+#: ../src/gui/photometric_cc.c:530
 #, fuzzy
 msgid "Photometric Color Calibration applied"
 msgstr "测光式色彩校准"
 
-#: ../src/gui/photometric_cc.c:529
+#: ../src/gui/photometric_cc.c:532
 #, fuzzy
 msgid "Photometric Color Calibration failed"
 msgstr "测光式色彩校准"
@@ -7778,24 +7775,25 @@ msgid "Average Star Data"
 msgstr "平均星点数据"
 
 #: ../src/gui/PSF_list.c:266
-#, c-format
-msgid "%d stars"
-msgstr "%d 星点"
+#, fuzzy, c-format
+msgid "%d star"
+msgid_plural "%d stars"
+msgstr[0] "%d 星点"
 
-#: ../src/gui/PSF_list.c:271
+#: ../src/gui/PSF_list.c:272
 #, c-format
 msgid "Star %d of %d"
 msgstr "星点 %d 之于 %d"
 
-#: ../src/gui/PSF_list.c:316
+#: ../src/gui/PSF_list.c:317
 msgid "The file stars.lst has been created.\n"
 msgstr "文件stars.lst已被创建。\n"
 
-#: ../src/gui/PSF_list.c:323
+#: ../src/gui/PSF_list.c:324
 msgid "Star list file (*.lst)"
 msgstr "星表文件 (*.lst)"
 
-#: ../src/gui/PSF_list.c:490
+#: ../src/gui/PSF_list.c:491
 msgid "Load an image first, aborted.\n"
 msgstr "请先载入图像，异常中止。\n"
 
@@ -9193,12 +9191,12 @@ msgstr "参考帧中没有足够数量的星点用于执行对齐\n"
 msgid "Reference Image: Limiting to %d brightest stars\n"
 msgstr "参考帧：最亮恒星极限为%d\n"
 
-#: ../src/registration/global.c:167 ../src/registration/global.c:533
+#: ../src/registration/global.c:167 ../src/registration/global.c:538
 #, c-format
 msgid "FWHMx:%*.2f %s\n"
 msgstr "FWHMx:%*.2f %s\n"
 
-#: ../src/registration/global.c:168 ../src/registration/global.c:534
+#: ../src/registration/global.c:168 ../src/registration/global.c:539
 #, c-format
 msgid "FWHMy:%*.2f %s\n"
 msgstr "FWHMy:%*.2f %s\n"
@@ -9234,57 +9232,57 @@ msgstr "无法执行星点匹配：尝试#%d。跳过图像 %d \n"
 msgid "Registration finished.\n"
 msgstr "对齐结束。\n"
 
-#: ../src/registration/global.c:404
-#, fuzzy
-msgid "image processed"
-msgid_plural "images processed"
+#: ../src/registration/global.c:403
+#, fuzzy, c-format
+msgid "%d image processed.\n"
+msgid_plural "%d images processed.\n"
 msgstr[0] "_图像处理"
 
-#: ../src/registration/global.c:405
+#: ../src/registration/global.c:406
 #, c-format
 msgid "Total: %d failed, %d registered.\n"
 msgstr "总计： %d 失败， %d 已对齐。\n"
 
-#: ../src/registration/global.c:415
+#: ../src/registration/global.c:417
 msgid "Registration aborted.\n"
 msgstr "对齐操作异常中止。\n"
 
-#: ../src/registration/global.c:443
+#: ../src/registration/global.c:445
 msgid "Global star registration"
 msgstr "全局星点对齐"
 
 #. Matching information
-#: ../src/registration/global.c:511
+#: ../src/registration/global.c:513
 #, c-format
 msgid "Matching stars in image %d: done\n"
 msgstr "匹配星点于图像 %d：完成\n"
 
-#: ../src/registration/global.c:520
+#: ../src/registration/global.c:525
 #, c-format
 msgid "scaleX:%*.3f\n"
 msgstr "缩放X轴：%*.3f\n"
 
-#: ../src/registration/global.c:521
+#: ../src/registration/global.c:526
 #, c-format
 msgid "scaleY:%*.3f\n"
 msgstr "缩放Y轴：%*.3f\n"
 
-#: ../src/registration/global.c:522
+#: ../src/registration/global.c:527
 #, c-format
 msgid "scale:%*.3f\n"
 msgstr "缩放：%*.3f\n"
 
-#: ../src/registration/global.c:526
+#: ../src/registration/global.c:531
 #, c-format
 msgid "rotation:%+*.3f deg\n"
 msgstr "旋转：%+*.3f 度\n"
 
-#: ../src/registration/global.c:531
+#: ../src/registration/global.c:536
 #, c-format
 msgid "dx:%+*.2f px\n"
 msgstr "x轴平移：%+*.2f px\n"
 
-#: ../src/registration/global.c:532
+#: ../src/registration/global.c:537
 #, c-format
 msgid "dy:%+*.2f px\n"
 msgstr "y轴平移：%+*.2f px\n"
@@ -9389,7 +9387,7 @@ msgid "Register: processing image %s"
 msgstr "对齐：处理图像 %s"
 
 #: ../src/registration/registration.c:429
-#: ../src/registration/registration.c:654
+#: ../src/registration/registration.c:656
 #, c-format
 msgid "Best frame: #%d.\n"
 msgstr "最佳帧： #%d.\n"
@@ -9409,28 +9407,28 @@ msgid "Cannot perform ECC alignment for frame %d\n"
 msgstr "无法在帧%d中执行ECC对齐\n"
 
 #: ../src/registration/registration.c:651
-#, fuzzy
-msgid "file was ignored and excluded"
-msgid_plural "files were ignored and excluded"
+#, fuzzy, c-format
+msgid "%d file was ignored and excluded\n"
+msgid_plural "%d files were ignored and excluded\n"
 msgstr[0] "文件"
 
-#: ../src/registration/registration.c:753
-#: ../src/registration/registration.c:759
+#: ../src/registration/registration.c:755
+#: ../src/registration/registration.c:761
 #, fuzzy
 msgid "Select images in the sequence"
 msgstr "在队列里选定一幅图像。"
 
-#: ../src/registration/registration.c:755
+#: ../src/registration/registration.c:757
 #, fuzzy
 msgid "Select an area in image first, and select images in the sequence"
 msgstr "先在图像中选定一个区域，再于队列中选定一幅图像。"
 
-#: ../src/registration/registration.c:761
+#: ../src/registration/registration.c:763
 #, fuzzy
 msgid "Select an area in image first"
 msgstr "请先在图像上选择一个区域。"
 
-#: ../src/registration/registration.c:885
+#: ../src/registration/registration.c:887
 msgid ""
 "All prerequisites are not filled for registration. Select a rectangle "
 "first.\n"
@@ -9798,13 +9796,19 @@ msgid "Up-scaling sequence for stacking"
 msgstr "超采样叠加"
 
 #, fuzzy
+#~ msgid "%d file was ignored"
+#~ msgid_plural "%d files were ignored"
+#~ msgstr[0] "文件"
+
+#, fuzzy
+#~ msgid "%d star excluded"
+#~ msgid_plural "%d stars excluded "
+#~ msgstr[0] "%d 帧被排除。\n"
+
+#, fuzzy
 #~ msgid "file loaded"
 #~ msgid_plural "files loaded"
 #~ msgstr[0] "%d个文件已载入"
-
-#, fuzzy
-#~ msgid "%d %s were excluded.\n"
-#~ msgstr "%d 帧被排除。\n"
 
 #, fuzzy
 #~ msgid "%d %s processed.\n"

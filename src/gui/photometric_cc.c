@@ -344,9 +344,9 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 		ngood++;
 	}
 	int excl = nb_stars - ngood;
-	gchar *str = ngettext("%d star excluded", "%d stars excluded ", excl);
+	gchar *str = ngettext("%d star excluded from the calculation", "%d stars excluded from the calculation", excl);
 	str = g_strdup_printf(str, excl);
-	siril_log_message(_("%s from the calculation.\n"), str, excl);
+	siril_log_message(str);
 	g_free(str);
 
 	if (ngood == 0) {
