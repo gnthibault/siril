@@ -773,7 +773,7 @@ char* g_real_path(const char *source) {
 	if (hFile == INVALID_HANDLE_VALUE) {
 		return NULL;
 	}
-	GetFinalPathNameByHandleA(hFile, FilePath, maxchar, 0);
+	GetFinalPathNameByHandleA(hFile, FilePath, MAX_PATH, 0);
 	gFilePath = g_locale_to_utf8(FilePath + 4, -1, NULL, NULL, NULL); // +4 = enleve les 4 caracteres du prefixe "//?/"
 	CloseHandle(hFile);
 	return gFilePath;
