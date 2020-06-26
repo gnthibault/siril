@@ -245,7 +245,7 @@ static int imoper_to_ushort(fits *a, fits *b, image_operator oper, float factor)
 }
 
 int imoper_to_float(fits *a, fits *b, image_operator oper, float factor) {
-	size_t i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
+	size_t n = a->naxes[0] * a->naxes[1] * a->naxes[2];
 	float *result;
 
 	if (memcmp(a->naxes, b->naxes, sizeof a->naxes)) {
@@ -265,7 +265,7 @@ int imoper_to_float(fits *a, fits *b, image_operator oper, float factor) {
 	}
 	else return 1;
 
-	for (i = 0; i < n; ++i) {
+	for (size_t i = 0; i < n; ++i) {
 		float aval = a->type == DATA_USHORT ? ushort_to_float_bitpix(a, a->data[i]) : a->fdata[i];
 		float bval = b->type == DATA_USHORT ? ushort_to_float_bitpix(b, b->data[i]) : b->fdata[i];
 		switch (oper) {
@@ -299,7 +299,7 @@ int imoper_to_float(fits *a, fits *b, image_operator oper, float factor) {
  * returns 0 on success */
 static int imoper_with_factor(fits *a, fits *b, image_operator oper, float factor, gboolean allow_32bits) {
 	// ushort result can only be forced when both input images are ushort
-	if (allow_32bits)
+	if (allow_32bits && !com.pref.force_to_16bit)
 		return imoper_to_float(a, b, oper, factor);
 	else {
 		if (a->type == DATA_USHORT)
