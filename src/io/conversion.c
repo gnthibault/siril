@@ -761,25 +761,16 @@ static int ser_conversion(const char *src_filename, int index,
 #ifdef _WIN32
 char* g_real_path(const char *source) {
 	HANDLE hFile;
-	DWORD maxchar = 2048;
-	TCHAR *FilePath;
+	TCHAR FilePath[MAX_PATH];
 	gchar *gFilePath;
 
 	if (!(GetFileAttributesA(source) & FILE_ATTRIBUTE_REPARSE_POINT)) { /* Ce n'est pas un lien symbolique , je sors */
 		return NULL;
 	}
 
-	FilePath = malloc(maxchar + 1);
-	if (!FilePath) {
-		PRINT_ALLOC_ERR;
-		return NULL;
-	}
-	FilePath[0] = 0;
-
 	hFile = CreateFile(source, GENERIC_READ, FILE_SHARE_READ, NULL,
 			OPEN_EXISTING, 0, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
-		free(FilePath);
 		return NULL;
 	}
 	GetFinalPathNameByHandleA(hFile, FilePath, maxchar, 0);
