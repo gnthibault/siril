@@ -29,6 +29,7 @@
 #include "image_display.h"
 #include "callbacks.h"
 #include "progress_and_log.h"
+#include "message_dialog.h"
 
 mouse_status_enum mouse_status;
 
@@ -220,7 +221,10 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 	if (inimage((GdkEvent *) event)) {
 		/* click on RGB image */
 		if (widget == com.vport[RGB_VPORT]) {
-			if (event->button == 3) {	// right click
+			if (event->button == 1) {	// left click
+				siril_message_dialog(GTK_MESSAGE_INFO, _("Only for visualization"),
+						_("The RGB tab is only for visualization. Operations must be done on R, G, and B channels"));
+			} else if (event->button == 3) {	// right click
 				do_popup_rgbmenu(widget, event);
 				return TRUE;
 			}
