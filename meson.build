@@ -37,6 +37,8 @@ project('siril',
   ],
 )
 
+enable_openmp = get_option('openmp')
+
 # General version
 siril_version = meson.project_version()
 
@@ -207,15 +209,17 @@ endif
 ## Optionnal dependencies
 
 openmp_dep = []
-if platform_osx
-  if get_option('openmp_darwin')
+if enable_openmp
+  if platform_osx
     message('Set OpenMP flags for macOS')
     siril_link_arg += ['-lomp']
     siril_cpp_flag += ['-Xpreprocessor', '-fopenmp']
     siril_c_flag += ['-Xpreprocessor', '-fopenmp']
+  else
+	openmp_dep = dependency('openmp', required : false)
   endif
 else
-  openmp_dep = dependency('openmp', required : false)
+  message('OpenMP disabled')
 endif
 
 libraw_dep = dependency('libraw', required : false)
