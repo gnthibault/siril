@@ -967,7 +967,7 @@ gboolean on_color_button_press_event(GtkDrawingArea *widget, GdkEventButton *eve
 		if (layers[layer]->color_w == widget)
 			break;
 	if (!layers[layer]) return FALSE;
-	if (event->button == 3) {	// right click
+	if (event->button == GDK_BUTTON_SECONDARY) {	// right click
 		current_layer_color_choosing = layer;
 		color_quick_edit = 1;
 		memcpy(&qe_ref_color, &layers[layer]->color, sizeof(GdkRGBA));
@@ -984,13 +984,13 @@ gboolean on_color_button_release_event(GtkDrawingArea *widget, GdkEventButton *e
 			break;
 	if (!layers[layer]) return FALSE;
 
-	if (event->button == 1) {	// left click
+	if (event->button == GDK_BUTTON_PRIMARY) {	// left click
 		current_layer_color_choosing = layer;
 		gtk_color_chooser_set_rgba(GTK_COLOR_CHOOSER(color_dialog), &layers[layer]->color);
 		gtk_editable_delete_text(GTK_EDITABLE(wl_entry), 0, -1);
 		gtk_combo_box_set_active(GTK_COMBO_BOX(box), -1);
 		gtk_widget_show(GTK_WIDGET(color_dialog));
-	} else if (event->button == 3) {	// right click
+	} else if (event->button == GDK_BUTTON_SECONDARY) {	// right click
 		if (has_fit(current_layer_color_choosing))
 			update_result(1);
 		current_layer_color_choosing = 0;

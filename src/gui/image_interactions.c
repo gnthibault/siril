@@ -221,10 +221,10 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 	if (inimage((GdkEvent *) event)) {
 		/* click on RGB image */
 		if (widget == com.vport[RGB_VPORT]) {
-			if (event->button == 1) {	// left click
+			if (event->button == GDK_BUTTON_PRIMARY) {	// left click
 				siril_message_dialog(GTK_MESSAGE_INFO, _("Only for visualization"),
 						_("The RGB tab is only for visualization. Operations must be done on R, G, and B channels"));
-			} else if (event->button == 3) {	// right click
+			} else if (event->button == GDK_BUTTON_SECONDARY) {	// right click
 				do_popup_rgbmenu(widget, event);
 				return TRUE;
 			}
@@ -232,7 +232,7 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 		}
 
 		/* else, click on gray image */
-		if (event->button == 1) {	// left click
+		if (event->button == GDK_BUTTON_PRIMARY) {	// left click
 			if (mouse_status == MOUSE_ACTION_SELECT_REG_AREA) {
 				if (com.drawing) {
 					com.drawing = FALSE;
@@ -288,7 +288,7 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 					redraw_previews();
 				}
 			}
-		} else if (event->button == 3) {	// right click
+		} else if (event->button == GDK_BUTTON_SECONDARY) {	// right click
 			if (mouse_status == MOUSE_ACTION_DRAW_SAMPLES) {
 				double zoom = get_zoom_val();
 				point pt;
@@ -332,7 +332,7 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 		else
 			zoomedY = event->y / zoom;
 	}
-	if (event->button == 1) {	// left click
+	if (event->button == GDK_BUTTON_PRIMARY) {	// left click
 		if (com.drawing && mouse_status == MOUSE_ACTION_SELECT_REG_AREA) {
 			com.drawing = FALSE;
 			/* finalize selection rectangle coordinates */
@@ -373,7 +373,7 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 			gtk_widget_queue_draw(widget);
 		}
 		is_shift_on = FALSE;
-	} else if (event->button == 2) {	// middle click
+	} else if (event->button == GDK_BUTTON_MIDDLE) {	// middle click
 		if (inimage((GdkEvent *) event)) {
 			double dX, dY, w, h;
 
@@ -396,7 +396,7 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 			}
 		}
 
-	} else if (event->button == 3) {	// right click
+	} else if (event->button == GDK_BUTTON_SECONDARY) {	// right click
 		if (mouse_status != MOUSE_ACTION_DRAW_SAMPLES) {
 			do_popup_graymenu(widget, NULL);
 		}
