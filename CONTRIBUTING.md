@@ -27,8 +27,8 @@ When you are creating a bug report, please include as many details as possible. 
 
 We are looking for volunteer translators, for the software and for the documentation. No programming experience is required; you just need to download [ Poedit ](https://poedit.net/) for your OS, and generate *.pot and *.po files by making:
 
-    cd po
-    make update-po
+    ninja siril-pot -C _build
+    ninja siril-update-po -C _build
     
 Once done, you can either open the *.pot file for a new translation or the *.po file of the language you want to contribute to an existing one. Then, you can open a merge request or a bug report and attach the new *.po file. We do not need *.mo that are compiled files.
 
