@@ -43,7 +43,8 @@ src_files = [
   'compositing/compositing.c',
   'compositing/filters.c',
   
-  'core/arithm.c', 
+  'core/arithm.c',
+  'core/atomic.cpp',
   'core/siril_app_dirs.c', 
   'core/preprocess.c', 
   'core/siril_cmd_help.c', 

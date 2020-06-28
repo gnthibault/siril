@@ -16,6 +16,7 @@
 #include <libintl.h>
 
 #include "gui/preferences.h"
+#include "core/atomic.h"
 
 #define _(String) gettext (String)
 #define gettext_noop(String) String
@@ -688,7 +689,7 @@ struct image_stats {
 	double mean, median, sigma, avgDev, mad, sqrtbwmv,
 	       location, scale, min, max, normValue, bgnoise;
 
-	int _nb_refs;	// reference counting for data management
+	atomic_int* _nb_refs;	// reference counting for data management
 };
 
 typedef struct Homo {

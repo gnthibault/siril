@@ -66,6 +66,8 @@ siril_common_SOURCES = \
 	compositing/filters.h \
 	core/arithm.c \
 	core/arithm.h \
+	core/atomic.cpp \
+	core/atomic.h \
 	core/command.c \
 	core/command.h \
 	core/command_def.h \
