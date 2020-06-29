@@ -97,7 +97,7 @@ sequence * readseqfile(const char *name){
 
 	seq = calloc(1, sizeof(sequence));
 	initialize_sequence(seq, TRUE);
-	i=0;
+	i = 0;
 	while (fgets(line, 511, seqfile)) {
 		switch (line[0]) {
 			case '#':
