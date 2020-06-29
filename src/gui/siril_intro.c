@@ -33,7 +33,7 @@ const SirilTipIntro intro_tips[] = {
 		{"headerbar", N_("Welcome to the newest version of Siril. Please take a moment to read some tips about this release"), 8},
 		{"notebook1", N_("All of the application windows have been merged into this window. In the left panel, you can see the image preview with the Red, Green, and Blue channels and the RGB Mix"), 9},
 		{"labelRGB", N_("The RGB tab is only for visualization. Operations must be done on R, G, and B channels"), 8},
-		{"label22", N_("Pre-processing steps are grouped together in the right panel. You can reach each step with the F1…F7 keys"), 8},
+		{"label22", N_("Pre-processing steps are grouped together in the right panel. You can reach each step with the F1...F7 keys"), 8},
 		{"button_paned", N_("This button will hide the right panel. You can also try the full screen mode (Control - F)"), 8},
 		{"hamburger-menu", N_("Press F10 or click on this button to open the menu. Here you can find the shortcut list and the preferences dialog where many of the options are available"), 9},
 		{"cwd_button", N_("You can now change your working directory by hitting this button. The working directory is shown right below the title at the center of the headerbar"), 9},

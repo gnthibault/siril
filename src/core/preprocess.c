@@ -222,7 +222,7 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 			prepro->normalisation = stat->mean;
 			free_stats(stat);
 
-			siril_log_message(_("Normalisation value auto evaluated: %.2f\n"),
+			siril_log_message(_("Normalisation value auto evaluated: %.3f\n"),
 					prepro->normalisation);
 		}
 	}
