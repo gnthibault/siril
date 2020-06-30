@@ -59,7 +59,7 @@ clock_t perf_test(double (*function)(WORD *data, size_t datasize),
 	free(data);
 	free(data_backup);
 
-	return t_end - t_start;;
+	return t_end - t_start;
 }
 
 void MeasureSmall()

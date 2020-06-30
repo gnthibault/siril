@@ -415,7 +415,7 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 						image_index, layer);
 			if (oldstat) {
 				stats_set_default_values(oldstat);
-				atomic_int_decref(oldstat->_nb_refs);;
+				atomic_int_decref(oldstat->_nb_refs);
 			}
 			return NULL;
 		}
