@@ -200,6 +200,8 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 		allocate_stats(&stat);
 		if (!stat) return NULL;
 		stat_is_local = 1;
+	} else {
+		atomic_int_incref(stat->_nb_refs);
 	}
 
 	if (fit) {
