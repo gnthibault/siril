@@ -17,10 +17,7 @@
  * You should have received a copy of the GNU General Public License
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
 */
-#ifdef _WIN32
-#include <windows.h>
-#include <fileapi.h>
-#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -46,6 +43,9 @@
 
 #ifdef HAVE_LIBRAW
 #include <libraw/libraw_version.h>
+#endif
+#ifdef _WIN32
+#include <windows.h>
 #endif
 
 static unsigned int supported_filetypes = 0;	// initialized by initialize_converters()
