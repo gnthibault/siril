@@ -18,6 +18,14 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -43,9 +51,6 @@
 
 #ifdef HAVE_LIBRAW
 #include <libraw/libraw_version.h>
-#endif
-#ifdef _WIN32
-#include <windows.h>
 #endif
 
 static unsigned int supported_filetypes = 0;	// initialized by initialize_converters()
