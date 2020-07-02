@@ -19,6 +19,7 @@
 */
 #ifdef _WIN32
 #include <windows.h>
+#include <fileapi.h>
 #endif
 #include <stdio.h>
 #include <stdlib.h>
