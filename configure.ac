@@ -272,6 +272,8 @@ case "$host_os" in
 	mingw*)
 		platform=windows
 		PATHSEP=';'
+		CFLAGS=" $CFLAGS -D_WIN32_WINNT=0x0600 -DWINVER=0x0600 "
+		CXXFLAGS=" $CXXFLAGS -D_WIN32_WINNT=0x0600 -DWINVER=0x0600 "
 		case "$host_cpu" in
 			x86_64)
 				;;
