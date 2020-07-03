@@ -789,7 +789,7 @@ char* g_real_path(const char *source) {
 	hFile = CreateFileW(wsource, GENERIC_READ, FILE_SHARE_READ, NULL,
 			OPEN_EXISTING, 0, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
-		free(wFilePath);
+		g_free(wFilePath);
 		g_free(wsource);
 		return NULL;
 	}

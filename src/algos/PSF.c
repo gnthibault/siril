@@ -738,3 +738,9 @@ void fwhm_to_arcsec_if_needed(fits* fit, fitted_PSF *result) {
 	result->units = "\"";
 }
 
+void fwhm_to_pixels(fitted_PSF *result) {
+	result->fwhmx = sqrt(result->sx * 0.5) * _2_SQRT_2_LOG2;
+	result->fwhmy = sqrt(result->sy * 0.5) * _2_SQRT_2_LOG2;
+	result->units = "px";
+}
+

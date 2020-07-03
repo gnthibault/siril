@@ -44,7 +44,7 @@
 
 static GtkWidget *drawingPlot = NULL, *sourceCombo = NULL, *combo = NULL,
 		*varCurve = NULL, *buttonExport = NULL, *buttonClearAll = NULL,
-		*buttonClearLatest = NULL;
+		*buttonClearLatest = NULL, *arcsec = NULL;
 static pldata *plot_data;
 static struct kpair ref;
 static gboolean is_fwhm = FALSE, use_photometry = FALSE, requires_color_update =
@@ -54,6 +54,7 @@ static gchar *xlabel = NULL;
 static enum photmetry_source selected_source = ROUNDNESS;
 static int julian0 = 0;
 static gnuplot_ctrl *gplot = NULL;
+static gboolean is_arcsec = FALSE;
 
 static void update_ylabel();
 static void set_colors(struct kplotcfg *cfg);
@@ -209,6 +210,10 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 				plot->data[j].y = psfs[i]->fwhmy / psfs[i]->fwhmx;
 				break;
 			case FWHM:
+				if (is_arcsec)
+					fwhm_to_arcsec_if_needed(&gfit, psfs[i]);
+				else
+					fwhm_to_pixels(psfs[i]);
 				plot->data[j].y = psfs[i]->fwhmx;
 				break;
 			case AMPLITUDE:
@@ -489,6 +494,7 @@ void on_plotSourceCombo_changed(GtkComboBox *box, gpointer user_data) {
 	use_photometry = gtk_combo_box_get_active(GTK_COMBO_BOX(box));
 	gtk_widget_set_visible(combo, use_photometry);
 	gtk_widget_set_visible(varCurve, use_photometry);
+	gtk_widget_set_visible(arcsec, use_photometry);
 	drawPlot();
 }
 
@@ -507,6 +513,7 @@ void reset_plot() {
 		gtk_widget_set_visible(sourceCombo, FALSE);
 		gtk_widget_set_visible(combo, FALSE);
 		gtk_widget_set_visible(varCurve, FALSE);
+		gtk_widget_set_visible(arcsec, FALSE);
 		gtk_widget_set_sensitive(buttonExport, FALSE);
 		gtk_widget_set_sensitive(buttonClearLatest, FALSE);
 		gtk_widget_set_sensitive(buttonClearAll, FALSE);
@@ -533,6 +540,7 @@ void drawPlot() {
 		drawingPlot = lookup_widget("DrawingPlot");
 		combo = lookup_widget("plotCombo");
 		varCurve = lookup_widget("varCurvePhotometry");
+		arcsec = lookup_widget("arcsecPhotometry");
 		sourceCombo = lookup_widget("plotSourceCombo");
 		buttonExport = lookup_widget("ButtonSaveCSV");
 		buttonClearAll = lookup_widget("clearAllPhotometry");
@@ -737,9 +745,18 @@ void on_plotCombo_changed(GtkComboBox *box, gpointer user_data) {
 	drawPlot();
 }
 
+void on_arcsecPhotometry_toggled(GtkToggleButton *button, gpointer user_data) {
+	is_arcsec = gtk_toggle_button_get_active(button);
+	drawPlot();
+}
+
 static void update_ylabel() {
 	selected_source = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
 	gtk_widget_set_sensitive(varCurve, selected_source == MAGNITUDE);
+	gboolean arcsec_is_ok = (gfit.focal_length > 0.0 && gfit.pixel_size_x > 0.f
+			&& gfit.pixel_size_y > 0.f && gfit.binning_x > 0
+			&& gfit.binning_y > 0);
+	gtk_widget_set_sensitive(arcsec, selected_source == FWHM && arcsec_is_ok);
 	switch (selected_source) {
 	case ROUNDNESS:
 		ylabel = _("Star roundness (1 is round)");

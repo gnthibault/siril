@@ -44,6 +44,7 @@
 #include "image_interactions.h"
 
 #include "callbacks.h"
+#include "plot.h"
 #include "preferences.h"
 #include "message_dialog.h"
 #include "PSF_list.h"
@@ -195,6 +196,7 @@ static void update_fwhm_units_ok() {
 	update = gfit.focal_length > 0.0 && gfit.pixel_size_x > 0.0f && gfit.pixel_size_y > 0.0f;
 
 	gtk_widget_set_visible(label_ok, update);
+	drawPlot();
 }
 
 
@@ -459,7 +461,7 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("header_save_as_button"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("header_save_button"), is_a_single_image_loaded && com.uniq->fileexist);
 	gtk_widget_set_sensitive(lookup_widget("info_menu_headers"), any_image_is_loaded && gfit.header != NULL);
-	gtk_widget_set_sensitive(lookup_widget("info_menu_informations"), is_a_single_image_loaded);
+	gtk_widget_set_sensitive(lookup_widget("info_menu_informations"), any_image_is_loaded);
 
 	/* Image processing Menu */
 	gtk_widget_set_sensitive(lookup_widget("removegreen"), is_a_singleRGB_image_loaded);

@@ -5399,21 +5399,19 @@ To be enabled, the reference image must have been explicitly set and already dis
                                 <property name="can_focus">False</property>
                                 <property name="spacing">5</property>
                                 <child>
-                                  <object class="GtkComboBoxText" id="plotSourceCombo">
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Select the source of graph information.</property>
-                                    <property name="active">0</property>
-                                    <items>
-                                      <item translatable="yes">Registration</item>
-                                      <item translatable="yes">Photometry</item>
-                                    </items>
-                                    <signal name="changed" handler="on_plotSourceCombo_changed" swapped="no"/>
+                                  <object class="GtkButton" id="varCurvePhotometry">
+                                    <property name="label" translatable="yes" comments="This is the button for plotting variable star graph">Light Curve</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <property name="tooltip_text" translatable="yes">Plot a graph of the variable star. The variable star must be analysed in first, then other PSF are applied to references. A maximum of 6 references is allowed. To enable this function, choose 'Magnitude' in the type of displayed graph.
+WARNING: gnuplot must be installed.</property>
+                                    <property name="halign">center</property>
+                                    <signal name="clicked" handler="on_varCurvePhotometry_clicked" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
-                                    <property name="padding">6</property>
-                                    <property name="pack_type">end</property>
                                     <property name="position">0</property>
                                   </packing>
                                 </child>
@@ -5437,23 +5435,41 @@ To be enabled, the reference image must have been explicitly set and already dis
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
                                     <property name="pack_type">end</property>
-                                    <property name="position">1</property>
+                                    <property name="position">0</property>
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="varCurvePhotometry">
-                                    <property name="label" translatable="yes" comments="This is the button for plotting variable star graph">Light Curve</property>
-                                    <property name="sensitive">False</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="tooltip_text" translatable="yes">Plot a graph of the variable star. The variable star must be analysed in first, then other PSF are applied to references. A maximum of 6 references is allowed. To enable this function, choose 'Magnitude' in the type of displayed graph.
-WARNING: gnuplot must be installed.</property>
-                                    <property name="halign">center</property>
-                                    <signal name="clicked" handler="on_varCurvePhotometry_clicked" swapped="no"/>
+                                  <object class="GtkComboBoxText" id="plotSourceCombo">
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Select the source of graph information.</property>
+                                    <property name="active">0</property>
+                                    <items>
+                                      <item translatable="yes">Registration</item>
+                                      <item translatable="yes">Photometry</item>
+                                    </items>
+                                    <signal name="changed" handler="on_plotSourceCombo_changed" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
+                                    <property name="padding">6</property>
+                                    <property name="pack_type">end</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="arcsecPhotometry">
+                                    <property name="label" translatable="yes">arcsec</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="on_arcsecPhotometry_toggled" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="pack_type">end</property>
                                     <property name="position">2</property>
                                   </packing>
                                 </child>
