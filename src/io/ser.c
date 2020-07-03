@@ -856,6 +856,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 
 	fit->bitpix = (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8) ? BYTE_IMG : USHORT_IMG;
 	fit->orig_bitpix = fit->bitpix;
+	fit->binning_x = fit->binning_y = 1;
 
 	/* If the user checks the SER CFA box, the video is opened in B&W
 	 * RGB and BGR are not coming from raw data. In consequence CFA does
