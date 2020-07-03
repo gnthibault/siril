@@ -618,8 +618,7 @@ void on_varCurvePhotometry_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void free_photometry_set(sequence *seq, int set) {
-	int j;
-	for (j = 0; j < seq->number; j++) {
+	for (int j = 0; j < seq->number; j++) {
 		if (seq->photometry[set][j])
 			free(seq->photometry[set][j]);
 	}
