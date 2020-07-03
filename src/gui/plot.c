@@ -39,6 +39,7 @@
 #include "algos/PSF.h"
 #include "io/ser.h"
 #include "gui/gnuplot_i/gnuplot_i.h"
+#include "gui/PSF_list.h"
 
 #define XLABELSIZE 15
 
@@ -58,6 +59,7 @@ static gboolean is_arcsec = FALSE;
 
 static void update_ylabel();
 static void set_colors(struct kplotcfg *cfg);
+static void free_colors(struct kplotcfg *cfg);
 void on_GtkEntryCSV_changed(GtkEditable *editable, gpointer user_data);
 
 static pldata *alloc_plot_data(int size) {
@@ -640,8 +642,8 @@ void on_clearLatestPhotometry_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_clearAllPhotometry_clicked(GtkButton *button, gpointer user_data) {
-	int i;
-	for (i = 0; i < MAX_SEQPSF && com.seq.photometry[i]; i++) {
+	clear_stars_list();
+	for (int i = 0; i < MAX_SEQPSF && com.seq.photometry[i]; i++) {
 		free_photometry_set(&com.seq, i);
 	}
 	reset_plot();
@@ -730,7 +732,7 @@ gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 			redraw(com.cvport, REMAP_ONLY);
 			requires_color_update = FALSE;
 		}
-
+		free_colors(&cfgplot);
 		kplot_free(p);
 		kdata_destroy(d1);
 		kdata_destroy(ref_d);
@@ -822,4 +824,8 @@ static void set_colors(struct kplotcfg *cfg) {
 	cfg->clrs[6].rgba[0] = 0xe5 / 255.0;
 	cfg->clrs[6].rgba[1] = 0x1e / 255.0;
 	cfg->clrs[6].rgba[2] = 0x10 / 255.0;
+}
+
+static void free_colors(struct kplotcfg *cfg) {
+	free(cfg->clrs);
 }
