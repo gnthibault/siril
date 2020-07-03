@@ -5399,6 +5399,25 @@ To be enabled, the reference image must have been explicitly set and already dis
                                 <property name="can_focus">False</property>
                                 <property name="spacing">5</property>
                                 <child>
+                                  <object class="GtkComboBoxText" id="plotSourceCombo">
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Select the source of graph information.</property>
+                                    <property name="active">0</property>
+                                    <items>
+                                      <item translatable="yes">Registration</item>
+                                      <item translatable="yes">Photometry</item>
+                                    </items>
+                                    <signal name="changed" handler="on_plotSourceCombo_changed" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="padding">6</property>
+                                    <property name="pack_type">end</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
                                   <object class="GtkButton" id="varCurvePhotometry">
                                     <property name="label" translatable="yes" comments="This is the button for plotting variable star graph">Light Curve</property>
                                     <property name="sensitive">False</property>
@@ -5412,7 +5431,7 @@ WARNING: gnuplot must be installed.</property>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
-                                    <property name="position">0</property>
+                                    <property name="position">1</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5434,25 +5453,6 @@ WARNING: gnuplot must be installed.</property>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
-                                    <property name="pack_type">end</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkComboBoxText" id="plotSourceCombo">
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Select the source of graph information.</property>
-                                    <property name="active">0</property>
-                                    <items>
-                                      <item translatable="yes">Registration</item>
-                                      <item translatable="yes">Photometry</item>
-                                    </items>
-                                    <signal name="changed" handler="on_plotSourceCombo_changed" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">6</property>
                                     <property name="pack_type">end</property>
                                     <property name="position">1</property>
                                   </packing>

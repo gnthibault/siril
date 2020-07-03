@@ -1352,10 +1352,6 @@ void initialize_all_GUI(gchar *supported_files) {
 	/* register some callbacks */
 	register_selection_update_callback(update_export_crop_label);
 
-	/* initialization of the binning parameters */
-	GtkComboBox *binning = GTK_COMBO_BOX(lookup_widget("combobinning"));
-	gtk_combo_box_set_active(binning, 0);
-
 	/* initialization of some paths */
 	initialize_path_directory();
 
@@ -1567,6 +1563,7 @@ void on_combobinning_changed(GtkComboBox *box, gpointer user_data) {
 		default:
 			fprintf(stderr, "Should not happen\n");
 	}
+	update_fwhm_units_ok();
 }
 
 void on_info_menu_informations_clicked(GtkButton *button, gpointer user_data) {
