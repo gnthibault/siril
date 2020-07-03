@@ -239,21 +239,10 @@ criterion_dep = dependency('criterion', required : false)
 ## General and package configuration
 conf_data = configuration_data()
 
-if not stable
-  conf_data.set('SIRIL_UNSTABLE', 1)
-endif
-
-if get_option('buildtype').startswith('debug')
-  conf_data.set('SIRIL_OUTPUT_DEBUG', 1)
-endif
-
-if relocatable_bundle
-  conf_data.set('ENABLE_RELOCATABLE_RESOURCES', 1)
-endif
-
-if platform_osx
-  conf_data.set('OS_OSX', 1)
-endif
+conf_data.set('SIRIL_UNSTABLE', stable ? false : 1)
+conf_data.set('SIRIL_OUTPUT_DEBUG', get_option('buildtype').startswith('debug') ? 1 : false)
+conf_data.set('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle ? 1 : false)
+conf_data.set('OS_OSX', platform_osx ? 1 : false)
 
 conf_data.set_quoted('PACKAGE', meson.project_name(), description : 'Name of package.')
 conf_data.set_quoted('PACKAGE_NAME', meson.project_name(), description : 'Define to the full name of this package.')
