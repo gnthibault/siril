@@ -2159,40 +2159,23 @@ int process_extractHa(int nb) {
 	}
 
 	/* Get Bayer informations from header if available */
-	sensor_pattern bayer;
+	sensor_pattern pattern;
 
 	if (com.pref.debayer.use_bayer_header) {
-		bayer = retrieveBayerPattern(gfit.bayer_pattern);
+		pattern = retrieveBayerPattern(gfit.bayer_pattern);
 	} else {
-		bayer = com.pref.debayer.bayer_pattern;
+		pattern = com.pref.debayer.bayer_pattern;
 	}
-	if (com.pref.debayer.up_bottom) {
-		switch(bayer) {
-		case BAYER_FILTER_RGGB:
-			bayer = BAYER_FILTER_BGGR;
-			break;
-		case BAYER_FILTER_BGGR:
-			bayer = BAYER_FILTER_RGGB;
-			break;
-		case BAYER_FILTER_GBRG:
-			bayer = BAYER_FILTER_GRBG;
-			break;
-		case BAYER_FILTER_GRBG:
-			bayer = BAYER_FILTER_GBRG;
-			break;
-		default:
-			printf("XTRANS is not handled.\n");
-		}
-	}
+	retrieve_Bayer_pattern(&gfit, &pattern);
 
 	gchar *Ha = g_strdup_printf("Ha_%s%s", filename, com.pref.ext);
 	if (gfit.type == DATA_USHORT) {
-		if (!(ret = extractHa_ushort(&gfit, &f_Ha, bayer))) {
+		if (!(ret = extractHa_ushort(&gfit, &f_Ha, pattern))) {
 			ret = save1fits16(Ha, &f_Ha, 0);
 		}
 	}
 	else if (gfit.type == DATA_FLOAT) {
-		if (!(ret = extractHa_float(&gfit, &f_Ha, bayer))) {
+		if (!(ret = extractHa_float(&gfit, &f_Ha, pattern))) {
 			ret = save1fits32(Ha, &f_Ha, 0);
 		}
 	} else return 1;
@@ -2225,42 +2208,25 @@ int process_extractHaOIII(int nb) {
 	}
 
 	/* Get Bayer informations from header if available */
-	sensor_pattern bayer;
+	sensor_pattern pattern;
 
 	if (com.pref.debayer.use_bayer_header) {
-		bayer = retrieveBayerPattern(gfit.bayer_pattern);
+		pattern = retrieveBayerPattern(gfit.bayer_pattern);
 	} else {
-		bayer = com.pref.debayer.bayer_pattern;
+		pattern = com.pref.debayer.bayer_pattern;
 	}
-	if (com.pref.debayer.up_bottom) {
-		switch(bayer) {
-		case BAYER_FILTER_RGGB:
-			bayer = BAYER_FILTER_BGGR;
-			break;
-		case BAYER_FILTER_BGGR:
-			bayer = BAYER_FILTER_RGGB;
-			break;
-		case BAYER_FILTER_GBRG:
-			bayer = BAYER_FILTER_GRBG;
-			break;
-		case BAYER_FILTER_GRBG:
-			bayer = BAYER_FILTER_GBRG;
-			break;
-		default:
-			printf("XTRANS is not handled.\n");
-		}
-	}
+	retrieve_Bayer_pattern(&gfit, &pattern);
 
 	gchar *Ha = g_strdup_printf("Ha_%s%s", filename, com.pref.ext);
 	gchar *OIII = g_strdup_printf("OIII_%s%s", filename, com.pref.ext);
 	if (gfit.type == DATA_USHORT) {
-		if (!(ret = extractHaOIII_ushort(&gfit, &f_Ha, &f_OIII, bayer))) {
+		if (!(ret = extractHaOIII_ushort(&gfit, &f_Ha, &f_OIII, pattern))) {
 			ret = save1fits16(Ha, &f_Ha, 0) ||
 					save1fits16(OIII, &f_OIII, 0);
 		}
 	}
 	else if (gfit.type == DATA_FLOAT) {
-		if (!(ret = extractHaOIII_float(&gfit, &f_Ha, &f_OIII, bayer))) {
+		if (!(ret = extractHaOIII_float(&gfit, &f_Ha, &f_OIII, pattern))) {
 			ret = save1fits32(Ha, &f_Ha, 0) ||
 					save1fits16(OIII, &f_OIII, 0);
 		}
@@ -2575,7 +2541,6 @@ int process_convertraw(int nb) {
 	args->list = files_to_convert;
 	args->total = count;
 	args->nb_converted_files = 0;
-	args->compatibility = FALSE;	// not used here
 	args->command_line = TRUE;
 	args->destroot = destroot;
 	args->input_has_a_seq = FALSE;
@@ -3131,7 +3096,7 @@ int process_preprocess(int nb) {
 			} else if (!strcmp(word[i], "-stretch")) {
 				siril_log_message(_("-stretch option is now deprecated.\n")); // TODO. Should we keep it only for compatibility
 			} else if (!strcmp(word[i], "-flip")) {
-				args->compatibility = TRUE;
+				siril_log_message(_("-stretch option is now deprecated.\n")); // TODO. Should we keep it only for compatibility
 			} else if (!strcmp(word[i], "-equalize_cfa")) {
 				args->equalize_cfa = TRUE;
 			} else if (!strcmp(word[i], "-fitseq")) {

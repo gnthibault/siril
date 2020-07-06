@@ -790,6 +790,99 @@ static WORD *debayer_buffer_siril(WORD *buf, int *width, int *height,
 	return newbuf;
 }
 
+int retrieve_Bayer_pattern(fits *fit, sensor_pattern *pattern) {
+	int xbayeroff = 0, ybayeroff = 0;
+
+	if (!com.pref.debayer.use_bayer_header) {
+		xbayeroff = com.pref.debayer.xbayeroff;
+		ybayeroff = com.pref.debayer.ybayeroff;
+	} else {
+		xbayeroff = fit->bayer_xoffset;
+		ybayeroff = fit->bayer_yoffset;
+	}
+
+	if (xbayeroff == 1) {
+		switch (*pattern) {
+		case BAYER_FILTER_RGGB:
+			*pattern = BAYER_FILTER_GRBG;
+			break;
+		case BAYER_FILTER_BGGR:
+			*pattern = BAYER_FILTER_GBRG;
+			break;
+		case BAYER_FILTER_GBRG:
+			*pattern = BAYER_FILTER_BGGR;
+			break;
+		case BAYER_FILTER_GRBG:
+			*pattern = BAYER_FILTER_RGGB;
+			break;
+		default:
+			return 1;
+		}
+	}
+
+	/* y offset
+	 * or bottom-up debayer
+	 */
+	if ((ybayeroff == 1)
+			|| ((com.pref.debayer.use_bayer_header
+					&& !g_strcmp0(fit->row_order, "BOTTOM-UP"))
+					|| !com.pref.debayer.top_down)) {
+		switch (*pattern) {
+		case BAYER_FILTER_RGGB:
+			*pattern = BAYER_FILTER_GBRG;
+			break;
+		case BAYER_FILTER_BGGR:
+			*pattern = BAYER_FILTER_GRBG;
+			break;
+		case BAYER_FILTER_GBRG:
+			*pattern = BAYER_FILTER_RGGB;
+			break;
+		case BAYER_FILTER_GRBG:
+			*pattern = BAYER_FILTER_BGGR;
+			break;
+		default:
+			return 1;
+		}
+	}
+
+	/* for top-down debayer: do nothing */
+	if ((com.pref.debayer.use_bayer_header
+			&& !g_strcmp0(fit->row_order, "TOP-DOWN"))) {
+		return 0;
+	}
+	return 0;
+}
+
+/* This function retrieve the xtrans matrix from the FITS header */
+static int retrieve_XTRANS_pattern(char *bayer, unsigned int xtrans[6][6]) {
+	int i = 0;
+
+	if (strlen(bayer) != 36) {
+		siril_log_color_message(_("FITS header does not contain a proper XTRANS pattern, demosaicing cannot be done"), "red");
+		return 1;
+	}
+
+	for (int x = 0; x < 6; x++) {
+		for (int y = 0; y < 6; y++) {
+			switch (bayer[i]) {
+			case 'R':
+				xtrans[x][y] = 0;
+				break;
+			case 'G':
+				xtrans[x][y] = 1;
+				break;
+			case 'B':
+				xtrans[x][y] = 2;
+				break;
+			default:
+				return 1;
+			}
+			i++;
+		}
+	}
+	return 0;
+}
+
 WORD *debayer_buffer_superpixel_ushort(WORD *buf, int *width, int *height, sensor_pattern pattern) {
 	int new_rx = *width / 2 + *width % 2;
 	int new_ry = *height / 2 + *height % 2;
@@ -912,93 +1005,18 @@ void get_debayer_area(const rectangle *area, rectangle *debayer_area,
 	assert(debayer_area->w > 2);
 }
 
-/* This function retrieve the xtrans matrix from the FITS header */
-int retrieveXTRANSPattern(char *bayer, unsigned int xtrans[6][6]) {
-	int x, y, i = 0;
-
-	if (strlen(bayer) != 36) {
-		siril_log_color_message(_("FITS header does not contain a proper XTRANS pattern, demosaicing cannot be done"), "red");
-		return 1;
-	}
-
-	for (x = 0; x < 6; x++) {
-		for (y = 0; y < 6; y++) {
-			switch (bayer[i]) {
-				default:	// shouldn't default be an error?
-				case 'R':
-					xtrans[x][y] = 0;
-					break;
-				case 'G':
-					xtrans[x][y] = 1;
-					break;
-				case 'B':
-					xtrans[x][y] = 2;
-					break;
-			}
-			i++;
-		}
-	}
-	return 0;
-}
-
 static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_pattern pattern) {
 	size_t i, j, npixels = fit->naxes[0] * fit->naxes[1];
 	int width = fit->rx;
 	int height = fit->ry;
 	WORD *buf = fit->data;
-	int xbayeroff = 0, ybayeroff = 0;
 
 	unsigned int xtrans[6][6];
 	if (interpolation == XTRANS) {
-		retrieveXTRANSPattern(fit->bayer_pattern, xtrans);
-	}
-
-	if (!com.pref.debayer.use_bayer_header) {
-		xbayeroff = com.pref.debayer.xbayeroff;
-		ybayeroff = com.pref.debayer.ybayeroff;
+		fits_flip_top_to_bottom(fit); // TODO: kind of ugly but not easy with xtrans
+		retrieve_XTRANS_pattern(fit->bayer_pattern, xtrans);
 	} else {
-		xbayeroff = fit->bayer_xoffset;
-		ybayeroff = fit->bayer_yoffset;
-	}
-
-	if (xbayeroff == 1) {
-		switch (pattern) {
-		case BAYER_FILTER_RGGB:
-			pattern = BAYER_FILTER_GRBG;
-			break;
-		case BAYER_FILTER_BGGR:
-			pattern = BAYER_FILTER_GBRG;
-			break;
-		case BAYER_FILTER_GBRG:
-			pattern = BAYER_FILTER_BGGR;
-			break;
-		case BAYER_FILTER_GRBG:
-			pattern = BAYER_FILTER_RGGB;
-			break;
-		default:
-		case BAYER_FILTER_NONE:
-			return 1;
-		}
-	}
-
-	if (ybayeroff == 1) {
-		switch (pattern) {
-		case BAYER_FILTER_RGGB:
-			pattern = BAYER_FILTER_GBRG;
-			break;
-		case BAYER_FILTER_BGGR:
-			pattern = BAYER_FILTER_GRBG;
-			break;
-		case BAYER_FILTER_GBRG:
-			pattern = BAYER_FILTER_RGGB;
-			break;
-		case BAYER_FILTER_GRBG:
-			pattern = BAYER_FILTER_BGGR;
-			break;
-		default:
-		case BAYER_FILTER_NONE:
-			return 1;
-		}
+		retrieve_Bayer_pattern(fit, &pattern);
 	}
 
 	if (USE_SIRIL_DEBAYER) {
@@ -1032,6 +1050,9 @@ static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_
 			return 1;
 
 		fit_debayer_buffer(fit, newbuf);
+		if (interpolation == XTRANS) {
+			fits_flip_top_to_bottom(fit);
+		}
 	}
 
 	return 0;
@@ -1041,59 +1062,13 @@ static int debayer_float(fits* fit, interpolation_method interpolation, sensor_p
 	int width = fit->rx;
 	int height = fit->ry;
 	float *buf = fit->fdata;
-	int xbayeroff = 0, ybayeroff = 0;
 
 	unsigned int xtrans[6][6];
 	if (interpolation == XTRANS) {
-		retrieveXTRANSPattern(fit->bayer_pattern, xtrans);
-	}
-
-	if (!com.pref.debayer.use_bayer_header) {
-		xbayeroff = com.pref.debayer.xbayeroff;
-		ybayeroff = com.pref.debayer.ybayeroff;
+		fits_flip_top_to_bottom(fit); // TODO: kind of ugly but not easy with xtrans
+		retrieve_XTRANS_pattern(fit->bayer_pattern, xtrans);
 	} else {
-		xbayeroff = fit->bayer_xoffset;
-		ybayeroff = fit->bayer_yoffset;
-	}
-
-	if (xbayeroff == 1) {
-		switch (pattern) {
-		case BAYER_FILTER_RGGB:
-			pattern = BAYER_FILTER_GRBG;
-			break;
-		case BAYER_FILTER_BGGR:
-			pattern = BAYER_FILTER_GBRG;
-			break;
-		case BAYER_FILTER_GBRG:
-			pattern = BAYER_FILTER_BGGR;
-			break;
-		case BAYER_FILTER_GRBG:
-			pattern = BAYER_FILTER_RGGB;
-			break;
-		default:
-		case BAYER_FILTER_NONE:
-			return 1;
-		}
-	}
-
-	if (ybayeroff == 1) {
-		switch (pattern) {
-		case BAYER_FILTER_RGGB:
-			pattern = BAYER_FILTER_GBRG;
-			break;
-		case BAYER_FILTER_BGGR:
-			pattern = BAYER_FILTER_GRBG;
-			break;
-		case BAYER_FILTER_GBRG:
-			pattern = BAYER_FILTER_RGGB;
-			break;
-		case BAYER_FILTER_GRBG:
-			pattern = BAYER_FILTER_BGGR;
-			break;
-		default:
-		case BAYER_FILTER_NONE:
-			return 1;
-		}
+		retrieve_Bayer_pattern(fit, &pattern);
 	}
 
 	float *newbuf = debayer_buffer_new_float(buf, &width, &height, interpolation, pattern, xtrans);
@@ -1101,6 +1076,9 @@ static int debayer_float(fits* fit, interpolation_method interpolation, sensor_p
 		return 1;
 
 	fit_debayer_buffer(fit, newbuf);
+	if (interpolation == XTRANS) {
+		fits_flip_top_to_bottom(fit);
+	}
 	return 0;
 }
 
@@ -1215,41 +1193,30 @@ int extractHa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 	fits f_Ha = { 0 };
 
 	/* Get Bayer informations from header if available */
-	sensor_pattern bayer;
+	sensor_pattern pattern;
 
 	if (com.pref.debayer.use_bayer_header) {
-		bayer = retrieveBayerPattern(fit->bayer_pattern);
+		pattern = retrieveBayerPattern(fit->bayer_pattern);
 	} else {
-		bayer = com.pref.debayer.bayer_pattern;
-	}
-	if (com.pref.debayer.up_bottom) {
-		switch(bayer) {
-		case BAYER_FILTER_RGGB:
-			bayer = BAYER_FILTER_GRBG;
-			break;
-		case BAYER_FILTER_BGGR:
-			bayer = BAYER_FILTER_GBRG;
-			break;
-		case BAYER_FILTER_GBRG:
-			bayer = BAYER_FILTER_BGGR;
-			break;
-		case BAYER_FILTER_GRBG:
-			bayer = BAYER_FILTER_RGGB;
-			break;
-		default:
-			printf("XTRANS is not handled.\n");
-		}
+		pattern = com.pref.debayer.bayer_pattern;
 	}
 
+	if (pattern == XTRANS_FILTER) {
+		siril_log_message("XTRANS pattern not handled for this feature.\n");
+		return 1;
+	}
+
+	retrieve_Bayer_pattern(fit, &pattern);
+
 	if (fit->type == DATA_USHORT) {
-		if (!(ret = extractHa_ushort(fit, &f_Ha, bayer))) {
+		if (!(ret = extractHa_ushort(fit, &f_Ha, pattern))) {
 			clearfits(fit);
 			new_fit_image(&fit, f_Ha.rx, f_Ha.ry, 1, DATA_USHORT);
 			copyfits(&f_Ha, fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
 		}
 	}
 	else if (fit->type == DATA_FLOAT) {
-		if (!(ret = extractHa_float(fit, &f_Ha, bayer))) {
+		if (!(ret = extractHa_float(fit, &f_Ha, pattern))) {
 			clearfits(fit);
 			new_fit_image(&fit, f_Ha.rx, f_Ha.ry, 1, DATA_FLOAT);
 			copyfits(&f_Ha, fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
@@ -1407,39 +1374,28 @@ int extractHaOIII_image_hook(struct generic_seq_args *args, int o, int i, fits *
 	gchar *OIII = g_strdup_printf("OIII_%s%05d%s", cfa_args->seq->seqname, o, com.pref.ext);
 
 	/* Get Bayer informations from header if available */
-	sensor_pattern bayer;
+	sensor_pattern pattern;
 
 	if (com.pref.debayer.use_bayer_header) {
-		bayer = retrieveBayerPattern(fit->bayer_pattern);
+		pattern = retrieveBayerPattern(fit->bayer_pattern);
 	} else {
-		bayer = com.pref.debayer.bayer_pattern;
-	}
-	if (com.pref.debayer.up_bottom) {
-		switch(bayer) {
-		case BAYER_FILTER_RGGB:
-			bayer = BAYER_FILTER_GRBG;
-			break;
-		case BAYER_FILTER_BGGR:
-			bayer = BAYER_FILTER_GBRG;
-			break;
-		case BAYER_FILTER_GBRG:
-			bayer = BAYER_FILTER_BGGR;
-			break;
-		case BAYER_FILTER_GRBG:
-			bayer = BAYER_FILTER_RGGB;
-			break;
-		default:
-			printf("XTRANS is not handled.\n");
-		}
+		pattern = com.pref.debayer.bayer_pattern;
 	}
 
+	if (pattern == XTRANS_FILTER) {
+		siril_log_message("XTRANS pattern not handled for this feature.\n");
+		return 1;
+	}
+
+	retrieve_Bayer_pattern(fit, &pattern);
+
 	if (fit->type == DATA_USHORT) {
-		if (!(ret = extractHaOIII_ushort(fit, &f_Ha, &f_OIII, bayer))) {
+		if (!(ret = extractHaOIII_ushort(fit, &f_Ha, &f_OIII, pattern))) {
 			ret = save1fits16(Ha, &f_Ha, 0) || save1fits16(OIII, &f_OIII, 0);
 		}
 	}
 	else if (fit->type == DATA_FLOAT) {
-		if (!(ret = extractHaOIII_float(fit, &f_Ha, &f_OIII, bayer))) {
+		if (!(ret = extractHaOIII_float(fit, &f_Ha, &f_OIII, pattern))) {
 			ret = save1fits16(Ha, &f_Ha, 0) || save1fits16(OIII, &f_OIII, 0);
 		}
 	}

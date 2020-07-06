@@ -256,6 +256,10 @@ void read_fits_header(fits *fit) {
 		fit->data_max = (double) maxi;
 	}
 
+	status = 0;
+	fits_read_key(fit->fptr, TSTRING, "ROWORDER", &(fit->row_order), NULL,
+			&status);
+
 	/*******************************************************************
 	 * ************* CAMERA AND INSTRUMENT KEYWORDS ********************
 	 * ****************************************************************/
@@ -958,6 +962,10 @@ static void save_fits_header(fits *fit) {
 	fits_update_key(fit->fptr, TDOUBLE, "BSCALE", &scale, "default scaling factor",
 			&status);
 
+	status = 0;
+	fits_update_key(fit->fptr, TSTRING, "ROWORDER", "BOTTOM-UP", "Order of the rows in image array",
+			&status);
+
 	/*******************************************************************
 	 * ************* CAMERA AND INSTRUMENT KEYWORDS ********************
 	 * ******************** AND DATES **********************************
@@ -1041,6 +1049,7 @@ static void save_fits_header(fits *fit) {
 		status = 0;
 		fits_update_key(fit->fptr, TINT, "YBAYROFF", &(fit->bayer_yoffset),
 				"Y offset of Bayer array", &status);
+
 	}
 
 	status = 0;

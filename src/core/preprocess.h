@@ -19,7 +19,6 @@ struct preprocessing_data {
 	deviant_pixel *dev;
 	gboolean is_cfa;
 	gboolean debayer;
-	gboolean compatibility;
 	gboolean equalize_cfa;
 	gboolean allow_32bit_output;
 	float normalisation;

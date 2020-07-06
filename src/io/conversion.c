@@ -93,9 +93,35 @@ char *filter_pattern[] = {
 	"BGGR",
 	"GBRG",
 	"GRBG",
-	"RBGBRGGGRGGBGGBGGRBRGRBGGGBGGRGGRGGB", /* XTRANS */
-	"GBGGRGRGRBGBGBGGRGGRGGBGBGBRGRGRGGBG",
-	"GGRGGBGGBGGRBRGRBGGGBGGRGGRGGBRBGBRG"
+
+/* XTRANS */
+	"RBGBRG"
+	"GGRGGB"
+	"GGBGGR"
+	"BRGRBG"
+	"GGBGGR"
+	"GGRGGB",
+
+	"GRGGBG"
+	"BGBRGR"
+	"GRGGBG"
+	"GBGGRG"
+	"RGTBGB"
+	"GBGGRG",
+
+	"GBGGRG"
+	"RGRBGB"
+	"GBGGRG"
+	"GRGGBG"
+	"BGBRGR"
+	"GRGGBG",
+
+	"GGRGGB"
+	"GGBGGR"
+	"BRGRBG"
+	"GGBGGR"
+	"GGRGGB"
+	"RBGBRG"
 };
 
 static int film_conversion(const char *src_filename, int index, unsigned int *added_frames, struct ser_struct *ser_file, struct _convert_data *args);
@@ -192,7 +218,7 @@ static void initialize_libraw_settings() {
 static void initialize_ser_debayer_settings() {
 	com.pref.debayer.open_debayer = FALSE;
 	com.pref.debayer.use_bayer_header = TRUE;
-	com.pref.debayer.up_bottom = FALSE;
+	com.pref.debayer.top_down = TRUE;
 	com.pref.debayer.bayer_pattern = BAYER_FILTER_RGGB;
 	com.pref.debayer.bayer_inter = BAYER_RCD;
 	com.pref.debayer.xbayeroff = 0;
@@ -235,14 +261,14 @@ static gboolean end_convert_idle(gpointer p) {
 }
 
 /* open the file with path source from any image type and load it into a new FITS object */
-static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean compatibility, gboolean debayer) {
+static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean debayer) {
 	int retval = 0;
 	fits *tmpfit = calloc(1, sizeof(fits));
 
 	retval = any_to_fits(imagetype, source, tmpfit, FALSE, FALSE, debayer);
 
 	if (!retval)
-		retval = debayer_if_needed(imagetype, tmpfit, compatibility, debayer);
+		retval = debayer_if_needed(imagetype, tmpfit, debayer);
 
 	if (retval) {
 		clearfits(tmpfit);
@@ -256,9 +282,7 @@ static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean 
 /**************************Public functions***********************************************************/
 
 int retrieveBayerPattern(char *bayer) {
-	int i;
-
-	for (i = 0; i < G_N_ELEMENTS(filter_pattern); i++) {
+	for (int i = 0; i < G_N_ELEMENTS(filter_pattern); i++) {
 		if (g_ascii_strcasecmp(bayer, filter_pattern[i]) == 0) {
 			return i;
 		}
@@ -501,7 +525,7 @@ gpointer convert_thread_worker(gpointer p) {
 			if (args->output_type == SEQ_FITSEQ)
 				fitseq_wait_for_memory();
 
-			fits *fit = any_to_new_fits(imagetype, src_filename, args->compatibility, args->debayer);
+			fits *fit = any_to_new_fits(imagetype, src_filename, args->debayer);
 			if (fit) {
 				if (args->output_type == SEQ_SER) {
 					if (ser_write_frame_from_fit(&ser_file, fit, i)) {
@@ -570,8 +594,7 @@ clean_exit:
 
 // debayers the image if it's a FITS image and if debayer is activated globally
 // or if the force argument is passed
-int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility,
-		gboolean force_debayer) {
+int debayer_if_needed(image_type imagetype, fits *fit, gboolean force_debayer) {
 	if (imagetype != TYPEFITS || (!com.pref.debayer.open_debayer && !force_debayer))
 		return 0;
 
@@ -584,16 +607,16 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility,
 		siril_log_message(_("Cannot perform debayering on image with more than one channel\n"));
 		return 0;
 	}
-	if (!compatibility)
-		fits_flip_top_to_bottom(fit);
+
 	/* Get Bayer informations from header if available */
 	sensor_pattern tmp_pattern = com.pref.debayer.bayer_pattern;
+	interpolation_method tmp_algo = com.pref.debayer.bayer_inter;
 	if (com.pref.debayer.use_bayer_header) {
 		sensor_pattern bayer;
 		bayer = retrieveBayerPattern(fit->bayer_pattern);
 
 		if (bayer <= BAYER_FILTER_MAX) {
-			if (bayer != com.pref.debayer.bayer_pattern) {
+			if (bayer != tmp_pattern) {
 				if (bayer == BAYER_FILTER_NONE) {
 					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
 				}
@@ -601,29 +624,25 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility,
 					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
 								" from Bayer pattern in settings (%s). Overriding settings.\n"),
 							"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
-					com.pref.debayer.bayer_pattern = bayer;
+					tmp_pattern = bayer;
 				}
 			}
 		} else {
-			com.pref.debayer.bayer_pattern = XTRANS_FILTER;
-			com.pref.debayer.bayer_inter = XTRANS;
+			tmp_pattern = bayer;
+			tmp_algo = XTRANS;
 			siril_log_color_message(_("XTRANS Sensor detected. Using special algorithm.\n"), "green");
 		}
 	}
-	if (com.pref.debayer.bayer_pattern >= BAYER_FILTER_MIN
-			&& com.pref.debayer.bayer_pattern <= BAYER_FILTER_MAX) {
-		siril_log_message(_("Filter Pattern: %s\n"), filter_pattern[com.pref.debayer.bayer_pattern]);
+	if (tmp_pattern >= BAYER_FILTER_MIN && tmp_pattern <= BAYER_FILTER_MAX) {
+		siril_log_message(_("Filter Pattern: %s\n"),
+				filter_pattern[tmp_pattern]);
 	}
 
 	int retval = 0;
-	if (debayer(fit, com.pref.debayer.bayer_inter, com.pref.debayer.bayer_pattern)) {
+	if (debayer(fit, tmp_algo, tmp_pattern)) {
 		siril_log_message(_("Cannot perform debayering\n"));
 		retval = -1;
-	} else {
-		if (!compatibility)
-			fits_flip_top_to_bottom(fit);
 	}
-	com.pref.debayer.bayer_pattern = tmp_pattern;
 	return retval;
 }
 
@@ -768,8 +787,6 @@ static int ser_conversion(const char *src_filename, int index,
 char* g_real_path(const char *source) {
 	HANDLE hFile;
 	DWORD maxchar = 2048;
-	wchar_t *wFilePath;
-	gchar *gFilePath;
 
 	wchar_t *wsource = g_utf8_to_utf16(source, -1, NULL, NULL, NULL);
 
@@ -777,8 +794,9 @@ char* g_real_path(const char *source) {
 		g_free(wsource);
 		return NULL;
 	}
+	g_free(wsource);
 
-	wFilePath = malloc(maxchar + 1);
+	wchar_t *wFilePath = g_new(wchar_t, maxchar + 1);
 	if (!wFilePath) {
 		PRINT_ALLOC_ERR;
 		g_free(wsource);
@@ -795,7 +813,8 @@ char* g_real_path(const char *source) {
 	}
 
 	GetFinalPathNameByHandleW(hFile, wFilePath, maxchar, 0);
-	gFilePath = g_utf16_to_utf8(wFilePath + 4, -1, NULL, NULL, NULL); // +4 = enleve les 4 caracteres du prefixe "//?/"
+
+	gchar *gFilePath = g_utf16_to_utf8(wFilePath + 4, -1, NULL, NULL, NULL); // +4 = enleve les 4 caracteres du prefixe "//?/"
 	g_free(wsource);
 	g_free(wFilePath);
 	CloseHandle(hFile);

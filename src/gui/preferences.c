@@ -88,7 +88,7 @@ void update_libraw_and_debayer_interface() {
 	/* We write in config file */
 	/*************SER**********************/
 	com.pref.debayer.use_bayer_header = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_SER_use_header")));
-	com.pref.debayer.up_bottom = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_debayer_compatibility")));
+	com.pref.debayer.top_down = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_debayer_compatibility")));
 	com.pref.debayer.xbayeroff = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(lookup_widget("xbayeroff_spin")));
 	com.pref.debayer.ybayeroff = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(lookup_widget("ybayeroff_spin")));
 	writeinitfile();
@@ -151,11 +151,16 @@ void set_GUI_LIBRAW() {
 	GtkSpinButton *ybayer_spin = GTK_SPIN_BUTTON(lookup_widget("ybayeroff_spin"));
 	gtk_combo_box_set_active(pattern, com.pref.debayer.bayer_pattern);
 	gtk_combo_box_set_active(inter, com.pref.debayer.bayer_inter);
-	gtk_toggle_button_set_active(compat, com.pref.debayer.up_bottom);
+	gtk_toggle_button_set_active(compat, com.pref.debayer.top_down);
 	gtk_toggle_button_set_active(use_header, com.pref.debayer.use_bayer_header);
 	gtk_toggle_button_set_active(demosaicingButton,	com.pref.debayer.open_debayer);
 	gtk_spin_button_set_value(xbayer_spin, com.pref.debayer.xbayeroff);
 	gtk_spin_button_set_value(ybayer_spin, com.pref.debayer.ybayeroff);
+}
+
+void on_checkbutton_debayer_guess_orientation_toggled(GtkToggleButton *button, gpointer user_data) {
+
+	gtk_widget_set_sensitive((GtkWidget *)user_data, !gtk_toggle_button_get_active(button));
 }
 
 void on_checkbutton_cam_toggled(GtkButton *button, gpointer user_data) {
