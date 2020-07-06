@@ -14,9 +14,9 @@ int debayer(fits*, interpolation_method, sensor_pattern pattern);
 #ifdef __cplusplus
 extern "C" {
 #endif
+int retrieve_Bayer_pattern(fits *fit, sensor_pattern *pattern);
 WORD *debayer_buffer_superpixel_ushort(WORD *buf, int *width, int *height, sensor_pattern pattern);
 float *debayer_buffer_superpixel_float(float *buf, int *width, int *height, sensor_pattern pattern);
-int retrieveXTRANSPattern(char *bayer, unsigned int xtrans[6][6]);
 #ifdef __cplusplus
 }
 #endif

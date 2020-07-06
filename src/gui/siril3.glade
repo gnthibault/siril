@@ -17615,11 +17615,13 @@ If the selection is empty, the whole image will be used as reference.</property>
                                 </child>
                                 <child>
                                   <object class="GtkCheckButton" id="checkbutton_debayer_compatibility">
-                                    <property name="label" translatable="yes">Debayer FITS files in up-bottom orientation</property>
+                                    <property name="label" translatable="yes">Debayer FITS files in top-down if no explicit keywords found</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Siril read FITS data in the bottom-up orientation. If capture software stored data in up-bottom orientation (as they usual do), you need to check this box in order to debayer the file in the right orientation.</property>
+                                    <property name="tooltip_markup" translatable="yes">Siril read FITS data in the bottom-up orientation but a lot of capture software do not meet this specification. If data are stored in top-down orientation (as they usual do), you need to check this box in order to debayer the file in the right orientation. 
+
+&lt;b&gt;If the keyword ROWORDER is found while you are using Bayer information from file's header, then Siril will follow its value rather than this option.&lt;/b&gt;</property>
                                     <property name="halign">start</property>
                                     <property name="draw_indicator">True</property>
                                   </object>

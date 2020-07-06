@@ -271,7 +271,7 @@ static int prepro_image_hook(struct generic_seq_args *args, int out_index, int i
 	if (prepro->debayer) {
 		// not for SER because it is done on-the-fly
 		if (!prepro->seq || prepro->seq->type == SEQ_REGULAR || prepro->seq->type == SEQ_FITSEQ) {
-			debayer_if_needed(TYPEFITS, fit, prepro->compatibility, TRUE);
+			debayer_if_needed(TYPEFITS, fit, TRUE);
 		}
 
 #ifdef SIRIL_OUTPUT_DEBUG
@@ -555,7 +555,6 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	GtkEntry *entry = GTK_ENTRY(lookup_widget("preproseqname_entry"));
 	GtkToggleButton *CFA = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
 	GtkToggleButton *debayer = GTK_TOGGLE_BUTTON(lookup_widget("checkButton_pp_dem"));
-	GtkToggleButton *compatibility = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_debayer_compatibility"));
 	GtkToggleButton *equalize_cfa = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_equalize_cfa"));
 	GtkComboBox *output_type = GTK_COMBO_BOX(lookup_widget("prepro_output_type_combo"));
 
@@ -569,7 +568,6 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	args->ppprefix = gtk_entry_get_text(entry);
 
 	args->is_cfa = gtk_toggle_button_get_active(CFA);
-	args->compatibility = gtk_toggle_button_get_active(compatibility);
 	args->debayer = gtk_toggle_button_get_active(debayer);
 	args->equalize_cfa = gtk_toggle_button_get_active(equalize_cfa);
 
