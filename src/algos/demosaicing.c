@@ -1110,11 +1110,10 @@ int extractHa_ushort(fits *in, fits *Ha, sensor_pattern pattern) {
 
 	for (int row = 0; row < in->ry - 1; row += 2) {
 		for (int col = 0; col < in->rx - 1; col += 2) {
-			/* not c0, c1, c2 and c3 because of the read orientation */
-			WORD c1 = in->data[col + row * in->rx];
-			WORD c3 = in->data[1 + col + row * in->rx];
-			WORD c0 = in->data[col + (1 + row) * in->rx];
-			WORD c2 = in->data[1 + col + (1 + row) * in->rx];
+			WORD c0 = in->data[col + row * in->rx];
+			WORD c1 = in->data[1 + col + row * in->rx];
+			WORD c2 = in->data[col + (1 + row) * in->rx];
+			WORD c3 = in->data[1 + col + (1 + row) * in->rx];
 
 			switch(pattern) {
 			case BAYER_FILTER_RGGB:
@@ -1159,11 +1158,10 @@ int extractHa_float(fits *in, fits *Ha, sensor_pattern pattern) {
 
 	for (int row = 0; row < in->ry - 1; row += 2) {
 		for (int col = 0; col < in->rx - 1; col += 2) {
-			/* not c0, c1, c2 and c3 because of the read orientation */
-			float c1 = in->fdata[col + row * in->rx];
-			float c3 = in->fdata[1 + col + row * in->rx];
-			float c0 = in->fdata[col + (1 + row) * in->rx];
-			float c2 = in->fdata[1 + col + (1 + row) * in->rx];
+			float c0 = in->fdata[col + row * in->rx];
+			float c1 = in->fdata[1 + col + row * in->rx];
+			float c2 = in->fdata[col + (1 + row) * in->rx];
+			float c3 = in->fdata[1 + col + (1 + row) * in->rx];
 
 			switch(pattern) {
 			case BAYER_FILTER_RGGB:
@@ -1291,11 +1289,10 @@ int extractHaOIII_ushort(fits *in, fits *Ha, fits *OIII, sensor_pattern pattern)
 
 	for (int row = 0; row < in->ry - 1; row += 2) {
 		for (int col = 0; col < in->rx - 1; col += 2) {
-			/* not c0, c1, c2 and c3 because of the read orientation */
-			WORD c1 = in->data[col + row * in->rx];
-			WORD c3 = in->data[1 + col + row * in->rx];
-			WORD c0 = in->data[col + (1 + row) * in->rx];
-			WORD c2 = in->data[1 + col + (1 + row) * in->rx];
+			WORD c0 = in->data[col + row * in->rx];
+			WORD c1 = in->data[1 + col + row * in->rx];
+			WORD c2 = in->data[col + (1 + row) * in->rx];
+			WORD c3 = in->data[1 + col + (1 + row) * in->rx];
 
 			switch(pattern) {
 			case BAYER_FILTER_RGGB:
@@ -1345,11 +1342,10 @@ int extractHaOIII_float(fits *in, fits *Ha, fits *OIII, sensor_pattern pattern) 
 
 	for (int row = 0; row < in->ry - 1; row += 2) {
 		for (int col = 0; col < in->rx - 1; col += 2) {
-			/* not c0, c1, c2 and c3 because of the read orientation */
-			float c1 = in->fdata[col + row * in->rx];
-			float c3 = in->fdata[1 + col + row * in->rx];
-			float c0 = in->fdata[col + (1 + row) * in->rx];
-			float c2 = in->fdata[1 + col + (1 + row) * in->rx];
+			float c0 = in->fdata[col + row * in->rx];
+			float c1 = in->fdata[1 + col + row * in->rx];
+			float c2 = in->fdata[col + (1 + row) * in->rx];
+			float c3 = in->fdata[1 + col + (1 + row) * in->rx];
 
 			switch(pattern) {
 			case BAYER_FILTER_RGGB:
