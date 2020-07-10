@@ -963,8 +963,9 @@ static void save_fits_header(fits *fit) {
 			&status);
 
 	status = 0;
-	fits_update_key(fit->fptr, TSTRING, "ROWORDER", "BOTTOM-UP", "Order of the rows in image array",
-			&status);
+	if (fit->row_order[0] != '\0')
+		fits_update_key(fit->fptr, TSTRING, "ROWORDER", &fit->row_order,
+				"Order of the rows in image array", &status);
 
 	/*******************************************************************
 	 * ************* CAMERA AND INSTRUMENT KEYWORDS ********************
@@ -1846,6 +1847,7 @@ int copy_fits_metadata(fits *from, fits *to) {
 	strncpy(to->dft.type, from->dft.type, FLEN_VALUE);
 	strncpy(to->dft.ord, from->dft.ord, FLEN_VALUE);
 	strncpy(to->bayer_pattern, from->bayer_pattern, FLEN_VALUE);
+	strncpy(to->row_order, from->row_order, FLEN_VALUE);
 
 	to->bayer_xoffset = from->bayer_xoffset;
 	to->bayer_yoffset = from->bayer_yoffset;

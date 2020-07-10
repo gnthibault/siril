@@ -1466,6 +1466,8 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 	if (filters)
 		g_snprintf(fit->bayer_pattern, FLEN_VALUE, "%s", pattern);
 
+	g_snprintf(fit->row_order, FLEN_VALUE, "%s", "BOTTUM-UP");
+
 	libraw_recycle(raw);
 	libraw_close(raw);
 	return 1;
