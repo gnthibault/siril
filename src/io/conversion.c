@@ -281,7 +281,7 @@ static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean 
 
 /**************************Public functions***********************************************************/
 
-int retrieveBayerPattern(char *bayer) {
+int retrieveBayerPatternFromChar(char *bayer) {
 	for (int i = 0; i < G_N_ELEMENTS(filter_pattern); i++) {
 		if (g_ascii_strcasecmp(bayer, filter_pattern[i]) == 0) {
 			return i;
@@ -613,7 +613,7 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean force_debayer) {
 	interpolation_method tmp_algo = com.pref.debayer.bayer_inter;
 	if (com.pref.debayer.use_bayer_header) {
 		sensor_pattern bayer;
-		bayer = retrieveBayerPattern(fit->bayer_pattern);
+		bayer = retrieveBayerPatternFromChar(fit->bayer_pattern);
 
 		if (bayer <= BAYER_FILTER_MAX) {
 			if (bayer != tmp_pattern) {

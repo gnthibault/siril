@@ -254,7 +254,7 @@ static int prepro_image_hook(struct generic_seq_args *args, int out_index, int i
 	if (prepro->use_cosmetic_correction && prepro->use_dark
 			&& prepro->dark->naxes[2] == 1) {
 		/* we don't want apply it on xtrans sensor */
-		sensor_pattern bayer = retrieveBayerPattern(fit->bayer_pattern);
+		sensor_pattern bayer = retrieveBayerPatternFromChar(fit->bayer_pattern);
 		if (bayer <= BAYER_FILTER_MAX) {
 			cosmeticCorrection(fit, prepro->dev, prepro->icold + prepro->ihot, prepro->is_cfa);
 #ifdef SIRIL_OUTPUT_DEBUG

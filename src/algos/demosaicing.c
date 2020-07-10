@@ -1193,30 +1193,43 @@ int extractHa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 	fits f_Ha = { 0 };
 
 	/* Get Bayer informations from header if available */
-	sensor_pattern pattern;
-
+	sensor_pattern tmp_pattern = com.pref.debayer.bayer_pattern;
 	if (com.pref.debayer.use_bayer_header) {
-		pattern = retrieveBayerPattern(fit->bayer_pattern);
-	} else {
-		pattern = com.pref.debayer.bayer_pattern;
+		sensor_pattern bayer;
+		bayer = retrieveBayerPatternFromChar(fit->bayer_pattern);
+
+		if (bayer <= BAYER_FILTER_MAX) {
+			if (bayer != tmp_pattern) {
+				if (bayer == BAYER_FILTER_NONE) {
+					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
+				}
+				else {
+					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
+								" from Bayer pattern in settings (%s). Overriding settings.\n"),
+							"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
+					tmp_pattern = bayer;
+				}
+			}
+		} else {
+			siril_log_message("XTRANS pattern not handled for this feature.\n");
+			return 1;
+		}
+	}
+	if (tmp_pattern >= BAYER_FILTER_MIN && tmp_pattern <= BAYER_FILTER_MAX) {
+		siril_log_message(_("Filter Pattern: %s\n"),
+				filter_pattern[tmp_pattern]);
 	}
 
-	if (pattern == XTRANS_FILTER) {
-		siril_log_message("XTRANS pattern not handled for this feature.\n");
-		return 1;
-	}
-
-	retrieve_Bayer_pattern(fit, &pattern);
-
+	retrieve_Bayer_pattern(fit, &tmp_pattern);
 	if (fit->type == DATA_USHORT) {
-		if (!(ret = extractHa_ushort(fit, &f_Ha, pattern))) {
+		if (!(ret = extractHa_ushort(fit, &f_Ha, tmp_pattern))) {
 			clearfits(fit);
 			new_fit_image(&fit, f_Ha.rx, f_Ha.ry, 1, DATA_USHORT);
 			copyfits(&f_Ha, fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
 		}
 	}
 	else if (fit->type == DATA_FLOAT) {
-		if (!(ret = extractHa_float(fit, &f_Ha, pattern))) {
+		if (!(ret = extractHa_float(fit, &f_Ha, tmp_pattern))) {
 			clearfits(fit);
 			new_fit_image(&fit, f_Ha.rx, f_Ha.ry, 1, DATA_FLOAT);
 			copyfits(&f_Ha, fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
@@ -1374,28 +1387,42 @@ int extractHaOIII_image_hook(struct generic_seq_args *args, int o, int i, fits *
 	gchar *OIII = g_strdup_printf("OIII_%s%05d%s", cfa_args->seq->seqname, o, com.pref.ext);
 
 	/* Get Bayer informations from header if available */
-	sensor_pattern pattern;
-
+	sensor_pattern tmp_pattern = com.pref.debayer.bayer_pattern;
 	if (com.pref.debayer.use_bayer_header) {
-		pattern = retrieveBayerPattern(fit->bayer_pattern);
-	} else {
-		pattern = com.pref.debayer.bayer_pattern;
+		sensor_pattern bayer;
+		bayer = retrieveBayerPatternFromChar(fit->bayer_pattern);
+
+		if (bayer <= BAYER_FILTER_MAX) {
+			if (bayer != tmp_pattern) {
+				if (bayer == BAYER_FILTER_NONE) {
+					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
+				}
+				else {
+					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
+								" from Bayer pattern in settings (%s). Overriding settings.\n"),
+							"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
+					tmp_pattern = bayer;
+				}
+			}
+		} else {
+			siril_log_message("XTRANS pattern not handled for this feature.\n");
+			return 1;
+		}
+	}
+	if (tmp_pattern >= BAYER_FILTER_MIN && tmp_pattern <= BAYER_FILTER_MAX) {
+		siril_log_message(_("Filter Pattern: %s\n"),
+				filter_pattern[tmp_pattern]);
 	}
 
-	if (pattern == XTRANS_FILTER) {
-		siril_log_message("XTRANS pattern not handled for this feature.\n");
-		return 1;
-	}
-
-	retrieve_Bayer_pattern(fit, &pattern);
+	retrieve_Bayer_pattern(fit, &tmp_pattern);
 
 	if (fit->type == DATA_USHORT) {
-		if (!(ret = extractHaOIII_ushort(fit, &f_Ha, &f_OIII, pattern))) {
+		if (!(ret = extractHaOIII_ushort(fit, &f_Ha, &f_OIII, tmp_pattern))) {
 			ret = save1fits16(Ha, &f_Ha, 0) || save1fits16(OIII, &f_OIII, 0);
 		}
 	}
 	else if (fit->type == DATA_FLOAT) {
-		if (!(ret = extractHaOIII_float(fit, &f_Ha, &f_OIII, pattern))) {
+		if (!(ret = extractHaOIII_float(fit, &f_Ha, &f_OIII, tmp_pattern))) {
 			ret = save1fits16(Ha, &f_Ha, 0) || save1fits16(OIII, &f_OIII, 0);
 		}
 	}

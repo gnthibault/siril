@@ -1414,7 +1414,7 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 			}
 		}
 		pattern[j++] = '\0';
-		siril_log_message(_("CFA pattern: %s\n"), pattern);
+		siril_log_message(_("Filter pattern: %s\n"), pattern);
 	}
 
 	WORD *data = (WORD*) calloc(1, npixels * sizeof(WORD));

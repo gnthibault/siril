@@ -2159,23 +2159,43 @@ int process_extractHa(int nb) {
 	}
 
 	/* Get Bayer informations from header if available */
-	sensor_pattern pattern;
-
+	sensor_pattern tmp_pattern = com.pref.debayer.bayer_pattern;
 	if (com.pref.debayer.use_bayer_header) {
-		pattern = retrieveBayerPattern(gfit.bayer_pattern);
-	} else {
-		pattern = com.pref.debayer.bayer_pattern;
+		sensor_pattern bayer;
+		bayer = retrieveBayerPatternFromChar(gfit.bayer_pattern);
+
+		if (bayer <= BAYER_FILTER_MAX) {
+			if (bayer != tmp_pattern) {
+				if (bayer == BAYER_FILTER_NONE) {
+					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
+				}
+				else {
+					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
+								" from Bayer pattern in settings (%s). Overriding settings.\n"),
+							"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
+					tmp_pattern = bayer;
+				}
+			}
+		} else {
+			siril_log_message("XTRANS pattern not handled for this feature.\n");
+			return 1;
+		}
 	}
-	retrieve_Bayer_pattern(&gfit, &pattern);
+	if (tmp_pattern >= BAYER_FILTER_MIN && tmp_pattern <= BAYER_FILTER_MAX) {
+		siril_log_message(_("Filter Pattern: %s\n"),
+				filter_pattern[tmp_pattern]);
+	}
+
+	retrieve_Bayer_pattern(&gfit, &tmp_pattern);
 
 	gchar *Ha = g_strdup_printf("Ha_%s%s", filename, com.pref.ext);
 	if (gfit.type == DATA_USHORT) {
-		if (!(ret = extractHa_ushort(&gfit, &f_Ha, pattern))) {
+		if (!(ret = extractHa_ushort(&gfit, &f_Ha, tmp_pattern))) {
 			ret = save1fits16(Ha, &f_Ha, 0);
 		}
 	}
 	else if (gfit.type == DATA_FLOAT) {
-		if (!(ret = extractHa_float(&gfit, &f_Ha, pattern))) {
+		if (!(ret = extractHa_float(&gfit, &f_Ha, tmp_pattern))) {
 			ret = save1fits32(Ha, &f_Ha, 0);
 		}
 	} else return 1;
@@ -2208,25 +2228,45 @@ int process_extractHaOIII(int nb) {
 	}
 
 	/* Get Bayer informations from header if available */
-	sensor_pattern pattern;
-
+	sensor_pattern tmp_pattern = com.pref.debayer.bayer_pattern;
 	if (com.pref.debayer.use_bayer_header) {
-		pattern = retrieveBayerPattern(gfit.bayer_pattern);
-	} else {
-		pattern = com.pref.debayer.bayer_pattern;
+		sensor_pattern bayer;
+		bayer = retrieveBayerPatternFromChar(gfit.bayer_pattern);
+
+		if (bayer <= BAYER_FILTER_MAX) {
+			if (bayer != tmp_pattern) {
+				if (bayer == BAYER_FILTER_NONE) {
+					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
+				}
+				else {
+					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
+								" from Bayer pattern in settings (%s). Overriding settings.\n"),
+							"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
+					tmp_pattern = bayer;
+				}
+			}
+		} else {
+			siril_log_message("XTRANS pattern not handled for this feature.\n");
+			return 1;
+		}
 	}
-	retrieve_Bayer_pattern(&gfit, &pattern);
+	if (tmp_pattern >= BAYER_FILTER_MIN && tmp_pattern <= BAYER_FILTER_MAX) {
+		siril_log_message(_("Filter Pattern: %s\n"),
+				filter_pattern[tmp_pattern]);
+	}
+
+	retrieve_Bayer_pattern(&gfit, &tmp_pattern);
 
 	gchar *Ha = g_strdup_printf("Ha_%s%s", filename, com.pref.ext);
 	gchar *OIII = g_strdup_printf("OIII_%s%s", filename, com.pref.ext);
 	if (gfit.type == DATA_USHORT) {
-		if (!(ret = extractHaOIII_ushort(&gfit, &f_Ha, &f_OIII, pattern))) {
+		if (!(ret = extractHaOIII_ushort(&gfit, &f_Ha, &f_OIII, tmp_pattern))) {
 			ret = save1fits16(Ha, &f_Ha, 0) ||
 					save1fits16(OIII, &f_OIII, 0);
 		}
 	}
 	else if (gfit.type == DATA_FLOAT) {
-		if (!(ret = extractHaOIII_float(&gfit, &f_Ha, &f_OIII, pattern))) {
+		if (!(ret = extractHaOIII_float(&gfit, &f_Ha, &f_OIII, tmp_pattern))) {
 			ret = save1fits32(Ha, &f_Ha, 0) ||
 					save1fits16(OIII, &f_OIII, 0);
 		}

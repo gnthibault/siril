@@ -32,7 +32,7 @@ extern supported_raw_list supported_raw[];	//supported raw extensions
 extern char *supported_extensions[MAX_EXTENSIONS];
 extern char *filter_pattern[];
 
-int retrieveBayerPattern(char *bayer);
+int retrieveBayerPatternFromChar(char *bayer);
 int get_nb_raw_supported();
 
 void list_format_available();
