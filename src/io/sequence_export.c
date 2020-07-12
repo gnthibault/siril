@@ -246,7 +246,7 @@ static gpointer export_sequence(gpointer ptr) {
 			destfit.header = NULL;
 			destfit.fptr = NULL;
 			nbdata = fit.rx * fit.ry;
-			if ((args->convflags == TYPEFITS) && ((fit.type == DATA_FLOAT) || com.pref.force_to_16bit)) {
+			if ((args->convflags == TYPEFITS) && ((fit.type == DATA_FLOAT) || !com.pref.force_to_16bit)) {
 				destfit.fdata = calloc(nbdata * fit.naxes[2], sizeof(float));
 				destfit.type = DATA_FLOAT;
 				destfit.stats = NULL;
@@ -346,7 +346,7 @@ static gpointer export_sequence(gpointer ptr) {
 								destfit.pdata[layer][nx + ny * fit.rx] = fit.pdata[layer][x + y * fit.rx];
 							}
 						} else if (fit.type == DATA_FLOAT) {
-							destfit.bitpix = USHORT_IMG;
+							destfit.bitpix = com.pref.force_to_16bit ? USHORT_IMG : FLOAT_IMG;
 							if (args->convflags == TYPEFITS) {
 								if (args->normalize) {
 									float tmp =	fit.fpdata[layer][x + y * fit.rx];
