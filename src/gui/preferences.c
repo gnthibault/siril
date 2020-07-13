@@ -319,9 +319,11 @@ void set_GUI_compression() {
 		if (com.pref.comp.fits_method == HCOMPRESS_COMP) {
 			gtk_spin_button_set_value(hscale, com.pref.comp.fits_hcompress_scale);
 		}
+		siril_log_message(_("FITS compression enabled\n"), com.pref.ext);
 	} else {
 		GtkToggleButton *disabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_disabled_radio"));
 		gtk_toggle_button_set_active(disabled, !com.pref.comp.fits_enabled);
+		siril_log_message(_("FITS compression disabled\n"));
 	}
 }
 

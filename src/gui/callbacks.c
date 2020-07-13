@@ -1366,6 +1366,7 @@ void initialize_all_GUI(gchar *supported_files) {
 
 	set_GUI_CWD();
 	set_GUI_misc();
+	siril_log_message(_("Default FITS extension is set to %s\n"), com.pref.ext);
 	set_GUI_compression();
 	set_GUI_photometry();
 	init_peaker_GUI();

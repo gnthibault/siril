@@ -36,7 +36,7 @@ gboolean redraw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	gboolean display_ref_image;
 
 	if (check_display_ref == NULL) {
-		check_display_ref = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "checkbutton_displayref"));
+		check_display_ref = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_displayref"));
 		labelRegRef = lookup_widget("labelRegRef");
 	}
 	display_ref_image = com.refimage_regbuffer && com.refimage_surface
