@@ -593,16 +593,26 @@ int64_t seq_compute_size(sequence *seq, int nb_frames, data_type depth) {
  * @return TRUE if the name already exists, FALSE otherwise
  */
 gboolean check_if_seq_exist(gchar *name, gboolean name_is_base) {
-	gchar *path;
+	gchar *path, *path_;
 	if (name_is_base) {
 		gchar *seq = g_strdup_printf("%s.seq", name);
+		gchar *seq_ = g_strdup_printf("%s_.seq", name);
 		path = g_build_filename(com.wd, seq, NULL);
+		path_ = g_build_filename(com.wd, seq_, NULL);
 		g_free(seq);
+		gboolean retval = is_readable_file(path);
+		if (!retval) {
+			retval = is_readable_file(path_);
+		}
+		g_free(path);
+		g_free(path_);
+		return retval;
+	} else {
+		path = g_build_filename(com.wd, name, NULL);
+		gboolean retval = is_readable_file(path);
+		g_free(path);
+		return retval;
 	}
-	else path = g_build_filename(com.wd, name, NULL);
-	gboolean retval = is_readable_file(path);
-	g_free(path);
-	return retval;
 }
 
 /*****************************************************************************
