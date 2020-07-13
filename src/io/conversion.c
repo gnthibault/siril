@@ -789,12 +789,14 @@ char* g_real_path(const char *source) {
 	DWORD maxchar = 2048;
 
 	wchar_t *wsource = g_utf8_to_utf16(source, -1, NULL, NULL, NULL);
+	if ( wsource == NULL ) {
+		return NULL ;
+	}
 
 	if (!(GetFileAttributesW(wsource) & FILE_ATTRIBUTE_REPARSE_POINT)) { /* Ce n'est pas un lien symbolique , je sors */
 		g_free(wsource);
 		return NULL;
 	}
-	g_free(wsource);
 
 	wchar_t *wFilePath = g_new(wchar_t, maxchar + 1);
 	if (!wFilePath) {
