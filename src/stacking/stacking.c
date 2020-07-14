@@ -358,7 +358,7 @@ static gboolean end_stacking(gpointer p) {
 	if (args->seq->type == SEQ_FITSEQ)
 		fitseq_multiple_close(args->seq->fitseq_file);
 
-	if (!args->retval) {
+	if (args->retval == ST_OK) {
 		clear_stars_list();
 		/* check in com.seq, because args->seq may have been replaced */
 		if (com.seq.upscale_at_stacking > 1.05)
@@ -433,6 +433,9 @@ static gboolean end_stacking(gpointer p) {
 		update_stack_interface(TRUE);
 	} else {
 		siril_log_color_message(_("Stacking failed, please check the log to fix your issue.\n"), "red");
+		if (args->retval == ST_ALLOC_ERROR) {
+			siril_log_message(_("It looks like there is a memory allocation error, change memory settings and try to fix it.\n"));
+		}
 	}
 
 	set_cursor_waiting(FALSE);

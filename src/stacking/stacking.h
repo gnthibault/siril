@@ -11,6 +11,13 @@ typedef int (*stack_method)(struct stacking_args *args);
 
 typedef struct normalization_coeff norm_coeff;
 
+enum {
+	ST_ALLOC_ERROR = -10,
+	ST_SEQUENCE_ERROR = -2,
+	ST_GENERIC_ERROR = -1,
+	ST_OK = 0
+};
+
 typedef enum {
 	STACK_SUM,
 	STACK_MEAN,
