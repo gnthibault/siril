@@ -1864,6 +1864,29 @@ int copy_fits_metadata(fits *from, fits *to) {
 	return 0;
 }
 
+int copy_fits_from_file(char *source, char *destination) {
+	fitsfile *infptr, *outfptr; /* FITS file pointers defined in fitsio.h */
+	int status = 0; /* status must always be initialized = 0  */
+
+	/* Open the input file */
+	if (!siril_fits_open_diskfile(&infptr, source, READONLY, &status)) {
+		/* Create the output file */
+		if (!siril_fits_create_diskfile(&outfptr, destination, &status)) {
+
+			/* copy the previous, current, and following HDUs */
+			fits_copy_file(infptr, outfptr, 1, 1, 1, &status);
+
+			fits_close_file(outfptr, &status);
+		}
+		fits_close_file(infptr, &status);
+	}
+
+	/* if error occured, print out error message */
+	if (status)
+		report_fits_error(status);
+	return (status);
+}
+
 int save1fits16(const char *filename, fits *fit, int layer) {
 	if (layer != RLAYER) {
 		size_t nbdata = fit->naxes[0] * fit->naxes[1];

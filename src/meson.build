@@ -92,6 +92,7 @@ src_files = [
   'io/conversion.c',
   'io/films.c',
   'io/fits_sequence.c',
+  'io/FITS_symlink.c',
   'io/image_format_fits.c',
   'io/image_formats_internal.c',
   'io/image_formats_libraries.c',
