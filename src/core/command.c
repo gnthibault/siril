@@ -1637,6 +1637,7 @@ int process_cosme(int nb) {
 	if (retval)
 		siril_log_message(_("There were some errors, please check your input file.\n"));
 
+	invalidate_stats_from_fit(&gfit);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -3073,7 +3074,7 @@ failure:
 
 int process_preprocess(int nb) {
 	struct preprocessing_data *args;
-	int nb_command_max = 11;
+	int nb_command_max = 12;
 	int i, retvalue = 0;
 
 	if (word[1][0] == '\0') {
@@ -3129,6 +3130,8 @@ int process_preprocess(int nb) {
 				args->ppprefix = strdup(value);
 			} else if (!strcmp(word[i], "-opt")) {
 				args->use_dark_optim = TRUE;
+			} else if (!strcmp(word[i], "-fix_xtrans")) {
+				args->fix_xtrans = TRUE;
 			} else if (!strcmp(word[i], "-cfa")) {
 				args->is_cfa = TRUE;
 			} else if (!strcmp(word[i], "-debayer")) {

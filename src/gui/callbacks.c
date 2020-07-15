@@ -52,6 +52,7 @@
 #include "script_menu.h"
 #include "progress_and_log.h"
 #include "dialogs.h"
+#include "fix_xtrans_af.h"
 #include "siril_intro.h"
 #include "siril_preview.h"
 
@@ -618,7 +619,7 @@ void update_prepro_interface(gboolean allow_debayer) {
 			       *checkAutoEvaluate = NULL;
 	static GtkWidget *prepro_button = NULL, *cosme_grid = NULL, *dark_optim = NULL;
        	static GtkWidget *equalize = NULL, *auto_eval = NULL, *flat_norm = NULL;
-       	static GtkWidget *debayer = NULL;
+       	static GtkWidget *debayer = NULL, *fix_xtrans = NULL;
 	static GtkComboBox *output_type = NULL;
 	if (udark == NULL) {
 		udark = GTK_TOGGLE_BUTTON(
@@ -638,6 +639,7 @@ void update_prepro_interface(gboolean allow_debayer) {
 		auto_eval = lookup_widget("checkbutton_auto_evaluate");
 		flat_norm = lookup_widget("entry_flat_norm");
 		debayer = lookup_widget("checkButton_pp_dem");
+		fix_xtrans = lookup_widget("fix_xtrans_af");
 	}
 
 	gtk_widget_set_sensitive(prepro_button,
@@ -654,6 +656,7 @@ void update_prepro_interface(gboolean allow_debayer) {
 			!gtk_toggle_button_get_active(checkAutoEvaluate));
 
 	gtk_widget_set_sensitive(debayer, allow_debayer && gtk_widget_get_sensitive(prepro_button));
+	gtk_widget_set_sensitive(fix_xtrans, gtk_toggle_button_get_active(udark) || gtk_toggle_button_get_active(uoffset));
 
 	gtk_widget_set_sensitive(GTK_WIDGET(output_type), sequence_is_loaded());
 	int type = com.seq.type;
@@ -1216,12 +1219,14 @@ void set_GUI_DiskSpace(int64_t space) {
 }
 
 static void initialize_preprocessing() {
-	GtkToggleButton *cfaButton, *eqButton;
+	GtkToggleButton *cfaButton, *eqButton, *xtransButton;
 
 	cfaButton = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
 	gtk_toggle_button_set_active(cfaButton, com.pref.prepro_cfa);
 	eqButton = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_equalize_cfa"));
 	gtk_toggle_button_set_active(eqButton, com.pref.prepro_equalize_cfa);
+	xtransButton = GTK_TOGGLE_BUTTON(lookup_widget("fix_xtrans_af"));
+	gtk_toggle_button_set_active(xtransButton, com.pref.fix_xtrans);
 
 	update_prepro_interface(FALSE);
 }
@@ -1356,6 +1361,8 @@ void initialize_all_GUI(gchar *supported_files) {
 	initialize_path_directory();
 
 	initialize_FITS_name_entries();
+
+	init_xtrans_ui_pixels();
 
 	initialize_log_tags();
 
