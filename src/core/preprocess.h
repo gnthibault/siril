@@ -9,6 +9,7 @@ struct preprocessing_data {
 	struct timeval t_start;
 	gboolean use_bias, use_dark, use_flat;
 	fits *bias, *dark, *flat;
+	gboolean fix_xtrans;
 	gboolean use_dark_optim, use_cosmetic_correction;
 	gboolean is_sequence;
 	sequence *seq;

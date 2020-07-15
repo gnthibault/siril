@@ -28,6 +28,7 @@
 #include "core/processing.h"
 #include "core/OS_utils.h"
 #include "algos/statistics.h"
+#include "algos/fix_xtrans_af.h"
 #include "filters/cosmetic_correction.h"
 #include "gui/callbacks.h"
 #include "gui/histogram.h"
@@ -227,6 +228,15 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 		}
 	}
 
+	/** FIX XTRANS AC ISSUE **/
+	if (prepro->fix_xtrans && prepro->use_dark) {
+		fix_xtrans_ac(prepro->dark);
+	}
+
+	if (prepro->fix_xtrans && prepro->use_bias) {
+		fix_xtrans_ac(prepro->bias);
+	}
+
 	// proceed to cosmetic correction
 	if (prepro->use_cosmetic_correction && prepro->use_dark) {
 		if (prepro->dark->naxes[2] == 1) {
@@ -238,11 +248,14 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 			siril_log_message(_("Darkmap cosmetic correction "
 						"is only supported with single channel images\n"));
 	}
+
 	return 0;
 }
 
 static int prepro_image_hook(struct generic_seq_args *args, int out_index, int in_index, fits *fit, rectangle *_) {
 	struct preprocessing_data *prepro = args->user;
+
+	/******/
 	if (prepro->use_dark_optim && prepro->use_dark) {
 		if (darkOptimization(fit, prepro))
 			return 1;
@@ -253,19 +266,13 @@ static int prepro_image_hook(struct generic_seq_args *args, int out_index, int i
 
 	if (prepro->use_cosmetic_correction && prepro->use_dark
 			&& prepro->dark->naxes[2] == 1) {
-		/* we don't want apply it on xtrans sensor */
-		sensor_pattern bayer = retrieveBayerPatternFromChar(fit->bayer_pattern);
-		if (bayer <= BAYER_FILTER_MAX) {
-			cosmeticCorrection(fit, prepro->dev, prepro->icold + prepro->ihot, prepro->is_cfa);
+		cosmeticCorrection(fit, prepro->dev, prepro->icold + prepro->ihot, prepro->is_cfa);
 #ifdef SIRIL_OUTPUT_DEBUG
-			image_find_minmax(fit);
-			fprintf(stdout, "after cosmetic correction: min=%f, max=%f\n",
-					fit->mini, fit->maxi);
-			invalidate_stats_from_fit(fit);
+		image_find_minmax(fit);
+		fprintf(stdout, "after cosmetic correction: min=%f, max=%f\n",
+				fit->mini, fit->maxi);
+		invalidate_stats_from_fit(fit);
 #endif
-		} else {
-			siril_log_color_message(_("Cannot apply cosmetic correction on XTRANS sensor yet\n"), "red");
-		}
 	}
 
 	if (prepro->debayer) {
@@ -553,6 +560,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	}
 
 	GtkEntry *entry = GTK_ENTRY(lookup_widget("preproseqname_entry"));
+	GtkToggleButton *fix_xtrans = GTK_TOGGLE_BUTTON(lookup_widget("fix_xtrans_af"));
 	GtkToggleButton *CFA = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
 	GtkToggleButton *debayer = GTK_TOGGLE_BUTTON(lookup_widget("checkButton_pp_dem"));
 	GtkToggleButton *equalize_cfa = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_equalize_cfa"));
@@ -570,6 +578,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	args->is_cfa = gtk_toggle_button_get_active(CFA);
 	args->debayer = gtk_toggle_button_get_active(debayer);
 	args->equalize_cfa = gtk_toggle_button_get_active(equalize_cfa);
+	args->fix_xtrans = gtk_toggle_button_get_active(fix_xtrans);
 
 	/****/
 

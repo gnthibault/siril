@@ -564,6 +564,9 @@ struct pref_struct {
 
 	gboolean prepro_cfa;	// Use to save type of sensor for cosmetic correction in preprocessing
 	gboolean prepro_equalize_cfa;  // Use to save if flat will be equalized in preprocessing
+	gboolean fix_xtrans; // Use to fix xtrans darks and biases with the AF square
+	rectangle xtrans_af; // if no xtrans model found, use these values
+	rectangle xtrans_sample; // if no xtrans model found, use these values
 	gchar *prepro_bias_lib;
 	gboolean use_bias_lib;
 	gchar *prepro_dark_lib;
