@@ -21,5 +21,6 @@
 #define SRC_GUI_FIX_XTRANS_AF_H_
 
 void save_xtrans_ui_pixels();
+void init_xtrans_ui_pixels();
 
 #endif /* SRC_GUI_FIX_XTRANS_AF_H_ */

@@ -220,7 +220,6 @@ static int get_image_index_from_path(GtkTreePath *path) {
 
 static gint get_real_index_from_index_in_list(GtkTreeModel *model, GtkTreeIter *iter, int index_in_list) {
 	gint real_index;
-
 	gtk_tree_model_get(model, iter, COLUMN_INDEX, &real_index, -1);
 	return real_index - 1;
 }
@@ -251,12 +250,8 @@ static void unselect_select_frame_from_list(GtkTreeView *tree_view) {
 }
 
 static void display_status() {
-	gchar *text;
-	GtkStatusbar *statusbar;
-
-	statusbar = GTK_STATUSBAR(lookup_widget("seqlist_statusbar"));
-
-	text = g_strdup_printf("%d/%d", com.seq.current + 1, com.seq.number);
+	GtkStatusbar *statusbar = GTK_STATUSBAR(lookup_widget("seqlist_statusbar"));
+	gchar *text = g_strdup_printf("%d/%d", com.seq.current + 1, com.seq.number);
 	gtk_statusbar_push(statusbar, COUNT_STATE, text);
 	g_free(text);
 }
@@ -444,64 +439,54 @@ void on_selected_frames_select(GtkButton *button, gpointer user_data) {
 }
 
 void on_seqexcludeall_button_clicked(GtkButton *button, gpointer user_data) {
-	gboolean exclude_all;
-
-	exclude_all = siril_confirm_dialog(_("Exclude all images ?"),
+	gboolean exclude_all = siril_confirm_dialog(_("Exclude all images?"),
 			_("This erases previous image selection and there's no possible undo."));
-	if (exclude_all) {
+	if (exclude_all)
 		sequence_setselect_all(FALSE);
-	}
 }
 
 void on_seqselectall_button_clicked(GtkButton *button, gpointer user_data) {
-	gboolean select_all;
-
-	select_all = siril_confirm_dialog(_("Include all images ?"),
+	gboolean select_all = siril_confirm_dialog(_("Include all images?"),
 			_("This erases previous image selection and there's no possible undo."));
-	if (select_all) {
+	if (select_all)
 		sequence_setselect_all(TRUE);
-	}
 }
 
 void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	if (sequence_is_loaded()) {
-		free_reference_image();
-		GtkTreeSelection *selection;
-		GtkTreeModel *model;
-		GList *references;
+	if (!sequence_is_loaded())
+		return;
 
-		get_list_store();
+	free_reference_image();
+	get_list_store();
+	GtkTreeModel *model = gtk_tree_view_get_model((GtkTreeView* ) user_data);
+	GtkTreeSelection *selection = gtk_tree_view_get_selection((GtkTreeView* ) user_data);
+	GList *references = get_row_references_of_selected_rows(selection, model);
 
-		model = gtk_tree_view_get_model((GtkTreeView* ) user_data);
-		selection = gtk_tree_view_get_selection((GtkTreeView* ) user_data);
-		references = get_row_references_of_selected_rows(selection, model);
+	references = g_list_first(references);
+	if (!references) return;
 
-		references = g_list_first(references);
-		if (!references) return;
-
-		GtkTreePath *path = gtk_tree_row_reference_get_path((GtkTreeRowReference*)references->data);
-		if (path) {
-			if ((gtk_toggle_button_get_active(togglebutton) == FALSE)) {
-				if (com.seq.reference_image == com.seq.current)
-					com.seq.reference_image = -1;
-			} else {
-				com.seq.reference_image = com.seq.current;
-				test_and_allocate_reference_image(-1);
-				// a reference image should not be excluded to avoid confusion
-				if (!com.seq.imgparam[com.seq.current].incl) {
-					toggle_image_selection(com.seq.current, com.seq.current);
-				}
+	GtkTreePath *path = gtk_tree_row_reference_get_path((GtkTreeRowReference*)references->data);
+	if (path) {
+		if (!gtk_toggle_button_get_active(togglebutton)) {
+			if (com.seq.reference_image == com.seq.current)
+				com.seq.reference_image = -1;
+		} else {
+			com.seq.reference_image = com.seq.current;
+			test_and_allocate_reference_image(-1);
+			// a reference image should not be excluded to avoid confusion
+			if (!com.seq.imgparam[com.seq.current].incl) {
+				toggle_image_selection(com.seq.current, com.seq.current);
 			}
-			gtk_tree_path_free(path);
 		}
-
-		g_list_free(references);
-		sequence_list_change_reference();
-		update_stack_interface(FALSE);// get stacking info and enable the Go button
-		adjust_sellabel();	// reference image is named in the label
-		writeseqfile(&com.seq);
-		drawPlot();		// update plots
+		gtk_tree_path_free(path);
 	}
+
+	g_list_free(references);
+	sequence_list_change_reference();
+	update_stack_interface(FALSE);// get stacking info and enable the Go button
+	adjust_sellabel();	// reference image is named in the label
+	writeseqfile(&com.seq);
+	drawPlot();		// update plots
 }
 
 /****************** modification of the list store (tree model) ******************/
@@ -563,12 +548,13 @@ void clear_sequence_list() {
 }
 
 void adjust_refimage(int n) {
-	static GtkWidget *ref_butt2 = NULL;
+	static GtkWidget *ref_butt2 = NULL, *treeview1 = NULL;
 	if (ref_butt2 == NULL) {
 		ref_butt2 = lookup_widget("refframe2");
+		treeview1 = lookup_widget("treeview1");
 	}
 
-	g_signal_handlers_block_by_func(ref_butt2, on_ref_frame_toggled, NULL);
+	g_signal_handlers_block_by_func(ref_butt2, on_ref_frame_toggled, treeview1);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(ref_butt2), com.seq.reference_image == n);
-	g_signal_handlers_unblock_by_func(ref_butt2, on_ref_frame_toggled, NULL);
+	g_signal_handlers_unblock_by_func(ref_butt2, on_ref_frame_toggled, treeview1);
 }

@@ -42,7 +42,6 @@
 #include "compositing/align_rgb.h"
 #include "image_display.h"
 #include "image_interactions.h"
-
 #include "callbacks.h"
 #include "plot.h"
 #include "preferences.h"
@@ -104,22 +103,6 @@ static void set_label_text_from_main_thread(const char *label_name, const char *
 	gdk_threads_add_idle(set_label_text_idle, data);
 }
 
-/* enables or disables the "display reference" checkbox in registration preview */
-void enable_view_reference_checkbox(gboolean status) {
-	static GtkToggleButton *check_display_ref = NULL;
-	static GtkWidget *widget = NULL, *labelRegRef = NULL;
-	if (check_display_ref == NULL) {
-		check_display_ref = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_displayref"));
-		widget = GTK_WIDGET(check_display_ref);
-		labelRegRef = lookup_widget("labelRegRef");
-	}
-	if (status && gtk_widget_get_sensitive(widget))
-		return;	// may be already enabled but deactivated by user, don't force it again
-	gtk_widget_set_sensitive(widget, status);
-	gtk_widget_set_visible(labelRegRef, !status);
-	gtk_toggle_button_set_active(check_display_ref, status);
-}
-
 void set_viewer_mode_widgets_sensitive(gboolean sensitive) {
 	GtkWidget *scalemax = lookup_widget("scalemax");
 	GtkWidget *scalemin = lookup_widget("scalemin");
@@ -136,54 +119,6 @@ void set_viewer_mode_widgets_sensitive(gboolean sensitive) {
 	gtk_widget_set_sensitive(minmax, sensitive);
 	gtk_widget_set_sensitive(hilo, sensitive);
 	gtk_widget_set_sensitive(user, sensitive);
-}
-
-/* vport can be -1 if the correct viewport should be tested */
-void test_and_allocate_reference_image(int vport) {
-	static GtkComboBox *cbbt_layers = NULL;
-	if (cbbt_layers == NULL) {
-		cbbt_layers = GTK_COMBO_BOX(lookup_widget("comboboxreglayer"));
-	}
-	if (vport == -1)
-		vport = gtk_combo_box_get_active(cbbt_layers);
-
-	if (sequence_is_loaded() && com.seq.current == com.seq.reference_image
-			&& gtk_combo_box_get_active(cbbt_layers) == vport) {
-		/* this is the registration layer and the reference frame,
-		 * save the buffer for alignment preview */
-		if (!com.refimage_regbuffer || !com.refimage_surface) {
-			guchar *oldbuf = com.refimage_regbuffer;
-			com.refimage_regbuffer = realloc(com.refimage_regbuffer,
-					com.surface_stride[vport] * gfit.ry * sizeof(guchar));
-			if (com.refimage_regbuffer == NULL) {
-				PRINT_ALLOC_ERR;
-				if (oldbuf)
-					free(oldbuf);
-				return;
-			}
-
-			if (com.refimage_surface)
-				cairo_surface_destroy(com.refimage_surface);
-			com.refimage_surface = cairo_image_surface_create_for_data(
-					com.refimage_regbuffer, CAIRO_FORMAT_RGB24, gfit.rx,
-					gfit.ry, com.surface_stride[vport]);
-			if (cairo_surface_status(com.refimage_surface)
-					!= CAIRO_STATUS_SUCCESS) {
-				fprintf(stderr,
-						"Error creating the Cairo image surface for the reference image.\n");
-				cairo_surface_destroy(com.refimage_surface);
-				com.refimage_surface = NULL;
-			} else {
-				fprintf(stdout,
-						"Saved the reference frame buffer for alignment preview.\n");
-				enable_view_reference_checkbox(TRUE);
-			}
-		}
-		memcpy(com.refimage_regbuffer, com.graybuf[vport],
-				com.surface_stride[vport] * gfit.ry * sizeof(guchar));
-		cairo_surface_flush(com.refimage_surface);
-		cairo_surface_mark_dirty(com.refimage_surface);
-	}
 }
 
 /*
@@ -1039,7 +974,8 @@ void close_tab() {
 
 void activate_tab(int vport) {
 	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook1"));
-	gtk_notebook_set_current_page(notebook, vport);
+	if (gtk_notebook_get_current_page(notebook) != vport)
+		gtk_notebook_set_current_page(notebook, vport);
 	// com.cvport is set in the event handler for changed page
 }
 

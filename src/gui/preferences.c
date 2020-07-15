@@ -30,6 +30,7 @@
 #include "gui/dialogs.h"
 #include "gui/PSF_list.h"
 #include "gui/siril_intro.h"
+#include "gui/fix_xtrans_af.h"
 
 #include "preferences.h"
 
