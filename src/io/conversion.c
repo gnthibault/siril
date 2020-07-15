@@ -180,7 +180,7 @@ static char *create_sequence_filename(const char *destroot, int counter, char *o
 			g_free(the_root);
 			return output;
 		}
-		the_root[ext-destroot-1] = '\0';
+		the_root[ext - destroot - 1] = '\0';
 		gchar last_char = the_root[strlen(the_root)-1];
 		if (last_char == '-' || last_char == '_')
 			g_snprintf(output, outsize, "%s%05d.%s", the_root, counter, the_ext);

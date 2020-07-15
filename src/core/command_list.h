@@ -72,6 +72,7 @@ static command commands[] = {
 	{"imul", 1, "imul filename", process_imoper, STR_IMUL, TRUE},
 	{"isub", 1, "isub filename", process_imoper, STR_ISUB, TRUE},
 
+	{"link", 1, "link basename", process_link, STR_LINK, TRUE},
 	{"linear_match", 2, "linear_match reference low high", process_linear_match, STR_LMATCH, TRUE}, /* logarifies current image */
 	{"load", 1, "load filename.[ext]", process_load, STR_LOAD, TRUE},
 	// specific loads are not required, but could be used to force the
