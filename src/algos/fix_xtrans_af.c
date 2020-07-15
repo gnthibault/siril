@@ -27,6 +27,7 @@
 supported_xtrans_list supported_xtrans[] =
 		{
 		// Camera Name      AF Pixels x,y,w,h        Sample x,y,w,h
+		{ "Fujifilm X-T2", { 1510, 507, 3009, 3016 }, { 1992, 990,2048, 2048 } },
 		{ "Fujifilm X-T20", { 1510, 507, 3009, 3016 }, { 1992, 990,2048, 2048 } }
 };
 
