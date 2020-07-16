@@ -239,14 +239,19 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 
 	// proceed to cosmetic correction
 	if (prepro->use_cosmetic_correction && prepro->use_dark) {
-		if (prepro->dark->naxes[2] == 1) {
-			prepro->dev = find_deviant_pixels(prepro->dark, prepro->sigma,
-					&(prepro->icold), &(prepro->ihot), FALSE);
-			siril_log_message(_("%ld pixels corrected (%ld + %ld)\n"),
-					prepro->icold + prepro->ihot, prepro->icold, prepro->ihot);
-		} else
-			siril_log_message(_("Darkmap cosmetic correction "
+		if (strlen(prepro->dark->bayer_pattern) > 4) {
+			siril_log_color_message(_("Cosmetic correction cannot be applied on X-Trans files.\n"), "red");
+			prepro->use_cosmetic_correction = FALSE;
+		} else {
+			if (prepro->dark->naxes[2] == 1) {
+				prepro->dev = find_deviant_pixels(prepro->dark, prepro->sigma,
+						&(prepro->icold), &(prepro->ihot), FALSE);
+				siril_log_message(_("%ld pixels corrected (%ld + %ld)\n"),
+						prepro->icold + prepro->ihot, prepro->icold, prepro->ihot);
+			} else
+				siril_log_message(_("Darkmap cosmetic correction "
 						"is only supported with single channel images\n"));
+		}
 	}
 
 	return 0;
