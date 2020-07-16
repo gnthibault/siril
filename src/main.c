@@ -278,9 +278,6 @@ static void siril_app_activate(GApplication *application) {
 		g_free(cwd_forced);
 	}
 
-	siril_log_message(_("FITS file extension is %s, compression is %s.\n"), com.pref.ext,
-			com.pref.comp.fits_enabled ? _("enabled") : _("disabled"));
-
 	init_num_procs();
 
 	if (com.headless) {
