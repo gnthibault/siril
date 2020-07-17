@@ -456,6 +456,7 @@ void on_check_button_pref_bias_toggled(GtkToggleButton *button, gpointer user_da
 
 void on_clear_bias_entry_clicked(GtkButton *button, gpointer user_data) {
 	g_free(com.pref.prepro_bias_lib);
+	com.pref.prepro_bias_lib = NULL;
 	gtk_file_chooser_unselect_all((GtkFileChooser *)user_data);
 }
 
@@ -470,6 +471,7 @@ void on_check_button_pref_dark_toggled(GtkToggleButton *button, gpointer user_da
 
 void on_clear_dark_entry_clicked(GtkButton *button, gpointer user_data) {
 	g_free(com.pref.prepro_dark_lib);
+	com.pref.prepro_dark_lib = NULL;
 	gtk_file_chooser_unselect_all((GtkFileChooser *)user_data);
 }
 
@@ -484,6 +486,7 @@ void on_check_button_pref_flat_toggled(GtkToggleButton *button, gpointer user_da
 
 void on_clear_flat_entry_clicked(GtkButton *button, gpointer user_data) {
 	g_free(com.pref.prepro_flat_lib);
+	com.pref.prepro_flat_lib = NULL;
 	gtk_file_chooser_unselect_all((GtkFileChooser *)user_data);
 }
 
