@@ -295,9 +295,9 @@ else
 endif
 
 if libjpeg_dep.found()
-  conf_data.set('HAVE_JPEG', true, description : 'Using JPEG images.')
+  conf_data.set('HAVE_LIBJPEG', true, description : 'Using JPEG images.')
 else 
-  conf_data.set('HAVE_JPEG', false, description : 'Using JPEG images.')
+  conf_data.set('HAVE_LIBJPEG', false, description : 'Using JPEG images.')
   warning('libjpeg not found. Not using JPEG importer.')
 endif
 
