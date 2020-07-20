@@ -70,10 +70,6 @@ static int is_af_pixel(rectangle af, int x, int y, int matrix) {
 	return 0;
 }
 
-// iif(x()>1509 && x()<4520 && (x()-1)%3==0 && y()>504 && y()<3522 && ((y()-1)%12==0 || ((y()-5)%12==0)),0,$T)
-
-
-
 static int subtract_fudge(fits *fit, rectangle af, float fudge, int matrix) {
 	int width = fit->rx;
 	int height = fit->ry;
