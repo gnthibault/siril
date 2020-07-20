@@ -205,7 +205,11 @@ void on_linearmatch_apply_clicked(GtkButton *button, gpointer user_data) {
 		double a[3] = { 0.0 }, b[3] = { 0.0 };
 		double low = get_low_rejection();
 		double high = get_high_rejection();
-		if (readfits(filename, &ref, NULL, gfit.type == DATA_FLOAT)) return;
+		if (readfits(filename, &ref, NULL, gfit.type == DATA_FLOAT)) {
+			g_free(filename);
+			return;
+		}
+		g_free(filename);
 		set_cursor_waiting(TRUE);
 		undo_save_state(&gfit, "Linear Match");
 		if (!find_linear_coeff(&gfit, &ref, low, high, a, b, &error)) {

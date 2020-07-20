@@ -760,8 +760,6 @@ void on_background_clear_all_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
-	set_cursor_waiting(TRUE);
-
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkBkgSeq")))
 			&& sequence_is_loaded()) {
 		struct background_data *args = malloc(sizeof(struct background_data));
@@ -792,10 +790,11 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 		args->seq = &com.seq;
 		apply_background_extraction_to_sequence(args);
 	} else {
+		set_cursor_waiting(TRUE);
 		if (com.grad_samples == NULL) {
-			set_cursor_waiting(FALSE);
 			return;
 		}
+		set_cursor_waiting(TRUE);
 
 		int correction = get_correction_type();
 		poly_order degree = get_poly_order();
@@ -806,9 +805,8 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 		invalidate_stats_from_fit(&gfit);
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);
-
+		set_cursor_waiting(FALSE);
 	}
-	set_cursor_waiting(FALSE);
 }
 
 void on_background_close_button_clicked(GtkButton *button, gpointer user_data) {
