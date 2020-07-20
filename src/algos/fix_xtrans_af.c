@@ -107,7 +107,7 @@ int fix_xtrans_ac(fits *fit) {
 	int model = get_model(fit->instrume);
 	if (model < 0) {
 		siril_log_color_message(_("Fix X-Trans: Unknown camera %s, trying to read information from preferences.\n"), "red", fit->instrume);
-		if (com.pref.xtrans_af.w != 0 && com.pref.xtrans_af.h != 0 && com.pref.xtrans_sample.w != 0 && com.pref.xtrans_sample.h != 0) {
+		if (com.pref.xtrans_af.w != 0 && com.pref.xtrans_af.h != 0) {
 			if (com.pref.xtrans_sample.w > fit->rx || com.pref.xtrans_sample.h > fit->ry) {
 				siril_log_color_message(_("Sample box cannot be bigger than the image.\n"), "red");
 				return 1;
@@ -117,7 +117,14 @@ int fix_xtrans_ac(fits *fit) {
 				return 1;
 			}
 			af = com.pref.xtrans_af;
-			sam = com.pref.xtrans_sample;
+			if (com.pref.xtrans_sample.w != 0 && com.pref.xtrans_sample.h != 0) {
+				sam = com.pref.xtrans_sample;
+			} else {
+				sam.x = 0;
+				sam.y = 0;
+				sam.w = fit->rx;
+				sam.h = fit->ry;
+			}
 		} else {
 			siril_log_color_message(_("No information available in preferences.\n"), "red");
 			return 1;
