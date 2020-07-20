@@ -36,9 +36,9 @@ void save_xtrans_ui_pixels() {
 }
 
 void init_xtrans_ui_pixels() {
-	if (com.pref.xtrans_af.w != 0 && com.pref.xtrans_af.h != 0
-			&& com.pref.xtrans_sample.w != 0 && com.pref.xtrans_sample.h != 0) {
-		char pixel_value[256];
+	char pixel_value[256];
+
+	if (com.pref.xtrans_af.w != 0 && com.pref.xtrans_af.h != 0) {
 		g_snprintf(pixel_value, 256, "%d", com.pref.xtrans_af.x);
 		gtk_entry_set_text(GTK_ENTRY(lookup_widget("xtrans_af_x")), pixel_value);
 		g_snprintf(pixel_value, 256, "%d", com.pref.xtrans_af.y);
@@ -47,7 +47,9 @@ void init_xtrans_ui_pixels() {
 		gtk_entry_set_text(GTK_ENTRY(lookup_widget("xtrans_af_w")), pixel_value);
 		g_snprintf(pixel_value, 256, "%d", com.pref.xtrans_af.h);
 		gtk_entry_set_text(GTK_ENTRY(lookup_widget("xtrans_af_h")), pixel_value);
+	}
 
+	if (com.pref.xtrans_sample.w != 0 && com.pref.xtrans_sample.h != 0) {
 		g_snprintf(pixel_value, 256, "%d", com.pref.xtrans_sample.x);
 		gtk_entry_set_text(GTK_ENTRY(lookup_widget("xtrans_sample_x")), pixel_value);
 		g_snprintf(pixel_value, 256, "%d", com.pref.xtrans_sample.y);
