@@ -27,8 +27,9 @@
 supported_xtrans_list supported_xtrans[] =
 		{
 		// Camera Name      AF Pixels x,y,w,h        Sample x,y,w,h
-		{ "Fujifilm X-T2", { 1510, 507, 3009, 3016 }, { 1992, 990,2048, 2048 } },
-		{ "Fujifilm X-T20", { 1510, 507, 3009, 3016 }, { 1992, 990,2048, 2048 } }
+		{ "Fujifilm X-T2", { 1510, 505, 3010, 3017 }, { 1992, 990, 2048, 2048 } },
+		{ "Fujifilm X-T20", { 1510, 505, 3010, 3017 }, { 1992, 990, 2048, 2048 } },
+		{ "Fujifilm X-Pro2", { 1500, 505, 3010, 3017 }, { 1992, 990, 2048, 2048 } }
 };
 
 static int get_nb_xtrans_supported() {
@@ -44,14 +45,36 @@ static int get_model(const char *model) {
 	return -1;
 }
 
-// This returns true if the pixel is a special auto focus pixel.
-static int is_af_pixel(rectangle af, int x, int y) {
-	// x=0, y=0 is the bottom left corner of the image.
-	return (x >= af.x && x <= (af.x + af.w) && y >= af.y && y <= (af.y + af.h)
-			&& (x + 2) % 3 == 0 && ((y + 5) % 12 == 0 || (y + 9) % 12 == 0));
+static int get_matrix(gchar *pattern) {
+	if (!g_ascii_strcasecmp("GGRGGBGGBGGRBRGRBGGGBGGRGGRGGBRBGBRG", pattern)) {
+		return 0;
+	} else if (!g_ascii_strcasecmp("RBGBRGGGRGGBGGBGGRBRGRBGGGBGGRGGRGGB", pattern)) {
+		return 1;
+	}
+	return -1;
 }
 
-static int subtract_fudge(fits *fit, rectangle af, float fudge) {
+// This returns true if the pixel is a special auto focus pixel.
+static int is_af_pixel(rectangle af, int x, int y, int matrix) {
+	// x=0, y=0 is the bottom left corner of the image.
+	switch (matrix) {
+	case 0:
+		return (x >= af.x && x <= (af.x + af.w) && y >= af.y && y <= (af.y + af.h)
+				&& (x + 2) % 3 == 0 && ((y + 5) % 12 == 0 || (y + 9) % 12 == 0));
+	case 1:
+		return (x >= af.x && x <= (af.x + af.w) && y >= af.y && y <= (af.y + af.h)
+				&& (x - 1) % 3 == 0 && ((y + 2) % 12 == 0 || (y + 6) % 12 == 0));
+	default:
+		printf("Should not happen.\n");
+	}
+	return 0;
+}
+
+// iif(x()>1509 && x()<4520 && (x()-1)%3==0 && y()>504 && y()<3522 && ((y()-1)%12==0 || ((y()-5)%12==0)),0,$T)
+
+
+
+static int subtract_fudge(fits *fit, rectangle af, float fudge, int matrix) {
 	int width = fit->rx;
 	int height = fit->ry;
 
@@ -60,7 +83,7 @@ static int subtract_fudge(fits *fit, rectangle af, float fudge) {
 
 		for (unsigned int y = 0; y < height; y++) {
 			for (unsigned int x = 0; x < width; x++) {
-				if (is_af_pixel(af, x, y)) {
+				if (is_af_pixel(af, x, y, matrix)) {
 					// This is an auto focus pixel.  Subtract the fudge.
 					buf[x + y * width] -= roundf_to_WORD(fudge);
 				}
@@ -71,7 +94,7 @@ static int subtract_fudge(fits *fit, rectangle af, float fudge) {
 
 		for (unsigned int y = 0; y < height; y++) {
 			for (unsigned int x = 0; x < width; x++) {
-				if (is_af_pixel(af, x, y)) {
+				if (is_af_pixel(af, x, y, matrix)) {
 					// This is an auto focus pixel.  Subtract the fudge.
 					buf[x + y * width] -= fudge;
 				}
@@ -89,6 +112,14 @@ int fix_xtrans_ac(fits *fit) {
 	if (model < 0) {
 		siril_log_color_message(_("Fix X-Trans: Unknown camera %s, trying to read information from preferences.\n"), "red", fit->instrume);
 		if (com.pref.xtrans_af.w != 0 && com.pref.xtrans_af.h != 0 && com.pref.xtrans_sample.w != 0 && com.pref.xtrans_sample.h != 0) {
+			if (com.pref.xtrans_sample.w > fit->rx || com.pref.xtrans_sample.h > fit->ry) {
+				siril_log_color_message(_("Sample box cannot be bigger than the image.\n"), "red");
+				return 1;
+			}
+			if (com.pref.xtrans_af.w > fit->rx || com.pref.xtrans_af.h > fit->ry) {
+				siril_log_color_message(_("AF box cannot be bigger than the image.\n"), "red");
+				return 1;
+			}
 			af = com.pref.xtrans_af;
 			sam = com.pref.xtrans_sample;
 		} else {
@@ -115,6 +146,11 @@ int fix_xtrans_ac(fits *fit) {
 
 	WORD *buf = fit->pdata[RLAYER];
 	float *fbuf = fit->fpdata[RLAYER];
+	int matrix = get_matrix(fit->bayer_pattern);
+	if (matrix < 0) {
+		siril_log_color_message(_("This CFA pattern cannot be handled\n"), "red");
+		return 1;
+	}
 
 	// Loop through sample rectangle and count/sum AF and non-AF pixels.
 	for (unsigned int y = sam.y; y <= (sam.y + sam.h); y++) {
@@ -123,7 +159,7 @@ int fix_xtrans_ac(fits *fit) {
 					fit->type == DATA_FLOAT ?
 							fbuf[x + y * fit->rx] :
 							(float) buf[x + y * fit->rx];
-			if (is_af_pixel(af, x, y)) {
+			if (is_af_pixel(af, x, y, matrix)) {
 				// This is an AF pixel.
 				afcount++;
 				afsum += (double) pixel;
@@ -152,7 +188,7 @@ int fix_xtrans_ac(fits *fit) {
 	siril_log_message(_("AF Pixel Adjust..   %.10f\n"), fudge);
 
 	// Stay FIT, Subtract the fudge!
-	subtract_fudge(fit, af, fudge);
+	subtract_fudge(fit, af, fudge, matrix);
 
 	invalidate_stats_from_fit(fit);
 
