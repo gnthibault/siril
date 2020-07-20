@@ -888,8 +888,9 @@ static void set_fwhm_star_as_star_list_with_layer(sequence *seq, int layer) {
 	assert(seq->regparam);
 	/* we chose here the first layer that has been allocated, which doesn't
 	 * mean it contains data for all images. Handle with care. */
-	if (seq->regparam && layer >= 0 && layer < seq->nb_layers && seq->regparam[layer] &&
-			seq->regparam[layer][seq->current].fwhm_data && !com.stars) {
+	if (seq->regparam && layer >= 0 && layer < seq->nb_layers
+			&& seq->regparam[layer] && seq->current >= 0
+			&& seq->regparam[layer][seq->current].fwhm_data && !com.stars) {
 		com.stars = malloc(2 * sizeof(fitted_PSF *));
 		com.stars[0] = seq->regparam[layer][seq->current].fwhm_data;
 		com.stars[1] = NULL;
