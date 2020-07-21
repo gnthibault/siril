@@ -790,7 +790,6 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 		args->seq = &com.seq;
 		apply_background_extraction_to_sequence(args);
 	} else {
-		set_cursor_waiting(TRUE);
 		if (com.grad_samples == NULL) {
 			return;
 		}
