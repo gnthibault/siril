@@ -188,7 +188,7 @@ static void do_popup_graymenu(GtkWidget *my_widget, GdkEventButton *event) {
 	gtk_widget_set_sensitive(lookup_widget("redo_item1"), is_redo_available());
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_psf"), selected);
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_stat"), is_a_single_image_loaded || sequence_is_loaded());
-	gtk_widget_set_sensitive(lookup_widget("menu_gray_seqpsf"), selected);
+	gtk_widget_set_sensitive(lookup_widget("menu_gray_seqpsf"), selected && sequence_is_loaded());
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_pick_star"), selected);
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_crop"), selected && is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_crop_seq"), selected && sequence_is_loaded());

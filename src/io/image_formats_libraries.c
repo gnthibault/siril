@@ -279,7 +279,7 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 		siril_log_message(_("Could not open the TIFF file %s\n"), name);
 		return OPEN_IMAGE_ERROR;
 	}
-	
+
 	TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
 	TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
 	TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &nsamples);	
@@ -371,6 +371,8 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 		mirrorx(fit, FALSE);
 	}
 	fit->orig_bitpix = fit->bitpix;
+	g_snprintf(fit->row_order, FLEN_VALUE, "%s", "BOTTOM-UP");
+
 	retval = nsamples;
 
 	gchar *basename = g_path_get_basename(name);
@@ -445,7 +447,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		TIFFSetField(tif, TIFFTAG_IMAGEDESCRIPTION, description);
 	if (copyright)
 		TIFFSetField(tif, TIFFTAG_COPYRIGHT, copyright);
-	TIFFSetField(tif, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
+	TIFFSetField(tif, TIFFTAG_ORIENTATION, ORIENTATION_BOTLEFT);
 	TIFFSetField(tif, TIFFTAG_MINSAMPLEVALUE, fit->mini);
 	TIFFSetField(tif, TIFFTAG_MAXSAMPLEVALUE, fit->maxi);
 	TIFFSetField(tif, TIFFTAG_SOFTWARE, PACKAGE " v" VERSION);
@@ -463,8 +465,6 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 
 	WORD *gbuf[3] =	{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
 	float *gbuff[3] = { fit->fpdata[RLAYER], fit->fpdata[GLAYER], fit->fpdata[BLAYER] };
-
-	mirrorx(fit, FALSE);
 
 	switch (bitspersample) {
 	case 8:
@@ -553,7 +553,7 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		retval = 1;
 	}
 	TIFFClose(tif);
-	mirrorx(fit, FALSE);
+
 	siril_log_message(_("Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
 			bitspersample, filename, nsamples, width, height);
 	g_free(filename);
