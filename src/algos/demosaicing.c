@@ -820,13 +820,8 @@ int retrieve_Bayer_pattern(fits *fit, sensor_pattern *pattern) {
 		}
 	}
 
-	/* y offset
-	 * or bottom-up debayer
-	 */
-	if ((ybayeroff == 1)
-			|| ((com.pref.debayer.use_bayer_header
-					&& !g_strcmp0(fit->row_order, "BOTTOM-UP"))
-					|| !com.pref.debayer.top_down)) {
+
+	if (ybayeroff == 1) {
 		switch (*pattern) {
 		case BAYER_FILTER_RGGB:
 			*pattern = BAYER_FILTER_GBRG;
@@ -845,10 +840,50 @@ int retrieve_Bayer_pattern(fits *fit, sensor_pattern *pattern) {
 		}
 	}
 
-	/* for top-down debayer: do nothing */
+	/* bottom-up keyword */
 	if ((com.pref.debayer.use_bayer_header
+			&& !g_strcmp0(fit->row_order, "BOTTOM-UP"))) {
+		switch (*pattern) {
+		case BAYER_FILTER_RGGB:
+			*pattern = BAYER_FILTER_GBRG;
+			break;
+		case BAYER_FILTER_BGGR:
+			*pattern = BAYER_FILTER_GRBG;
+			break;
+		case BAYER_FILTER_GBRG:
+			*pattern = BAYER_FILTER_RGGB;
+			break;
+		case BAYER_FILTER_GRBG:
+			*pattern = BAYER_FILTER_BGGR;
+			break;
+		default:
+			return 1;
+		}
+		/* top-down keyword */
+	} else if ((com.pref.debayer.use_bayer_header
 			&& !g_strcmp0(fit->row_order, "TOP-DOWN"))) {
+		/* Do nothing */
 		return 0;
+	} else {
+		/* no keywords found */
+		if (com.pref.debayer.top_down) {
+			switch (*pattern) {
+			case BAYER_FILTER_RGGB:
+				*pattern = BAYER_FILTER_GBRG;
+				break;
+			case BAYER_FILTER_BGGR:
+				*pattern = BAYER_FILTER_GRBG;
+				break;
+			case BAYER_FILTER_GBRG:
+				*pattern = BAYER_FILTER_RGGB;
+				break;
+			case BAYER_FILTER_GRBG:
+				*pattern = BAYER_FILTER_BGGR;
+				break;
+			default:
+				return 1;
+			}
+		}
 	}
 	return 0;
 }
