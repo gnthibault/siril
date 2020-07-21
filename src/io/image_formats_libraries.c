@@ -371,7 +371,7 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 		mirrorx(fit, FALSE);
 	}
 	fit->orig_bitpix = fit->bitpix;
-	g_snprintf(fit->row_order, FLEN_VALUE, "%s", "BOTTOM-UP");
+	g_snprintf(fit->row_order, FLEN_VALUE, "%s", "TOP-DOWN");
 
 	retval = nsamples;
 
