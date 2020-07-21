@@ -587,6 +587,8 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 		return -1;
 	}
 	fit->type = DATA_USHORT;
+	g_snprintf(fit->row_order, FLEN_VALUE, "%s", "TOP-DOWN");
+
 	fclose(file);
 	char *basename = g_path_get_basename(filename);
 	siril_log_message(_("Reading NetPBM: file %s, %ld layer(s), %ux%u pixels\n"),

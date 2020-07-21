@@ -854,7 +854,7 @@ int readpng(const char *name, fits* fit) {
 		fit->pdata[GLAYER] = fit->data + npixels;
 		fit->pdata[BLAYER] = fit->data + npixels * 2;
 		fit->binning_x = fit->binning_y = 1;
-
+		g_snprintf(fit->row_order, FLEN_VALUE, "%s", "TOP-DOWN");
 	}
 	gchar *basename = g_path_get_basename(name);
 	siril_log_message(_("Reading PNG: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
