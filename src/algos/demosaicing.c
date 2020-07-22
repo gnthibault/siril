@@ -828,7 +828,6 @@ int retrieve_Bayer_pattern(fits *fit, sensor_pattern *pattern) {
 		}
 	}
 
-
 	if (ybayeroff == 1) {
 		switch (*pattern) {
 		case BAYER_FILTER_RGGB:
@@ -848,6 +847,7 @@ int retrieve_Bayer_pattern(fits *fit, sensor_pattern *pattern) {
 		}
 	}
 
+	/* read bottom-up */
 	if (!top_down) {
 		switch (*pattern) {
 		case BAYER_FILTER_RGGB:

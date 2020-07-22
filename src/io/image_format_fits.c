@@ -963,9 +963,10 @@ static void save_fits_header(fits *fit) {
 			&status);
 
 	status = 0;
-	if (fit->row_order[0] != '\0')
+	if (!g_strcmp0(fit->row_order, "BOTTOM-UP") || !g_strcmp0(fit->row_order, "TOP-DOWN")) {
 		fits_update_key(fit->fptr, TSTRING, "ROWORDER", &fit->row_order,
 				"Order of the rows in image array", &status);
+	}
 
 	/*******************************************************************
 	 * ************* CAMERA AND INSTRUMENT KEYWORDS ********************
