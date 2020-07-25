@@ -1,10 +1,10 @@
 ############################################
 # Script for Siril 1.0
-# March 2020
+# July 2020
 # (C) Cyril Richard
-# DSLR_extractHa v1.0
+# ExtractHaOIII v1.0
 ########### PREPROCESSING SCRIPT ###########
-# Script for DSLR color camera preprocessing
+# Script for color camera preprocessing
 # needs 4 sets of RAW images in the working
 # directory, within 4 directories:
 # biases, flats, darks and lights 
@@ -13,13 +13,15 @@
 
 #build master-bias
 cd biases
-convertraw bias_
+convert bias -out=../process
+cd ../process
 stack bias_ rej 3 3 -nonorm
 cd ..
 
-cd flats
 #preprocess flats
-convertraw flat_
+cd flats
+convert flat -out=../process
+cd ../process
 preprocess flat_ -bias=../biases/bias_stacked
 
 #build master-flat
@@ -28,24 +30,37 @@ cd ..
 
 #build master-dark
 cd darks
-convertraw dark_
+convert dark -out=../process
+cd ../process
 stack dark_ rej 3 3 -nonorm
 cd ..
 
 #preprocess lights
 cd lights
-convertraw light_
+convert light -out=../process
+cd ../process
 preprocess light_ -dark=../darks/dark_stacked -flat=../flats/pp_flat_stacked -cfa -equalize_cfa
 
-#extract Ha
-seqextract_Ha pp_light_
+#extract Ha and OIII
+seqextract_HaOIII pp_light_
 
-#align lights
+#align Ha lights
 register Ha_pp_light_ -drizzle
 
-#stack calibrated lights
+#stack calibrated Ha lights
 stack r_Ha_pp_light_ rej 3 3 -norm=addscale -output_norm -out=../Ha_result
 
-cd ..
-close
+#align OIII lights
+register OIII_pp_light_ -drizzle
 
+#stack calibrated OIII lights
+stack r_OIII_pp_light_ rej 3 3 -norm=addscale -output_norm -out=../OIII_result
+
+cd ..
+
+#Now make linear match on OIII frame based upon Ha frame
+load OIII_result
+linear_match Ha_result 0 0.92
+save OIII_result
+
+close

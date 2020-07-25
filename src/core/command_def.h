@@ -15,7 +15,8 @@
 #define STR_CLEAR N_("Clears the graphical output logs")
 #define STR_CLEARSTAR N_("Clear all the stars saved in memory and displayed on the screen")
 #define STR_CLOSE N_("Properly closes the opened image and the opened sequence, if any")
-#define STR_CONVERT N_("Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" is the basename of the new sequence. The option \"-debayer\" applies demosaicing to images while \"-fitseq\" is an option that sets the output file type to a FITS sequence. \"-start=index\" sets the starting index parameter")
+#define STR_CONVERT N_("Convert all images in a known format into Siril's FITS images. The argument \"basename\" is the basename of the new sequence. For FITS images, Siril will try to make a symbolic link. If not possible, files are copied.  The option \"-debayer\" applies demosaicing to images, in this case no symbolic link are done. \"-start=index\" sets the starting index parameter and the \"-out=\" option allows to convert files into another directory" )
+#define STR_CONVERTRAW N_("Convert DSLR RAW files into Siril's FITS images. The argument \"basename\" is the basename of the new sequence. The option \"-debayer\" applies demosaicing to images while \"-fitseq\" is an option that sets the output file type to a FITS sequence. \"-start=index\" sets the starting index parameter. It is possible to convert files in another directory with the \"-out=\" option")
 #define STR_COSME N_("Apply the local mean to a set of pixels on the in-memory image (cosmetic correction). The coordinates of these pixels are in an ASCII file [.lst file]. COSME is adapted to correct residual hot and cold pixels after preprocessing")
 #define STR_COSME_CFA N_("Same function that COSME but applying to RAW CFA images")
 #define STR_CROP N_("It can be used with the GUI: if a selection has been made with the mouse, calling the CROP command without arguments crops it on this selection. Otherwise, or in scripts, arguments have to be given, with \"x\" and \"y\" being the coordinates of the top left corner, and \"width\" and \"height\" the size of the selection")
@@ -52,7 +53,7 @@
 #define STR_IMUL N_("Multiplies the image in memory by the image given in argument")
 #define STR_ISUB N_("Subtracts the image in memory by the image given in argument")
 
-#define STR_LINK N_("Link all FITS images in the working directory with the basename given in argument. If no symbolic link could be created, files are copied")
+#define STR_LINK N_("Link all FITS images in the working directory with the basename given in argument. If no symbolic link could be created, files are copied. It is possible to convert files in another directory with the \"-out=\" option")
 #define STR_LOAD N_("Loads the image \"filename\"; it first attempts to load \"filename\", then \"filename\".fit and finally \"filename\".fits and after, all supported format, aborting if none of these are found. These scheme is applicable to every Siril command implying reading files. Fits headers MIPS-HI and MIPS-LO are read and their values given to the current viewing levels. Writing a known extension at the end of \"filename\" will load the image \"filename\".ext: this is used when numerous files have the same name but not the same extension")
 #define STR_LOG N_("Computes and applies a logarithmic scale to the current image")
 #define STR_LMATCH N_("Computes a linear function between a reference image and a target. The function is then applied to the target image to match it to the reference one. The algorithm will ignore all reference pixels whose values are outside of the [\"low\", \"high\"] range")

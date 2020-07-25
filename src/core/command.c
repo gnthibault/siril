@@ -39,7 +39,6 @@
 #include "core/processing.h"
 #include "core/sequence_filtering.h"
 #include "core/OS_utils.h"
-#include "io/FITS_symlink.h"
 #include "io/conversion.h"
 #include "io/image_format_fits.h"
 #include "io/sequence.h"
@@ -2513,7 +2512,7 @@ int process_convertraw(int nb) {
 		return 1;
 	}
 
-	for (int i = 2; i < 4; i++) {
+	for (int i = 2; i < 6; i++) {
 		if (word[i]) {
 			char *current = word[i], *value;
 			if (!strcmp(current, "-debayer")) {
@@ -2525,6 +2524,21 @@ int process_convertraw(int nb) {
 			} else if (g_str_has_prefix(current, "-start=")) {
 				value = current + 7;
 				idx = (atoi(value) <= 0 || atoi(value) >= 100000) ? 1 : atoi(value);
+			} else if (g_str_has_prefix(current, "-out=")) {
+				value = current + 5;
+				if (value[0] == '\0') {
+					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+					return 1;
+				}
+				if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
+					if (!g_mkdir_with_parents(value, 0755) == 0) {
+						siril_log_color_message(_("Cannot create output folder: %s\n"), "red", value);
+						return 1;
+					}
+				}
+				gchar *filename = g_build_filename(value, destroot, NULL);
+				g_free(destroot);
+				destroot = filename;
 			}
 		}
 	}
@@ -2544,7 +2558,7 @@ int process_convertraw(int nb) {
 			continue;
 		image_type type = get_type_for_extension(ext);
 		if (type == TYPERAW) {
-			list = g_list_append(list, g_strdup(file));
+			list = g_list_append(list, g_build_filename(com.wd, file, NULL));
 			count++;
 		}
 	}
@@ -2584,11 +2598,12 @@ int process_convertraw(int nb) {
 	args->total = count;
 	args->nb_converted_files = 0;
 	args->command_line = TRUE;
-	args->destroot = destroot;
+	args->destroot = format_basename(destroot);
 	args->input_has_a_seq = FALSE;
 	args->debayer = debayer;
 	args->output_type = output;
 	args->multiple_output = FALSE;
+	args->make_link = FALSE;
 	gettimeofday(&(args->t_start), NULL);
 	start_in_new_thread(convert_thread_worker, args);
 	return 0;
@@ -2607,17 +2622,35 @@ int process_link(int nb) {
 		return 1;
 	}
 
-	if (word[2]) {
-		char *current = word[2], *value;
-		if (g_str_has_prefix(current, "-start=")) {
-			value = current + 7;
-			idx = (atoi(value) <= 0 || atoi(value) >= 100000) ? 1 : atoi(value);
+	for (int i = 2; i < 4; i++) {
+		if (word[i]) {
+			char *current = word[i], *value;
+			if (g_str_has_prefix(current, "-start=")) {
+				value = current + 7;
+				idx = (atoi(value) <= 0 || atoi(value) >= 100000) ?
+						1 : atoi(value);
+			} else if (g_str_has_prefix(current, "-out=")) {
+				value = current + 5;
+				if (value[0] == '\0') {
+					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+					return 1;
+				}
+				if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
+					if (!g_mkdir_with_parents(value, 0755) == 0) {
+						siril_log_color_message(_("Cannot create output folder: %s\n"), "red", value);
+						return 1;
+					}
+				}
+				gchar *filename = g_build_filename(value, destroot, NULL);
+				g_free(destroot);
+				destroot = filename;
+			}
 		}
 	}
 
 	if ((dir = g_dir_open(com.wd, 0, &error)) == NULL){
-		siril_log_message(_("Conversion: error opening working directory %s.\n"), com.wd);
-		fprintf (stderr, "Conversion: %s\n", error->message);
+		siril_log_message(_("Link: error opening working directory %s.\n"), com.wd);
+		fprintf (stderr, "Link: %s\n", error->message);
 		g_error_free(error);
 		set_cursor_waiting(FALSE);
 		return 1;
@@ -2630,12 +2663,12 @@ int process_link(int nb) {
 			continue;
 		image_type type = get_type_for_extension(ext);
 		if (type == TYPEFITS) {
-			list = g_list_append(list, g_strdup(file));
+			list = g_list_append(list, g_build_filename(com.wd, file, NULL));
 			count++;
 		}
 	}
 	if (!count) {
-		siril_log_message(_("No FITS files were found for conversion\n"));
+		siril_log_message(_("No FITS files were found for link\n"));
 		return 1;
 	}
 	/* sort list */
@@ -2651,28 +2684,150 @@ int process_link(int nb) {
 		files_to_link[i] = g_strdup(list->data);
 	g_list_free_full(orig_list, g_free);
 
-	siril_log_color_message(_("Conversion: processing %d RAW files...\n"), "green", count);
+	siril_log_color_message(_("Link: processing %d FITS files...\n"), "green", count);
 
 	set_cursor_waiting(TRUE);
 	if (!com.script)
 		control_window_switch_to_tab(OUTPUT_LOGS);
 
 	if (!com.wd) {
-		siril_log_message(_("Conversion: no working directory set.\n"));
+		siril_log_message(_("Link: no working directory set.\n"));
 		set_cursor_waiting(FALSE);
 		return 1;
 	}
 
-	struct _symlink_data *args = malloc(sizeof(struct _symlink_data));
+	struct _convert_data *args = malloc(sizeof(struct _convert_data));
 	args->start = idx;
 	args->dir = dir;
 	args->list = files_to_link;
 	args->total = count;
+	args->nb_converted_files = 0;
 	args->command_line = TRUE;
-	args->destroot = destroot;
+	args->destroot = format_basename(destroot);
 	args->input_has_a_seq = FALSE;
+	args->debayer = FALSE;
+	args->multiple_output = FALSE;
+	args->output_type = SEQ_REGULAR; // fallback if symlink does not work
+	args->make_link = TRUE;
 	gettimeofday(&(args->t_start), NULL);
-	start_in_new_thread(symlink_thread_worker, args);
+	start_in_new_thread(convert_thread_worker, args);
+
+	return 0;
+}
+
+int process_convert(int nb) {
+	GDir *dir;
+	GError *error = NULL;
+	const gchar *file;
+	GList *list = NULL;
+	int idx = 1;
+	gboolean debayer = FALSE;
+	gboolean make_link = TRUE;
+	sequence_type output = SEQ_REGULAR;
+	gchar *destroot = g_strdup(word[1]);
+
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
+	for (int i = 2; i < 6; i++) {
+		if (word[i]) {
+			char *current = word[i], *value;
+			if (!strcmp(current, "-debayer")) {
+				debayer = TRUE;
+				make_link = FALSE;
+			} else if (!strcmp(current, "-fitseq")) {
+				output = SEQ_FITSEQ;
+				if (!ends_with(destroot, com.pref.ext))
+					str_append(&destroot, com.pref.ext);
+			} else if (g_str_has_prefix(current, "-start=")) {
+				value = current + 7;
+				idx = (atoi(value) <= 0 || atoi(value) >= 100000) ?
+						1 : atoi(value);
+			} else if (g_str_has_prefix(current, "-out=")) {
+				value = current + 5;
+				if (value[0] == '\0') {
+					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+					return 1;
+				}
+				if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
+					if (!g_mkdir_with_parents(value, 0755) == 0) {
+						siril_log_color_message(_("Cannot create output folder: %s\n"), "red", value);
+						return 1;
+					}
+				}
+				gchar *filename = g_build_filename(value, destroot, NULL);
+				g_free(destroot);
+				destroot = filename;
+			}
+		}
+	}
+
+	if ((dir = g_dir_open(com.wd, 0, &error)) == NULL){
+		siril_log_message(_("Convert: error opening working directory %s.\n"), com.wd);
+		fprintf (stderr, "Convert: %s\n", error->message);
+		g_error_free(error);
+		set_cursor_waiting(FALSE);
+		return 1;
+	}
+
+	int count = 0;
+	while ((file = g_dir_read_name(dir)) != NULL) {
+		const char *ext = get_filename_ext(file);
+		if (!ext)
+			continue;
+		image_type type = get_type_for_extension(ext);
+		if (type != TYPEUNDEF && type != TYPEAVI && type != TYPEMP4
+				&& type != TYPEWEBM && type != TYPESER) {
+			list = g_list_append(list, g_build_filename(com.wd, file, NULL));
+			count++;
+		}
+	}
+	if (!count) {
+		siril_log_message(_("No files were found for convert\n"));
+		return 1;
+	}
+	/* sort list */
+	list = g_list_sort(list, (GCompareFunc) strcompare);
+	/* convert the list to an array for parallel processing */
+	char **files_to_link = malloc(count * sizeof(char *));
+	if (!files_to_link) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
+	GList *orig_list = list;
+	for (int i = 0; i < count && list; list = list->next, i++)
+		files_to_link[i] = g_strdup(list->data);
+	g_list_free_full(orig_list, g_free);
+
+	siril_log_color_message(_("Convert: processing %d files...\n"), "green", count);
+
+	set_cursor_waiting(TRUE);
+	if (!com.script)
+		control_window_switch_to_tab(OUTPUT_LOGS);
+
+	if (!com.wd) {
+		siril_log_message(_("Convert: no working directory set.\n"));
+		set_cursor_waiting(FALSE);
+		return 1;
+	}
+
+	struct _convert_data *args = malloc(sizeof(struct _convert_data));
+	args->start = idx;
+	args->dir = dir;
+	args->list = files_to_link;
+	args->total = count;
+	args->nb_converted_files = 0;
+	args->command_line = TRUE;
+	args->destroot = format_basename(destroot);
+	args->input_has_a_seq = FALSE;
+	args->debayer = debayer;
+	args->multiple_output = FALSE;
+	args->output_type = output;
+	args->make_link = make_link;
+	gettimeofday(&(args->t_start), NULL);
+	start_in_new_thread(convert_thread_worker, args);
 
 	return 0;
 }
@@ -2870,6 +3025,12 @@ static int parse_stack_command_line(struct stacking_configuration *arg, int firs
 				if (value[0] == '\0') {
 					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
 					return 1;
+				}
+				if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
+					if (!g_mkdir_with_parents(value, 0755) == 0) {
+						siril_log_color_message(_("Cannot create output folder: %s\n"), "red", value);
+						return 1;
+					}
 				}
 				arg->result_file = strdup(value);
 			}
@@ -3080,8 +3241,13 @@ static gpointer stackone_worker(gpointer garg) {
 
 	retval = stack_one_seq(arg);
 
-	if (!retval)
+	if (retval) {
+		if (retval == ST_ALLOC_ERROR) {
+			siril_log_message(_("It looks like there is a memory allocation error, change memory settings and try to fix it.\n"));
+		}
+	} else {
 		siril_log_message(_("Stacked sequence successfully.\n"));
+	}
 
 	gettimeofday(&t_end, NULL);
 	show_time(arg->t_start, t_end);

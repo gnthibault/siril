@@ -18,6 +18,7 @@ struct _convert_data {
 	int nb_converted_files;
 	gboolean command_line;
 	gboolean input_has_a_seq;
+	gboolean make_link;
 	gchar *destroot;
 	int retval;
 

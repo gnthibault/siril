@@ -160,11 +160,13 @@ static void initialize_convert() {
 		if (!confirm) return;
 	}
 
-	gboolean multiple, debayer;
-	GtkToggleButton *toggle = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "multipleSER"));
+	gboolean multiple, debayer, symbolic_link;
+	GtkToggleButton *toggle = GTK_TOGGLE_BUTTON(lookup_widget("multipleSER"));
 	multiple = gtk_toggle_button_get_active(toggle);
-	toggle = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "demosaicingButton"));
+	toggle = GTK_TOGGLE_BUTTON(lookup_widget("demosaicingButton"));
 	debayer = gtk_toggle_button_get_active(toggle);
+	toggle = GTK_TOGGLE_BUTTON(lookup_widget("convert_symlink"));
+	symbolic_link = gtk_toggle_button_get_active(toggle);
 
 	/* handle impossible cases */
 	/* why is it forbidden?
@@ -236,6 +238,7 @@ static void initialize_convert() {
 	args->input_has_a_seq = !no_sequence_to_convert;
 	args->destroot = g_strdup(destroot);
 	args->debayer = debayer;
+	args->make_link = symbolic_link;
 	args->output_type = output_type;
 	args->multiple_output = multiple;
 	gettimeofday(&(args->t_start), NULL);
