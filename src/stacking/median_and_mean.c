@@ -175,7 +175,7 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 }
 
 int stack_compute_parallel_blocks(struct _image_block **blocksptr, int max_number_of_rows,
-		int nb_channels, long *naxes, long *largest_block_height,
+		int nb_channels, long *naxes, size_t *largest_block_height,
 		int *nb_blocks, int nb_threads) {
 	int size_of_stacks = max_number_of_rows;
 	if (size_of_stacks == 0)
@@ -616,8 +616,8 @@ int stack_median(struct stacking_args *args) {
 
 static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	int nb_frames;		/* number of frames actually used */
-	int bitpix, i, naxis, ielem_size, cur_nb = 0, retval = ST_OK, pool_size = 1;
-	long npixels_in_block, naxes[3];
+	int bitpix, i, naxis, cur_nb = 0, retval = ST_OK, pool_size = 1;
+	long naxes[3];
 	double exposure = 0.0;
 	struct _data_block *data_pool = NULL;
 	struct _image_block *blocks = NULL;
@@ -627,7 +627,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	// data for mean/rej only
 	uint64_t irej[3][2] = {{0,0}, {0,0}, {0,0}};
 	regdata *layerparam = NULL;
-	gboolean use_regdata = is_mean;	// TODO see the other TODO at the top
+	gboolean use_regdata = is_mean;
 
 	nb_frames = args->nb_images_to_stack;
 	naxes[0] = naxes[1] = 0; naxes[2] = 1;
@@ -639,8 +639,10 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	g_assert(nb_frames <= args->seq->number);
 
 	if (use_regdata) {
-		if (args->reglayer < 0)
+		if (args->reglayer < 0) {
 			fprintf(stderr, "No registration layer passed, ignoring regdata!\n");
+			use_regdata = FALSE;
+		}
 		else layerparam = args->seq->regparam[args->reglayer];
 	}
 
@@ -702,7 +704,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		nb_channels = 3;
 	}
 
-	long largest_block_height;
+	size_t largest_block_height;
 	int nb_blocks;
 	/* Compute parallel processing data: the data blocks, later distributed to threads */
 	if ((retval = stack_compute_parallel_blocks(&blocks, args->max_number_of_rows, nb_channels,
@@ -718,14 +720,14 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	pool_size = nb_threads;
 	g_assert(pool_size > 0);
 #endif
-	npixels_in_block = largest_block_height * naxes[0];
+	size_t npixels_in_block = largest_block_height * naxes[0];
 	g_assert(npixels_in_block > 0);
-	ielem_size = itype == DATA_FLOAT ? sizeof(float) : sizeof(WORD);
+	int ielem_size = itype == DATA_FLOAT ? sizeof(float) : sizeof(WORD);
 
 	fprintf(stdout, "allocating data for %d threads (each %'lu MB)\n", pool_size,
 			(unsigned long)(nb_frames * npixels_in_block * ielem_size) / BYTES_IN_A_MB);
 	data_pool = calloc(pool_size, sizeof(struct _data_block));
-	size_t bufferSize = ielem_size * nb_frames * (npixels_in_block + 1) + 4; // buffer for tmp and stack, added 4 byte for alignment
+	size_t bufferSize = ielem_size * nb_frames * (npixels_in_block + 1ul) + 4ul; // buffer for tmp and stack, added 4 byte for alignment
 	if (is_mean) {
 		bufferSize += nb_frames * sizeof(int); // for rejected
 		if (args->type_of_rejection == WINSORIZED) {
