@@ -34,7 +34,8 @@ static command commands[] = {
 	{"clear", 0, "clear", process_clear, STR_CLEAR, FALSE},
 	{"clearstar", 0, "clearstar", process_clearstar, STR_CLEARSTAR, FALSE},
 	{"close", 0, "close", process_close, STR_CLOSE, TRUE},
-	{"convertraw", 1, "convertraw basename [-debayer] [-fitseq] [-start=index]", process_convertraw, STR_CONVERT, TRUE},
+	{"convert", 1, "convert basename [-debayer] [-fitseq] [-start=index] [-out=]", process_convert, STR_CONVERT, TRUE},
+	{"convertraw", 1, "convertraw basename [-debayer] [-fitseq] [-start=index] [-out=]", process_convertraw, STR_CONVERTRAW, TRUE},
 	{"cosme", 1, "cosme [filename].lst", process_cosme, STR_COSME, TRUE},
 	{"cosme_cfa", 1, "cosme_cfa [filename].lst", process_cosme, STR_COSME_CFA, TRUE},
 	{"crop", 0, "crop [x y width height]", process_crop, STR_CROP, TRUE},
@@ -72,7 +73,7 @@ static command commands[] = {
 	{"imul", 1, "imul filename", process_imoper, STR_IMUL, TRUE},
 	{"isub", 1, "isub filename", process_imoper, STR_ISUB, TRUE},
 
-	{"link", 1, "link basename [-start=index]", process_link, STR_LINK, TRUE},
+	{"link", 1, "link basename [-start=index] [-out=]", process_link, STR_LINK, TRUE},
 	{"linear_match", 2, "linear_match reference low high", process_linear_match, STR_LMATCH, TRUE}, /* logarifies current image */
 	{"load", 1, "load filename.[ext]", process_load, STR_LOAD, TRUE},
 	// specific loads are not required, but could be used to force the

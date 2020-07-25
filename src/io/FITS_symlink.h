@@ -20,21 +20,18 @@
 #ifndef SRC_IO_FITS_SYMLINK_H_
 #define SRC_IO_FITS_SYMLINK_H_
 
+#ifdef _WIN32
+#include <windows.h>
+#endif
+
 #include <glib.h>
 
-struct _symlink_data {
-	struct timeval t_start;
-	GDir *dir;
-	gchar **list;
-	int start;
-	int total;
-	int nb_linked_files;
-	gboolean command_line;
-	gboolean input_has_a_seq;
-	gchar *destroot;
-	int retval;
-};
-
+gboolean test_if_symlink_is_ok();
 gpointer symlink_thread_worker(gpointer p);
+gboolean symlink_uniq_file(gchar *src_filename, gchar *dest_filename, gboolean allow_symlink);
+
+#ifdef _WIN32
+DWORD read_registre_value(LPTSTR lpKeyName, LPTSTR lpPolicyPath);
+#endif
 
 #endif /* SRC_IO_FITS_SYMLINK_H_ */
