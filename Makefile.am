@@ -13,6 +13,7 @@ SUBDIRS = subprojects \
 # be a recussive make with a separate file list.
 scriptsdir = $(pkgdatadir)/scripts
 scripts_DATA = scripts/OSC_Preprocessing.ssf \
+    scripts/Mono_Preprocessing.ssf \
 	scripts/OSC_Extract_Ha.ssf \
 	scripts/OSC_Extract_HaOIII.ssf \
 	3rdparty/scripts/en/DSLR_Preprocessing_Drizzle.ssf

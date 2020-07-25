@@ -1,0 +1,52 @@
+############################################
+# Script for Siril 1.0
+# July 2020
+# (C) Cyril Richard
+# Mono_Preprocessing v1.0
+#
+########### PREPROCESSING SCRIPT ###########
+# Script for mono camera preprocessing
+# needs 4 sets of RAW images in the working
+# directory, within 4 directories:
+# biases, flats, darks and lights 
+#
+############################################
+
+#build master-bias
+cd biases
+convert bias -out=../process
+cd ../process
+stack bias_ rej 3 3 -nonorm
+cd ..
+
+#preprocess flats
+cd flats
+convert flat -out=../process
+cd ../process
+preprocess flat_ -bias=bias_stacked
+
+#build master-flat
+stack pp_flat_ rej 3 3 -norm=mul
+cd ..
+
+#build master-dark
+cd darks
+convert dark -out=../process
+cd ../process
+stack dark_ rej 3 3 -nonorm
+cd ..
+
+#preprocess lights
+cd lights
+convert light -out=../process
+cd ../process
+preprocess light_ -dark=dark_stacked -flat=pp_flat_stacked
+
+#align lights
+register pp_light_
+
+#stack calibrated lights
+stack r_pp_light_ rej 3 3 -norm=addscale -output_norm -out=../result
+
+cd ..
+close
