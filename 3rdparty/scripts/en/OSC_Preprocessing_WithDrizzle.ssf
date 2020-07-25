@@ -1,13 +1,11 @@
 ############################################
-# Script for Siril 0.9
-# March 2020
+# Script for Siril 1.0
+# July 2020
 # (C) Cyril Richard
-# Modified by Colmic
-# DSLR_preprocessing v1.6
-########### PREPROCESSING SCRIPT ###########
-#              With Drizzle 2x
+# OSC_Preprocessing_WithDrizzle v1.0
 #
-# Script for DSLR color camera preprocessing
+########### PREPROCESSING SCRIPT ###########
+# Script for color camera preprocessing
 # needs 4 sets of RAW images in the working
 # directory, within 4 directories:
 # biases, flats, darks and lights 
@@ -16,14 +14,16 @@
 
 #build master-bias
 cd biases
-convertraw bias_
+convert bias -out=../process
+cd ../process
 stack bias_ rej 3 3 -nonorm
 cd ..
 
-cd flats
 #preprocess flats
-convertraw flat_
-preprocess flat_ -bias=../biases/bias_stacked
+cd flats
+convert flat -out=../process
+cd ../process
+preprocess flat_ -bias=bias_stacked
 
 #build master-flat
 stack pp_flat_ rej 3 3 -norm=mul
@@ -31,16 +31,18 @@ cd ..
 
 #build master-dark
 cd darks
-convertraw dark_
+convert dark -out=../process
+cd ../process
 stack dark_ rej 3 3 -nonorm
 cd ..
 
 #preprocess lights
 cd lights
-convertraw light_
-preprocess light_ -dark=../darks/dark_stacked -flat=../flats/pp_flat_stacked -cfa -equalize_cfa -debayer
+convert light -out=../process
+cd ../process
+preprocess light_ -dark=dark_stacked -flat=pp_flat_stacked -cfa -equalize_cfa -debayer
 
-#align lights
+#align lights with Drizzle 2x
 register pp_light_ -drizzle
 
 #stack calibrated lights

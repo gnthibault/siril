@@ -16,7 +16,7 @@ scripts_DATA = scripts/OSC_Preprocessing.ssf \
     scripts/Mono_Preprocessing.ssf \
 	scripts/OSC_Extract_Ha.ssf \
 	scripts/OSC_Extract_HaOIII.ssf \
-	3rdparty/scripts/en/DSLR_Preprocessing_Drizzle.ssf
+	3rdparty/scripts/en/OSC_Preprocessing_WithDrizzle.ssf
 
 doc_DATA = AUTHORS \
 	LICENSE.md
