@@ -1,0 +1,71 @@
+###################################################
+# Script pour Siril 1.0
+# Juillet 2020
+# (C) Cyril Richard
+# Adapté, modifié et traduit par Colmic
+# Couleur_Extraction_HaOIII v1.0
+#
+###################################################
+#
+# Pré-traitement pour caméra ou APN Couleur
+# avec option extraction Ha + OIII
+#
+# fonctionne avec un filtre duo-band Ha + OIII
+# Ce script a besoin de 4 dossiers pour fonctionner
+# à installer dans votre dossier de travail de Siril :
+# offsets, darks, flats, brutes
+# Copiez vos images FITS dans ces 4 dossiers 
+#
+###################################################
+
+#Création du master-offset (ou dark de flat)
+cd offsets
+convert offset -out=../process
+cd ../process
+stack offset_ rej 3 3 -nonorm
+cd ..
+
+#Pré-traitement des flats avec retrait de l'offset (ou du dark de flat)
+cd flats
+convert flat -out=../process
+cd ../process
+preprocess flat_ -dark=offset_stacked
+
+#Création du master-flat
+stack pp_flat_ rej 3 3 -norm=mul
+cd ..
+
+#Création du master-dark
+cd darks
+convert dark -out=../process
+cd ../process
+stack dark_ rej 3 3 -nonorm
+cd ..
+
+#pré-traitement des brutes
+cd brutes
+convert brute -out=../process
+cd ../process
+preprocess brute_ -dark=dark_stacked -flat=pp_flat_stacked -cfa -equalize_cfa
+
+#extraction Ha et OIII
+seqextract_HaOIII pp_brute_
+
+#alignement des brutes Ha
+register Ha_pp_brute_ -drizzle
+
+#empilement des brutes Ha calibrées
+stack r_Ha_pp_brute_ rej 3 3 -norm=addscale -output_norm -out=../Ha_resultat
+
+#alignement des brutes OIII
+register OIII_pp_brute_ -drizzle
+
+#empilement des brutes OIII calibrées
+stack r_OIII_pp_brute_ rej 3 3 -norm=addscale -output_norm -out=../OIII_resultat
+
+#linear match pour ajuster les niveaux de l'image OIII avec l'image Ha
+cd ..
+load OIII_resultat
+linear_match Ha_resultat 0 0.92
+save OIII_resultat
+close
