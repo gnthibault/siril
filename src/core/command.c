@@ -3026,12 +3026,6 @@ static int parse_stack_command_line(struct stacking_configuration *arg, int firs
 					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
 					return 1;
 				}
-				if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
-					if (!g_mkdir_with_parents(value, 0755) == 0) {
-						siril_log_color_message(_("Cannot create output folder: %s\n"), "red", value);
-						return 1;
-					}
-				}
 				arg->result_file = strdup(value);
 			}
 			else {
