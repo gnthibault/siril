@@ -24,37 +24,37 @@
 cd offsets
 convert offset -out=../process
 cd ../process
-stack offset_ rej 3 3 -nonorm
+stack offset rej 3 3 -nonorm
 cd ..
 
 #Pré-traitement des flats avec retrait de l'offset (ou du dark de flat)
 cd flats
 convert flat -out=../process
 cd ../process
-preprocess flat_ -dark=offset_stacked
+preprocess flat -dark=offset_stacked
 
 #Création du master-flat
-stack pp_flat_ rej 3 3 -norm=mul
+stack pp_flat rej 3 3 -norm=mul
 cd ..
 
 #Création du master-dark
 cd darks
 convert dark -out=../process
 cd ../process
-stack dark_ rej 3 3 -nonorm
+stack dark rej 3 3 -nonorm
 cd ..
 
 #pré-traitement des brutes
 cd brutes
 convert brute -out=../process
 cd ../process
-preprocess brute_ -dark=dark_stacked -flat=pp_flat_stacked -cfa -equalize_cfa -debayer
+preprocess brute -dark=dark_stacked -flat=pp_flat_stacked -cfa -equalize_cfa -debayer
 
 #Alignement des brutes avec Drizzle 2x
-register pp_brute_ -drizzle
+register pp_brute -drizzle
 
 #Empilement des brutes calibrées
-stack r_pp_brute_ rej 3 3 -norm=addscale -out=../resultat
+stack r_pp_brute rej 3 3 -norm=addscale -out=../resultat
 
 cd ..
 close
