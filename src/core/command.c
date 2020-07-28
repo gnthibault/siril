@@ -2598,7 +2598,10 @@ int process_convertraw(int nb) {
 	args->total = count;
 	args->nb_converted_files = 0;
 	args->command_line = TRUE;
-	args->destroot = format_basename(destroot);
+	if (output == SEQ_REGULAR)
+		args->destroot = format_basename(destroot);
+	else
+		args->destroot = destroot;
 	args->input_has_a_seq = FALSE;
 	args->debayer = debayer;
 	args->output_type = output;
@@ -2820,7 +2823,10 @@ int process_convert(int nb) {
 	args->total = count;
 	args->nb_converted_files = 0;
 	args->command_line = TRUE;
-	args->destroot = format_basename(destroot);
+	if (output == SEQ_REGULAR)
+		args->destroot = format_basename(destroot);
+	else
+		args->destroot = destroot;
 	args->input_has_a_seq = FALSE;
 	args->debayer = debayer;
 	args->multiple_output = FALSE;
