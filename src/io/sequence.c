@@ -133,22 +133,22 @@ int read_single_sequence(char *realname, image_type imagetype) {
 	const char *film_ext;
 #endif
 	switch (imagetype) {
-		case TYPESER:
-			name[strlen(name)-1] = 'q';
-			break;
-		case TYPEFITS:
-			ext = get_filename_ext(realname);
-			assert(ext);
-			len = strlen(ext);
-			strncpy(name+strlen(name)-len, "seq", len);
-			break;
+	case TYPESER:
+		name[strlen(name) - 1] = 'q';
+		break;
+	case TYPEFITS:
+		ext = get_filename_ext(realname);
+		assert(ext);
+		len = strlen(ext);
+		strncpy(name + strlen(name) - len, "seq", len);
+		break;
 #ifdef HAVE_FFMS2
-		case TYPEAVI:
-			film_ext = get_filename_ext(realname);
-			assert(film_ext);
-			len = strlen(film_ext);
-			strncpy(name+strlen(name)-len, "seq", len);
-			break;
+	case TYPEAVI:
+		film_ext = get_filename_ext(realname);
+		assert(film_ext);
+		len = strlen(film_ext);
+		strncpy(name + strlen(name) - len, "seq", len);
+		break;
 #endif
 		default:
 			retval = 1;
@@ -928,11 +928,13 @@ char *fit_sequence_get_image_filename(sequence *seq, int index, char *name_buffe
 
 char *fit_sequence_get_image_filename_prefixed(sequence *seq, const char *prefix, int index) {
 	char format[16];
+	gchar *basename = g_path_get_basename(seq->seqname);
 	GString *str = g_string_sized_new(70);
 	sprintf(format, "%%s%%s%%0%dd%%s", seq->fixed);
 	g_string_printf(str, format, prefix,
-			seq->seqname, seq->imgparam[index].filenum,
+			basename, seq->imgparam[index].filenum,
 			com.pref.ext);
+	g_free(basename);
 	return g_string_free(str, FALSE);
 }
 
