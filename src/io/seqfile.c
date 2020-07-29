@@ -360,7 +360,7 @@ sequence * readseqfile(const char *name){
 					int nb_film = get_nb_film_ext_supported();
 					gchar *filmname = NULL;
 
-					for (int ii = 0; ii < nb_film; i++) {
+					for (int ii = 0; ii < nb_film; ii++) {
 						GString *filmString;
 						filmString = g_string_new(seqfilename);
 						filmString = g_string_truncate(filmString, strlen(seqfilename) - 3);
