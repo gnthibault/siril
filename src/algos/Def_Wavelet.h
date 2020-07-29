@@ -67,15 +67,15 @@ typedef struct 	{
 } pave_f_des;
 
 
-/* Data structure for Mallat's algorithm */
-struct mallat_plan_des	{
-	int Nl,Nc;
-	float *Coef_Horiz;
-	float *Coef_Diag;
-	float *Coef_Vert;
-	float *Low_Resol;
-	struct mallat_plan_des *Smooth_Imag;
-};
+///* Data structure for Mallat's algorithm */
+//struct mallat_plan_des	{
+//	int Nl,Nc;
+//	float *Coef_Horiz;
+//	float *Coef_Diag;
+//	float *Coef_Vert;
+//	float *Low_Resol;
+//	struct mallat_plan_des *Smooth_Imag;
+//};
 
 /* Data structure for a wavelet transform */
 typedef struct 	{
@@ -90,7 +90,7 @@ typedef struct 	{
 	/* Buffer for the data */
 	pyramid_f_des Pyramid;
 	pave_f_des Pave;
-	struct mallat_plan_des Mallat;
+//	struct mallat_plan_des Mallat;
 } wave_transf_des;
 
 /* Data structure for image information */
