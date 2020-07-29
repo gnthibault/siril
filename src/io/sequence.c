@@ -479,7 +479,6 @@ int set_seq(const char *name){
 	set_GUI_photometry();
 
 	/* redraw and display image */
-//	show_main_gray_window();
 	close_tab();	//close Green and Blue Tab if a 1-layer sequence is loaded
 	adjust_vport_size_to_image();	// resize viewports to the displayed image size
 	redraw(com.cvport, REMAP_ALL);

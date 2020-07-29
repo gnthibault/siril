@@ -247,12 +247,11 @@ int film_read_frame(struct film_struct *film, int frame_no, fits *fit) {
 	/* now we're ready to actually retrieve the video frames */
 	int nb_pixels, convert_rgb_to_gray = 0;
 
-	if (film->videosource == 0x00) {
+	if (film->videosource == NULL) {
 		siril_log_message(_("FILM ERROR: incompatible format\n"));
 		return FILM_ERROR;
 	}
 	const FFMS_Frame *frame = FFMS_GetFrame(film->videosource, frame_no, &film->errinfo);
-	WORD *ptr;
 	if (frame == NULL) {
 		/* handle error */
 		fprintf(stderr, "FILM error: %s\n", film->errmsg);
@@ -302,6 +301,7 @@ int film_read_frame(struct film_struct *film, int frame_no, fits *fit) {
 		film->nb_layers = 1;
 
 	/* do something with frame */
+	WORD *ptr;
 
 	if ((ptr = realloc(fit->data, nb_pixels * film->nb_layers * sizeof(WORD)))
 			== NULL) {
@@ -325,7 +325,7 @@ int film_read_frame(struct film_struct *film, int frame_no, fits *fit) {
 		fit->pdata[GLAYER] = fit->data + nb_pixels;
 		fit->pdata[BLAYER] = fit->data + nb_pixels * 2;
 	}
-	fit->bitpix = BYTE_IMG;
+	fit->bitpix = fit->orig_bitpix = BYTE_IMG;
 	//fit->mini = 0;
 	//fit->maxi = 255;
 	/* putting this above also requires the max[*] to be = 255. Besides, this overrides the

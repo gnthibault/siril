@@ -109,7 +109,7 @@ void free_image_data() {
 	if (!com.headless) {
 		/* free alignment preview data */
 		int i;
-		for (i=0; i<PREVIEW_NB; i++) {
+		for (i = 0; i < PREVIEW_NB; i++) {
 			if (com.preview_surface[i]) {
 				cairo_surface_destroy(com.preview_surface[i]);
 				com.preview_surface[i] = NULL;
