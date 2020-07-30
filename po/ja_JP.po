@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2020-07-30 10:14+0200\n"
-"PO-Revision-Date: 2020-07-30 17:26+0200\n"
+"PO-Revision-Date: 2020-07-30 22:28+0200\n"
 "Last-Translator: \n"
 "Language-Team: \n"
 "Language: ja_JP\n"
@@ -16,7 +16,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 2.3.1\n"
+"X-Generator: Poedit 2.4\n"
 
 #: src/gui/siril3.glade:630
 msgid ""
@@ -908,11 +908,11 @@ msgstr ""
 
 #: src/gui/siril3.glade:4203 src/gui/siril3.glade:10562
 msgid "Cold Sigma:"
-msgstr "疎偏差:"
+msgstr "疎標準偏差:"
 
 #: src/gui/siril3.glade:4219 src/gui/siril3.glade:10627
 msgid "Hot Sigma:"
-msgstr "過偏差:"
+msgstr "過標準偏差:"
 
 #: src/gui/siril3.glade:4235
 msgid "Estimate"
@@ -2839,9 +2839,8 @@ msgid ""
 msgstr ""
 
 #: src/gui/siril3.glade:12938
-#, fuzzy
 msgid "Reject high"
-msgstr "画像を選ぶ"
+msgstr ""
 
 #: src/gui/siril3.glade:13005
 msgid "Resample"
@@ -3163,7 +3162,7 @@ msgstr "動的点像分布関数"
 
 #: src/gui/siril3.glade:15154
 msgid "Ch."
-msgstr ""
+msgstr "Ch."
 
 #: src/gui/siril3.glade:15167
 msgid "B"
@@ -3191,7 +3190,7 @@ msgstr "FWHMy"
 
 #: src/gui/siril3.glade:15281
 msgid "Mag"
-msgstr ""
+msgstr "Mag"
 
 #: src/gui/siril3.glade:15299
 msgid "r"
@@ -3400,7 +3399,7 @@ msgstr ""
 
 #: src/gui/siril3.glade:17119 src/gui/siril3.glade:17596
 msgid "DSLR RAW debayer"
-msgstr ""
+msgstr "DSLR RAW ディベイヤー"
 
 #: src/gui/siril3.glade:17150
 msgid "Use automatic daylight multiplier"
@@ -4255,7 +4254,7 @@ msgstr ""
 #: src/gui/siril-shortcuts.ui:197
 msgctxt "shortcut window"
 msgid "Switch to the Output logs page"
-msgstr ""
+msgstr "出力ログページに切り替え"
 
 #: src/gui/siril-shortcuts.ui:204
 msgctxt "shortcut window"
@@ -4270,7 +4269,7 @@ msgstr ""
 
 #: src/algos/background_extraction.c:621
 msgid "Not enough samples."
-msgstr ""
+msgstr "サンプル不足."
 
 #: src/algos/background_extraction.c:628
 #, c-format
@@ -4646,11 +4645,11 @@ msgstr ""
 
 #: src/algos/plateSolver.c:1341
 msgid "No metadata"
-msgstr ""
+msgstr "メタデータなし"
 
 #: src/algos/plateSolver.c:1394
 msgid "No coordinates"
-msgstr ""
+msgstr "座標なし"
 
 #: src/algos/plateSolver.c:1394
 msgid "Please enter object coordinates."
@@ -4830,7 +4829,7 @@ msgstr ""
 #: src/core/command.c:359
 #, c-format
 msgid "Entropy: %.3f\n"
-msgstr ""
+msgstr "エントロピー: %.3f\n"
 
 #: src/core/command.c:406
 msgid "Sigma must be between [0.4, 2.0]\n"
@@ -5259,7 +5258,7 @@ msgstr ""
 #. sets most properties
 #: src/core/command.c:3406 src/core/preprocess.c:579
 msgid "Preprocessing...\n"
-msgstr ""
+msgstr "前処理中…\n"
 
 #: src/core/command.c:3427
 msgid "16-bit per channel in processed images mode is active\n"
@@ -5590,7 +5589,7 @@ msgstr ""
 
 #: src/core/command_def.h:58
 msgid "Computes and applies a logarithmic scale to the current image"
-msgstr ""
+msgstr "この画像の対数スケールを計算し適用"
 
 #: src/core/command_def.h:59
 msgid ""
@@ -5602,15 +5601,15 @@ msgstr ""
 
 #: src/core/command_def.h:60
 msgid "Lists files and directories in the working directory"
-msgstr ""
+msgstr "ワーキングディレクトリー内のファイルとディレクトリーを表示"
 
 #: src/core/command_def.h:62
 msgid "Rotates the image around a vertical axis"
-msgstr ""
+msgstr "画像を縦軸の周りに回転"
 
 #: src/core/command_def.h:63
 msgid "Rotates the image around an horizontal axis"
-msgstr ""
+msgstr "画像を横軸の周りに回転"
 
 #: src/core/command_def.h:64
 msgid "Applies midtone transfer function to the current loaded image"
@@ -5710,13 +5709,15 @@ msgstr ""
 
 #: src/core/command_def.h:81
 msgid "Rotates the image of an angle of \"degree\" value"
-msgstr ""
+msgstr "画像を « degree » 度回転"
 
 #: src/core/command_def.h:82
 msgid ""
 "Rotates the image of an angle of 180° around its center. This is equivalent to "
 "the command \"ROTATE 180\" or \"ROTATE -180\""
 msgstr ""
+"画像をその中心の周りに 180°回転. これはコマンド ``ROTATE 180’’ 又は "
+"``ROTATE-180’’ と同等."
 
 #: src/core/command_def.h:84
 msgid ""
@@ -5746,7 +5747,7 @@ msgstr ""
 
 #: src/core/command_def.h:88
 msgid "Saves current image into a PNG file: \"filename\".png"
-msgstr ""
+msgstr "この画像を PNG-ファイル:  ``ファイル名’’.png に保存"
 
 #: src/core/command_def.h:89
 msgid ""
@@ -5957,16 +5958,17 @@ msgstr ""
 
 #: src/core/command_def.h:120
 msgid "Replaces values below \"level\" with \"level\""
-msgstr ""
+msgstr "« level » 以下の値を « level » に置き換える"
 
 #: src/core/command_def.h:121
 msgid "Replaces values above \"level\" with \"level\""
-msgstr ""
+msgstr "« level » 以上の値を « level » に置き換える"
 
 #: src/core/command_def.h:122
 msgid ""
 "Replaces values below \"lo\" with \"lo\" and values above \"hi\" with \"hi\""
 msgstr ""
+"« lo » 以下の値を « lo » に置き換え, « hi » 以上の値を « hi » に置き換える"
 
 #: src/core/command_def.h:124
 msgid ""
@@ -6022,23 +6024,23 @@ msgstr ""
 #: src/core/command_line_processor.c:96
 #, c-format
 msgid "This command cannot be used in a script: %s\n"
-msgstr ""
+msgstr "このコマンドはスクリプト: %s では使用不可能\n"
 
 #. process the command
 #: src/core/command_line_processor.c:102
 #, c-format
 msgid "Running command: %s\n"
-msgstr ""
+msgstr "コマンド: %s を実行中\n"
 
 #: src/core/command_line_processor.c:131
 #, c-format
 msgid "Processing line %d: %s"
-msgstr ""
+msgstr "%d: %s 行目を処理中"
 
 #: src/core/command_line_processor.c:209
 #, c-format
 msgid "Error in line %d: '%s'.\n"
-msgstr ""
+msgstr "%d: ‘%s’ 行目にエラー.\n"
 
 #: src/core/command_line_processor.c:210
 msgid "Exiting batch processing.\n"
@@ -6046,7 +6048,7 @@ msgstr ""
 
 #: src/core/command_line_processor.c:230
 msgid "Script execution finished successfully.\n"
-msgstr ""
+msgstr "スクリプトの実行を無事に終了.\n"
 
 #: src/core/command_line_processor.c:232
 msgid "Total execution time"
@@ -6066,11 +6068,11 @@ msgstr ""
 
 #: src/core/command_line_processor.c:269
 msgid "YES"
-msgstr ""
+msgstr "YES"
 
 #: src/core/command_line_processor.c:271
 msgid "NO"
-msgstr ""
+msgstr "NO"
 
 #: src/core/command_line_processor.c:283
 msgid "No help for this command"
@@ -6144,7 +6146,7 @@ msgstr ""
 
 #: src/core/OS_utils.c:268
 msgid "Not enough disk space"
-msgstr ""
+msgstr "ディスク容量不足"
 
 #: src/core/OS_utils.c:527
 msgid "Select Folder"
@@ -6157,11 +6159,11 @@ msgstr "ファイルを開く"
 #: src/core/OS_utils.c:531 src/core/OS_utils.c:540 src/core/OS_utils.c:546
 #: src/io/image_formats_libraries.c:1645
 msgid "_Cancel"
-msgstr ""
+msgstr "_取り消し"
 
 #: src/core/OS_utils.c:532
 msgid "_Open"
-msgstr ""
+msgstr "_開く"
 
 #: src/core/OS_utils.c:539
 msgid "Add Files"
@@ -6169,7 +6171,7 @@ msgstr "ファイルを追加"
 
 #: src/core/OS_utils.c:540
 msgid "_Add"
-msgstr ""
+msgstr "_追加"
 
 #: src/core/OS_utils.c:545
 msgid "Save File"
@@ -6177,7 +6179,7 @@ msgstr "ファイルを保存"
 
 #: src/core/OS_utils.c:546
 msgid "_Save"
-msgstr ""
+msgstr "_保存"
 
 #: src/core/pipe.c:100
 #, c-format
@@ -6677,17 +6679,17 @@ msgstr ""
 
 #: src/filters/rgradient.c:70
 msgid "Rotational gradient: processing...\n"
-msgstr ""
+msgstr "Rotational gradient: 処理中…\n"
 
 #. only used for progress bar
 #. only used for progress bar
 #: src/filters/rgradient.c:85
 msgid "Rotational gradient in progress..."
-msgstr ""
+msgstr "Rotational gradient 進行中…"
 
 #: src/filters/rgradient.c:165 src/filters/rgradient.c:177
 msgid "Rotational gradient complete."
-msgstr ""
+msgstr "Rotational gradient 完了."
 
 #: src/filters/rgradient.c:250
 msgid "Wrong center coordinates"
@@ -7012,19 +7014,16 @@ msgstr ""
 
 #. left click
 #: src/gui/image_interactions.c:225
-#, fuzzy
-#| msgid "Color Calibration"
 msgid "Only for visualization"
-msgstr "色補正"
+msgstr "可視化の為のみ"
 
 #: src/gui/image_interactions.c:226 src/gui/siril_intro.c:35
-#, fuzzy
 msgid ""
 "The RGB tab is only for visualization. Operations must be done on R, G, and B "
 "channels"
 msgstr ""
-"RGB チャンネルは可視化だけの為に用いられます. 赤、緑、または青チャンネルをご利"
-"用下さい."
+"RGB チャンネルは可視化だけの為に用いられる. 操作は赤、緑、及び青チャンネル夫々"
+"に対し実行すべし"
 
 #: src/gui/linear_match.c:45 src/gui/linear_match.c:93
 msgid "Images must have same dimensions.\n"
@@ -7225,16 +7224,12 @@ msgid "Incorrect parameters detected"
 msgstr ""
 
 #: src/gui/preferences.c:323
-#, fuzzy
-#| msgid "<b>FITS Compression</b>"
 msgid "FITS compression enabled\n"
-msgstr "<b>FITS 圧縮</b>"
+msgstr ""
 
 #: src/gui/preferences.c:327
-#, fuzzy
-#| msgid "<b>FITS Compression</b>"
 msgid "FITS compression disabled\n"
-msgstr "<b>FITS 圧縮</b>"
+msgstr ""
 
 #: src/gui/preferences.c:405
 #, c-format
@@ -7255,27 +7250,27 @@ msgstr ""
 
 #: src/gui/progress_and_log.c:224
 msgid "Execution time"
-msgstr ""
+msgstr "実行時間"
 
 #: src/gui/progress_and_log.c:240
 #, c-format
 msgid "%s: %d h %02d min %.2d s.\n"
-msgstr ""
+msgstr "%s: %d 時間 %02d 分 %.2d 秒.\n"
 
 #: src/gui/progress_and_log.c:245
 #, c-format
 msgid "%s: %d min %02d s.\n"
-msgstr ""
+msgstr "%s: %d 分 %02d 秒.\n"
 
 #: src/gui/progress_and_log.c:249
 #, c-format
 msgid "%s: %.2lf ms.\n"
-msgstr ""
+msgstr "%s: %.2lf ミリ秒.\n"
 
 #: src/gui/progress_and_log.c:251
 #, c-format
 msgid "%s: %.2lf s.\n"
-msgstr ""
+msgstr "%s: %.2lf 秒.\n"
 
 #: src/gui/PSF_list.c:218
 msgid "Stars must have the same units."
@@ -7338,7 +7333,7 @@ msgstr ""
 #. BMP FILES
 #: src/gui/save_dialog.c:74
 msgid "BMP Files (*.bmp)"
-msgstr "BMP ファイル　 (*.bmp)"
+msgstr "BMP ファイル (*.bmp)"
 
 #: src/gui/save_dialog.c:78
 msgid "JPEG Files (*.jpg, *.jpeg)"
@@ -7358,27 +7353,27 @@ msgstr ""
 
 #: src/gui/save_dialog.c:215 src/gui/save_dialog.c:603
 msgid "Saving BMP"
-msgstr ""
+msgstr "BMP ファイルを保存"
 
 #: src/gui/save_dialog.c:219 src/gui/save_dialog.c:563
 msgid "Saving PNG"
-msgstr ""
+msgstr "PNG ファイルを保存"
 
 #: src/gui/save_dialog.c:223 src/gui/save_dialog.c:583
 msgid "Saving Netpbm"
-msgstr ""
+msgstr "Netpbm ファイルを保存"
 
 #: src/gui/save_dialog.c:227 src/gui/save_dialog.c:623
 msgid "Saving JPG"
-msgstr ""
+msgstr "JPG ファイルを保存"
 
 #: src/gui/save_dialog.c:231 src/gui/save_dialog.c:541
 msgid "Saving TIFF"
-msgstr ""
+msgstr "TIFF ファイルを保存"
 
 #: src/gui/save_dialog.c:238 src/gui/save_dialog.c:517
 msgid "Saving FITS"
-msgstr ""
+msgstr "FITS ファイルを保存"
 
 #: src/gui/save_dialog.c:373
 msgid "File saving failed. Check the logs for more info."
@@ -7585,7 +7580,7 @@ msgstr ""
 
 #: src/gui/statistics_list.c:50
 msgid "sigma"
-msgstr ""
+msgstr "標準偏差"
 
 #: src/gui/statistics_list.c:51
 msgid "avgDev"
@@ -9186,6 +9181,6 @@ msgstr ""
 msgid "Up-scaling sequence for stacking"
 msgstr ""
 
-#, fuzzy
+#, fuzzy, c-format
 #~ msgid "Could not write image %d of the FITS sequence\n"
 #~ msgstr "画像/シリーズを閉じる"
