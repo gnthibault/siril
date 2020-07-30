@@ -130,8 +130,13 @@ gpointer generic_sequence_worker(gpointer p) {
 #endif
 
 #ifdef _OPENMP
+#ifdef HAVE_FFMS2
 #pragma omp parallel for num_threads(com.max_thread) private(input_idx) schedule(static) \
 	if(args->seq->type != SEQ_AVI && args->parallel && (args->seq->type == SEQ_SER || fits_is_reentrant()))
+#else
+#pragma omp parallel for num_threads(com.max_thread) private(input_idx) schedule(static) \
+	if(args->parallel && (args->seq->type == SEQ_SER || fits_is_reentrant()))
+#endif
 #endif
 	for (frame = 0; frame < nb_frames; frame++) {
 		if (abort) continue;
