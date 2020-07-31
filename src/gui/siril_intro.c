@@ -36,7 +36,7 @@ const SirilTipIntro intro_tips[] = {
 		{"label22", N_("Pre-processing steps are grouped together in the right panel. You can reach each step with the F1...F7 keys"), 8},
 		{"button_paned", N_("This button will hide the right panel. You can also try the full screen mode (Control - F)"), 8},
 		{"hamburger-menu", N_("Press F10 or click on this button to open the menu. Here you can find the shortcut list and the preferences dialog where many of the options are available"), 9},
-		{"hamburger-menu", N_("You can get more scripts by clicking to the \"Get scripts\" entry in the menu"), 6},
+		{"hamburger-menu", N_("You can get more scripts by clicking to the \"Get scripts\" item in the menu"), 6},
 		{"cwd_button", N_("You can now change your working directory by hitting this button. The working directory is shown right below the title at the center of the headerbar"), 9},
 		{"header_open_button", N_("You can open a single image or FITS/SER sequence"), 6},
 		{"recent_menu_button", N_("Here’s listed the most recent FITS files you’ve opened"), 6},
