@@ -448,7 +448,7 @@ gpointer convert_thread_worker(gpointer p) {
 	args->nb_converted_files = 0;
 	args->retval = 0;
 
-	gboolean allow_symlink = test_if_symlink_is_ok();
+	gboolean allow_symlink = test_if_symlink_is_ok() && args->output_type == SEQ_REGULAR;
 
 	if (args->output_type == SEQ_SER) {
 		if (!args->multiple_output) {
@@ -467,15 +467,10 @@ gpointer convert_thread_worker(gpointer p) {
 			goto clean_exit;
 		}
 
-		/* currently, we don't have any limits in memory for
-		 * conversion, but we might still put one in case we get a very
-		 * slow writing device.
-		 * If the write is fast compared to processing, then it's still
-		 * good to allow for all cores to work on it, and not cores-1
-		 */
 		int limit = 0;
 #ifdef _OPENMP
-		limit = com.max_thread;
+		/* we don't know the image size here, max * 2 + 1 may be ok for most users */
+		limit = com.max_thread * 2 + 1;
 #endif
 		fitseq_set_max_active_blocks(limit);
 	}
@@ -485,7 +480,10 @@ gpointer convert_thread_worker(gpointer p) {
 		args->multiple_output = FALSE;
 
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) schedule(guided) \
+	if (args->output_type == SEQ_FITSEQ)
+		omp_set_schedule(omp_sched_dynamic, 1);
+	else omp_set_schedule(omp_sched_static, 0);
+#pragma omp parallel for num_threads(com.max_thread) schedule(runtime) \
 	if(!args->input_has_a_seq && (args->output_type == SEQ_SER || fits_is_reentrant()))
 	// we should run in parallel only when images are converted, not sequences
 #endif

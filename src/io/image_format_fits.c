@@ -178,7 +178,7 @@ static void fits_read_history(fitsfile *fptr, GSList **history) {
 		hdu_changed = TRUE;
 		if (type == IMAGE_HDU)
 			break;
-		siril_debug_print("history read from another HDU\n");
+		siril_debug_print("history read from another HDU (CHDU changed)\n");
 		read_history_in_hdu(fptr, &list);
 	} while (1);
 
@@ -444,9 +444,8 @@ char *copy_header(fits *fit) {
 		fits_movrel_hdu(fit->fptr, 1, &type, &status);
 		if (status || type == IMAGE_HDU)
 			break;
-
 		hdu_changed = TRUE;
-		siril_debug_print("header read from another HDU\n");
+		siril_debug_print("header read from another HDU (CHDU changed)\n");
 		if (copy_header_from_hdu(fit->fptr, &header, &strsize, &strlength))
 			break;
 	} while (1);
@@ -659,7 +658,7 @@ static int siril_fits_move_first_image(fitsfile* fp) {
 		}
 	} while (!status);
 
-	siril_debug_print("Found image HDU with naxis %d (status %d)\n", naxis, status);
+	siril_debug_print("Found image HDU (changed CHDU) with naxis %d (status %d)\n", naxis, status);
 	return status;
 }
 
@@ -915,7 +914,7 @@ static void save_wcs_keywords(fits *fit) {
 	}
 }
 
-static void save_fits_header(fits *fit) {
+void save_fits_header(fits *fit) {
 	int i, status = 0;
 	double zero, scale;
 	char comment[FLEN_COMMENT];
@@ -1138,12 +1137,6 @@ static void save_fits_header(fits *fit) {
 	}
 }
 
-static int read_data_cube(fits *fit) {
-	printf("fit->naxes[2]=%ld\n", fit->naxes[2]);
-	if (fit->naxis == 3) fit->naxes[2] = 3;
-	return 0;
-}
-
 /********************** public functions ************************************/
 
 double get_exposure_from_fitsfile(fitsfile *fptr) {
@@ -1246,7 +1239,8 @@ int readfits(const char *filename, fits *fit, char *realname, gboolean force_flo
 	fit->ry = fit->naxes[1];
 
 	if (fit->naxis == 3 && fit->naxes[2] != 3) {
-		read_data_cube(fit);
+		siril_log_color_message("The FITS image contains more than 3 channels (%ld). Opening only the three first.\n", "salmon", fit->naxes[2]);
+		if (fit->naxis == 3) fit->naxes[2] = 3;
 	}
 
 	if (fit->naxis == 2 && fit->naxes[2] == 0) {
@@ -1270,7 +1264,7 @@ int readfits(const char *filename, fits *fit, char *realname, gboolean force_flo
 	fit->top_down = FALSE;
 
 	if (!retval) {
-		// copy the entire header
+		// copy the entire header in memory
 		if (fit->header)
 			free(fit->header);
 		fit->header = copy_header(fit);
@@ -1595,6 +1589,7 @@ int save_opened_fits(fits *f) {
 	size_t i, pixel_count;
 	int type, status = 0;
 
+	save_fits_header(f);
 	pixel_count = f->naxes[0] * f->naxes[1] * f->naxes[2];
 
 	status = 0;
@@ -1670,8 +1665,7 @@ int save_opened_fits(fits *f) {
 	}
 
 	if (!status) {
-		save_fits_header(f);
-		// copy the entire header
+		// copy the entire header in memory
 		if (f->header)
 			free(f->header);
 		f->header = copy_header(f);
