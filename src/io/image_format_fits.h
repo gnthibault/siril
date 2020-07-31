@@ -49,6 +49,7 @@ int read_fits_with_convert(fits* fit, const char* filename, gboolean force_float
 int internal_read_partial_fits(fitsfile *fptr, unsigned int ry,
 		int bitpix, void *dest, int layer, const rectangle *area);
 int siril_fits_create_diskfile(fitsfile **fptr, const char *filename, int *status);
+void save_fits_header(fits *fit);
 void report_fits_error(int status);
 
 #endif
