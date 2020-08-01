@@ -131,10 +131,11 @@ gpointer generic_sequence_worker(gpointer p) {
 		omp_set_schedule(omp_sched_dynamic, 1);
 	else omp_set_schedule(omp_sched_static, 0);
 #ifdef HAVE_FFMS2
-#pragma omp parallel for num_threads(com.max_thread) private(input_idx) schedule(static) \
+	// we don't want to enable parallel processing for films, as ffms2 is not thread-safe
+#pragma omp parallel for num_threads(com.max_thread) private(input_idx) schedule(runtime) \
 	if(args->seq->type != SEQ_AVI && args->parallel && (args->seq->type == SEQ_SER || fits_is_reentrant()))
 #else
-#pragma omp parallel for num_threads(com.max_thread) private(input_idx) schedule(static) \
+#pragma omp parallel for num_threads(com.max_thread) private(input_idx) schedule(runtime) \
 	if(args->parallel && (args->seq->type == SEQ_SER || fits_is_reentrant()))
 #endif // HAVE_FFMS2
 #endif // _OPENMP
