@@ -413,7 +413,7 @@ gpointer autoDetectThreaded(gpointer p) {
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
 	gchar *str = ngettext("%ld corrected pixel (%ld + %ld)\n", "%ld corrected pixels (%ld + %ld)\n", icold + ihot);
-	str = g_strdup_printf(str, icold + ihot);
+	str = g_strdup_printf(str, icold + ihot, icold, ihot);
 	siril_log_message(str);
 	g_free(str);
 
