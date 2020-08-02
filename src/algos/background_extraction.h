@@ -5,10 +5,10 @@
 
 /* ORDER OF POLYNOMES */
 typedef enum {
-	POLY_1,
-	POLY_2,
-	POLY_3,
-	POLY_4,
+	BACKGROUND_POLY_1,
+	BACKGROUND_POLY_2,
+	BACKGROUND_POLY_3,
+	BACKGROUND_POLY_4,
 } poly_order;
 
 typedef struct sample {

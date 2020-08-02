@@ -292,7 +292,7 @@ struct registration_data {
 	fitted_PSF *fwhm_data;	// used in PSF/FWHM registration, not saved
 	float fwhm;		// copy of fwhm->fwhmx, used as quality indicator, saved data
 	float weighted_fwhm; // used to exclude spurious images.
-	float roundness;	// fwhm->fwhmy / fwhm->fwhmx, 0 when uninit, ]0, 1] when set 
+	float roundness;	// fwhm->fwhmy / fwhm->fwhmx, 0 when uninit, ]0, 1] when set
 	double quality;
 };
 
