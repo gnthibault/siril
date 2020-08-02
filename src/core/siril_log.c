@@ -115,7 +115,7 @@ static void save_log_file(gchar *filename) {
 	f = g_fopen(filename, "w");
 
 	for (i = 0; i < nargs; i++) {
-		fprintf(f, "%s%s", token[i], SIRIL_EOL);
+		fprintf(f, "%s\n", token[i]);
 	}
 
 	fclose(f);
