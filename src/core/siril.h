@@ -191,22 +191,6 @@ typedef struct save_config_struct save_config;
 
 /* global structures */
 
-/* operations on image data */
-typedef enum {
-	OPER_ADD,
-	OPER_SUB,
-	OPER_MUL,
-	OPER_DIV
-} image_operator;
-
-/* ORDER OF POLYNOMES */
-typedef enum {
-	POLY_1,
-	POLY_2,
-	POLY_3,
-	POLY_4,
-} poly_order;
-
 typedef enum {
 	NORMAL_DISPLAY,	
 	LOG_DISPLAY,
@@ -229,11 +213,11 @@ typedef enum {
 	USER
 } sliders_mode;
 
-enum {
+typedef enum {
 	OPEN_IMAGE_ERROR = -1,
 	OPEN_IMAGE_OK = 0,
 	OPEN_IMAGE_CANCEL = 10,
-};
+} open_image_status;
 
 typedef enum {
 	FILE_CONVERSION,

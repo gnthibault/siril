@@ -26,6 +26,8 @@
 #include "io/single_image.h"
 #include "io/image_format_fits.h"
 
+#include "arithm.h"
+
 /*****************************************************************************
  *       S I R I L      A R I T H M E T I C      O P E R A T I O N S         *
  ****************************************************************************/

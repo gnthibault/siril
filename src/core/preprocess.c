@@ -251,8 +251,7 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 				siril_log_message(str);
 				g_free(str);
 			} else
-				siril_log_message(_("Darkmap cosmetic correction "
-						"is only supported with single channel images\n"));
+				siril_log_message(_("Darkmap cosmetic correction is only supported with single channel images\n"));
 		}
 	}
 

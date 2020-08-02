@@ -20,7 +20,14 @@
 #ifndef SRC_CORE_ARITHM_H_
 #define SRC_CORE_ARITHM_H_
 
-#include "core/siril.h"
+/* operations on image data */
+typedef enum {
+	OPER_ADD,
+	OPER_SUB,
+	OPER_MUL,
+	OPER_DIV
+} image_operator;
+
 
 int soper(fits *a, float scalar, image_operator oper, gboolean conv_to_float);
 int imoper(fits *a, fits *b, image_operator oper, gboolean allow_32bits);
