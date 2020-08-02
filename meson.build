@@ -172,12 +172,12 @@ no_dep = dependency('', required: false)
 
 ## Core dependencies
 dbghelp = platform_windows ? cc.find_library('dbghelp') : no_dep
-glib_dep = dependency('glib-2.0', required : true)
-gtk_dep = dependency('gtk+-3.0', required : true)
+glib_dep = dependency('glib-2.0', required : true, version: '>= 2.56.0')
+gtk_dep = dependency('gtk+-3.0', required : true, version: '>= 3.17.10')
 gsl_dep = dependency('gsl', required : true)
 libconfig_dep = dependency('libconfig', required : true)
 m_dep = cc.find_library('m', required : true)
-exiv_dep = dependency('exiv2', required : true)
+exiv_dep = dependency('exiv2', required : true, version: '>= 0.25')
 fftw3f_dep = dependency('fftw3f', required : true)
 cfitsio_dep = dependency('cfitsio', required : true)
 cairo_dep = dependency('cairo', required : true)
