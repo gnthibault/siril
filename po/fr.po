@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: siril 0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-07-31 22:25+0200\n"
-"PO-Revision-Date: 2020-07-31 22:25+0200\n"
+"POT-Creation-Date: 2020-08-03 09:49+0200\n"
+"PO-Revision-Date: 2020-08-03 09:51+0200\n"
 "Last-Translator: Cyril Richard\n"
 "Language-Team: French <cyril@free-astro.fr>\n"
 "Language: fr\n"
@@ -532,8 +532,7 @@ msgstr "Nom de la séquence :"
 #: src/gui/siril3.glade:3105
 msgid ""
 "Enter the base name of the sequence, for example NGC_6822-L. It will create "
-"images in the form NGC_6822-L_00001.fit. The name can also end with .ser, "
-"which will enable SER output format for the conversion."
+"images in the form NGC_6822-L_00001.fit."
 msgstr ""
 "Entrer le nom de base de la séquence, par exemple NGC_6822-L. Cela va créer "
 "des images de la forme NGC_6822-L_00001.fit. Le nom peut aussi se finir par ."
@@ -5053,13 +5052,13 @@ msgstr ""
 "Extract_Ha ne fonctionne pas sur des images de caméra aux filtres non Bayer !\n"
 
 #: src/algos/demosaicing.c:1220 src/algos/demosaicing.c:1412
-#: src/core/command.c:2171 src/core/command.c:2240 src/io/conversion.c:630
+#: src/core/command.c:2171 src/core/command.c:2240 src/io/conversion.c:634
 #: src/io/ser.c:893 src/io/ser.c:1113
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "Aucun motif de Bayer trouvé dans l'entête du fichier.\n"
 
 #: src/algos/demosaicing.c:1223 src/algos/demosaicing.c:1415
-#: src/core/command.c:2174 src/core/command.c:2243 src/io/conversion.c:633
+#: src/core/command.c:2174 src/core/command.c:2243 src/io/conversion.c:637
 #: src/io/ser.c:897 src/io/ser.c:1117
 #, c-format
 msgid ""
@@ -5070,7 +5069,7 @@ msgstr ""
 "enregistré dans les paramètres (%s). Outrepasser les paramètres.\n"
 
 #: src/algos/demosaicing.c:1235 src/algos/demosaicing.c:1427
-#: src/core/command.c:2186 src/core/command.c:2255 src/io/conversion.c:646
+#: src/core/command.c:2186 src/core/command.c:2255 src/io/conversion.c:650
 #, c-format
 msgid "Filter Pattern: %s\n"
 msgstr "Motif du Filtre : %s\n"
@@ -5509,15 +5508,15 @@ msgstr "Rien à ajuster, aucun débordement\n"
 msgid "Readjusting layer %d to %g times bright\n"
 msgstr "Réajustement du canal %d (x%g)\n"
 
-#: src/core/arithm.c:146
+#: src/core/arithm.c:148
 msgid "Cannot divide by zero, aborting."
 msgstr "Division par zéro impossible, abandon."
 
-#: src/core/arithm.c:163 src/core/arithm.c:252 src/core/preprocess.c:161
+#: src/core/arithm.c:165 src/core/arithm.c:254 src/core/preprocess.c:161
 msgid "imoper: images must have same dimensions\n"
 msgstr "imoper : les images doivent avoir les mêmes dimensions\n"
 
-#: src/core/arithm.c:307
+#: src/core/arithm.c:309
 msgid ""
 "Image operations can only be kept 16 bits if first input images are 16 bits. "
 "Aborting.\n"
@@ -5525,11 +5524,11 @@ msgstr ""
 "Les opérations d'image ne peuvent être conservées en 16 bits que si les images "
 "en entrée sont en 16 bits. Abandon.\n"
 
-#: src/core/arithm.c:328
+#: src/core/arithm.c:330
 msgid "addmax: images must have same dimensions\n"
 msgstr "addmax : les images doivent avoir les mêmes dimensions\n"
 
-#: src/core/arithm.c:332
+#: src/core/arithm.c:334
 msgid "addmax: images must have same data type\n"
 msgstr "addmax : les images doivent avoir le même type de données\n"
 
@@ -6024,7 +6023,7 @@ msgid "-flip option is now deprecated.\n"
 msgstr "L'option -flip est maintenant dépréciée.\n"
 
 #. sets most properties
-#: src/core/command.c:3406 src/core/preprocess.c:579
+#: src/core/command.c:3406 src/core/preprocess.c:578
 msgid "Preprocessing...\n"
 msgstr "Prétraitement...\n"
 
@@ -6217,7 +6216,7 @@ msgstr ""
 "froids résiduels après le prétraitement"
 
 #: src/core/command_def.h:21
-msgid "Same function that COSME but applying to RAW CFA images"
+msgid "Same function as COSME but applying to RAW CFA images"
 msgstr "Commande identique à COSME mais appliquée a des images RAW CFA"
 
 #: src/core/command_def.h:22
@@ -6319,7 +6318,7 @@ msgstr ""
 
 #: src/core/command_def.h:36
 msgid ""
-"Same command than FILL but this is a symmetric fill of a region defined by the "
+"Same command as FILL but this is a symmetric fill of a region defined by the "
 "mouse. Used to process an image in the Fourier (FFT) domain"
 msgstr ""
 "Même commande que FILL mais il s'agit d'un remplissage symétrique d'une région "
@@ -6335,7 +6334,7 @@ msgstr ""
 "seuils écrits en arguments"
 
 #: src/core/command_def.h:38
-msgid "Same command than FIND_COSME but for monochromatic CFA images"
+msgid "Same command as FIND_COSME but for monochromatic CFA images"
 msgstr "Même commande que FIND_COSME mais pour les images CFA monochromatiques"
 
 #: src/core/command_def.h:39
@@ -6710,7 +6709,7 @@ msgstr ""
 
 #: src/core/command_def.h:91
 msgid ""
-"Same command than SAVE_TIF but the output file is saved in 32-bit per channel: "
+"Same command as SAVE_TIF but the output file is saved in 32-bit per channel: "
 "\"filename\".tif"
 msgstr ""
 "Même commande que SAVE_TIF mais le fichier de sortie est en 32 bits par "
@@ -6718,7 +6717,7 @@ msgstr ""
 
 #: src/core/command_def.h:92
 msgid ""
-"Same command than SAVE_TIF but the output file is saved in 8-bit per channel: "
+"Same command as SAVE_TIF but the output file is saved in 8-bit per channel: "
 "\"filename\".tif"
 msgstr ""
 "Même commande que SAVE_TIF mais le fichier de sortie est en 8 bits par canal : "
@@ -6743,7 +6742,7 @@ msgstr ""
 
 #: src/core/command_def.h:95
 msgid ""
-"Same command than EXTRACT_HA but for the sequence \"sequencename\". The output "
+"Same command as EXTRACT_HA but for the sequence \"sequencename\". The output "
 "sequence name starts with the prefix \"Ha_\" unless otherwise specified with "
 "option \"-prefix=\""
 msgstr ""
@@ -6753,7 +6752,7 @@ msgstr ""
 
 #: src/core/command_def.h:96
 msgid ""
-"Same command than EXTRACT_HAOIII but for the sequence \"sequencename\". The "
+"Same command as EXTRACT_HAOIII but for the sequence \"sequencename\". The "
 "output sequence name start with the prefix \"Ha_\" and \"OIII_\""
 msgstr ""
 "Même commande que EXTRACT_HAOIII mais pour la séquence \"sequencename\". Les "
@@ -6761,7 +6760,7 @@ msgstr ""
 
 #: src/core/command_def.h:97
 msgid ""
-"Same command than FIND_COSME but for the sequence \"sequencename\". The output "
+"Same command as FIND_COSME but for the sequence \"sequencename\". The output "
 "sequence name starts with the prefix \"cc_\" unless otherwise specified with "
 "\"-prefix=\" option"
 msgstr ""
@@ -6771,7 +6770,7 @@ msgstr ""
 
 #: src/core/command_def.h:98
 msgid ""
-"Same command than FIND_COSME_CFA but for the sequence \"sequencename\". The "
+"Same command as FIND_COSME_CFA but for the sequence \"sequencename\". The "
 "output sequence name starts with the prefix \"cc_\" unless otherwise specified "
 "with \"-prefix=\" option"
 msgstr ""
@@ -6781,7 +6780,7 @@ msgstr ""
 
 #: src/core/command_def.h:99
 msgid ""
-"Same command than MTF but for the sequence \"sequencename\".  The output "
+"Same command as MTF but for the sequence \"sequencename\".  The output "
 "sequence name starts with the prefix \"mtf_\" unless otherwise specified with "
 "\"-prefix=\" option"
 msgstr ""
@@ -6791,8 +6790,8 @@ msgstr ""
 
 #: src/core/command_def.h:100
 msgid ""
-"Same command than PSF but works for sequences. Results are dumped in the "
-"console in a form that can be used to produce brightness variation curves"
+"Same command as PSF but works for sequences. Results are dumped in the console "
+"in a form that can be used to produce brightness variation curves"
 msgstr ""
 "Même commande que PSF mais fonctionne pour les séquences. Les résultats sont "
 "affichés dans la console sous une forme pouvant être utilisée pour produire "
@@ -6800,7 +6799,7 @@ msgstr ""
 
 #: src/core/command_def.h:101
 msgid ""
-"Same command than SPLIT_CFA but for the sequence \"sequencename\". The output "
+"Same command as SPLIT_CFA but for the sequence \"sequencename\". The output "
 "sequence name starts with the prefix \"CFA_\" unless otherwise specified with "
 "\"-prefix=\" option"
 msgstr ""
@@ -6810,7 +6809,7 @@ msgstr ""
 
 #: src/core/command_def.h:102
 msgid ""
-"Same command that SUBSKY but for the sequence \"sequencename\".  The output "
+"Same command as SUBSKY but for the sequence \"sequencename\".  The output "
 "sequence name starts with the prefix \"bkg_\" unless otherwise specified with "
 "\"-prefix=\" option"
 msgstr ""
@@ -7308,83 +7307,83 @@ msgstr ""
 "La correction cosmétique utilisant le master-dark ne supporte que des images à "
 "un canal\n"
 
-#: src/core/preprocess.c:351
+#: src/core/preprocess.c:350
 msgid "Preprocessing"
 msgstr "Pré-traitement"
 
-#: src/core/preprocess.c:384
+#: src/core/preprocess.c:383
 #, c-format
 msgid "Pre-processing image %s"
 msgstr "Pré-traitement de l'image %s"
 
-#: src/core/preprocess.c:402
+#: src/core/preprocess.c:401
 #, c-format
 msgid "Saving image %s"
 msgstr "Image %s enregistrée"
 
-#: src/core/preprocess.c:440
+#: src/core/preprocess.c:439
 msgid "Opening offset image..."
 msgstr "Ouverture de l'image d'offset..."
 
-#: src/core/preprocess.c:444
+#: src/core/preprocess.c:443
 msgid "NOT USING OFFSET: number of channels is different"
 msgstr "OFFSET NON UTILISÉ : nombre de canal différent"
 
-#: src/core/preprocess.c:447
+#: src/core/preprocess.c:446
 msgid "NOT USING OFFSET: image dimensions are different"
 msgstr "OFFSET NON UTILISÉ : les dimensions des images sont différentes"
 
-#: src/core/preprocess.c:452
+#: src/core/preprocess.c:451
 msgid "NOT USING OFFSET: cannot open the file\n"
 msgstr "OFFSET NON UTILISÉ : impossible d'ouvrir le fichier\n"
 
-#: src/core/preprocess.c:472
+#: src/core/preprocess.c:471
 msgid "Opening dark image..."
 msgstr "Ouverture de l'image dark..."
 
-#: src/core/preprocess.c:476
+#: src/core/preprocess.c:475
 msgid "NOT USING DARK: number of channels is different"
 msgstr "DARK NON UTILISÉ : nombre de canal différent"
 
-#: src/core/preprocess.c:479
+#: src/core/preprocess.c:478
 msgid "NOT USING DARK: image dimensions are different"
 msgstr "DARK NON UTILISÉ : les dimensions des images sont différentes"
 
-#: src/core/preprocess.c:484
+#: src/core/preprocess.c:483
 msgid "NOT USING DARK: cannot open the file\n"
 msgstr "DARK NON UTILISÉ : impossible d'ouvrir le fichier\n"
 
-#: src/core/preprocess.c:528
+#: src/core/preprocess.c:527
 msgid "Opening flat image..."
 msgstr "Ouverture de l'image falt..."
 
-#: src/core/preprocess.c:532
+#: src/core/preprocess.c:531
 msgid "NOT USING FLAT: number of channels is different"
 msgstr "FLAT NON UTILISÉ : nombre de canal différent"
 
-#: src/core/preprocess.c:535
+#: src/core/preprocess.c:534
 msgid "NOT USING FLAT: image dimensions are different"
 msgstr "FLAT NON UTILISÉ : les dimensions des images sont différentes"
 
-#: src/core/preprocess.c:540
+#: src/core/preprocess.c:539
 msgid "NOT USING FLAT: cannot open the file\n"
 msgstr "FLAT NON UTILISÉ : impossible d'ouvrir le fichier\n"
 
-#: src/core/preprocess.c:614
+#: src/core/preprocess.c:613
 msgid "Error in preprocessing."
 msgstr "Erreur dans le pré-traitement."
 
-#: src/core/preprocess.c:645 src/core/preprocess.c:646
+#: src/core/preprocess.c:644 src/core/preprocess.c:645
 #, c-format
 msgid "<span foreground=\"red\">ERROR</span>"
 msgstr "<span foreground=\"red\">ERREUR</span>"
 
-#: src/core/preprocess.c:658
+#: src/core/preprocess.c:657
 #, c-format
 msgid "<span foreground=\"red\">Cold: %ld px</span>"
 msgstr "<span foreground=\"red\">Froid : %ld px</span>"
 
-#: src/core/preprocess.c:659 src/core/preprocess.c:671
+#: src/core/preprocess.c:658 src/core/preprocess.c:670
 msgid ""
 "This value may be to high. Please, consider to change sigma value or uncheck "
 "the box."
@@ -7392,17 +7391,17 @@ msgstr ""
 "Cette valeur est peut-être trop haute. S'il vous plaît veuillez reconsidérer "
 "la valeur de sigma ou bien décocher l'option."
 
-#: src/core/preprocess.c:662
+#: src/core/preprocess.c:661
 #, c-format
 msgid "Cold: %ld px"
 msgstr "Froid : %ld px"
 
-#: src/core/preprocess.c:670
+#: src/core/preprocess.c:669
 #, c-format
 msgid "<span foreground=\"red\">Hot: %ld px</span>"
 msgstr "<span foreground=\"red\">Chaud : %ld px</span>"
 
-#: src/core/preprocess.c:674
+#: src/core/preprocess.c:673
 #, c-format
 msgid "Hot: %ld px"
 msgstr "Chaud : %ld px"
@@ -7424,24 +7423,24 @@ msgstr "Le mapping de l'index de sortie a échoué (%d/%d).\n"
 msgid ": processing...\n"
 msgstr " : en cours...\n"
 
-#: src/core/processing.c:255
+#: src/core/processing.c:256
 #, c-format
 msgid "%s. Processing image %d (%s)"
 msgstr "%s. Traitement de l'image %d (%s)"
 
-#: src/core/processing.c:261
+#: src/core/processing.c:262
 msgid "Sequence processing failed. Check the log."
 msgstr "Échec du traitement de la séquence. Vérifier les log."
 
-#: src/core/processing.c:262
+#: src/core/processing.c:263
 msgid "Sequence processing failed.\n"
 msgstr "Le traitement de la séquence a échoué.\n"
 
-#: src/core/processing.c:267
+#: src/core/processing.c:268
 msgid "Sequence processing partially succeeded. Check the log."
 msgstr "Le traitement de la séquence a partiellement réussi. Vérifier les log."
 
-#: src/core/processing.c:268
+#: src/core/processing.c:269
 #, c-format
 msgid ""
 "Sequence processing partially succeeded, with %d images that failed and that "
@@ -7450,19 +7449,19 @@ msgstr ""
 "Le traitement de la séquence a partiellement réussi, avec %d image(s) en échec "
 "et temporairement exclue(s) de la séquence.\n"
 
-#: src/core/processing.c:270
+#: src/core/processing.c:271
 msgid "Sequence processing succeeded."
 msgstr "Le traitement de la séquence a réussi."
 
-#: src/core/processing.c:271
+#: src/core/processing.c:272
 msgid "Sequence processing succeeded.\n"
 msgstr "Le traitement de la séquence a réussi.\n"
 
-#: src/core/processing.c:283
+#: src/core/processing.c:284
 msgid "Finalizing sequence processing failed.\n"
 msgstr "Échec de la finalisation du traitement de la séquence.\n"
 
-#: src/core/processing.c:360
+#: src/core/processing.c:361
 msgid ""
 "Configured memory limits do not seem to allow these images to be processed, "
 "aborting\n"
@@ -7470,7 +7469,7 @@ msgstr ""
 "Les limites de mémoire configurées ne semblent pas autoriser le traitement de "
 "ces images, abandon\n"
 
-#: src/core/processing.c:523
+#: src/core/processing.c:524
 msgid "Process aborted by user\n"
 msgstr "Traitement interrompu par l'utilisateur\n"
 
@@ -8915,7 +8914,7 @@ msgstr "Images HEIF"
 msgid "Supported file types: %s\n"
 msgstr "Type de fichiers supportés : %s\n"
 
-#: src/io/conversion.c:457 src/io/conversion.c:677 src/io/sequence_export.c:115
+#: src/io/conversion.c:457 src/io/conversion.c:681 src/io/sequence_export.c:115
 msgid "Creating the SER file failed, aborting.\n"
 msgstr "La création du fichier SER a échoué, abandon.\n"
 
@@ -8928,70 +8927,78 @@ msgstr "Échec de la création du fichier de la séquence FITS, abandon.\n"
 msgid "Converting %s..."
 msgstr "Conversion de %s..."
 
-#: src/io/conversion.c:540 src/io/conversion.c:547 src/io/conversion.c:698
-#: src/io/conversion.c:775 src/io/sequence_export.c:406
+#: src/io/conversion.c:540 src/io/conversion.c:547 src/io/conversion.c:702
+#: src/io/conversion.c:779 src/io/sequence_export.c:406
 msgid "Error while converting to SER (no space left?)\n"
 msgstr ""
 "Erreur pendant la conversion en fichier SER (plus d'espace disponible ?)\n"
 
-#: src/io/conversion.c:553 src/io/conversion.c:706 src/io/conversion.c:783
+#: src/io/conversion.c:553 src/io/conversion.c:710 src/io/conversion.c:787
 msgid "Error while converting to FITS (no space left?)\n"
 msgstr ""
 "Erreur pendant la conversion en fichier FITS (plus d'espace disponible ?)\n"
 
-#: src/io/conversion.c:594
+#: src/io/conversion.c:562
+msgid ""
+"For SER or FITS sequence output, a failure in conversion cannot be ignored, "
+"aborting.\n"
+msgstr ""
+"Pour la sortie de séquence SER ou FITS, un échec de conversion ne peut pas "
+"être ignoré, abandon.\n"
+
+#: src/io/conversion.c:598
 #, c-format
 msgid "Conversion ended with error, %d/%d input files converted\n"
 msgstr "La conversion s'est terminée avec une erreur, %d/%d fichiers convertis\n"
 
-#: src/io/conversion.c:597
+#: src/io/conversion.c:601
 #, c-format
 msgid "Conversion succeeded, %d/%d input files converted\n"
 msgstr "Conversion réussie, %d/% d fichiers convertis\n"
 
-#: src/io/conversion.c:598
+#: src/io/conversion.c:602
 #, c-format
 msgid "Conversion aborted, %d/%d input files converted\n"
 msgstr "Conversion abandonnée, %d/%d fichiers convertis\n"
 
-#: src/io/conversion.c:616
+#: src/io/conversion.c:620
 msgid "Cannot perform debayering on image with more than one channel\n"
 msgstr ""
 "Impossible de dématricer une image dont le nombre de canaux est supérieur à 1\n"
 
-#: src/io/conversion.c:642
+#: src/io/conversion.c:646
 msgid "XTRANS Sensor detected. Using special algorithm.\n"
 msgstr "Capteur XTRANS détecté. Utilisation d'un algorithme spécial.\n"
 
-#: src/io/conversion.c:652
+#: src/io/conversion.c:656
 msgid "Cannot perform debayering\n"
 msgstr "Dématriçage impossible\n"
 
-#: src/io/conversion.c:669
+#: src/io/conversion.c:673
 #, c-format
 msgid "Error while opening film %s, aborting.\n"
 msgstr "Erreur pendant l'ouverture du film %s, abandon.\n"
 
-#: src/io/conversion.c:689 src/io/conversion.c:766
+#: src/io/conversion.c:693 src/io/conversion.c:770
 #, c-format
 msgid "Error while reading frame %d from %s, aborting.\n"
 msgstr "Erreur pendant la lecture de l'image %d de %s, abandon.\n"
 
-#: src/io/conversion.c:733
+#: src/io/conversion.c:737
 #, c-format
 msgid "Reading %s\n"
 msgstr "Lecture de %s\n"
 
-#: src/io/conversion.c:735
+#: src/io/conversion.c:739
 #, c-format
 msgid "Error while opening ser file %s, aborting.\n"
 msgstr "Erreur pendant l'ouverture du fichier ser %s, abandon.\n"
 
-#: src/io/conversion.c:741
+#: src/io/conversion.c:745
 msgid "Input SER files must have the same size to be joined.\n"
 msgstr "Les fichiers SER doivent avoir la même taille pour être joints.\n"
 
-#: src/io/conversion.c:896
+#: src/io/conversion.c:900
 msgid ""
 "Requested converting a sequence file to single FITS image, should not happen\n"
 msgstr ""
@@ -8999,7 +9006,7 @@ msgstr ""
 "devrait pas arriver\n"
 
 #. when the ifdefs are not compiled, default happens!
-#: src/io/conversion.c:901
+#: src/io/conversion.c:905
 #, c-format
 msgid "Error opening %s: file type not supported.\n"
 msgstr "Erreur à l'ouverture de %s : type de fichier non supporté.\n"
@@ -9046,14 +9053,14 @@ msgstr ""
 "Impossible d'ajouter une image avec des propriétés différentes à une séquence "
 "existante.\n"
 
-#: src/io/fits_sequence.c:417
+#: src/io/fits_sequence.c:418
 #, c-format
 msgid "fitseq write: Saving FITS image %d, %ld layer(s), %ux%u pixels, %d bits\n"
 msgstr ""
 "écriture fitseq : Enregistre l'image FITS %d, %ld canal(aux), %ux%u pixels, %d "
 "bits \n"
 
-#: src/io/fits_sequence.c:442
+#: src/io/fits_sequence.c:443
 #, c-format
 msgid ""
 "Frame number mismatch at the end of sequence saving (%d saved for %d written)\n"
@@ -9061,21 +9068,21 @@ msgstr ""
 "Non-concordance du numéro de trame à la fin de l'enregistrement de la séquence "
 "(%d enregistré pour %d écrit)\n"
 
-#: src/io/fits_sequence.c:450
+#: src/io/fits_sequence.c:451
 #, c-format
 msgid "Successfully saved FITS sequence with %d images\n"
 msgstr "Séquence FITS enregistrée avec %d images\n"
 
-#: src/io/fits_sequence.c:483 src/io/fits_sequence.c:489
+#: src/io/fits_sequence.c:484 src/io/fits_sequence.c:490
 msgid "Failed to remove failed images from the sequence\n"
 msgstr "Impossible de supprimer les images de la séquence ayant échoué\n"
 
-#: src/io/fits_sequence.c:527
+#: src/io/fits_sequence.c:528
 #, c-format
 msgid "Removing failed FITS sequence file: %s\n"
 msgstr "Suppression du fichier de la séquence FITS ayant échoué : %s\n"
 
-#: src/io/fits_sequence.c:596
+#: src/io/fits_sequence.c:597
 #, c-format
 msgid "Number of images allowed in the FITS write queue: %d\n"
 msgstr "Nombre d'images autorisées dans la file d'attente d'écriture FITS : %d\n"
