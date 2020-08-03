@@ -378,7 +378,7 @@ static void *write_worker(void *a) {
 
 		if (!task) {	// if not in the waiting list, try to get it from processing threads
 			do {
-			siril_debug_print("fitseq write: waiting for message %d\n", nb_frames_written);
+				siril_debug_print("fitseq write: waiting for message %d\n", nb_frames_written);
 				task = g_async_queue_pop(fitseq->writes_queue);	// blocking
 				if (fitseq->bitpix && (memcmp(task->image->naxes, fitseq->naxes, sizeof fitseq->naxes) ||
 							task->image->bitpix != fitseq->bitpix)) {
@@ -398,7 +398,8 @@ static void *write_worker(void *a) {
 					task = NULL;
 				}
 			} while (!task);
-			siril_debug_print("fitseq write: image %d received\n", task->index);
+			if (retval == FITSEQ_OK)
+				siril_debug_print("fitseq write: image %d received\n", task->index);
 		}
 		if (retval == FITSEQ_INCOMPLETE)
 			break;
@@ -448,9 +449,9 @@ static void *write_worker(void *a) {
 			fitseq->frame_count = nb_frames_written;
 			retval = FITSEQ_OK;
 			siril_log_message(_("Successfully saved FITS sequence with %d images\n"), nb_frames_written);
+		} else {
+			siril_debug_print("fitseq write: write aborted, quitting thread\n");
 		}
-		// we don't know here if it's cancellation or end of
-		// processing, so we can't call compact
 	}
 
 	siril_debug_print("fitseq writer exits with retval %d (0: ok, 1: error, 2: incomplete)\n", retval);

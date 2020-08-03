@@ -558,6 +558,10 @@ gpointer convert_thread_worker(gpointer p) {
 						g_free(dest_filename);
 					}
 				}
+				else if (args->output_type == SEQ_SER || args->output_type == SEQ_FITSEQ) {
+					siril_log_color_message("For SER or FITS sequence output, a failure in conversion cannot be ignored, aborting.\n", "red");
+					args->retval = 1;
+				}
 			}
 			frame_index++;
 		}
