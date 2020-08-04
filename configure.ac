@@ -98,6 +98,9 @@ AC_SUBST([LIBATOMIC_LIBS])
 
 dnl ================ PLATFORM CHECKS ================
 
+dnl Compute the canonical host-system type variable (need config.guess and config.sub)
+AC_CANONICAL_HOST
+
 AC_MSG_CHECKING([if compiling for Win32])
 case "$host_os" in
   mingw* | cygwin*)
@@ -108,7 +111,6 @@ case "$host_os" in
     ;;
 esac
 AC_MSG_RESULT([$platform_win32])
-AM_CONDITIONAL(PLATFORM_WIN32, test "$platform_win32" = "yes")
 
 dnl ================ MANDATORY DEPENDECIES ================
 dnl check math lib
@@ -253,9 +255,6 @@ if test "x$enable_debug" = "xyes"; then
 	CFLAGS="-g $CFLAGS"
 	CXXFLAGS="$CFLAGS"
 fi
-
-dnl Compute the canonical host-system type variable (need config.guess and config.sub)
-AC_CANONICAL_HOST
 
 #####################################
 # Check for Platform and architecture
