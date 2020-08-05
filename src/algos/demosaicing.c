@@ -1227,7 +1227,7 @@ int extractHa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 				}
 			}
 		} else {
-			siril_log_message("XTRANS pattern not handled for this feature.\n");
+			siril_log_message(_("XTRANS pattern not handled for this feature.\n"));
 			return 1;
 		}
 	}
@@ -1419,7 +1419,7 @@ int extractHaOIII_image_hook(struct generic_seq_args *args, int o, int i, fits *
 				}
 			}
 		} else {
-			siril_log_message("XTRANS pattern not handled for this feature.\n");
+			siril_log_message(_("XTRANS pattern not handled for this feature.\n"));
 			return 1;
 		}
 	}

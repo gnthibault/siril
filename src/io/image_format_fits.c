@@ -1239,7 +1239,7 @@ int readfits(const char *filename, fits *fit, char *realname, gboolean force_flo
 	fit->ry = fit->naxes[1];
 
 	if (fit->naxis == 3 && fit->naxes[2] != 3) {
-		siril_log_color_message("The FITS image contains more than 3 channels (%ld). Opening only the three first.\n", "salmon", fit->naxes[2]);
+		siril_log_color_message(_("The FITS image contains more than 3 channels (%ld). Opening only the three first.\n"), "salmon", fit->naxes[2]);
 		if (fit->naxis == 3) fit->naxes[2] = 3;
 	}
 

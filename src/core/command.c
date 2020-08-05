@@ -1886,8 +1886,7 @@ int process_subsky(int nb) {
 	}
 
 	if (degree < 1 || degree > 4) {
-		siril_log_message("Polynomial degree order must be within the [1, 4] range.\n");
-		printf("test %d\n", degree);
+		siril_log_message(_("Polynomial degree order must be within the [1, 4] range.\n"));
 		return 1;
 	}
 
@@ -2178,7 +2177,7 @@ int process_extractHa(int nb) {
 				}
 			}
 		} else {
-			siril_log_message("XTRANS pattern not handled for this feature.\n");
+			siril_log_message(_("XTRANS pattern not handled for this feature.\n"));
 			return 1;
 		}
 	}
@@ -2247,7 +2246,7 @@ int process_extractHaOIII(int nb) {
 				}
 			}
 		} else {
-			siril_log_message("XTRANS pattern not handled for this feature.\n");
+			siril_log_message(_("XTRANS pattern not handled for this feature.\n"));
 			return 1;
 		}
 	}
