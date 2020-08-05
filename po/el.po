@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-03 09:49+0200\n"
+"POT-Creation-Date: 2020-08-05 21:47+0200\n"
 "PO-Revision-Date: 2020-07-09 19:45+0300\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -408,10 +408,6 @@ msgstr ""
 "Θέτει τον αριθμό των νημάτων χειροκίνητα.\n"
 "ΠΡΟΕΙΔΟΠΟΙΗΣΗ: Μειώνοντας τον αριθμό των επιτρεπόμενων επεξεργαστών πάρα "
 "πολύ θα μειωθούν οι επιδόσεις."
-
-#: src/gui/siril3.glade:2202
-msgid "1"
-msgstr "1"
 
 #: src/gui/siril3.glade:2230
 msgid "Displays the amount of used RAM memory by Siril."
@@ -5088,7 +5084,7 @@ msgstr "Κάντε μια επιλογή της περιοχής υποβάθρ�
 
 #: src/algos/colors.c:748 src/algos/colors.c:904 src/algos/noise.c:69
 #: src/algos/star_finder.c:53 src/algos/star_finder.c:74
-#: src/core/command.c:2460 src/core/preprocess.c:75 src/core/preprocess.c:220
+#: src/core/command.c:2459 src/core/preprocess.c:75 src/core/preprocess.c:220
 #: src/core/siril.c:351 src/filters/banding.c:165 src/filters/banding.c:247
 #: src/filters/cosmetic_correction.c:194 src/filters/cosmetic_correction.c:436
 #: src/filters/saturation.c:154 src/filters/saturation.c:216
@@ -5149,13 +5145,13 @@ msgid "Extract_Ha does not work on non-Bayer filter camera images!\n"
 msgstr "Το Extract_Ha δεν λειτουργεί σε εικόνες κάμερας φίλτρου μη-Bayer!\n"
 
 #: src/algos/demosaicing.c:1220 src/algos/demosaicing.c:1412
-#: src/core/command.c:2171 src/core/command.c:2240 src/io/conversion.c:634
+#: src/core/command.c:2170 src/core/command.c:2239 src/io/conversion.c:634
 #: src/io/ser.c:893 src/io/ser.c:1113
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "Δεν βρέθηκε διάταξη Bayer στην κεφαλίδα του αρχείου.\n"
 
 #: src/algos/demosaicing.c:1223 src/algos/demosaicing.c:1415
-#: src/core/command.c:2174 src/core/command.c:2243 src/io/conversion.c:637
+#: src/core/command.c:2173 src/core/command.c:2242 src/io/conversion.c:637
 #: src/io/ser.c:897 src/io/ser.c:1117
 #, c-format
 msgid ""
@@ -5165,8 +5161,13 @@ msgstr ""
 "Η διάταξη Bayer που βρέθηκε στην επικεφαλίδα (%s) είναι διαφορετική από την "
 "διάταξη Bayer στις ρυθμίσεις (%s). Γίνεται παράκαμψη των ρυθμίσεων.\n"
 
+#: src/algos/demosaicing.c:1230 src/algos/demosaicing.c:1422
+#: src/core/command.c:2180 src/core/command.c:2249
+msgid "XTRANS pattern not handled for this feature.\n"
+msgstr ""
+
 #: src/algos/demosaicing.c:1235 src/algos/demosaicing.c:1427
-#: src/core/command.c:2186 src/core/command.c:2255 src/io/conversion.c:650
+#: src/core/command.c:2185 src/core/command.c:2254 src/io/conversion.c:650
 #, c-format
 msgid "Filter Pattern: %s\n"
 msgstr "Διάταξη Φίλτρου: %s\n"
@@ -5694,7 +5695,7 @@ msgstr ""
 msgid "Crop: select a region or provide x, y, width, height\n"
 msgstr "Περικοπή: επιλέξτε μια περιοχή ή δώστε τα x,y, πλάτος, ύψος\n"
 
-#: src/core/command.c:588 src/core/command.c:3565 src/filters/wavelets.c:253
+#: src/core/command.c:588 src/core/command.c:3564 src/filters/wavelets.c:253
 #: src/filters/wavelets.c:331
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
@@ -5752,7 +5753,7 @@ msgstr "Αλληλουχία: %s\n"
 msgid "Image: %s\n"
 msgstr "Εικόνα: %s\n"
 
-#: src/core/command.c:823 src/core/command.c:3545
+#: src/core/command.c:823 src/core/command.c:3544
 msgid "********* END OF THE LIST *********\n"
 msgstr "********* ΤΕΛΟΣ ΛΙΣΤΑΣ *********\n"
 
@@ -5829,12 +5830,12 @@ msgstr "Το μέγεθος αναφοράς απενεργοποιήθηκε γ
 msgid "Running the PSF on the loaded sequence, layer %d\n"
 msgstr "Γίνεται εκτέλεση του PSF στην φορτωμένη αλληλουχία, επίπεδο %d\n"
 
-#: src/core/command.c:1200 src/core/command.c:1915 src/core/command.c:1987
-#: src/core/command.c:2311 src/core/command.c:2357 src/core/command.c:2402
-#: src/core/command.c:2530 src/core/command.c:2638 src/core/command.c:2754
-#: src/core/command.c:2889 src/core/command.c:2972 src/core/command.c:2988
-#: src/core/command.c:3005 src/core/command.c:3022 src/core/command.c:3032
-#: src/core/command.c:3376
+#: src/core/command.c:1200 src/core/command.c:1914 src/core/command.c:1986
+#: src/core/command.c:2310 src/core/command.c:2356 src/core/command.c:2401
+#: src/core/command.c:2529 src/core/command.c:2637 src/core/command.c:2753
+#: src/core/command.c:2888 src/core/command.c:2971 src/core/command.c:2987
+#: src/core/command.c:3004 src/core/command.c:3021 src/core/command.c:3031
+#: src/core/command.c:3375
 #, c-format
 msgid "Missing argument to %s, aborting.\n"
 msgstr "Λείπει το όρισμα σε %s, γίνεται ακύρωση.\n"
@@ -5918,41 +5919,45 @@ msgstr "Η τιμή διαμόρφωσης πρέπει να είναι ανάμ
 msgid "Center of gravity coordinates are (%.3lf, %.3lf)\n"
 msgstr "Οι συντεταγμένες του κέντρου βαρύτητας είναι (%.3lf, %.3lf)\n"
 
-#: src/core/command.c:2006
+#: src/core/command.c:1889
+msgid "Polynomial degree order must be within the [1, 4] range.\n"
+msgstr ""
+
+#: src/core/command.c:2005
 msgid ""
 "Use this command to select images in a sequence, load a sequence first.\n"
 msgstr ""
 "Χρησιμοποιήστε αυτή την εντολή για να επιλέξετε εικόνες μιας αλληλουχίας, "
 "φορτώστε πρώτα μια αλληλουχία.\n"
 
-#: src/core/command.c:2012
+#: src/core/command.c:2011
 msgid ""
 "The first argument must be between 0 and the number of images minus one.\n"
 msgstr ""
 "Το πρώτο όρισμα θα πρέπει να είναι ανάμεσα στο 0 και του αριθμού των εικόνων "
 "μείον ένα.\n"
 
-#: src/core/command.c:2047
+#: src/core/command.c:2046
 #, c-format
 msgid "Selection update finished, %d images are selected in the sequence\n"
 msgstr ""
 "Η ενημέρωση της επιλογής ολοκληρώθηκε, %d εικόνες επιλέχθηκαν στην "
 "αλληλουχία\n"
 
-#: src/core/command.c:2067
+#: src/core/command.c:2066
 msgid "Siril cannot split layers. Make sure your image is in RGB mode.\n"
 msgstr ""
 "Το Siril δεν μπορεί να χωρίσει επίπεδα. Σιγουρευτείτε ότι η εικόνα σας είναι "
 "σε λειτουργία RGB.\n"
 
-#: src/core/command.c:2092 src/core/command.c:2143 src/core/command.c:2212
-#: src/core/command.c:2338 src/core/command.c:2384 src/core/command.c:2429
+#: src/core/command.c:2091 src/core/command.c:2142 src/core/command.c:2211
+#: src/core/command.c:2337 src/core/command.c:2383 src/core/command.c:2428
 msgid "Siril cannot split CFA channel. Make sure your image is in CFA mode.\n"
 msgstr ""
 "Το Siril δεν μπορεί να χωρίσει το κανάλι CFA. Σιγουρευτείτε ότι η εικόνα σας "
 "είναι σε λειτουργία CFA.\n"
 
-#: src/core/command.c:2481 src/core/command.c:2487
+#: src/core/command.c:2480 src/core/command.c:2486
 #, c-format
 msgid ""
 "%s layer: Mean: %0.1lf, Median: %0.1lf, Sigma: %0.1lf, AvgDev: %0.1lf, Min: "
@@ -5961,141 +5966,141 @@ msgstr ""
 "Επίπεδο %s : Μέσος όρος: %0.1lf, Διάμεσος: %0.1lf, Σίγμα: %0.1lf, Απόκλιση "
 "Μέσου Όρου: %0.1lf, Ελάχιστο: %0.1lf, Μέγιστο: %0.1lf\n"
 
-#: src/core/command.c:2535 src/core/command.c:2643 src/core/command.c:2759
+#: src/core/command.c:2534 src/core/command.c:2642 src/core/command.c:2758
 #, fuzzy, c-format
 msgid "Cannot create output folder: %s\n"
 msgstr "Το αρχείο δεν μπορεί να ανοιχτεί: %s\n"
 
-#: src/core/command.c:2547 src/gui/conversion.c:202
+#: src/core/command.c:2546 src/gui/conversion.c:202
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "Μετατροπή: σφάλμα ανοίγματος καταλόγου εργασίας %s.\n"
 
-#: src/core/command.c:2566
+#: src/core/command.c:2565
 msgid "No RAW files were found for conversion\n"
 msgstr "Δεν βρέθηκαν αρχεία RAW για μετατροπή\n"
 
-#: src/core/command.c:2582
+#: src/core/command.c:2581
 #, c-format
 msgid "Conversion: processing %d RAW files...\n"
 msgstr "Μετατροπή: γίνεται επεξεργασία %d αρχείων RAW...\n"
 
-#: src/core/command.c:2589
+#: src/core/command.c:2588
 msgid "Conversion: no working directory set.\n"
 msgstr "Μετατροπή: δεν έχει οριστεί κατάλογος εργασίας.\n"
 
-#: src/core/command.c:2655
+#: src/core/command.c:2654
 #, fuzzy, c-format
 msgid "Link: error opening working directory %s.\n"
 msgstr "Μετατροπή: σφάλμα ανοίγματος καταλόγου εργασίας %s.\n"
 
-#: src/core/command.c:2674
+#: src/core/command.c:2673
 #, fuzzy
 msgid "No FITS files were found for link\n"
 msgstr "Δεν βρέθηκαν αρχεία RAW για μετατροπή\n"
 
-#: src/core/command.c:2690
+#: src/core/command.c:2689
 #, fuzzy, c-format
 msgid "Link: processing %d FITS files...\n"
 msgstr "Μετατροπή: γίνεται επεξεργασία %d αρχείων...\n"
 
-#: src/core/command.c:2697
+#: src/core/command.c:2696
 #, fuzzy
 msgid "Link: no working directory set.\n"
 msgstr "Μετατροπή: δεν έχει οριστεί κατάλογος εργασίας.\n"
 
-#: src/core/command.c:2771
+#: src/core/command.c:2770
 #, fuzzy, c-format
 msgid "Convert: error opening working directory %s.\n"
 msgstr "Μετατροπή: σφάλμα ανοίγματος καταλόγου εργασίας %s.\n"
 
-#: src/core/command.c:2791
+#: src/core/command.c:2790
 #, fuzzy
 msgid "No files were found for convert\n"
 msgstr "Δεν βρέθηκαν αρχεία RAW για μετατροπή\n"
 
-#: src/core/command.c:2807
+#: src/core/command.c:2806
 #, fuzzy, c-format
 msgid "Convert: processing %d files...\n"
 msgstr "Μετατροπή: γίνεται επεξεργασία %d αρχείων...\n"
 
-#: src/core/command.c:2814
+#: src/core/command.c:2813
 #, fuzzy
 msgid "Convert: no working directory set.\n"
 msgstr "Μετατροπή: δεν έχει οριστεί κατάλογος εργασίας.\n"
 
-#: src/core/command.c:2857 src/registration/registration.c:106
+#: src/core/command.c:2856 src/registration/registration.c:106
 msgid "Global Star Alignment (deep-sky)"
 msgstr "Ευθυγράμμιση Καθολικών Αστεριών (βαθύ ουρανού)"
 
 #. only TRUE for global registration. Will be updated in this case
-#: src/core/command.c:2925 src/registration/registration.c:948
+#: src/core/command.c:2924 src/registration/registration.c:948
 #, c-format
 msgid "Registration: processing using method: %s\n"
 msgstr "Εγγραφή: γίνεται επεξεργασία με την μέθοδο: %s\n"
 
-#: src/core/command.c:2947
+#: src/core/command.c:2946
 msgid "Normalization options are not allowed in this context, ignoring.\n"
 msgstr ""
 "Οι επιλογές ομαλοποιησης δεν επιτρέπονται σε αυτό το γενικό πλαίσιο, δεν "
 "λαμβάνονται υπόψη.\n"
 
-#: src/core/command.c:2965 src/core/command.c:2981 src/core/command.c:2998
-#: src/core/command.c:3015
+#: src/core/command.c:2964 src/core/command.c:2980 src/core/command.c:2997
+#: src/core/command.c:3014
 #, c-format
 msgid "Could not parse argument `%s' to the filter `%s', aborting.\n"
 msgstr ""
 "Δεν ήταν δυνατή η ανάλυση του ορίσματος '%s' στο φίλτρο '%s', γίνεται "
 "ακύρωση.\n"
 
-#: src/core/command.c:3038
+#: src/core/command.c:3037
 msgid "Output filename option is not allowed in this context, ignoring.\n"
 msgstr ""
 "Η επιλογή του ονόματος αρχείου εξόδου δεν επιτρέπεται σε αυτό το γενικό "
 "πλαίσιο, δεν λαμβάνεται υπόψη.\n"
 
-#: src/core/command.c:3042
+#: src/core/command.c:3041
 #, c-format
 msgid "Unexpected argument to stacking `%s', aborting.\n"
 msgstr "Μη αναμενόμενο όρισμα για σώρευση `%s', γίνεται ακύρωση.\n"
 
-#: src/core/command.c:3060
+#: src/core/command.c:3059
 #, c-format
 msgid "Stacking sequence %s\n"
 msgstr "Γίνεται σώρευση της αλληλουχίας %s.\n"
 
-#: src/core/command.c:3070
+#: src/core/command.c:3069
 msgid "Not using rejection for stacking\n"
 msgstr "Δεν γίνεται χρήση απόρριψης στη σώρευση\n"
 
-#: src/core/command.c:3122
+#: src/core/command.c:3121
 #, c-format
 msgid "Could not save the stacking result %s\n"
 msgstr "Το αποτέλεσμα της σώρευσης δεν μπορούσε να αποθηκευτεί %s\n"
 
-#: src/core/command.c:3130 src/core/command_line_processor.c:352 src/main.c:360
+#: src/core/command.c:3129 src/core/command_line_processor.c:352 src/main.c:360
 #, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "Δεν βρέθηκε η αλληλουχία `%s' .\n"
 
-#: src/core/command.c:3144
+#: src/core/command.c:3143
 msgid "Looking for sequences in current working directory...\n"
 msgstr "Γίνεται αναζήτηση για αλληλουχίες στον τρέχων κατάλογο...\n"
 
-#: src/core/command.c:3146
+#: src/core/command.c:3145
 msgid "Error while searching sequences or opening the directory.\n"
 msgstr "Σφάλμα κατά την αναζήτηση αλληλουχιών ή ανοίγματος του καταλόγου.\n"
 
-#: src/core/command.c:3155
+#: src/core/command.c:3154
 msgid "Starting stacking of found sequences...\n"
 msgstr "Γίνεται εκκίνηση σώρευσης των αλληλουχιών που βρέθηκαν...\n"
 
-#: src/core/command.c:3167
+#: src/core/command.c:3166
 #, c-format
 msgid "Stacked %d sequences successfully.\n"
 msgstr "Έγινε σώρευση %d αλληλουχιών με επιτυχία.\n"
 
-#: src/core/command.c:3205 src/core/command.c:3295
+#: src/core/command.c:3204 src/core/command.c:3294
 msgid ""
 "The average stacking with rejection uses the Winsorized rejection here and "
 "requires two extra arguments: sigma low and high.\n"
@@ -6103,70 +6108,70 @@ msgstr ""
 "Η σώρευση μέσου όρου με απόρριψη χρησιμοποιεί την απόρριψη Winsor και "
 "απαιτεί δυο ορισμούς: κάτω σίγμα και άνω σίγμα. \n"
 
-#: src/core/command.c:3214 src/core/command.c:3304
+#: src/core/command.c:3213 src/core/command.c:3303
 #, c-format
 msgid "Stacking method type '%s' is invalid\n"
 msgstr "Ο τύπος μεθόδου σώρευσης '%s' δεν είναι έγκυρος\n"
 
-#: src/core/command.c:3246 src/stacking/stacking.c:437
+#: src/core/command.c:3245 src/stacking/stacking.c:437
 msgid ""
 "It looks like there is a memory allocation error, change memory settings and "
 "try to fix it.\n"
 msgstr ""
 
-#: src/core/command.c:3249
+#: src/core/command.c:3248
 msgid "Stacked sequence successfully.\n"
 msgstr "Έγινε σώρευση της αλληλουχίας με επιτυχία.\n"
 
-#: src/core/command.c:3390
+#: src/core/command.c:3389
 msgid "-stretch option is now deprecated.\n"
 msgstr "-η επιλογή τεντώματος καταργήθηκε.\n"
 
-#: src/core/command.c:3392
+#: src/core/command.c:3391
 #, fuzzy
 msgid "-flip option is now deprecated.\n"
 msgstr "-η επιλογή τεντώματος καταργήθηκε.\n"
 
 #. sets most properties
-#: src/core/command.c:3406 src/core/preprocess.c:578
+#: src/core/command.c:3405 src/core/preprocess.c:578
 msgid "Preprocessing...\n"
 msgstr "Γίνεται προ-επεξεργασία...\n"
 
-#: src/core/command.c:3427
+#: src/core/command.c:3426
 msgid "16-bit per channel in processed images mode is active\n"
 msgstr ""
 "Η λειτουργία 16-bit ανά κανάλι των επεξεργασμένων εικόνων είναι ενεργή\n"
 
-#: src/core/command.c:3428
+#: src/core/command.c:3427
 msgid "32-bit per channel in processed images mode is active\n"
 msgstr ""
 "Η λειτουργία 32-bit ανά κανάλι των επεξεργασμένων εικόνων είναι ενεργή\n"
 
-#: src/core/command.c:3442
+#: src/core/command.c:3441
 msgid "Please specify the type of compression and quantization value.\n"
 msgstr "Παρακαλώ ορίστε τον τύπο συμπίεσης και την τιμή κβαντοποίησης.\n"
 
-#: src/core/command.c:3458
+#: src/core/command.c:3457
 msgid "Please specify the value of hcompress scale factor.\n"
 msgstr "Παρακαλώ ορίστε την τιμή του παράγοντα κλίμακας του hcompress.\n"
 
-#: src/core/command.c:3465
+#: src/core/command.c:3464
 msgid ""
 "Wrong type of compression. Choices are rice, gzip1, gzip2 or hcompress\n"
 msgstr ""
 "Λάθος τύπος συμπίεσης. Οι επιλογές είναι rice, gzip1, gzip2 ή hcompress\n"
 
-#: src/core/command.c:3469
+#: src/core/command.c:3468
 msgid "Please specify the value of quantization.\n"
 msgstr "Παρακαλώ ορίστε την τιμή της κβαντοποίησης.\n"
 
-#: src/core/command.c:3475
+#: src/core/command.c:3474
 msgid "Quantization can only be equal to 0 for GZIP1 and GZIP2 algorithms.\n"
 msgstr ""
 "Η κβαντοποίηση μπορεί να είναι ίση με 0 για τους αλγόριθμους GZIP1 και "
 "GZIP2\n"
 
-#: src/core/command.c:3478
+#: src/core/command.c:3477
 #, c-format
 msgid ""
 "Compression enabled with the %s algorithm and a quantization value of %.2lf\n"
@@ -6174,11 +6179,11 @@ msgstr ""
 "Η συμπίεση είναι ενεργοποιημένη με τον αλγόριθμο %s και με τιμή "
 "κβαντοποίησης %.2lf\n"
 
-#: src/core/command.c:3481
+#: src/core/command.c:3480
 msgid "No compression enabled.\n"
 msgstr "Δεν έχει ενεργοποιηθεί συμπίεση.\n"
 
-#: src/core/command.c:3500
+#: src/core/command.c:3499
 #, c-format
 msgid ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
@@ -6187,12 +6192,12 @@ msgstr ""
 "Ο αριθμός των λογικών επεξεργαστών ΠΡΕΠΕΙ να είναι μεγαλύτερος του 0 και "
 "μικρότερος ή ίσος με %d.\n"
 
-#: src/core/command.c:3510
+#: src/core/command.c:3509
 #, c-format
 msgid "Using now %d logical processors\n"
 msgstr "Γίνεται χρήση %d λογικών επεξεργαστών\n"
 
-#: src/core/command.c:3522
+#: src/core/command.c:3521
 msgid ""
 "The accepted range for the ratio of memory used for stacking is [0.05, 4], "
 "with values below the available memory recommended\n"
@@ -6200,7 +6205,7 @@ msgstr ""
 "Το αποδεκτό εύρος για το λόγο της μνήμης που χρησιμοποιείται για την σωρευση "
 "είναι [0.05, 4], με τιμές κάτω από τη διαθέσιμη μνήμη που συνιστάται\n"
 
-#: src/core/command.c:3526
+#: src/core/command.c:3525
 #, c-format
 msgid ""
 "Setting the ratio of memory used for stacking above 1 will require the use "
@@ -6211,12 +6216,12 @@ msgstr ""
 "θα απαιτήσει τη χρήση μνήμης στο δίσκο, η οποία είναι πολύ αργή και δεν "
 "συνιστάται (%g ζητήθηκε)\n"
 
-#: src/core/command.c:3530
+#: src/core/command.c:3529
 #, c-format
 msgid "Usable memory for stacking changed to %g\n"
 msgstr "Η χρησιμοποιήσιμη μνήμη για την σώρεσυη άλλαξε σε %g\n"
 
-#: src/core/command.c:3540
+#: src/core/command.c:3539
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "********* ΛΙΣΤΑ ΔΙΑΘΕΣΙΜΩΝ ΕΝΤΟΛΩΝ *********\n"
 
@@ -9319,6 +9324,13 @@ msgstr ""
 msgid "FITSIO error getting image parameters, file %s.\n"
 msgstr "Σφάλμα FITSIO στην λήψη των παραμέτρων εικόνας, αρχείο %s.\n"
 
+#: src/io/image_format_fits.c:1242
+#, c-format
+msgid ""
+"The FITS image contains more than 3 channels (%ld). Opening only the three "
+"first.\n"
+msgstr ""
+
 #: src/io/image_format_fits.c:1273
 #, c-format
 msgid "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
@@ -10088,11 +10100,11 @@ msgstr ""
 "Δεν ήταν δυνατό να φορτωθεί ή να δημιουργηθεί αρχείο ρυθμίσεων, γίνεται "
 "έξοδος.\n"
 
-#: src/main.c:491
+#: src/main.c:494
 msgid "Siril - A free astronomical image processing software."
 msgstr "Siril - Ένα δωρεάν λογισμικό επεξεργασίας αστρονομικών εικόνων."
 
-#: src/main.c:498
+#: src/main.c:501
 #, c-format
 msgid "Run “%s --help” to see a full list of available command line options."
 msgstr "Τρέξτε “%s --help” για να δείτε μια λίστα με τις διαθέσιμες εντολές."
@@ -10812,6 +10824,9 @@ msgstr ""
 #: src/stacking/upscaling.c:174
 msgid "Up-scaling sequence for stacking"
 msgstr "Αλληλουχία αύξησης της κλίμακας για σώρευση"
+
+#~ msgid "1"
+#~ msgstr "1"
 
 #~ msgid "Failed to initialize the FITS sequence, aborting\n"
 #~ msgstr "Η αρχικοποίηση της αλληλουχίας FITS απέτυχε, γίνετε ακύρωση\n"
