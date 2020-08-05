@@ -371,6 +371,9 @@ static void siril_app_open(GApplication *application, GFile **files, gint n_file
 			if (!forcecwd) {
 				gchar *image_dir = g_path_get_dirname(path);
 				changedir(image_dir, NULL);
+				writeinitfile();
+				if (!com.script)
+					set_GUI_CWD();
 				g_free(image_dir);
 			}
 		}
