@@ -154,55 +154,22 @@ static gboolean idle_messaging(gpointer p) {
 	return FALSE;
 }
 
-/* This function writes a message on Siril's console/log. It is not thread safe.
- * There is a limit in number of characters that it is able to write in one call: 1023.
- * Return value is the string printed from arguments, or NULL if argument was empty or
- * only newline. It is an allocated string and must not be freed. It can be
- * reused until next call to this function.
- */
-char* siril_log_internal(const char* format, const char* color, va_list arglist) {
-	static char *msg = NULL;
-	struct tm *now;
-	time_t now_sec;
-	char timestamp[30];
-	struct log_message *new_msg;
-
-	if (msg == NULL) {
-		msg = malloc(1024);
-		msg[1023] = '\0';
-	}
-
-	vsnprintf(msg, 1023, format, arglist);
-
-	if (msg == NULL || msg[0] == '\0')
-		return NULL;
-
-	if (msg[0] == '\n' && msg[1] == '\0') {
-		fputc('\n', stdout);
-		new_msg = malloc(sizeof(struct log_message));
-		new_msg->timestamp = NULL;
-		new_msg->message = "\n";
-		new_msg->color = NULL;
-		if (!com.headless)	// avoid adding things in lost memory
-			gdk_threads_add_idle(idle_messaging, new_msg);
-		return NULL;
-	}
-
-	fprintf(stdout, "log: %s", msg);
-	pipe_send_message(PIPE_LOG, PIPE_NA, msg);
-	now_sec = time(NULL);
-	now = localtime(&now_sec);
-	g_snprintf(timestamp, sizeof(timestamp), "%.2d:%.2d:%.2d: ", now->tm_hour,
+// Send a log message to the console in the UI
+void gui_log_message(const char* msg, const char* color)
+{
+	if (!com.headless) {	// avoid adding things in lost memory
+		time_t now_sec = time(NULL);
+		struct tm *now = localtime(&now_sec);
+		char timestamp[30];
+		g_snprintf(timestamp, sizeof(timestamp), "%.2d:%.2d:%.2d: ", now->tm_hour,
 			now->tm_min, now->tm_sec);
 
-	new_msg = malloc(sizeof(struct log_message));
-	new_msg->timestamp = strdup(timestamp);
-	new_msg->message = strdup(msg);
-	new_msg->color = color;
-	if (!com.headless)	// avoid adding things in lost memory
+		struct log_message *new_msg = malloc(sizeof(struct log_message));
+		new_msg->timestamp = strdup(timestamp);
+		new_msg->message = strdup(msg);
+		new_msg->color = color;
 		gdk_threads_add_idle(idle_messaging, new_msg);
-
-	return msg;
+	}
 }
 
 void initialize_log_tags() {
