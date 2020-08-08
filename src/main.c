@@ -360,22 +360,23 @@ static void siril_app_open(GApplication *application, GFile **files, gint n_file
 					siril_log_message(_("No sequence `%s' found.\n"), path);
 				} else {
 					set_seq(path);
+					if (!com.script)
+						set_GUI_CWD();
 				}
 				g_free(sequence_dir);
 			}
 		} else {
-			if (startup_cwd) {
-				changedir(startup_cwd, NULL);
-			}
-			open_single_image(path);
-			if (!forcecwd) {
+			image_type type = get_type_from_filename(path);
+			if (!forcecwd && type != TYPEAVI && type != TYPESER && type != TYPEUNDEF) {
 				gchar *image_dir = g_path_get_dirname(path);
 				changedir(image_dir, NULL);
-				writeinitfile();
-				if (!com.script)
-					set_GUI_CWD();
 				g_free(image_dir);
+			} else if (startup_cwd) {
+				changedir(startup_cwd, NULL);
 			}
+			if (!com.script)
+				set_GUI_CWD();
+			open_single_image(path);
 		}
 		g_free(path);
 	}
