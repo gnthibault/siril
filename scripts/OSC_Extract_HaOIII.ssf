@@ -22,7 +22,7 @@ cd ..
 cd flats
 convert flat -out=../process
 cd ../process
-preprocess flat -bias=../biases/bias_stacked
+preprocess flat -bias=bias_stacked
 
 #build master-flat
 stack pp_flat rej 3 3 -norm=mul
@@ -39,7 +39,7 @@ cd ..
 cd lights
 convert light -out=../process
 cd ../process
-preprocess light -dark=../darks/dark_stacked -flat=../flats/pp_flat_stacked -cfa -equalize_cfa
+preprocess light -dark=dark_stacked -flat=pp_flat_stacked -cfa -equalize_cfa
 
 #extract Ha and OIII
 seqextract_HaOIII pp_light
