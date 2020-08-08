@@ -289,7 +289,7 @@ static int prepro_image_hook(struct generic_seq_args *args, int out_index, int i
 
 #ifdef SIRIL_OUTPUT_DEBUG
 		image_find_minmax(fit);
-		fprintf(stdout, "after cosmetic correction: min=%f, max=%f\n", fit->mini, fit->maxi);
+		fprintf(stdout, "after debayer: min=%f, max=%f\n", fit->mini, fit->maxi);
 		invalidate_stats_from_fit(fit);
 #endif
 	}

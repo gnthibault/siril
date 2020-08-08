@@ -24,7 +24,6 @@ struct fits_sequence {
 #endif
 	GThread *write_thread;		// reads a script and executes its commands
 	GAsyncQueue *writes_queue;	// the write tasks queue
-	gboolean *frame_written;	// keeping track of holes in the sequence
 };
 
 typedef struct fits_sequence fitseq;

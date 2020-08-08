@@ -221,6 +221,16 @@ gpointer generic_sequence_worker(gpointer p) {
 			}
 			clearfits(fit);
 			free(fit);
+			// for fitseq, we need to notify the failed frame
+			if (args->has_output &&
+					(args->force_fitseq_output || args->seq->type == SEQ_FITSEQ)) {
+				int retval;
+				if (args->save_hook)
+					retval = args->save_hook(args, frame, input_idx, NULL);
+				else retval = generic_save(args, frame, input_idx, NULL);
+				if (retval)
+					abort = 1;
+			}
 			continue;
 		}
 
