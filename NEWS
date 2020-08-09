@@ -3,10 +3,13 @@ Complete refactoring
 
 * New UI with a single window
 * New demosaicing algorithms, RCD is now the default one
+* New algorithm to fix the AF square with XTRANS sensor (Kristopher Setnes)
 * New support for FITS decompression and compression with Rice/Gzip and HCompress methods (Fabrice Faure)
 * New support for quantization and HCompress scale factor settings for FITS compression (Fabrice Faure)
 * New functions to extract Ha and Ha/OII from RGB images
 * New linear match function
+* New link command to create symbolic links
+* New convert command to convert all files (and link FITS)
 * New preference entries for FITS compression settings (Fabrice Faure)
 * New native image format: 32-bit floating point image
 * New native sequence format: FITS sequence in a single image
@@ -22,6 +25,7 @@ Complete refactoring
 * New binary siril-cli to start siril without X server
 * New preference entries with darks/biases/flat libraries
 * New preliminary Meson support (Florian Benedetti)
+* New ROWORDER FITS keyword that should be used by several programm now
 * X(Y)BAYEROFF can now be configured in preferences
 * Parallelizing conversion and some other functions
 * CI file was totally rewritten (Florian Benedetti)

@@ -31,6 +31,8 @@ siril_common_SOURCES = \
 	algos/Def_Mem.h \
 	algos/demosaicing.c \
 	algos/demosaicing.h \
+	algos/fix_xtrans_af.c \
+	algos/fix_xtrans_af.h \
 	algos/geometry.c \
 	algos/geometry.h \
 	algos/io_wave.c \
@@ -66,6 +68,8 @@ siril_common_SOURCES = \
 	compositing/filters.h \
 	core/arithm.c \
 	core/arithm.h \
+	core/atomic.cpp \
+	core/atomic.h \
 	core/command.c \
 	core/command.h \
 	core/command_def.h \
@@ -133,6 +137,8 @@ siril_common_SOURCES = \
 	gui/dialog_preview.h \
 	gui/dialogs.c \
 	gui/dialogs.h \
+	gui/fix_xtrans_af.c \
+	gui/fix_xtrans_af.h \
 	gui/gnuplot_i/gnuplot_i.c \
 	gui/gnuplot_i/gnuplot_i.h \
 	gui/histogram.c \
@@ -176,6 +182,8 @@ siril_common_SOURCES = \
 	io/films.h \
 	io/fits_sequence.c \
 	io/fits_sequence.h \
+	io/FITS_symlink.c \
+	io/FITS_symlink.h \
 	io/image_format_fits.c \
 	io/image_format_fits.h \
 	io/image_formats_internal.c \

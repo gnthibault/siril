@@ -27,8 +27,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "http://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfitsio3450.tar.gz",
-                    "sha256": "bf6012dbe668ecb22c399c4b7b2814557ee282c74a7d5dc704eb17c30d9fb92e"
+                    "url": "http://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfitsio-3.48.tar.gz",
+                    "sha256": "91b48ffef544eb8ea3908543052331072c99bf09ceb139cb3c6977fc3e47aac1"
                 }
             ]
         },
@@ -41,8 +41,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "http://mirror.sergal.org/gnu/gsl/gsl-2.5.tar.gz",
-                    "sha256": "0460ad7c2542caaddc6729762952d345374784100223995eb14d614861f2258d"
+                    "url": "http://mirror.sergal.org/gnu/gsl/gsl-2.6.tar.gz",
+                    "sha256": "b782339fc7a38fe17689cb39966c4d821236c28018b6593ddb6fd59ee40786a8"
                 }
             ],
             "cleanup": [
@@ -93,14 +93,15 @@
                 "/lib/pkgconfig"
             ],
             "config-opts": [
-                "-D CMAKE_BUILD_TYPE=RELEASE",
-                "-D BUILD_EXAMPLES=OFF"
+                "-DCMAKE_BUILD_TYPE=RELEASE",
+                "-DBUILD_EXAMPLES=OFF",
+                "-DOPENCV_GENERATE_PKGCONFIG=ON"
             ],
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://github.com/opencv/opencv/archive/3.4.3.zip",
-                    "sha256": "37c7d8c3b9807902ad11b9181bbde61dcb3898a78a563130494752f46fe8cc5f"
+                    "url": "https://github.com/opencv/opencv/archive/4.4.0.zip",
+                    "sha256": "7faa0991c74cda52313ee37ef73f3e451332a47e7aa36c2bb2240b69f5002d27"
                 }
             ]
         },
@@ -136,8 +137,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url" : "https://www.libraw.org/data/LibRaw-0.19.5.tar.gz",
-                    "sha256" : "40a262d7cc71702711a0faec106118ee004f86c86cc228281d12d16da03e02f5"
+                    "url" : "https://www.libraw.org/data/LibRaw-0.20.0.tar.gz",
+                    "sha256" : "1f0a383da2ce9f409087facd28261decbf6be72cc90c78cd003b0766e4d694a3"
                 }
             ]
         },

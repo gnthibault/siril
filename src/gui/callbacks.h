@@ -61,8 +61,6 @@ void load_main_window_state();
 void siril_quit();
 
 /* for image_display */
-void test_and_allocate_reference_image(int vport);
-void enable_view_reference_checkbox(gboolean status);
 void set_viewer_mode_widgets_sensitive(gboolean sensitive);
 
 /*****************************************************************************

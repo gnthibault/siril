@@ -27,7 +27,7 @@
 
 project('siril',
   ['c','cpp'],
-  version : '0.99.2',
+  version : '0.99.3',
   license : ['GPL3'],
   meson_version: '>=0.51.0',
   default_options : [
@@ -36,6 +36,8 @@ project('siril',
     'buildtype=debugoptimized',
   ],
 )
+
+enable_openmp = get_option('openmp')
 
 # General version
 siril_version = meson.project_version()
@@ -129,6 +131,8 @@ elif platform_windows
   if stable
     siril_link_arg += '-mwindows'
   endif
+  siril_c_flag += ['-D_WIN32_WINNT=0x0600', '-DWINVER=0x0600']
+  siril_cpp_flag += ['-D_WIN32_WINNT=0x0600', '-DWINVER=0x0600']
 elif platform_osx
   # on OSX ObjC and C sources are mixed so adding objc to the linkflags
   siril_link_arg += ['-Wl,-framework,Foundation', '-Wl,-framework,AppKit', '-ObjC']
@@ -168,12 +172,12 @@ no_dep = dependency('', required: false)
 
 ## Core dependencies
 dbghelp = platform_windows ? cc.find_library('dbghelp') : no_dep
-glib_dep = dependency('glib-2.0', required : true)
-gtk_dep = dependency('gtk+-3.0', required : true)
+glib_dep = dependency('glib-2.0', required : true, version: '>= 2.56.0')
+gtk_dep = dependency('gtk+-3.0', required : true, version: '>= 3.17.10')
 gsl_dep = dependency('gsl', required : true)
 libconfig_dep = dependency('libconfig', required : true)
 m_dep = cc.find_library('m', required : true)
-exiv_dep = dependency('exiv2', required : true)
+exiv_dep = dependency('exiv2', required : true, version: '>= 0.25')
 fftw3f_dep = dependency('fftw3f', required : true)
 cfitsio_dep = dependency('cfitsio', required : true)
 cairo_dep = dependency('cairo', required : true)
@@ -207,15 +211,17 @@ endif
 ## Optionnal dependencies
 
 openmp_dep = []
-if platform_osx
-  if get_option('openmp_darwin')
+if enable_openmp
+  if platform_osx
     message('Set OpenMP flags for macOS')
     siril_link_arg += ['-lomp']
     siril_cpp_flag += ['-Xpreprocessor', '-fopenmp']
     siril_c_flag += ['-Xpreprocessor', '-fopenmp']
+  else
+	openmp_dep = dependency('openmp', required : false)
   endif
 else
-  openmp_dep = dependency('openmp', required : false)
+  message('OpenMP disabled')
 endif
 
 libraw_dep = dependency('libraw', required : false)
@@ -233,21 +239,10 @@ criterion_dep = dependency('criterion', required : false)
 ## General and package configuration
 conf_data = configuration_data()
 
-if not stable
-  conf_data.set('SIRIL_UNSTABLE', 1)
-endif
-
-if get_option('buildtype').startswith('debug')
-  conf_data.set('SIRIL_OUTPUT_DEBUG', 1)
-endif
-
-if relocatable_bundle
-  conf_data.set('ENABLE_RELOCATABLE_RESOURCES', 1)
-endif
-
-if platform_osx
-  conf_data.set('OS_OSX', 1)
-endif
+conf_data.set('SIRIL_UNSTABLE', stable ? false : 1)
+conf_data.set('SIRIL_OUTPUT_DEBUG', get_option('buildtype').startswith('debug') ? 1 : false)
+conf_data.set('ENABLE_RELOCATABLE_RESOURCES', relocatable_bundle ? 1 : false)
+conf_data.set('OS_OSX', platform_osx ? 1 : false)
 
 conf_data.set_quoted('PACKAGE', meson.project_name(), description : 'Name of package.')
 conf_data.set_quoted('PACKAGE_NAME', meson.project_name(), description : 'Define to the full name of this package.')
@@ -300,9 +295,9 @@ else
 endif
 
 if libjpeg_dep.found()
-  conf_data.set('HAVE_JPEG', true, description : 'Using JPEG images.')
+  conf_data.set('HAVE_LIBJPEG', true, description : 'Using JPEG images.')
 else 
-  conf_data.set('HAVE_JPEG', false, description : 'Using JPEG images.')
+  conf_data.set('HAVE_LIBJPEG', false, description : 'Using JPEG images.')
   warning('libjpeg not found. Not using JPEG importer.')
 endif
 

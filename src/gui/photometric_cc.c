@@ -343,8 +343,11 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 		i++;
 		ngood++;
 	}
-
-	siril_log_message(_("%d stars excluded from the calculation.\n"), nb_stars - ngood);
+	int excl = nb_stars - ngood;
+	gchar *str = ngettext("%d star excluded from the calculation", "%d stars excluded from the calculation", excl);
+	str = g_strdup_printf(str, excl);
+	siril_log_message(str);
+	g_free(str);
 
 	if (ngood == 0) {
 		siril_log_message(_("No valid stars found.\n"));

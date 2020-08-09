@@ -287,7 +287,12 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 	r2 *= r2;
 	rmin_sq = (appRadius - 0.5) * (appRadius - 0.5);
 
-	double *data = calloc((y2 - y1) * (x2 - x1), sizeof(double));
+	int ndata = (y2 - y1) * (x2 - x1);
+	if (ndata <= 0) {
+		siril_log_color_message(_("An error occurred in your selection. Please make another selection.\n"), "red");
+		return NULL;
+	}
+	double *data = calloc(ndata, sizeof(double));
 	if (!data) {
 		PRINT_ALLOC_ERR;
 		return NULL;

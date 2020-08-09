@@ -178,7 +178,7 @@ static void fits_read_history(fitsfile *fptr, GSList **history) {
 		hdu_changed = TRUE;
 		if (type == IMAGE_HDU)
 			break;
-		siril_debug_print("history read from another HDU\n");
+		siril_debug_print("history read from another HDU (CHDU changed)\n");
 		read_history_in_hdu(fptr, &list);
 	} while (1);
 
@@ -255,6 +255,10 @@ void read_fits_header(fits *fit) {
 	if (status == KEY_NO_EXIST) {
 		fit->data_max = (double) maxi;
 	}
+
+	status = 0;
+	fits_read_key(fit->fptr, TSTRING, "ROWORDER", &(fit->row_order), NULL,
+			&status);
 
 	/*******************************************************************
 	 * ************* CAMERA AND INSTRUMENT KEYWORDS ********************
@@ -440,9 +444,8 @@ char *copy_header(fits *fit) {
 		fits_movrel_hdu(fit->fptr, 1, &type, &status);
 		if (status || type == IMAGE_HDU)
 			break;
-
 		hdu_changed = TRUE;
-		siril_debug_print("header read from another HDU\n");
+		siril_debug_print("header read from another HDU (CHDU changed)\n");
 		if (copy_header_from_hdu(fit->fptr, &header, &strsize, &strlength))
 			break;
 	} while (1);
@@ -655,7 +658,7 @@ static int siril_fits_move_first_image(fitsfile* fp) {
 		}
 	} while (!status);
 
-	siril_debug_print("Found image HDU with naxis %d (status %d)\n", naxis, status);
+	siril_debug_print("Found image HDU (changed CHDU) with naxis %d (status %d)\n", naxis, status);
 	return status;
 }
 
@@ -911,7 +914,7 @@ static void save_wcs_keywords(fits *fit) {
 	}
 }
 
-static void save_fits_header(fits *fit) {
+void save_fits_header(fits *fit) {
 	int i, status = 0;
 	double zero, scale;
 	char comment[FLEN_COMMENT];
@@ -957,6 +960,12 @@ static void save_fits_header(fits *fit) {
 	status = 0;
 	fits_update_key(fit->fptr, TDOUBLE, "BSCALE", &scale, "default scaling factor",
 			&status);
+
+	status = 0;
+	if (!g_strcmp0(fit->row_order, "BOTTOM-UP") || !g_strcmp0(fit->row_order, "TOP-DOWN")) {
+		fits_update_key(fit->fptr, TSTRING, "ROWORDER", &fit->row_order,
+				"Order of the rows in image array", &status);
+	}
 
 	/*******************************************************************
 	 * ************* CAMERA AND INSTRUMENT KEYWORDS ********************
@@ -1041,6 +1050,7 @@ static void save_fits_header(fits *fit) {
 		status = 0;
 		fits_update_key(fit->fptr, TINT, "YBAYROFF", &(fit->bayer_yoffset),
 				"Y offset of Bayer array", &status);
+
 	}
 
 	status = 0;
@@ -1125,12 +1135,6 @@ static void save_fits_header(fits *fit) {
 					comment_str, &status);
 		}
 	}
-}
-
-static int read_data_cube(fits *fit) {
-	printf("fit->naxes[2]=%ld\n", fit->naxes[2]);
-	if (fit->naxis == 3) fit->naxes[2] = 3;
-	return 0;
 }
 
 /********************** public functions ************************************/
@@ -1235,7 +1239,8 @@ int readfits(const char *filename, fits *fit, char *realname, gboolean force_flo
 	fit->ry = fit->naxes[1];
 
 	if (fit->naxis == 3 && fit->naxes[2] != 3) {
-		read_data_cube(fit);
+		siril_log_color_message(_("The FITS image contains more than 3 channels (%ld). Opening only the three first.\n"), "salmon", fit->naxes[2]);
+		if (fit->naxis == 3) fit->naxes[2] = 3;
 	}
 
 	if (fit->naxis == 2 && fit->naxes[2] == 0) {
@@ -1259,7 +1264,7 @@ int readfits(const char *filename, fits *fit, char *realname, gboolean force_flo
 	fit->top_down = FALSE;
 
 	if (!retval) {
-		// copy the entire header
+		// copy the entire header in memory
 		if (fit->header)
 			free(fit->header);
 		fit->header = copy_header(fit);
@@ -1584,6 +1589,7 @@ int save_opened_fits(fits *f) {
 	size_t i, pixel_count;
 	int type, status = 0;
 
+	save_fits_header(f);
 	pixel_count = f->naxes[0] * f->naxes[1] * f->naxes[2];
 
 	status = 0;
@@ -1659,8 +1665,7 @@ int save_opened_fits(fits *f) {
 	}
 
 	if (!status) {
-		save_fits_header(f);
-		// copy the entire header
+		// copy the entire header in memory
 		if (f->header)
 			free(f->header);
 		f->header = copy_header(f);
@@ -1837,6 +1842,7 @@ int copy_fits_metadata(fits *from, fits *to) {
 	strncpy(to->dft.type, from->dft.type, FLEN_VALUE);
 	strncpy(to->dft.ord, from->dft.ord, FLEN_VALUE);
 	strncpy(to->bayer_pattern, from->bayer_pattern, FLEN_VALUE);
+	strncpy(to->row_order, from->row_order, FLEN_VALUE);
 
 	to->bayer_xoffset = from->bayer_xoffset;
 	to->bayer_yoffset = from->bayer_yoffset;
@@ -1851,6 +1857,29 @@ int copy_fits_metadata(fits *from, fits *to) {
 	to->dft.norm[2] = from->dft.norm[2];
 
 	return 0;
+}
+
+int copy_fits_from_file(char *source, char *destination) {
+	fitsfile *infptr, *outfptr; /* FITS file pointers defined in fitsio.h */
+	int status = 0; /* status must always be initialized = 0  */
+
+	/* Open the input file */
+	if (!siril_fits_open_diskfile(&infptr, source, READONLY, &status)) {
+		/* Create the output file */
+		if (!siril_fits_create_diskfile(&outfptr, destination, &status)) {
+
+			/* copy the previous, current, and following HDUs */
+			fits_copy_file(infptr, outfptr, 1, 1, 1, &status);
+
+			fits_close_file(outfptr, &status);
+		}
+		fits_close_file(infptr, &status);
+	}
+
+	/* if error occured, print out error message */
+	if (status)
+		report_fits_error(status);
+	return (status);
 }
 
 int save1fits16(const char *filename, fits *fit, int layer) {

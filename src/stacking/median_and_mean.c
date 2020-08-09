@@ -76,7 +76,7 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 		for (i = 0; i < nb_frames; ++i) {
 			int image_index = args->image_indices[i];	// image index in sequence
 			if (!get_thread_run()) {
-				return 1;
+				return ST_GENERIC_ERROR;
 			}
 			if (!fit_sequence_get_image_filename(args->seq, image_index, filename, TRUE))
 				continue;
@@ -87,7 +87,7 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 
 			/* open input images */
 			if (seq_open_image(args->seq, image_index)) {
-				return 1;
+				return ST_SEQUENCE_ERROR;
 			}
 
 			/* here we use the internal data of sequences, it's quite ugly, we should
@@ -97,12 +97,12 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 			fits_get_img_param(args->seq->fptr[image_index], 3, bitpix, naxis, naxes, &status);
 			if (status) {
 				fits_report_error(stderr, status); /* print error message */
-				return 1;
+				return ST_SEQUENCE_ERROR;
 			}
 			if (*naxis > 3) {
 				siril_log_message(_("Stacking error: images with > 3 dimensions "
 						"are not supported\n"));
-				return 1;
+				return ST_SEQUENCE_ERROR;
 			}
 
 			if (oldnaxis > 0) {
@@ -112,7 +112,7 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 						oldnaxes[2] != naxes[2]) {
 					siril_log_message(_("Stacking error: input images have "
 							"different sizes\n"));
-					return 2;
+					return ST_SEQUENCE_ERROR;
 				}
 			} else {
 				oldnaxis = *naxis;
@@ -125,7 +125,7 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 				if (*bitpix != oldbitpix) {
 					siril_log_message(_("Stacking error: input images have "
 							"different precision\n"));
-					return 2;
+					return ST_SEQUENCE_ERROR;
 				}
 			} else {
 				oldbitpix = *bitpix;
@@ -157,7 +157,7 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 		/* case of Super Pixel not handled yet */
 		if (com.pref.debayer.open_debayer && com.pref.debayer.bayer_inter == BAYER_SUPER_PIXEL) {
 			siril_log_message(_("Super-pixel is not handled yet for on the fly SER stacking\n"));
-			return 1;
+			return ST_GENERIC_ERROR;
 		}
 	}
 	else if (args->seq->type == SEQ_FITSEQ) {
@@ -168,14 +168,14 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 		import_metadata_from_fitsfile(args->seq->fitseq_file->fptr, fit);
 	} else {
 		siril_log_message(_("Rejection stacking is only supported for FITS images/sequences and SER sequences.\nUse \"Sum Stacking\" instead.\n"));
-		return 2;
+		return ST_SEQUENCE_ERROR;
 	}
 
-	return 0;
+	return ST_OK;
 }
 
 int stack_compute_parallel_blocks(struct _image_block **blocksptr, int max_number_of_rows,
-		int nb_channels, long *naxes, long *largest_block_height,
+		int nb_channels, long *naxes, size_t *largest_block_height,
 		int *nb_blocks, int nb_threads) {
 	int size_of_stacks = max_number_of_rows;
 	if (size_of_stacks == 0)
@@ -224,13 +224,16 @@ int stack_compute_parallel_blocks(struct _image_block **blocksptr, int max_numbe
 	*largest_block_height = 0;
 	long channel = 0, row = 0, end, j = 0;
 	*blocksptr = malloc(*nb_blocks * sizeof(struct _image_block));
-	if (!*blocksptr) return 1;
+	if (!*blocksptr) {
+		PRINT_ALLOC_ERR;
+		return ST_ALLOC_ERROR;
+	}
 	struct _image_block *blocks = *blocksptr;
 	do {
 		if (j >= *nb_blocks) {
 			siril_log_message(_("A bug has been found. Unable to split the image "
 						"area into the correct processing blocks.\n"));
-			return 1;
+			return ST_GENERIC_ERROR;
 		}
 
 		blocks[j].channel = channel;
@@ -263,7 +266,7 @@ int stack_compute_parallel_blocks(struct _image_block **blocksptr, int max_numbe
 
 	} while (channel < nb_channels) ;
 
-	return 0;
+	return ST_OK;
 }
 
 static void stack_read_block_data(struct stacking_args *args, int use_regdata,
@@ -613,8 +616,8 @@ int stack_median(struct stacking_args *args) {
 
 static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	int nb_frames;		/* number of frames actually used */
-	int bitpix, i, naxis, ielem_size, cur_nb = 0, retval = 0, pool_size = 1;
-	long npixels_in_block, naxes[3];
+	int bitpix, i, naxis, cur_nb = 0, retval = ST_OK, pool_size = 1;
+	long naxes[3];
 	double exposure = 0.0;
 	struct _data_block *data_pool = NULL;
 	struct _image_block *blocks = NULL;
@@ -624,20 +627,22 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	// data for mean/rej only
 	uint64_t irej[3][2] = {{0,0}, {0,0}, {0,0}};
 	regdata *layerparam = NULL;
-	gboolean use_regdata = is_mean;	// TODO see the other TODO at the top
+	gboolean use_regdata = is_mean;
 
 	nb_frames = args->nb_images_to_stack;
 	naxes[0] = naxes[1] = 0; naxes[2] = 1;
 
 	if (nb_frames < 2) {
 		siril_log_message(_("Select at least two frames for stacking. Aborting.\n"));
-		return -1;
+		return ST_GENERIC_ERROR;
 	}
 	g_assert(nb_frames <= args->seq->number);
 
 	if (use_regdata) {
-		if (args->reglayer < 0)
+		if (args->reglayer < 0) {
 			fprintf(stderr, "No registration layer passed, ignoring regdata!\n");
+			use_regdata = FALSE;
+		}
 		else layerparam = args->seq->regparam[args->reglayer];
 	}
 
@@ -653,7 +658,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	if (naxes[0] == 0) {
 		// no image has been loaded
 		siril_log_message(_("Rejection stack error: uninitialized sequence\n"));
-		retval = -2;
+		retval = ST_SEQUENCE_ERROR;
 		goto free_and_close;
 	}
 	fprintf(stdout, "image size: %ldx%ld, %ld layers\n", naxes[0], naxes[1], naxes[2]);
@@ -699,7 +704,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		nb_channels = 3;
 	}
 
-	long largest_block_height;
+	size_t largest_block_height;
 	int nb_blocks;
 	/* Compute parallel processing data: the data blocks, later distributed to threads */
 	if ((retval = stack_compute_parallel_blocks(&blocks, args->max_number_of_rows, nb_channels,
@@ -715,14 +720,14 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	pool_size = nb_threads;
 	g_assert(pool_size > 0);
 #endif
-	npixels_in_block = largest_block_height * naxes[0];
+	size_t npixels_in_block = largest_block_height * naxes[0];
 	g_assert(npixels_in_block > 0);
-	ielem_size = itype == DATA_FLOAT ? sizeof(float) : sizeof(WORD);
+	int ielem_size = itype == DATA_FLOAT ? sizeof(float) : sizeof(WORD);
 
 	fprintf(stdout, "allocating data for %d threads (each %'lu MB)\n", pool_size,
 			(unsigned long)(nb_frames * npixels_in_block * ielem_size) / BYTES_IN_A_MB);
 	data_pool = calloc(pool_size, sizeof(struct _data_block));
-	size_t bufferSize = ielem_size * nb_frames * (npixels_in_block + 1) + 4; // buffer for tmp and stack, added 4 byte for alignment
+	size_t bufferSize = ielem_size * nb_frames * (npixels_in_block + 1ul) + 4ul; // buffer for tmp and stack, added 4 byte for alignment
 	if (is_mean) {
 		bufferSize += nb_frames * sizeof(int); // for rejected
 		if (args->type_of_rejection == WINSORIZED) {
@@ -736,8 +741,9 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		data_pool[i].tmp = malloc(bufferSize);
 		if (!data_pool[i].pix || !data_pool[i].tmp) {
 			PRINT_ALLOC_ERR;
+			fprintf(stderr, "Cannot allocate %zu (free memory: %d)\n", bufferSize / BYTES_IN_A_MB, get_available_memory_in_MB());
 			fprintf(stderr, "CHANGE MEMORY SETTINGS if stacking takes too much.\n");
-			retval = -1;
+			retval = ST_ALLOC_ERROR;
 			goto free_and_close;
 		}
 		data_pool[i].stack = (void*) ((char*) data_pool[i].tmp
@@ -790,7 +796,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		int data_idx = 0;
 		long x, y;
 
-		if (!get_thread_run()) retval = -1;
+		if (!get_thread_run()) retval = ST_GENERIC_ERROR;
 		if (retval) continue;
 #ifdef _OPENMP
 		data_idx = omp_get_thread_num();
@@ -835,7 +841,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 			cur_nb++;
 
 			if (!get_thread_run()) {
-				retval = -1;
+				retval = ST_GENERIC_ERROR;
 				break;
 			}
 			if (!(cur_nb % 16))	// every 16 iterations

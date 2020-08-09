@@ -100,16 +100,16 @@ static gboolean computeBackground(GSList *list, double *background, int channel,
 
 	int nbParam;
 	switch (order) {
-	case POLY_1:
+	case BACKGROUND_POLY_1:
 		nbParam = NPARAM_POLY1;
 		break;
-	case POLY_2:
+	case BACKGROUND_POLY_2:
 		nbParam = NPARAM_POLY2;
 		break;
-	case POLY_3:
+	case BACKGROUND_POLY_3:
 		nbParam = NPARAM_POLY3;
 		break;
-	case POLY_4:
+	case BACKGROUND_POLY_4:
 	default:
 		nbParam = NPARAM_POLY4;
 	}
@@ -144,20 +144,20 @@ static gboolean computeBackground(GSList *list, double *background, int channel,
 		gsl_matrix_set(J, k, 1, col);
 		gsl_matrix_set(J, k, 2, row);
 
-		if (order != POLY_1) {
+		if (order != BACKGROUND_POLY_1) {
 			gsl_matrix_set(J, k, 3, col * col);
 			gsl_matrix_set(J, k, 4, col * row);
 			gsl_matrix_set(J, k, 5, row * row);
 		}
 
-		if (order == POLY_3 || order == POLY_4) {
+		if (order == BACKGROUND_POLY_3 || order == BACKGROUND_POLY_4) {
 			gsl_matrix_set(J, k, 6, col * col * col);
 			gsl_matrix_set(J, k, 7, col * col * row);
 			gsl_matrix_set(J, k, 8, col * row * row);
 			gsl_matrix_set(J, k, 9, row * row * row);
 		}
 
-		if (order == POLY_4) {
+		if (order == BACKGROUND_POLY_4) {
 			gsl_matrix_set(J, k, 10, col * col * col * col);
 			gsl_matrix_set(J, k, 11, col * col * col * row);
 			gsl_matrix_set(J, k, 12, col * col * row * row);
@@ -191,17 +191,17 @@ static gboolean computeBackground(GSList *list, double *background, int channel,
 	for (unsigned int i = 0; i < height; i++) {
 		for (unsigned int j = 0; j < width; j++) {
 			switch (order) {
-			case POLY_1:
+			case BACKGROUND_POLY_1:
 				pixel = poly_1(c, (double) j, (double) i);
 				break;
-			case POLY_2:
+			case BACKGROUND_POLY_2:
 				pixel = poly_2(c, (double) j, (double) i);
 				break;
-			case POLY_3:
+			case BACKGROUND_POLY_3:
 				pixel = poly_3(c, (double) j, (double) i);
 				break;
 			default:
-			case POLY_4:
+			case BACKGROUND_POLY_4:
 				pixel = poly_4(c, (double) j, (double) i);
 			}
 			background[j + i * width] = pixel;
@@ -760,8 +760,6 @@ void on_background_clear_all_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
-	set_cursor_waiting(TRUE);
-
 	if (gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkBkgSeq")))
 			&& sequence_is_loaded()) {
 		struct background_data *args = malloc(sizeof(struct background_data));
@@ -770,7 +768,7 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 		args->tolerance = get_tolerance_value();
 		args->correction = get_correction_type();
 		args->degree = get_poly_order();
-		if (args->degree > POLY_1) {
+		if (args->degree > BACKGROUND_POLY_1) {
 			int confirm = siril_confirm_dialog(_("Polynomial order seems too high."),
 					_("You are about to process a sequence of preprocessed files with "
 							"a polynomial degree greater than 1. This is unlikely because such "
@@ -793,9 +791,9 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 		apply_background_extraction_to_sequence(args);
 	} else {
 		if (com.grad_samples == NULL) {
-			set_cursor_waiting(FALSE);
 			return;
 		}
+		set_cursor_waiting(TRUE);
 
 		int correction = get_correction_type();
 		poly_order degree = get_poly_order();
@@ -806,9 +804,8 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 		invalidate_stats_from_fit(&gfit);
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);
-
+		set_cursor_waiting(FALSE);
 	}
-	set_cursor_waiting(FALSE);
 }
 
 void on_background_close_button_clicked(GtkButton *button, gpointer user_data) {

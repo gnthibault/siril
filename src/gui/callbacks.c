@@ -42,8 +42,8 @@
 #include "compositing/align_rgb.h"
 #include "image_display.h"
 #include "image_interactions.h"
-
 #include "callbacks.h"
+#include "plot.h"
 #include "preferences.h"
 #include "message_dialog.h"
 #include "PSF_list.h"
@@ -51,6 +51,7 @@
 #include "script_menu.h"
 #include "progress_and_log.h"
 #include "dialogs.h"
+#include "fix_xtrans_af.h"
 #include "siril_intro.h"
 #include "siril_preview.h"
 
@@ -102,22 +103,6 @@ static void set_label_text_from_main_thread(const char *label_name, const char *
 	gdk_threads_add_idle(set_label_text_idle, data);
 }
 
-/* enables or disables the "display reference" checkbox in registration preview */
-void enable_view_reference_checkbox(gboolean status) {
-	static GtkToggleButton *check_display_ref = NULL;
-	static GtkWidget *widget = NULL, *labelRegRef = NULL;
-	if (check_display_ref == NULL) {
-		check_display_ref = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_displayref"));
-		widget = GTK_WIDGET(check_display_ref);
-		labelRegRef = lookup_widget("labelRegRef");
-	}
-	if (status && gtk_widget_get_sensitive(widget))
-		return;	// may be already enabled but deactivated by user, don't force it again
-	gtk_widget_set_sensitive(widget, status);
-	gtk_widget_set_visible(labelRegRef, !status);
-	gtk_toggle_button_set_active(check_display_ref, status);
-}
-
 void set_viewer_mode_widgets_sensitive(gboolean sensitive) {
 	GtkWidget *scalemax = lookup_widget("scalemax");
 	GtkWidget *scalemin = lookup_widget("scalemin");
@@ -136,54 +121,6 @@ void set_viewer_mode_widgets_sensitive(gboolean sensitive) {
 	gtk_widget_set_sensitive(user, sensitive);
 }
 
-/* vport can be -1 if the correct viewport should be tested */
-void test_and_allocate_reference_image(int vport) {
-	static GtkComboBox *cbbt_layers = NULL;
-	if (cbbt_layers == NULL) {
-		cbbt_layers = GTK_COMBO_BOX(lookup_widget("comboboxreglayer"));
-	}
-	if (vport == -1)
-		vport = gtk_combo_box_get_active(cbbt_layers);
-
-	if (sequence_is_loaded() && com.seq.current == com.seq.reference_image
-			&& gtk_combo_box_get_active(cbbt_layers) == vport) {
-		/* this is the registration layer and the reference frame,
-		 * save the buffer for alignment preview */
-		if (!com.refimage_regbuffer || !com.refimage_surface) {
-			guchar *oldbuf = com.refimage_regbuffer;
-			com.refimage_regbuffer = realloc(com.refimage_regbuffer,
-					com.surface_stride[vport] * gfit.ry * sizeof(guchar));
-			if (com.refimage_regbuffer == NULL) {
-				PRINT_ALLOC_ERR;
-				if (oldbuf)
-					free(oldbuf);
-				return;
-			}
-
-			if (com.refimage_surface)
-				cairo_surface_destroy(com.refimage_surface);
-			com.refimage_surface = cairo_image_surface_create_for_data(
-					com.refimage_regbuffer, CAIRO_FORMAT_RGB24, gfit.rx,
-					gfit.ry, com.surface_stride[vport]);
-			if (cairo_surface_status(com.refimage_surface)
-					!= CAIRO_STATUS_SUCCESS) {
-				fprintf(stderr,
-						"Error creating the Cairo image surface for the reference image.\n");
-				cairo_surface_destroy(com.refimage_surface);
-				com.refimage_surface = NULL;
-			} else {
-				fprintf(stdout,
-						"Saved the reference frame buffer for alignment preview.\n");
-				enable_view_reference_checkbox(TRUE);
-			}
-		}
-		memcpy(com.refimage_regbuffer, com.graybuf[vport],
-				com.surface_stride[vport] * gfit.ry * sizeof(guchar));
-		cairo_surface_flush(com.refimage_surface);
-		cairo_surface_mark_dirty(com.refimage_surface);
-	}
-}
-
 /*
  * Update FWHM UNITS static function
  */
@@ -195,6 +132,7 @@ static void update_fwhm_units_ok() {
 	update = gfit.focal_length > 0.0 && gfit.pixel_size_x > 0.0f && gfit.pixel_size_y > 0.0f;
 
 	gtk_widget_set_visible(label_ok, update);
+	drawPlot();
 }
 
 
@@ -459,7 +397,7 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("header_save_as_button"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("header_save_button"), is_a_single_image_loaded && com.uniq->fileexist);
 	gtk_widget_set_sensitive(lookup_widget("info_menu_headers"), any_image_is_loaded && gfit.header != NULL);
-	gtk_widget_set_sensitive(lookup_widget("info_menu_informations"), is_a_single_image_loaded);
+	gtk_widget_set_sensitive(lookup_widget("info_menu_informations"), any_image_is_loaded);
 
 	/* Image processing Menu */
 	gtk_widget_set_sensitive(lookup_widget("removegreen"), is_a_singleRGB_image_loaded);
@@ -616,7 +554,7 @@ void update_prepro_interface(gboolean allow_debayer) {
 			       *checkAutoEvaluate = NULL;
 	static GtkWidget *prepro_button = NULL, *cosme_grid = NULL, *dark_optim = NULL;
        	static GtkWidget *equalize = NULL, *auto_eval = NULL, *flat_norm = NULL;
-       	static GtkWidget *debayer = NULL;
+       	static GtkWidget *debayer = NULL, *fix_xtrans = NULL;
 	static GtkComboBox *output_type = NULL;
 	if (udark == NULL) {
 		udark = GTK_TOGGLE_BUTTON(
@@ -636,6 +574,7 @@ void update_prepro_interface(gboolean allow_debayer) {
 		auto_eval = lookup_widget("checkbutton_auto_evaluate");
 		flat_norm = lookup_widget("entry_flat_norm");
 		debayer = lookup_widget("checkButton_pp_dem");
+		fix_xtrans = lookup_widget("fix_xtrans_af");
 	}
 
 	gtk_widget_set_sensitive(prepro_button,
@@ -652,6 +591,7 @@ void update_prepro_interface(gboolean allow_debayer) {
 			!gtk_toggle_button_get_active(checkAutoEvaluate));
 
 	gtk_widget_set_sensitive(debayer, allow_debayer && gtk_widget_get_sensitive(prepro_button));
+	gtk_widget_set_sensitive(fix_xtrans, gtk_toggle_button_get_active(udark) || gtk_toggle_button_get_active(uoffset));
 
 	gtk_widget_set_sensitive(GTK_WIDGET(output_type), sequence_is_loaded());
 	int type = com.seq.type;
@@ -1034,7 +974,8 @@ void close_tab() {
 
 void activate_tab(int vport) {
 	GtkNotebook* notebook = GTK_NOTEBOOK(lookup_widget("notebook1"));
-	gtk_notebook_set_current_page(notebook, vport);
+	if (gtk_notebook_get_current_page(notebook) != vport)
+		gtk_notebook_set_current_page(notebook, vport);
 	// com.cvport is set in the event handler for changed page
 }
 
@@ -1214,12 +1155,14 @@ void set_GUI_DiskSpace(int64_t space) {
 }
 
 static void initialize_preprocessing() {
-	GtkToggleButton *cfaButton, *eqButton;
+	GtkToggleButton *cfaButton, *eqButton, *xtransButton;
 
 	cfaButton = GTK_TOGGLE_BUTTON(lookup_widget("cosmCFACheck"));
 	gtk_toggle_button_set_active(cfaButton, com.pref.prepro_cfa);
 	eqButton = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_equalize_cfa"));
 	gtk_toggle_button_set_active(eqButton, com.pref.prepro_equalize_cfa);
+	xtransButton = GTK_TOGGLE_BUTTON(lookup_widget("fix_xtrans_af"));
+	gtk_toggle_button_set_active(xtransButton, com.pref.fix_xtrans);
 
 	update_prepro_interface(FALSE);
 }
@@ -1350,14 +1293,12 @@ void initialize_all_GUI(gchar *supported_files) {
 	/* register some callbacks */
 	register_selection_update_callback(update_export_crop_label);
 
-	/* initialization of the binning parameters */
-	GtkComboBox *binning = GTK_COMBO_BOX(lookup_widget("combobinning"));
-	gtk_combo_box_set_active(binning, 0);
-
 	/* initialization of some paths */
 	initialize_path_directory();
 
 	initialize_FITS_name_entries();
+
+	init_xtrans_ui_pixels();
 
 	initialize_log_tags();
 
@@ -1368,6 +1309,7 @@ void initialize_all_GUI(gchar *supported_files) {
 
 	set_GUI_CWD();
 	set_GUI_misc();
+	siril_log_message(_("Default FITS extension is set to %s\n"), com.pref.ext);
 	set_GUI_compression();
 	set_GUI_photometry();
 	init_peaker_GUI();
@@ -1565,6 +1507,7 @@ void on_combobinning_changed(GtkComboBox *box, gpointer user_data) {
 		default:
 			fprintf(stderr, "Should not happen\n");
 	}
+	update_fwhm_units_ok();
 }
 
 void on_info_menu_informations_clicked(GtkButton *button, gpointer user_data) {

@@ -3,6 +3,14 @@
 
 #include "core/siril.h"
 
+/* ORDER OF POLYNOMES */
+typedef enum {
+	BACKGROUND_POLY_1,
+	BACKGROUND_POLY_2,
+	BACKGROUND_POLY_3,
+	BACKGROUND_POLY_4,
+} poly_order;
+
 typedef struct sample {
 	double median[3]; // median of each channel of the sample (if color)
 	double mean; // mean of the 3 channel of the sample (if color)

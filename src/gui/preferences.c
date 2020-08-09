@@ -30,6 +30,7 @@
 #include "gui/dialogs.h"
 #include "gui/PSF_list.h"
 #include "gui/siril_intro.h"
+#include "gui/fix_xtrans_af.h"
 
 #include "preferences.h"
 
@@ -88,7 +89,7 @@ void update_libraw_and_debayer_interface() {
 	/* We write in config file */
 	/*************SER**********************/
 	com.pref.debayer.use_bayer_header = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_SER_use_header")));
-	com.pref.debayer.up_bottom = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_debayer_compatibility")));
+	com.pref.debayer.top_down = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_debayer_compatibility")));
 	com.pref.debayer.xbayeroff = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(lookup_widget("xbayeroff_spin")));
 	com.pref.debayer.ybayeroff = gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON(lookup_widget("ybayeroff_spin")));
 	writeinitfile();
@@ -151,11 +152,16 @@ void set_GUI_LIBRAW() {
 	GtkSpinButton *ybayer_spin = GTK_SPIN_BUTTON(lookup_widget("ybayeroff_spin"));
 	gtk_combo_box_set_active(pattern, com.pref.debayer.bayer_pattern);
 	gtk_combo_box_set_active(inter, com.pref.debayer.bayer_inter);
-	gtk_toggle_button_set_active(compat, com.pref.debayer.up_bottom);
+	gtk_toggle_button_set_active(compat, com.pref.debayer.top_down);
 	gtk_toggle_button_set_active(use_header, com.pref.debayer.use_bayer_header);
 	gtk_toggle_button_set_active(demosaicingButton,	com.pref.debayer.open_debayer);
 	gtk_spin_button_set_value(xbayer_spin, com.pref.debayer.xbayeroff);
 	gtk_spin_button_set_value(ybayer_spin, com.pref.debayer.ybayeroff);
+}
+
+void on_checkbutton_debayer_guess_orientation_toggled(GtkToggleButton *button, gpointer user_data) {
+
+	gtk_widget_set_sensitive((GtkWidget *)user_data, !gtk_toggle_button_get_active(button));
 }
 
 void on_checkbutton_cam_toggled(GtkButton *button, gpointer user_data) {
@@ -314,9 +320,11 @@ void set_GUI_compression() {
 		if (com.pref.comp.fits_method == HCOMPRESS_COMP) {
 			gtk_spin_button_set_value(hscale, com.pref.comp.fits_hcompress_scale);
 		}
+		siril_log_message(_("FITS compression enabled\n"), com.pref.ext);
 	} else {
 		GtkToggleButton *disabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_disabled_radio"));
 		gtk_toggle_button_set_active(disabled, !com.pref.comp.fits_enabled);
+		siril_log_message(_("FITS compression disabled\n"));
 	}
 }
 
@@ -432,6 +440,11 @@ void on_checkbutton_equalize_cfa_toggled(GtkToggleButton *button, gpointer user_
 	writeinitfile();
 }
 
+void on_fix_xtrans_af_toggled(GtkToggleButton *button, gpointer user_data) {
+	com.pref.fix_xtrans = gtk_toggle_button_get_active(button);
+	writeinitfile();
+}
+
 void on_filechooser_bias_lib_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 	g_free(com.pref.prepro_bias_lib);
 	com.pref.prepro_bias_lib = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(widget));
@@ -443,6 +456,7 @@ void on_check_button_pref_bias_toggled(GtkToggleButton *button, gpointer user_da
 
 void on_clear_bias_entry_clicked(GtkButton *button, gpointer user_data) {
 	g_free(com.pref.prepro_bias_lib);
+	com.pref.prepro_bias_lib = NULL;
 	gtk_file_chooser_unselect_all((GtkFileChooser *)user_data);
 }
 
@@ -457,6 +471,7 @@ void on_check_button_pref_dark_toggled(GtkToggleButton *button, gpointer user_da
 
 void on_clear_dark_entry_clicked(GtkButton *button, gpointer user_data) {
 	g_free(com.pref.prepro_dark_lib);
+	com.pref.prepro_dark_lib = NULL;
 	gtk_file_chooser_unselect_all((GtkFileChooser *)user_data);
 }
 
@@ -471,6 +486,7 @@ void on_check_button_pref_flat_toggled(GtkToggleButton *button, gpointer user_da
 
 void on_clear_flat_entry_clicked(GtkButton *button, gpointer user_data) {
 	g_free(com.pref.prepro_flat_lib);
+	com.pref.prepro_flat_lib = NULL;
 	gtk_file_chooser_unselect_all((GtkFileChooser *)user_data);
 }
 
@@ -508,6 +524,7 @@ void on_apply_settings_button_clicked(GtkButton *button, gpointer user_data) {
 	update_photometry_interface();
 	update_language();
 	initialize_FITS_name_entries();
+	save_xtrans_ui_pixels();
 	fill_script_paths_list();
 	refresh_stars_list(com.stars);
 	save_main_window_state();

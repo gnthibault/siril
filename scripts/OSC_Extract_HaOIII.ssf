@@ -1,0 +1,66 @@
+############################################
+# Script for Siril 1.0
+# July 2020
+# (C) Cyril Richard
+# ExtractHaOIII v1.0
+########### PREPROCESSING SCRIPT ###########
+# Script for color camera preprocessing
+# needs 4 sets of RAW images in the working
+# directory, within 4 directories:
+# biases, flats, darks and lights 
+#
+############################################
+
+#build master-bias
+cd biases
+convert bias -out=../process
+cd ../process
+stack bias rej 3 3 -nonorm
+cd ..
+
+#preprocess flats
+cd flats
+convert flat -out=../process
+cd ../process
+preprocess flat -bias=bias_stacked
+
+#build master-flat
+stack pp_flat rej 3 3 -norm=mul
+cd ..
+
+#build master-dark
+cd darks
+convert dark -out=../process
+cd ../process
+stack dark rej 3 3 -nonorm
+cd ..
+
+#preprocess lights
+cd lights
+convert light -out=../process
+cd ../process
+preprocess light -dark=dark_stacked -flat=pp_flat_stacked -cfa -equalize_cfa
+
+#extract Ha and OIII
+seqextract_HaOIII pp_light
+
+#align Ha lights
+register Ha_pp_light -drizzle
+
+#stack calibrated Ha lights
+stack r_Ha_pp_light rej 3 3 -norm=addscale -output_norm -out=../Ha_result
+
+#align OIII lights
+register OIII_pp_light -drizzle
+
+#stack calibrated OIII lights
+stack r_OIII_pp_light rej 3 3 -norm=addscale -output_norm -out=../OIII_result
+
+cd ..
+
+#Now make linear match on OIII frame based upon Ha frame
+load OIII_result
+linear_match Ha_result 0 0.92
+save OIII_result
+
+close

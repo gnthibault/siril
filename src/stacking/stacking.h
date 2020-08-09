@@ -11,6 +11,13 @@ typedef int (*stack_method)(struct stacking_args *args);
 
 typedef struct normalization_coeff norm_coeff;
 
+enum {
+	ST_ALLOC_ERROR = -10,
+	ST_SEQUENCE_ERROR = -2,
+	ST_GENERIC_ERROR = -1,
+	ST_OK = 0
+};
+
 typedef enum {
 	STACK_SUM,
 	STACK_MEAN,
@@ -137,7 +144,7 @@ struct _data_block {
 
 int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, long *naxes, double *exposure, fits *fit);
 int stack_compute_parallel_blocks(struct _image_block **blocks, int max_number_of_rows,
-		int nb_channels, long *naxes, long *largest_block_height,
+		int nb_channels, long *naxes, size_t *largest_block_height,
 		int *nb_parallel_stacks, int nb_threads);
 int find_refimage_in_indices(int *indices, int nb, int ref);
 

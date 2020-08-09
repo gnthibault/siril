@@ -47,7 +47,7 @@ static int sum_stacking_prepare_hook(struct generic_seq_args *args) {
 		ssdata->fsum[0] = calloc(nbdata, sizeof(double) * args->seq->nb_layers);
 		if (ssdata->fsum[0] == NULL){
 			PRINT_ALLOC_ERR;
-			return -1;
+			return ST_ALLOC_ERROR;
 		}
 		if(args->seq->nb_layers == 3){
 			ssdata->fsum[1] = ssdata->fsum[0] + nbdata;
@@ -61,7 +61,7 @@ static int sum_stacking_prepare_hook(struct generic_seq_args *args) {
 		ssdata->sum[0] = calloc(nbdata, sizeof(uint64_t) * args->seq->nb_layers);
 		if (ssdata->sum[0] == NULL){
 			PRINT_ALLOC_ERR;
-			return -1;
+			return ST_ALLOC_ERROR;
 		}
 		if(args->seq->nb_layers == 3){
 			ssdata->sum[1] = ssdata->sum[0] + nbdata;	// index of green layer in sum[0]
@@ -74,7 +74,7 @@ static int sum_stacking_prepare_hook(struct generic_seq_args *args) {
 	}
 
 	ssdata->exposure = 0.0;
-	return 0;
+	return ST_OK;
 }
 
 static int sum_stacking_image_hook(struct generic_seq_args *args, int o, int i, fits *fit, rectangle *_) {
@@ -121,7 +121,7 @@ static int sum_stacking_image_hook(struct generic_seq_args *args, int o, int i, 
 			++pixel;
 		}
 	}
-	return 0;
+	return ST_OK;
 }
 
 // convert the result and store it into gfit
@@ -138,7 +138,7 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 #ifdef _OPENMP
 #pragma omp parallel for reduction(max:fmax)
 #endif
-		for (i=0; i < nbdata; ++i) {
+		for (i = 0; i < nbdata; ++i) {
 			if (ssdata->fsum[0][i] > fmax)
 				fmax = ssdata->fsum[0][i];
 		}
@@ -146,7 +146,7 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 #ifdef _OPENMP
 #pragma omp parallel for reduction(max:max)
 #endif
-		for (i=0; i < nbdata; ++i)
+		for (i = 0; i < nbdata; ++i)
 			if (ssdata->sum[0][i] > max)
 				max = ssdata->sum[0][i];
 	}
@@ -154,7 +154,7 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 	clearfits(&gfit);
 	fits *fit = &gfit;
 	if (new_fit_image(&fit, args->seq->rx, args->seq->ry, args->seq->nb_layers, ssdata->output_32bits ? DATA_FLOAT : DATA_USHORT))
-		return -1;
+		return ST_GENERIC_ERROR;
 
 	/* We copy metadata from reference to the final fit */
 	if (args->seq->type == SEQ_REGULAR) {
@@ -211,7 +211,7 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 	free(ssdata);
 	args->user = NULL;
 
-	return 0;
+	return ST_OK;
 }
 
 int stack_summing_generic(struct stacking_args *stackargs) {

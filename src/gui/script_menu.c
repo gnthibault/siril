@@ -282,10 +282,16 @@ void fill_script_paths_list() {
 
 void siril_get_on_script_pages() {
 	gboolean ret;
-	const char *locale = setlocale(LC_MESSAGES, NULL);
+	const char *locale;
 	const char *supported_languages[] = { "el", "fr", "it", NULL }; // en is NULL: default language
 	gchar *lang = NULL;
 	int i = 0;
+
+	if (!g_strcmp0(com.pref.combo_lang, "")) {
+		locale = setlocale(LC_MESSAGES, NULL);
+	} else {
+		locale = com.pref.combo_lang;
+	}
 
 	if (locale) {
 		while (supported_languages[i]) {

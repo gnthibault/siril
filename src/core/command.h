@@ -18,6 +18,7 @@ int	process_clahe(int nb);
 int	process_clear(int nb);
 int	process_clearstar(int nb);
 int	process_close(int nb);
+int process_convert(int nb);
 int	process_convertraw(int nb);
 int	process_cosme(int nb);
 
@@ -48,6 +49,7 @@ int	process_histo(int nb);
 
 int	process_imoper(int nb);
 
+int process_link(int nb);
 int process_linear_match(int nb);
 int	process_load(int nb);
 int	process_log(int nb);

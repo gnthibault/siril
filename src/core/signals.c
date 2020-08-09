@@ -42,52 +42,45 @@ static void signal_handled(int s) {
 #pragma omp single
 #endif
 	{
-	g_printf("Error, signal %d:\n", s);
-	const gchar *visit = _("Please report this bug to: " PACKAGE_BUGREPORT);
-	switch (s) {
-	case SIGSEGV:
-	case SIGFPE:
-	case SIGABRT:
-	case SIGILL:
-		g_printf(ANSI_COLOR_RED"%s\n"ANSI_COLOR_RESET, visit);
-	}
+		g_printf("Error, signal %d:\n", s);
+		const gchar *visit = _("Please report this bug to: " PACKAGE_BUGREPORT);
+		switch (s) {
+		case SIGSEGV:
+		case SIGFPE:
+		case SIGABRT:
+		case SIGILL:
+			g_printf(ANSI_COLOR_RED"%s"ANSI_COLOR_RESET"\n", visit);
+		}
 
 #if (!defined _WIN32 && defined HAVE_EXECINFO_H)
-		int i;
 		void *stack[STACK_DEPTH];
 
 		size_t size = backtrace(stack, sizeof(stack) / sizeof(void*));
 
-		char **message = backtrace_symbols(stack, size);
-		if (message != NULL && message[0] != NULL) {
-			for (i = 0; i < size && message != NULL; ++i) {
-				g_printf("[#%i] in %s\n", i, message[i]);
-			}
-			free(message);
-		}
+		backtrace_symbols_fd(stack, size, fileno((FILE*) stdout));
 #else
-	unsigned int i;
-	void *stack[STACK_DEPTH];
-	unsigned short size;
-	SYMBOL_INFO *symbol;
-	HANDLE process;
+		unsigned int i;
+		void *stack[STACK_DEPTH];
+		unsigned short size;
+		SYMBOL_INFO *symbol;
+		HANDLE process;
 
-	process = GetCurrentProcess();
+		process = GetCurrentProcess();
 
-	SymInitialize(process, NULL, TRUE);
+		SymInitialize(process, NULL, TRUE);
 
-	size = CaptureStackBackTrace(0, sizeof(stack) / sizeof(void*), stack, NULL);
-	symbol = (SYMBOL_INFO*) calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
-	symbol->MaxNameLen = 255;
-	symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
+		size = CaptureStackBackTrace(0, sizeof(stack) / sizeof(void*), stack, NULL);
+		symbol = (SYMBOL_INFO*) calloc(sizeof(SYMBOL_INFO) + 256 * sizeof(char), 1);
+		symbol->MaxNameLen = 255;
+		symbol->SizeOfStruct = sizeof(SYMBOL_INFO);
 
-	for (i = 0; i < size; i++) {
-		SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
+		for (i = 0; i < size; i++) {
+			SymFromAddr(process, (DWORD64)(stack[i]), 0, symbol);
 
-		g_printf("[#%i]: in %s\n", i, symbol->Name);
-	}
+			g_printf("[#%i]: in %s\n", i, symbol->Name);
+		}
 
-	free(symbol);
+		free(symbol);
 #endif
 	}
 	undo_flush();

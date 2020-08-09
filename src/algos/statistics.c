@@ -192,6 +192,8 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 		allocate_stats(&stat);
 		if (!stat) return NULL;
 		stat_is_local = 1;
+	} else {
+		atomic_int_incref(stat->_nb_refs);
 	}
 
 	if (fit) {
@@ -385,14 +387,14 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 		// we have a single image, store in the fits
 		if (fit->stats && fit->stats[layer]) {
 			oldstat = fit->stats[layer];
-			oldstat->_nb_refs++;
+			atomic_int_incref(oldstat->_nb_refs);
 		}
 		stat = statistics_internal(fit, layer, NULL, option, oldstat, multithread);
 		if (!stat) {
 			fprintf(stderr, "- stats failed for fit %p (%d)\n", fit, layer);
 			if (oldstat) {
 				stats_set_default_values(oldstat);
-				oldstat->_nb_refs--;
+				atomic_int_decref(oldstat->_nb_refs);
 			}
 			return NULL;
 		}
@@ -404,7 +406,7 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 		if (seq->stats && seq->stats[layer]) {
 			oldstat = seq->stats[layer][image_index];
 			if (oldstat)	// can be NULL here
-				oldstat->_nb_refs++;
+				atomic_int_incref(oldstat->_nb_refs);
 		}
 		stat = statistics_internal(fit, layer, NULL, option, oldstat, multithread);
 		if (!stat) {
@@ -413,7 +415,7 @@ imstats* statistics(sequence *seq, int image_index, fits *fit, int layer, rectan
 						image_index, layer);
 			if (oldstat) {
 				stats_set_default_values(oldstat);
-				oldstat->_nb_refs--;
+				atomic_int_decref(oldstat->_nb_refs);
 			}
 			return NULL;
 		}
@@ -492,7 +494,7 @@ void add_stats_to_fit(fits *fit, int layer, imstats *stat) {
 		} else return;
 	}
 	fit->stats[layer] = stat;
-	stat->_nb_refs++;
+	atomic_int_incref(stat->_nb_refs);
 	siril_debug_print("- stats %p saved to fit %p (%d)\n", stat, fit, layer);
 }
 
@@ -521,7 +523,7 @@ static void add_stats_to_stats(sequence *seq, int nb_layers, imstats ****stats, 
 	siril_debug_print("- stats %p, %d in seq (%d): saving data\n", stat, image_index, layer);
 	(*stats)[layer][image_index] = stat;
 	seq->needs_saving = TRUE;
-	stat->_nb_refs++;
+	atomic_int_incref(stat->_nb_refs);
 }
 
 void add_stats_to_seq(sequence *seq, int image_index, int layer, imstats *stat) {
@@ -595,7 +597,7 @@ void allocate_stats(imstats **stat) {
 			*stat = malloc(sizeof(imstats));
 		if (!*stat) { PRINT_ALLOC_ERR; return; } // OOM
 		stats_set_default_values(*stat);
-		(*stat)->_nb_refs = 1;
+		(*stat)->_nb_refs = atomic_int_alloc();
 		siril_debug_print("- stats %p allocated\n", *stat);
 	}
 }
@@ -603,13 +605,14 @@ void allocate_stats(imstats **stat) {
 /* frees an imstats struct if there are no more references to it.
  * returns NULL if it was freed, the argument otherwise. */
 imstats* free_stats(imstats *stat) {
-	if (stat && stat->_nb_refs-- == 1) {
+	int n;
+	if (stat && (n = atomic_int_decref(stat->_nb_refs)) == 0) {
 		siril_debug_print("- stats %p has no more refs, freed\n", stat);
 		free(stat);
 		return NULL;
 	}
 	if (stat)
-		siril_debug_print("- stats %p has refs (%d)\n", stat, stat->_nb_refs);
+		siril_debug_print("- stats %p has refs (%d)\n", stat, n);
 	return stat;
 }
 

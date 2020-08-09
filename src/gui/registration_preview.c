@@ -36,7 +36,7 @@ gboolean redraw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	gboolean display_ref_image;
 
 	if (check_display_ref == NULL) {
-		check_display_ref = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "checkbutton_displayref"));
+		check_display_ref = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_displayref"));
 		labelRegRef = lookup_widget("labelRegRef");
 	}
 	display_ref_image = com.refimage_regbuffer && com.refimage_surface
@@ -122,6 +122,55 @@ gboolean redraw_preview(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
 	return FALSE;
 }
+
+/* vport can be -1 if the correct viewport should be tested */
+void test_and_allocate_reference_image(int vport) {
+	static GtkComboBox *cbbt_layers = NULL;
+	if (cbbt_layers == NULL) {
+		cbbt_layers = GTK_COMBO_BOX(lookup_widget("comboboxreglayer"));
+	}
+	if (vport == -1)
+		vport = gtk_combo_box_get_active(cbbt_layers);
+
+	if (sequence_is_loaded() && com.seq.current == com.seq.reference_image
+			&& gtk_combo_box_get_active(cbbt_layers) == vport) {
+		/* this is the registration layer and the reference frame,
+		 * save the buffer for alignment preview */
+		if (!com.refimage_regbuffer || !com.refimage_surface) {
+			guchar *oldbuf = com.refimage_regbuffer;
+			com.refimage_regbuffer = realloc(com.refimage_regbuffer,
+					com.surface_stride[vport] * gfit.ry * sizeof(guchar));
+			if (com.refimage_regbuffer == NULL) {
+				PRINT_ALLOC_ERR;
+				if (oldbuf)
+					free(oldbuf);
+				return;
+			}
+
+			if (com.refimage_surface)
+				cairo_surface_destroy(com.refimage_surface);
+			com.refimage_surface = cairo_image_surface_create_for_data(
+					com.refimage_regbuffer, CAIRO_FORMAT_RGB24, gfit.rx,
+					gfit.ry, com.surface_stride[vport]);
+			if (cairo_surface_status(com.refimage_surface)
+					!= CAIRO_STATUS_SUCCESS) {
+				fprintf(stderr,
+						"Error creating the Cairo image surface for the reference image.\n");
+				cairo_surface_destroy(com.refimage_surface);
+				com.refimage_surface = NULL;
+			} else {
+				fprintf(stdout,
+						"Saved the reference frame buffer for alignment preview.\n");
+				enable_view_reference_checkbox(TRUE);
+			}
+		}
+		memcpy(com.refimage_regbuffer, com.graybuf[vport],
+				com.surface_stride[vport] * gfit.ry * sizeof(guchar));
+		cairo_surface_flush(com.refimage_surface);
+		cairo_surface_mark_dirty(com.refimage_surface);
+	}
+}
+
 
 void redraw_previews() {
 	int i;
@@ -255,7 +304,6 @@ void on_spinbut_shift_value_change(GtkSpinButton *spinbutton, gpointer user_data
 	}
 
 	current_layer = gtk_combo_box_get_active(cbbt_layers);
-	siril_log_message(_("Switching to the registration layer\n"));
 	activate_tab(current_layer);
 
 	if (com.seq.regparam[current_layer] == NULL) {
@@ -275,5 +323,21 @@ void on_spinbut_shift_value_change(GtkSpinButton *spinbutton, gpointer user_data
 	update_seqlist();
 	fill_sequence_list(&com.seq, current_layer, FALSE);	// update list with new regparam
 	redraw_previews();
+}
+
+/* enables or disables the "display reference" checkbox in registration preview */
+void enable_view_reference_checkbox(gboolean status) {
+	static GtkToggleButton *check_display_ref = NULL;
+	static GtkWidget *widget = NULL, *labelRegRef = NULL;
+	if (check_display_ref == NULL) {
+		check_display_ref = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_displayref"));
+		widget = GTK_WIDGET(check_display_ref);
+		labelRegRef = lookup_widget("labelRegRef");
+	}
+	if (status && gtk_widget_get_sensitive(widget))
+		return;	// may be already enabled but deactivated by user, don't force it again
+	gtk_widget_set_sensitive(widget, status);
+	gtk_widget_set_visible(labelRegRef, !status);
+	gtk_toggle_button_set_active(check_display_ref, status);
 }
 

@@ -39,12 +39,13 @@
 #include "algos/PSF.h"
 #include "io/ser.h"
 #include "gui/gnuplot_i/gnuplot_i.h"
+#include "gui/PSF_list.h"
 
 #define XLABELSIZE 15
 
 static GtkWidget *drawingPlot = NULL, *sourceCombo = NULL, *combo = NULL,
 		*varCurve = NULL, *buttonExport = NULL, *buttonClearAll = NULL,
-		*buttonClearLatest = NULL;
+		*buttonClearLatest = NULL, *arcsec = NULL;
 static pldata *plot_data;
 static struct kpair ref;
 static gboolean is_fwhm = FALSE, use_photometry = FALSE, requires_color_update =
@@ -54,9 +55,11 @@ static gchar *xlabel = NULL;
 static enum photmetry_source selected_source = ROUNDNESS;
 static int julian0 = 0;
 static gnuplot_ctrl *gplot = NULL;
+static gboolean is_arcsec = FALSE;
 
 static void update_ylabel();
 static void set_colors(struct kplotcfg *cfg);
+static void free_colors(struct kplotcfg *cfg);
 void on_GtkEntryCSV_changed(GtkEditable *editable, gpointer user_data);
 
 static pldata *alloc_plot_data(int size) {
@@ -209,6 +212,10 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 				plot->data[j].y = psfs[i]->fwhmy / psfs[i]->fwhmx;
 				break;
 			case FWHM:
+				if (is_arcsec)
+					fwhm_to_arcsec_if_needed(&gfit, psfs[i]);
+				else
+					fwhm_to_pixels(psfs[i]);
 				plot->data[j].y = psfs[i]->fwhmx;
 				break;
 			case AMPLITUDE:
@@ -489,6 +496,7 @@ void on_plotSourceCombo_changed(GtkComboBox *box, gpointer user_data) {
 	use_photometry = gtk_combo_box_get_active(GTK_COMBO_BOX(box));
 	gtk_widget_set_visible(combo, use_photometry);
 	gtk_widget_set_visible(varCurve, use_photometry);
+	gtk_widget_set_visible(arcsec, use_photometry);
 	drawPlot();
 }
 
@@ -507,6 +515,7 @@ void reset_plot() {
 		gtk_widget_set_visible(sourceCombo, FALSE);
 		gtk_widget_set_visible(combo, FALSE);
 		gtk_widget_set_visible(varCurve, FALSE);
+		gtk_widget_set_visible(arcsec, FALSE);
 		gtk_widget_set_sensitive(buttonExport, FALSE);
 		gtk_widget_set_sensitive(buttonClearLatest, FALSE);
 		gtk_widget_set_sensitive(buttonClearAll, FALSE);
@@ -533,6 +542,7 @@ void drawPlot() {
 		drawingPlot = lookup_widget("DrawingPlot");
 		combo = lookup_widget("plotCombo");
 		varCurve = lookup_widget("varCurvePhotometry");
+		arcsec = lookup_widget("arcsecPhotometry");
 		sourceCombo = lookup_widget("plotSourceCombo");
 		buttonExport = lookup_widget("ButtonSaveCSV");
 		buttonClearAll = lookup_widget("clearAllPhotometry");
@@ -610,8 +620,7 @@ void on_varCurvePhotometry_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void free_photometry_set(sequence *seq, int set) {
-	int j;
-	for (j = 0; j < seq->number; j++) {
+	for (int j = 0; j < seq->number; j++) {
 		if (seq->photometry[set][j])
 			free(seq->photometry[set][j]);
 	}
@@ -633,8 +642,8 @@ void on_clearLatestPhotometry_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_clearAllPhotometry_clicked(GtkButton *button, gpointer user_data) {
-	int i;
-	for (i = 0; i < MAX_SEQPSF && com.seq.photometry[i]; i++) {
+	clear_stars_list();
+	for (int i = 0; i < MAX_SEQPSF && com.seq.photometry[i]; i++) {
 		free_photometry_set(&com.seq, i);
 	}
 	reset_plot();
@@ -723,7 +732,7 @@ gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 			redraw(com.cvport, REMAP_ONLY);
 			requires_color_update = FALSE;
 		}
-
+		free_colors(&cfgplot);
 		kplot_free(p);
 		kdata_destroy(d1);
 		kdata_destroy(ref_d);
@@ -737,9 +746,18 @@ void on_plotCombo_changed(GtkComboBox *box, gpointer user_data) {
 	drawPlot();
 }
 
+void on_arcsecPhotometry_toggled(GtkToggleButton *button, gpointer user_data) {
+	is_arcsec = gtk_toggle_button_get_active(button);
+	drawPlot();
+}
+
 static void update_ylabel() {
 	selected_source = gtk_combo_box_get_active(GTK_COMBO_BOX(combo));
 	gtk_widget_set_sensitive(varCurve, selected_source == MAGNITUDE);
+	gboolean arcsec_is_ok = (gfit.focal_length > 0.0 && gfit.pixel_size_x > 0.f
+			&& gfit.pixel_size_y > 0.f && gfit.binning_x > 0
+			&& gfit.binning_y > 0);
+	gtk_widget_set_sensitive(arcsec, selected_source == FWHM && arcsec_is_ok);
 	switch (selected_source) {
 	case ROUNDNESS:
 		ylabel = _("Star roundness (1 is round)");
@@ -806,4 +824,8 @@ static void set_colors(struct kplotcfg *cfg) {
 	cfg->clrs[6].rgba[0] = 0xe5 / 255.0;
 	cfg->clrs[6].rgba[1] = 0x1e / 255.0;
 	cfg->clrs[6].rgba[2] = 0x10 / 255.0;
+}
+
+static void free_colors(struct kplotcfg *cfg) {
+	free(cfg->clrs);
 }

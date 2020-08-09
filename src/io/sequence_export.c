@@ -68,8 +68,8 @@ static uint8_t *fits_to_uint8(fits *fit) {
 }
 
 static gpointer export_sequence(gpointer ptr) {
-	int i, x, y, nx, ny, shiftx, shifty, layer, retval = 0, reglayer,
-	    nb_layers, skipped, nb_frames, cur_nb = 0;
+	int nb_layers;
+	int retval = 0, cur_nb = 0;
 	unsigned int out_width, out_height, in_width, in_height;
 	size_t nbdata = 0;
 	uint8_t *data;
@@ -86,7 +86,7 @@ static gpointer export_sequence(gpointer ptr) {
 	struct exportseq_args *args = (struct exportseq_args *)ptr;
 	norm_coeff coeff = { 0 };
 
-	reglayer = get_registration_layer(args->seq);
+	int reglayer = get_registration_layer(args->seq);
 	siril_log_message(_("Using registration information from layer %d to export sequence\n"), reglayer);
 	if (args->crop) {
 		in_width  = args->crop_area.w;
@@ -181,7 +181,7 @@ static gpointer export_sequence(gpointer ptr) {
 			break;
 	}
 
-	nb_frames = compute_nb_filtered_images(args->seq,
+	int nb_frames = compute_nb_filtered_images(args->seq,
 			args->filtering_criterion, args->filtering_parameter);
 	filter_descr = describe_filter(args->seq, args->filtering_criterion,
 			args->filtering_parameter);
@@ -212,7 +212,7 @@ static gpointer export_sequence(gpointer ptr) {
 	}
 
 	set_progress_bar_data(NULL, PROGRESS_RESET);
-	for (i = 0, skipped = 0; i < args->seq->number; ++i) {
+	for (int i = 0, skipped = 0; i < args->seq->number; ++i) {
 		if (!get_thread_run()) {
 			retval = -1;
 			goto free_and_reset_progress_bar;
@@ -246,7 +246,7 @@ static gpointer export_sequence(gpointer ptr) {
 			destfit.header = NULL;
 			destfit.fptr = NULL;
 			nbdata = fit.rx * fit.ry;
-			if ((args->convflags == TYPEFITS) && ((fit.type == DATA_FLOAT) || com.pref.force_to_16bit)) {
+			if ((args->convflags == TYPEFITS) && ((fit.type == DATA_FLOAT) || !com.pref.force_to_16bit)) {
 				destfit.fdata = calloc(nbdata * fit.naxes[2], sizeof(float));
 				destfit.type = DATA_FLOAT;
 				destfit.stats = NULL;
@@ -319,7 +319,7 @@ static gpointer export_sequence(gpointer ptr) {
 				}
 			}
 		}
-
+		int shiftx, shifty;
 		/* load registration data for current image */
 		if (reglayer != -1 && args->seq->regparam[reglayer]) {
 			shiftx = roundf_to_int(args->seq->regparam[reglayer][i].shiftx);
@@ -330,11 +330,11 @@ static gpointer export_sequence(gpointer ptr) {
 		}
 
 		/* fill the image with shift data and normalization */
-		for (layer = 0; layer < fit.naxes[2]; ++layer) {
-			for (y = 0; y < fit.ry; ++y) {
-				for (x = 0; x < fit.rx; ++x) {
-					nx = x + shiftx;
-					ny = y + shifty;
+		for (int layer = 0; layer < fit.naxes[2]; ++layer) {
+			for (int y = 0; y < fit.ry; ++y) {
+				for (int x = 0; x < fit.rx; ++x) {
+					int nx = x + shiftx;
+					int ny = y + shifty;
 					if (nx >= 0 && nx < fit.rx && ny >= 0 && ny < fit.ry) {
 						if (fit.type == DATA_USHORT) {
 							if (args->normalize) {
@@ -346,7 +346,7 @@ static gpointer export_sequence(gpointer ptr) {
 								destfit.pdata[layer][nx + ny * fit.rx] = fit.pdata[layer][x + y * fit.rx];
 							}
 						} else if (fit.type == DATA_FLOAT) {
-							destfit.bitpix = USHORT_IMG;
+							destfit.bitpix = com.pref.force_to_16bit ? USHORT_IMG : FLOAT_IMG;
 							if (args->convflags == TYPEFITS) {
 								if (args->normalize) {
 									float tmp =	fit.fpdata[layer][x + y * fit.rx];

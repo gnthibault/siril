@@ -2199,7 +2199,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
             <property name="max_length">3</property>
             <property name="width_chars">3</property>
             <property name="max_width_chars">2</property>
-            <property name="text" translatable="yes">1</property>
+            <property name="text">1</property>
             <property name="progress_pulse_step">1</property>
             <property name="input_purpose">digits</property>
             <property name="adjustment">adjCPU</property>
@@ -3102,7 +3102,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                                   <object class="GtkEntry" id="convroot_entry">
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="tooltip_text" translatable="yes">Enter the base name of the sequence, for example NGC_6822-L. It will create images in the form NGC_6822-L_00001.fit. The name can also end with .ser, which will enable SER output format for the conversion.</property>
+                                    <property name="tooltip_text" translatable="yes">Enter the base name of the sequence, for example NGC_6822-L. It will create images in the form NGC_6822-L_00001.fit.</property>
                                     <property name="valign">center</property>
                                     <property name="hexpand">True</property>
                                     <signal name="activate" handler="on_convroot_entry_activate" swapped="no"/>
@@ -3206,6 +3206,25 @@ Note: FITS images will have no effect when the pre-processed sequence is SER or 
                                   <packing>
                                     <property name="left_attach">2</property>
                                     <property name="top_attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="convert_symlink">
+                                    <property name="label" translatable="yes">Symbolic Link</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="tooltip_markup" translatable="yes">Create a symbolic link for FITS files instead of copying them. This is useful to rename a sequence without duplicating files on the disk.
+
+&lt;b&gt;WARNING: on Windows, the symbolic link operations are only possible in Development mode.&lt;/b&gt;</property>
+                                    <property name="halign">start</property>
+                                    <property name="active">True</property>
+                                    <property name="draw_indicator">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">2</property>
+                                    <property name="width">4</property>
                                   </packing>
                                 </child>
                               </object>
@@ -4030,6 +4049,26 @@ This value is the mean of the master flat calibrated with the master offset.</pr
                                     <property name="top_attach">3</property>
                                     <property name="width">2</property>
                                   </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="fix_xtrans_af">
+                                    <property name="label" translatable="yes">Fix X-Trans AF artifact</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="tooltip_text" translatable="yes">This option helps to fix the Fujifilm X-Trans Auto Focus pixels. Indeed, because of the phase detection auto focus system, the photosites used for auto focus get a little less light than the surrounding photosites. The camera compensates for this and increases the values from these specific photosites giving a visible square in the middle of the dark/bias frames.</property>
+                                    <property name="halign">start</property>
+                                    <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="on_fix_xtrans_af_toggled" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">4</property>
+                                    <property name="width">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <placeholder/>
                                 </child>
                                 <child>
                                   <placeholder/>
@@ -5418,6 +5457,23 @@ To be enabled, the reference image must have been explicitly set and already dis
                                   </packing>
                                 </child>
                                 <child>
+                                  <object class="GtkButton" id="varCurvePhotometry">
+                                    <property name="label" translatable="yes" comments="This is the button for plotting variable star graph">Light Curve</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">True</property>
+                                    <property name="tooltip_text" translatable="yes">Plot a graph of the variable star. The variable star must be analysed in first, then other PSF are applied to references. A maximum of 6 references is allowed. To enable this function, choose 'Magnitude' in the type of displayed graph.
+WARNING: gnuplot must be installed.</property>
+                                    <property name="halign">center</property>
+                                    <signal name="clicked" handler="on_varCurvePhotometry_clicked" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                                <child>
                                   <object class="GtkComboBoxText" id="plotCombo">
                                     <property name="can_focus">False</property>
                                     <property name="tooltip_text" translatable="yes">Select which information to display from photometry data.</property>
@@ -5441,19 +5497,18 @@ To be enabled, the reference image must have been explicitly set and already dis
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkButton" id="varCurvePhotometry">
-                                    <property name="label" translatable="yes" comments="This is the button for plotting variable star graph">Light Curve</property>
-                                    <property name="sensitive">False</property>
+                                  <object class="GtkCheckButton" id="arcsecPhotometry">
+                                    <property name="label" translatable="yes">arcsec</property>
+                                    <property name="visible">True</property>
                                     <property name="can_focus">True</property>
-                                    <property name="receives_default">True</property>
-                                    <property name="tooltip_text" translatable="yes">Plot a graph of the variable star. The variable star must be analysed in first, then other PSF are applied to references. A maximum of 6 references is allowed. To enable this function, choose 'Magnitude' in the type of displayed graph.
-WARNING: gnuplot must be installed.</property>
-                                    <property name="halign">center</property>
-                                    <signal name="clicked" handler="on_varCurvePhotometry_clicked" swapped="no"/>
+                                    <property name="receives_default">False</property>
+                                    <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="on_arcsecPhotometry_toggled" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
+                                    <property name="pack_type">end</property>
                                     <property name="position">2</property>
                                   </packing>
                                 </child>
@@ -10877,7 +10932,7 @@ Uncheck if images come from a monochrome sensor.</property>
     </action-widgets>
   </object>
   <object class="GtkDialog" id="data_dialog">
-    <property name="width_request">400</property>
+    <property name="width_request">600</property>
     <property name="height_request">300</property>
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
@@ -11985,6 +12040,7 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="can_focus">False</property>
             <property name="row_spacing">10</property>
             <property name="column_spacing">10</property>
+            <property name="column_homogeneous">True</property>
             <child>
               <object class="GtkLabel" id="label63">
                 <property name="visible">True</property>
@@ -12022,8 +12078,7 @@ Uncheck if images come from a monochrome sensor.</property>
               </object>
               <packing>
                 <property name="left_attach">0</property>
-                <property name="top_attach">5</property>
-                <property name="width">3</property>
+                <property name="top_attach">4</property>
               </packing>
             </child>
             <child>
@@ -12107,22 +12162,6 @@ Uncheck if images come from a monochrome sensor.</property>
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="label_ok">
-                <property name="can_focus">False</property>
-                <property name="halign">start</property>
-                <property name="hexpand">True</property>
-                <property name="label" translatable="yes">FWHM is converted into arcsec</property>
-                <style>
-                  <class name="label-info"/>
-                </style>
-              </object>
-              <packing>
-                <property name="left_attach">0</property>
-                <property name="top_attach">4</property>
-                <property name="width">3</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkBox" id="box_binning_info">
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
@@ -12171,11 +12210,26 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="top_attach">3</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkLabel" id="label_ok">
+                <property name="can_focus">False</property>
+                <property name="halign">start</property>
+                <property name="label" translatable="yes">FWHM is converted into arcsec</property>
+                <style>
+                  <class name="label-info"/>
+                </style>
+              </object>
+              <packing>
+                <property name="left_attach">1</property>
+                <property name="top_attach">4</property>
+                <property name="width">2</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
-            <property name="position">1</property>
+            <property name="position">0</property>
           </packing>
         </child>
       </object>
@@ -17600,11 +17654,13 @@ If the selection is empty, the whole image will be used as reference.</property>
                                 </child>
                                 <child>
                                   <object class="GtkCheckButton" id="checkbutton_debayer_compatibility">
-                                    <property name="label" translatable="yes">Debayer FITS files in up-bottom orientation</property>
+                                    <property name="label" translatable="yes">Debayer FITS files in top-down if no explicit keywords found</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Siril read FITS data in the bottom-up orientation. If capture software stored data in up-bottom orientation (as they usual do), you need to check this box in order to debayer the file in the right orientation.</property>
+                                    <property name="tooltip_markup" translatable="yes">Siril read FITS data in the bottom-up orientation but a lot of capture software do not meet this specification. If data are stored in top-down orientation (as they usual do), you need to check this box in order to debayer the file in the right orientation. 
+
+&lt;b&gt;If the keyword ROWORDER is found while you are using Bayer information from file's header, then Siril will follow its value rather than this option.&lt;/b&gt;</property>
                                     <property name="halign">start</property>
                                     <property name="draw_indicator">True</property>
                                   </object>
@@ -18051,6 +18107,300 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                         <property name="expand">False</property>
                         <property name="fill">True</property>
                         <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkFrame" id="frame21">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="tooltip_text" translatable="yes">If your X-Trans model is not recognized, you can also enter the coordinate values ​​of the AF square and the sample. For more information you can contact us on our forum.</property>
+                        <property name="valign">start</property>
+                        <property name="label_xalign">0</property>
+                        <property name="shadow_type">none</property>
+                        <child>
+                          <object class="GtkAlignment" id="alignment22">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="valign">center</property>
+                            <property name="left_padding">12</property>
+                            <child>
+                              <object class="GtkBox">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="orientation">vertical</property>
+                                <property name="spacing">10</property>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="halign">start</property>
+                                        <property name="label" translatable="yes">AF pixels:</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkGrid">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="column_spacing">10</property>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="halign">start</property>
+                                            <property name="label" translatable="yes">x:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">0</property>
+                                            <property name="top_attach">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="halign">start</property>
+                                            <property name="label" translatable="yes">w:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">2</property>
+                                            <property name="top_attach">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="halign">start</property>
+                                            <property name="label" translatable="yes">h:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">2</property>
+                                            <property name="top_attach">1</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="halign">start</property>
+                                            <property name="label" translatable="yes">y:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">0</property>
+                                            <property name="top_attach">1</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkEntry" id="xtrans_af_h">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">3</property>
+                                            <property name="top_attach">1</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkEntry" id="xtrans_af_w">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">3</property>
+                                            <property name="top_attach">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkEntry" id="xtrans_af_y">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="top_attach">1</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkEntry" id="xtrans_af_x">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="top_attach">0</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="pack_type">end</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkBox">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <child>
+                                      <object class="GtkLabel">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="halign">start</property>
+                                        <property name="label" translatable="yes">Sample pixels:</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkGrid">
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">False</property>
+                                        <property name="column_spacing">10</property>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="halign">start</property>
+                                            <property name="label" translatable="yes">x:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">0</property>
+                                            <property name="top_attach">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="halign">start</property>
+                                            <property name="label" translatable="yes">w:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">2</property>
+                                            <property name="top_attach">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="halign">start</property>
+                                            <property name="label" translatable="yes">h:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">2</property>
+                                            <property name="top_attach">1</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">False</property>
+                                            <property name="halign">start</property>
+                                            <property name="label" translatable="yes">y:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">0</property>
+                                            <property name="top_attach">1</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkEntry" id="xtrans_sample_x">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="top_attach">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkEntry" id="xtrans_sample_y">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">1</property>
+                                            <property name="top_attach">1</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkEntry" id="xtrans_sample_w">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">3</property>
+                                            <property name="top_attach">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkEntry" id="xtrans_sample_h">
+                                            <property name="visible">True</property>
+                                            <property name="can_focus">True</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left_attach">3</property>
+                                            <property name="top_attach">1</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="pack_type">end</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="position">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel" id="label65">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_top">10</property>
+                            <property name="margin_bottom">10</property>
+                            <property name="label" translatable="yes">Fix Xtrans files</property>
+                            <property name="single_line_mode">True</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                            </attributes>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
                   </object>

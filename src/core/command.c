@@ -1637,6 +1637,7 @@ int process_cosme(int nb) {
 	if (retval)
 		siril_log_message(_("There were some errors, please check your input file.\n"));
 
+	invalidate_stats_from_fit(&gfit);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -1885,8 +1886,7 @@ int process_subsky(int nb) {
 	}
 
 	if (degree < 1 || degree > 4) {
-		siril_log_message("Polynomial degree order must be within the [1, 4] range.\n");
-		printf("test %d\n", degree);
+		siril_log_message(_("Polynomial degree order must be within the [1, 4] range.\n"));
 		return 1;
 	}
 
@@ -2159,40 +2159,43 @@ int process_extractHa(int nb) {
 	}
 
 	/* Get Bayer informations from header if available */
-	sensor_pattern bayer;
-
+	sensor_pattern tmp_pattern = com.pref.debayer.bayer_pattern;
 	if (com.pref.debayer.use_bayer_header) {
-		bayer = retrieveBayerPattern(gfit.bayer_pattern);
-	} else {
-		bayer = com.pref.debayer.bayer_pattern;
-	}
-	if (com.pref.debayer.up_bottom) {
-		switch(bayer) {
-		case BAYER_FILTER_RGGB:
-			bayer = BAYER_FILTER_BGGR;
-			break;
-		case BAYER_FILTER_BGGR:
-			bayer = BAYER_FILTER_RGGB;
-			break;
-		case BAYER_FILTER_GBRG:
-			bayer = BAYER_FILTER_GRBG;
-			break;
-		case BAYER_FILTER_GRBG:
-			bayer = BAYER_FILTER_GBRG;
-			break;
-		default:
-			printf("XTRANS is not handled.\n");
+		sensor_pattern bayer;
+		bayer = retrieveBayerPatternFromChar(gfit.bayer_pattern);
+
+		if (bayer <= BAYER_FILTER_MAX) {
+			if (bayer != tmp_pattern) {
+				if (bayer == BAYER_FILTER_NONE) {
+					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
+				}
+				else {
+					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
+								" from Bayer pattern in settings (%s). Overriding settings.\n"),
+							"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
+					tmp_pattern = bayer;
+				}
+			}
+		} else {
+			siril_log_message(_("XTRANS pattern not handled for this feature.\n"));
+			return 1;
 		}
 	}
+	if (tmp_pattern >= BAYER_FILTER_MIN && tmp_pattern <= BAYER_FILTER_MAX) {
+		siril_log_message(_("Filter Pattern: %s\n"),
+				filter_pattern[tmp_pattern]);
+	}
+
+	retrieve_Bayer_pattern(&gfit, &tmp_pattern);
 
 	gchar *Ha = g_strdup_printf("Ha_%s%s", filename, com.pref.ext);
 	if (gfit.type == DATA_USHORT) {
-		if (!(ret = extractHa_ushort(&gfit, &f_Ha, bayer))) {
+		if (!(ret = extractHa_ushort(&gfit, &f_Ha, tmp_pattern))) {
 			ret = save1fits16(Ha, &f_Ha, 0);
 		}
 	}
 	else if (gfit.type == DATA_FLOAT) {
-		if (!(ret = extractHa_float(&gfit, &f_Ha, bayer))) {
+		if (!(ret = extractHa_float(&gfit, &f_Ha, tmp_pattern))) {
 			ret = save1fits32(Ha, &f_Ha, 0);
 		}
 	} else return 1;
@@ -2225,42 +2228,45 @@ int process_extractHaOIII(int nb) {
 	}
 
 	/* Get Bayer informations from header if available */
-	sensor_pattern bayer;
-
+	sensor_pattern tmp_pattern = com.pref.debayer.bayer_pattern;
 	if (com.pref.debayer.use_bayer_header) {
-		bayer = retrieveBayerPattern(gfit.bayer_pattern);
-	} else {
-		bayer = com.pref.debayer.bayer_pattern;
-	}
-	if (com.pref.debayer.up_bottom) {
-		switch(bayer) {
-		case BAYER_FILTER_RGGB:
-			bayer = BAYER_FILTER_BGGR;
-			break;
-		case BAYER_FILTER_BGGR:
-			bayer = BAYER_FILTER_RGGB;
-			break;
-		case BAYER_FILTER_GBRG:
-			bayer = BAYER_FILTER_GRBG;
-			break;
-		case BAYER_FILTER_GRBG:
-			bayer = BAYER_FILTER_GBRG;
-			break;
-		default:
-			printf("XTRANS is not handled.\n");
+		sensor_pattern bayer;
+		bayer = retrieveBayerPatternFromChar(gfit.bayer_pattern);
+
+		if (bayer <= BAYER_FILTER_MAX) {
+			if (bayer != tmp_pattern) {
+				if (bayer == BAYER_FILTER_NONE) {
+					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
+				}
+				else {
+					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
+								" from Bayer pattern in settings (%s). Overriding settings.\n"),
+							"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
+					tmp_pattern = bayer;
+				}
+			}
+		} else {
+			siril_log_message(_("XTRANS pattern not handled for this feature.\n"));
+			return 1;
 		}
 	}
+	if (tmp_pattern >= BAYER_FILTER_MIN && tmp_pattern <= BAYER_FILTER_MAX) {
+		siril_log_message(_("Filter Pattern: %s\n"),
+				filter_pattern[tmp_pattern]);
+	}
+
+	retrieve_Bayer_pattern(&gfit, &tmp_pattern);
 
 	gchar *Ha = g_strdup_printf("Ha_%s%s", filename, com.pref.ext);
 	gchar *OIII = g_strdup_printf("OIII_%s%s", filename, com.pref.ext);
 	if (gfit.type == DATA_USHORT) {
-		if (!(ret = extractHaOIII_ushort(&gfit, &f_Ha, &f_OIII, bayer))) {
+		if (!(ret = extractHaOIII_ushort(&gfit, &f_Ha, &f_OIII, tmp_pattern))) {
 			ret = save1fits16(Ha, &f_Ha, 0) ||
 					save1fits16(OIII, &f_OIII, 0);
 		}
 	}
 	else if (gfit.type == DATA_FLOAT) {
-		if (!(ret = extractHaOIII_float(&gfit, &f_Ha, &f_OIII, bayer))) {
+		if (!(ret = extractHaOIII_float(&gfit, &f_Ha, &f_OIII, tmp_pattern))) {
 			ret = save1fits32(Ha, &f_Ha, 0) ||
 					save1fits16(OIII, &f_OIII, 0);
 		}
@@ -2505,7 +2511,7 @@ int process_convertraw(int nb) {
 		return 1;
 	}
 
-	for (int i = 2; i < 4; i++) {
+	for (int i = 2; i < 6; i++) {
 		if (word[i]) {
 			char *current = word[i], *value;
 			if (!strcmp(current, "-debayer")) {
@@ -2517,6 +2523,21 @@ int process_convertraw(int nb) {
 			} else if (g_str_has_prefix(current, "-start=")) {
 				value = current + 7;
 				idx = (atoi(value) <= 0 || atoi(value) >= 100000) ? 1 : atoi(value);
+			} else if (g_str_has_prefix(current, "-out=")) {
+				value = current + 5;
+				if (value[0] == '\0') {
+					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+					return 1;
+				}
+				if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
+					if (!g_mkdir_with_parents(value, 0755) == 0) {
+						siril_log_color_message(_("Cannot create output folder: %s\n"), "red", value);
+						return 1;
+					}
+				}
+				gchar *filename = g_build_filename(value, destroot, NULL);
+				g_free(destroot);
+				destroot = filename;
 			}
 		}
 	}
@@ -2536,7 +2557,7 @@ int process_convertraw(int nb) {
 			continue;
 		image_type type = get_type_for_extension(ext);
 		if (type == TYPERAW) {
-			list = g_list_append(list, g_strdup(file));
+			list = g_list_append(list, g_build_filename(com.wd, file, NULL));
 			count++;
 		}
 	}
@@ -2575,15 +2596,244 @@ int process_convertraw(int nb) {
 	args->list = files_to_convert;
 	args->total = count;
 	args->nb_converted_files = 0;
-	args->compatibility = FALSE;	// not used here
 	args->command_line = TRUE;
-	args->destroot = destroot;
+	if (output == SEQ_REGULAR)
+		args->destroot = format_basename(destroot);
+	else
+		args->destroot = destroot;
 	args->input_has_a_seq = FALSE;
 	args->debayer = debayer;
 	args->output_type = output;
 	args->multiple_output = FALSE;
+	args->make_link = FALSE;
 	gettimeofday(&(args->t_start), NULL);
 	start_in_new_thread(convert_thread_worker, args);
+	return 0;
+}
+
+int process_link(int nb) {
+	GDir *dir;
+	GError *error = NULL;
+	const gchar *file;
+	GList *list = NULL;
+	int idx = 1;
+	gchar *destroot = g_strdup(word[1]);
+
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
+	for (int i = 2; i < 4; i++) {
+		if (word[i]) {
+			char *current = word[i], *value;
+			if (g_str_has_prefix(current, "-start=")) {
+				value = current + 7;
+				idx = (atoi(value) <= 0 || atoi(value) >= 100000) ?
+						1 : atoi(value);
+			} else if (g_str_has_prefix(current, "-out=")) {
+				value = current + 5;
+				if (value[0] == '\0') {
+					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+					return 1;
+				}
+				if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
+					if (!g_mkdir_with_parents(value, 0755) == 0) {
+						siril_log_color_message(_("Cannot create output folder: %s\n"), "red", value);
+						return 1;
+					}
+				}
+				gchar *filename = g_build_filename(value, destroot, NULL);
+				g_free(destroot);
+				destroot = filename;
+			}
+		}
+	}
+
+	if ((dir = g_dir_open(com.wd, 0, &error)) == NULL){
+		siril_log_message(_("Link: error opening working directory %s.\n"), com.wd);
+		fprintf (stderr, "Link: %s\n", error->message);
+		g_error_free(error);
+		set_cursor_waiting(FALSE);
+		return 1;
+	}
+
+	int count = 0;
+	while ((file = g_dir_read_name(dir)) != NULL) {
+		const char *ext = get_filename_ext(file);
+		if (!ext)
+			continue;
+		image_type type = get_type_for_extension(ext);
+		if (type == TYPEFITS) {
+			list = g_list_append(list, g_build_filename(com.wd, file, NULL));
+			count++;
+		}
+	}
+	if (!count) {
+		siril_log_message(_("No FITS files were found for link\n"));
+		return 1;
+	}
+	/* sort list */
+	list = g_list_sort(list, (GCompareFunc) strcompare);
+	/* convert the list to an array for parallel processing */
+	char **files_to_link = malloc(count * sizeof(char *));
+	if (!files_to_link) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
+	GList *orig_list = list;
+	for (int i = 0; i < count && list; list = list->next, i++)
+		files_to_link[i] = g_strdup(list->data);
+	g_list_free_full(orig_list, g_free);
+
+	siril_log_color_message(_("Link: processing %d FITS files...\n"), "green", count);
+
+	set_cursor_waiting(TRUE);
+	if (!com.script)
+		control_window_switch_to_tab(OUTPUT_LOGS);
+
+	if (!com.wd) {
+		siril_log_message(_("Link: no working directory set.\n"));
+		set_cursor_waiting(FALSE);
+		return 1;
+	}
+
+	struct _convert_data *args = malloc(sizeof(struct _convert_data));
+	args->start = idx;
+	args->dir = dir;
+	args->list = files_to_link;
+	args->total = count;
+	args->nb_converted_files = 0;
+	args->command_line = TRUE;
+	args->destroot = format_basename(destroot);
+	args->input_has_a_seq = FALSE;
+	args->debayer = FALSE;
+	args->multiple_output = FALSE;
+	args->output_type = SEQ_REGULAR; // fallback if symlink does not work
+	args->make_link = TRUE;
+	gettimeofday(&(args->t_start), NULL);
+	start_in_new_thread(convert_thread_worker, args);
+
+	return 0;
+}
+
+int process_convert(int nb) {
+	GDir *dir;
+	GError *error = NULL;
+	const gchar *file;
+	GList *list = NULL;
+	int idx = 1;
+	gboolean debayer = FALSE;
+	gboolean make_link = TRUE;
+	sequence_type output = SEQ_REGULAR;
+	gchar *destroot = g_strdup(word[1]);
+
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
+	for (int i = 2; i < 6; i++) {
+		if (word[i]) {
+			char *current = word[i], *value;
+			if (!strcmp(current, "-debayer")) {
+				debayer = TRUE;
+				make_link = FALSE;
+			} else if (!strcmp(current, "-fitseq")) {
+				output = SEQ_FITSEQ;
+				if (!ends_with(destroot, com.pref.ext))
+					str_append(&destroot, com.pref.ext);
+			} else if (g_str_has_prefix(current, "-start=")) {
+				value = current + 7;
+				idx = (atoi(value) <= 0 || atoi(value) >= 100000) ?
+						1 : atoi(value);
+			} else if (g_str_has_prefix(current, "-out=")) {
+				value = current + 5;
+				if (value[0] == '\0') {
+					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+					return 1;
+				}
+				if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
+					if (!g_mkdir_with_parents(value, 0755) == 0) {
+						siril_log_color_message(_("Cannot create output folder: %s\n"), "red", value);
+						return 1;
+					}
+				}
+				gchar *filename = g_build_filename(value, destroot, NULL);
+				g_free(destroot);
+				destroot = filename;
+			}
+		}
+	}
+
+	if ((dir = g_dir_open(com.wd, 0, &error)) == NULL){
+		siril_log_message(_("Convert: error opening working directory %s.\n"), com.wd);
+		fprintf (stderr, "Convert: %s\n", error->message);
+		g_error_free(error);
+		set_cursor_waiting(FALSE);
+		return 1;
+	}
+
+	int count = 0;
+	while ((file = g_dir_read_name(dir)) != NULL) {
+		const char *ext = get_filename_ext(file);
+		if (!ext)
+			continue;
+		image_type type = get_type_for_extension(ext);
+		if (type != TYPEUNDEF && type != TYPEAVI && type != TYPEMP4
+				&& type != TYPEWEBM && type != TYPESER) {
+			list = g_list_append(list, g_build_filename(com.wd, file, NULL));
+			count++;
+		}
+	}
+	if (!count) {
+		siril_log_message(_("No files were found for convert\n"));
+		return 1;
+	}
+	/* sort list */
+	list = g_list_sort(list, (GCompareFunc) strcompare);
+	/* convert the list to an array for parallel processing */
+	char **files_to_link = malloc(count * sizeof(char *));
+	if (!files_to_link) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
+	GList *orig_list = list;
+	for (int i = 0; i < count && list; list = list->next, i++)
+		files_to_link[i] = g_strdup(list->data);
+	g_list_free_full(orig_list, g_free);
+
+	siril_log_color_message(_("Convert: processing %d files...\n"), "green", count);
+
+	set_cursor_waiting(TRUE);
+	if (!com.script)
+		control_window_switch_to_tab(OUTPUT_LOGS);
+
+	if (!com.wd) {
+		siril_log_message(_("Convert: no working directory set.\n"));
+		set_cursor_waiting(FALSE);
+		return 1;
+	}
+
+	struct _convert_data *args = malloc(sizeof(struct _convert_data));
+	args->start = idx;
+	args->dir = dir;
+	args->list = files_to_link;
+	args->total = count;
+	args->nb_converted_files = 0;
+	args->command_line = TRUE;
+	if (output == SEQ_REGULAR)
+		args->destroot = format_basename(destroot);
+	else
+		args->destroot = destroot;
+	args->input_has_a_seq = FALSE;
+	args->debayer = debayer;
+	args->multiple_output = FALSE;
+	args->output_type = output;
+	args->make_link = make_link;
+	gettimeofday(&(args->t_start), NULL);
+	start_in_new_thread(convert_thread_worker, args);
+
 	return 0;
 }
 
@@ -2990,8 +3240,13 @@ static gpointer stackone_worker(gpointer garg) {
 
 	retval = stack_one_seq(arg);
 
-	if (!retval)
+	if (retval) {
+		if (retval == ST_ALLOC_ERROR) {
+			siril_log_message(_("It looks like there is a memory allocation error, change memory settings and try to fix it.\n"));
+		}
+	} else {
 		siril_log_message(_("Stacked sequence successfully.\n"));
+	}
 
 	gettimeofday(&t_end, NULL);
 	show_time(arg->t_start, t_end);
@@ -3068,7 +3323,7 @@ failure:
 
 int process_preprocess(int nb) {
 	struct preprocessing_data *args;
-	int nb_command_max = 11;
+	int nb_command_max = 12;
 	int i, retvalue = 0;
 
 	if (word[1][0] == '\0') {
@@ -3124,14 +3379,16 @@ int process_preprocess(int nb) {
 				args->ppprefix = strdup(value);
 			} else if (!strcmp(word[i], "-opt")) {
 				args->use_dark_optim = TRUE;
+			} else if (!strcmp(word[i], "-fix_xtrans")) {
+				args->fix_xtrans = TRUE;
 			} else if (!strcmp(word[i], "-cfa")) {
 				args->is_cfa = TRUE;
 			} else if (!strcmp(word[i], "-debayer")) {
 				args->debayer = TRUE;
 			} else if (!strcmp(word[i], "-stretch")) {
-				siril_log_message(_("-stretch option is now deprecated.\n")); // TODO. Should we keep it only for compatibility
+				siril_log_message(_("-stretch option is now deprecated.\n")); // TODO. Should we keep it only for compatibility?
 			} else if (!strcmp(word[i], "-flip")) {
-				args->compatibility = TRUE;
+				siril_log_message(_("-flip option is now deprecated.\n")); // TODO. Should we keep it only for compatibility?
 			} else if (!strcmp(word[i], "-equalize_cfa")) {
 				args->equalize_cfa = TRUE;
 			} else if (!strcmp(word[i], "-fitseq")) {

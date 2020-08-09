@@ -15,7 +15,7 @@ static int compute_normalization(struct stacking_args *args);
 /* normalization: reading all images and making stats on their background level.
  * That's very long if not cached. */
 int do_normalization(struct stacking_args *args) {
-	if (args->normalize == NO_NORM) return 0;
+	if (args->normalize == NO_NORM) return ST_OK;
 
 	int nb_frames = args->nb_images_to_stack;
 
@@ -24,19 +24,19 @@ int do_normalization(struct stacking_args *args) {
 	args->coeff.scale = malloc(nb_frames * sizeof(double));
 	if (!args->coeff.offset || !args->coeff.mul || !args->coeff.scale) {
 		PRINT_ALLOC_ERR;
-		args->retval = -1;
-		return -1;
+		args->retval = ST_ALLOC_ERROR;
+		return args->retval;
 	}
 
 	if (compute_normalization(args)) {
-		args->retval = -1;
-		return -1;
+		args->retval = ST_GENERIC_ERROR;
+		return args->retval;
 	}
 
 	if (args->seq->needs_saving)	// if we had to compute new stats
 		writeseqfile(args->seq);
 
-	return 0;
+	return ST_OK;
 }
 
 /* scale0, mul0 and offset0 are output arguments when i = ref_image, input arguments otherwise */
@@ -53,11 +53,11 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 		fits fit = { 0 };
 		// read frames as float, it's faster to compute stats
 		if (seq_read_frame(args->seq, args->image_indices[i], &fit, TRUE, thread_id)) {
-			return 1;
+			return ST_SEQUENCE_ERROR;
 		}
 		// retry with the fit to compute it
 		if (!(stat = statistics(args->seq, args->image_indices[i], &fit, reglayer, NULL, STATS_EXTRA, multithread)))
-			return 1;
+			return ST_GENERIC_ERROR;
 		if (args->seq->type != SEQ_INTERNAL)
 			clearfits(&fit);
 	}
@@ -91,7 +91,7 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 	}
 
 	free_stats(stat);
-	return 0;
+	return ST_OK;
 }
 
 static int normalization_get_max_number_of_threads(sequence *seq) {
@@ -155,7 +155,7 @@ static int compute_normalization(struct stacking_args *args) {
 	if (ref_image_filtred_idx == -1) {
 		siril_log_color_message(_("The reference image is not in the selected set of images. "
 				"Please choose another reference image.\n"), "red");
-		return 1;
+		return ST_GENERIC_ERROR;
 	}
 
 	// check memory first
@@ -163,7 +163,7 @@ static int compute_normalization(struct stacking_args *args) {
 	int nb_threads = normalization_get_max_number_of_threads(args->seq);
 	if (nb_threads == 0) {
 		set_progress_bar_data(error_msg, PROGRESS_NONE);
-		return 1;
+		return ST_GENERIC_ERROR;
 	}
 
 	/* We empty the cache if needed (force to recompute) */
@@ -177,7 +177,7 @@ static int compute_normalization(struct stacking_args *args) {
 		siril_log_color_message(_("%s Check image %d first.\n"), "red", error_msg,
 				ref_image_filtred_idx + 1);
 		set_progress_bar_data(error_msg, PROGRESS_NONE);
-		return 1;
+		return ST_GENERIC_ERROR;
 	}
 
 	set_progress_bar_data(NULL, 1.0 / (double)args->nb_images_to_stack);

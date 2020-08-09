@@ -17,9 +17,15 @@
  * You should have received a copy of the GNU General Public License
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
 */
+
+#ifdef HAVE_CONFIG_H
+#  include <config.h>
+#endif
+
 #ifdef _WIN32
 #include <windows.h>
 #endif
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
@@ -37,6 +43,7 @@
 #include "io/image_format_fits.h"
 #include "io/sequence.h"
 #include "io/ser.h"
+#include "io/FITS_symlink.h"
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
@@ -87,9 +94,35 @@ char *filter_pattern[] = {
 	"BGGR",
 	"GBRG",
 	"GRBG",
-	"RBGBRGGGRGGBGGBGGRBRGRBGGGBGGRGGRGGB", /* XTRANS */
-	"GBGGRGRGRBGBGBGGRGGRGGBGBGBRGRGRGGBG",
-	"GGRGGBGGBGGRBRGRBGGGBGGRGGRGGBRBGBRG"
+
+/* XTRANS */
+	"RBGBRG"
+	"GGRGGB"
+	"GGBGGR"
+	"BRGRBG"
+	"GGBGGR"
+	"GGRGGB",
+
+	"GRGGBG"
+	"BGBRGR"
+	"GRGGBG"
+	"GBGGRG"
+	"RGTBGB"
+	"GBGGRG",
+
+	"GBGGRG"
+	"RGRBGB"
+	"GBGGRG"
+	"GRGGBG"
+	"BGBRGR"
+	"GRGGBG",
+
+	"GGRGGB"
+	"GGBGGR"
+	"BRGRBG"
+	"GGBGGR"
+	"GGRGGB"
+	"RBGBRG"
 };
 
 static int film_conversion(const char *src_filename, int index, unsigned int *added_frames, struct ser_struct *ser_file, struct _convert_data *args);
@@ -148,7 +181,7 @@ static char *create_sequence_filename(const char *destroot, int counter, char *o
 			g_free(the_root);
 			return output;
 		}
-		the_root[ext-destroot-1] = '\0';
+		the_root[ext - destroot - 1] = '\0';
 		gchar last_char = the_root[strlen(the_root)-1];
 		if (last_char == '-' || last_char == '_')
 			g_snprintf(output, outsize, "%s%05d.%s", the_root, counter, the_ext);
@@ -186,7 +219,7 @@ static void initialize_libraw_settings() {
 static void initialize_ser_debayer_settings() {
 	com.pref.debayer.open_debayer = FALSE;
 	com.pref.debayer.use_bayer_header = TRUE;
-	com.pref.debayer.up_bottom = FALSE;
+	com.pref.debayer.top_down = TRUE;
 	com.pref.debayer.bayer_pattern = BAYER_FILTER_RGGB;
 	com.pref.debayer.bayer_inter = BAYER_RCD;
 	com.pref.debayer.xbayeroff = 0;
@@ -229,14 +262,14 @@ static gboolean end_convert_idle(gpointer p) {
 }
 
 /* open the file with path source from any image type and load it into a new FITS object */
-static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean compatibility, gboolean debayer) {
+static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean debayer) {
 	int retval = 0;
 	fits *tmpfit = calloc(1, sizeof(fits));
 
 	retval = any_to_fits(imagetype, source, tmpfit, FALSE, FALSE, debayer);
 
 	if (!retval)
-		retval = debayer_if_needed(imagetype, tmpfit, compatibility, debayer);
+		retval = debayer_if_needed(imagetype, tmpfit, debayer);
 
 	if (retval) {
 		clearfits(tmpfit);
@@ -249,10 +282,8 @@ static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean 
 
 /**************************Public functions***********************************************************/
 
-int retrieveBayerPattern(char *bayer) {
-	int i;
-
-	for (i = 0; i < G_N_ELEMENTS(filter_pattern); i++) {
+int retrieveBayerPatternFromChar(char *bayer) {
+	for (int i = 0; i < G_N_ELEMENTS(filter_pattern); i++) {
 		if (g_ascii_strcasecmp(bayer, filter_pattern[i]) == 0) {
 			return i;
 		}
@@ -417,6 +448,8 @@ gpointer convert_thread_worker(gpointer p) {
 	args->nb_converted_files = 0;
 	args->retval = 0;
 
+	gboolean allow_symlink = test_if_symlink_is_ok() && args->output_type == SEQ_REGULAR;
+
 	if (args->output_type == SEQ_SER) {
 		if (!args->multiple_output) {
 			ser_init_struct(&ser_file);
@@ -434,15 +467,10 @@ gpointer convert_thread_worker(gpointer p) {
 			goto clean_exit;
 		}
 
-		/* currently, we don't have any limits in memory for
-		 * conversion, but we might still put one in case we get a very
-		 * slow writing device.
-		 * If the write is fast compared to processing, then it's still
-		 * good to allow for all cores to work on it, and not cores-1
-		 */
 		int limit = 0;
 #ifdef _OPENMP
-		limit = com.max_thread;
+		/* we don't know the image size here, max * 2 + 1 may be ok for most users */
+		limit = com.max_thread * 2 + 1;
 #endif
 		fitseq_set_max_active_blocks(limit);
 	}
@@ -452,7 +480,10 @@ gpointer convert_thread_worker(gpointer p) {
 		args->multiple_output = FALSE;
 
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) schedule(guided) \
+	if (args->output_type == SEQ_FITSEQ)
+		omp_set_schedule(omp_sched_dynamic, 1);
+	else omp_set_schedule(omp_sched_static, 0);
+#pragma omp parallel for num_threads(com.max_thread) schedule(runtime) \
 	if(!args->input_has_a_seq && (args->output_type == SEQ_SER || fits_is_reentrant()))
 	// we should run in parallel only when images are converted, not sequences
 #endif
@@ -492,32 +523,44 @@ gpointer convert_thread_worker(gpointer p) {
 			frame_index += added_frames;
 		}
 		else {	// single image
-			if (args->output_type == SEQ_FITSEQ)
-				fitseq_wait_for_memory();
+			if (imagetype == TYPEFITS && args->make_link && allow_symlink) {
+				gchar *dest_filename = g_strdup_printf("%s%05d%s", args->destroot, index,
+						com.pref.ext);
+				symlink_uniq_file(src_filename, dest_filename, allow_symlink);
+				g_free(dest_filename);
+			} else {
+				if (args->output_type == SEQ_FITSEQ) {
+					fitseq_wait_for_memory();
+				}
 
-			fits *fit = any_to_new_fits(imagetype, src_filename, args->compatibility, args->debayer);
-			if (fit) {
-				if (args->output_type == SEQ_SER) {
-					if (ser_write_frame_from_fit(&ser_file, fit, i)) {
-						siril_log_message(_("Error while converting to SER (no space left?)\n"));
-						args->retval = 1;
+				fits *fit = any_to_new_fits(imagetype, src_filename, args->debayer);
+				if (fit) {
+					if (args->output_type == SEQ_SER) {
+						if (ser_write_frame_from_fit(&ser_file, fit, i)) {
+							siril_log_message(_("Error while converting to SER (no space left?)\n"));
+							args->retval = 1;
+						}
+						clearfits(fit);
+						free(fit);
+					} else if (args->output_type == SEQ_FITSEQ) {
+						if (fitseq_write_image(&fitseq_file, fit, i)) {
+							siril_log_message(_("Error while converting to SER (no space left?)\n"));
+							args->retval = 1;
+						}
+					} else {
+						gchar *dest_filename = g_strdup_printf("%s%05d", args->destroot, index);
+						if (savefits(dest_filename, fit)) {
+							siril_log_message(_("Error while converting to FITS (no space left?)\n"));
+							args->retval = 1;
+						}
+						clearfits(fit);
+						free(fit);
+						g_free(dest_filename);
 					}
-					clearfits(fit);
-					free(fit);
-				} else if (args->output_type == SEQ_FITSEQ) {
-					if (fitseq_write_image(&fitseq_file, fit, i)) {
-						siril_log_message(_("Error while converting to SER (no space left?)\n"));
-						args->retval = 1;
-					}
-				} else {
-					gchar *dest_filename = g_strdup_printf("%s%05d", args->destroot, index);
-					if (savefits(dest_filename, fit)) {
-						siril_log_message(_("Error while converting to FITS (no space left?)\n"));
-						args->retval = 1;
-					}
-					clearfits(fit);
-					free(fit);
-					g_free(dest_filename);
+				}
+				else if (args->output_type == SEQ_SER || args->output_type == SEQ_FITSEQ) {
+					siril_log_color_message(_("For SER or FITS sequence output, a failure in conversion cannot be ignored, aborting.\n"), "red");
+					args->retval = 1;
 				}
 			}
 			frame_index++;
@@ -564,8 +607,7 @@ clean_exit:
 
 // debayers the image if it's a FITS image and if debayer is activated globally
 // or if the force argument is passed
-int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility,
-		gboolean force_debayer) {
+int debayer_if_needed(image_type imagetype, fits *fit, gboolean force_debayer) {
 	if (imagetype != TYPEFITS || (!com.pref.debayer.open_debayer && !force_debayer))
 		return 0;
 
@@ -578,16 +620,16 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility,
 		siril_log_message(_("Cannot perform debayering on image with more than one channel\n"));
 		return 0;
 	}
-	if (!compatibility)
-		fits_flip_top_to_bottom(fit);
+
 	/* Get Bayer informations from header if available */
 	sensor_pattern tmp_pattern = com.pref.debayer.bayer_pattern;
+	interpolation_method tmp_algo = com.pref.debayer.bayer_inter;
 	if (com.pref.debayer.use_bayer_header) {
 		sensor_pattern bayer;
-		bayer = retrieveBayerPattern(fit->bayer_pattern);
+		bayer = retrieveBayerPatternFromChar(fit->bayer_pattern);
 
 		if (bayer <= BAYER_FILTER_MAX) {
-			if (bayer != com.pref.debayer.bayer_pattern) {
+			if (bayer != tmp_pattern) {
 				if (bayer == BAYER_FILTER_NONE) {
 					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
 				}
@@ -595,29 +637,25 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility,
 					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
 								" from Bayer pattern in settings (%s). Overriding settings.\n"),
 							"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
-					com.pref.debayer.bayer_pattern = bayer;
+					tmp_pattern = bayer;
 				}
 			}
 		} else {
-			com.pref.debayer.bayer_pattern = XTRANS_FILTER;
-			com.pref.debayer.bayer_inter = XTRANS;
+			tmp_pattern = bayer;
+			tmp_algo = XTRANS;
 			siril_log_color_message(_("XTRANS Sensor detected. Using special algorithm.\n"), "green");
 		}
 	}
-	if (com.pref.debayer.bayer_pattern >= BAYER_FILTER_MIN
-			&& com.pref.debayer.bayer_pattern <= BAYER_FILTER_MAX) {
-		siril_log_message(_("Filter Pattern: %s\n"), filter_pattern[com.pref.debayer.bayer_pattern]);
+	if (tmp_pattern >= BAYER_FILTER_MIN && tmp_pattern <= BAYER_FILTER_MAX) {
+		siril_log_message(_("Filter Pattern: %s\n"),
+				filter_pattern[tmp_pattern]);
 	}
 
 	int retval = 0;
-	if (debayer(fit, com.pref.debayer.bayer_inter, com.pref.debayer.bayer_pattern)) {
+	if (debayer(fit, tmp_algo, tmp_pattern)) {
 		siril_log_message(_("Cannot perform debayering\n"));
 		retval = -1;
-	} else {
-		if (!compatibility)
-			fits_flip_top_to_bottom(fit);
 	}
-	com.pref.debayer.bayer_pattern = tmp_pattern;
 	return retval;
 }
 
@@ -762,28 +800,38 @@ static int ser_conversion(const char *src_filename, int index,
 char* g_real_path(const char *source) {
 	HANDLE hFile;
 	DWORD maxchar = 2048;
-	TCHAR *FilePath;
-	gchar *gFilePath;
 
-	if (!(GetFileAttributesA(source) & FILE_ATTRIBUTE_REPARSE_POINT)) { /* Ce n'est pas un lien symbolique , je sors */
+	wchar_t *wsource = g_utf8_to_utf16(source, -1, NULL, NULL, NULL);
+	if ( wsource == NULL ) {
+		return NULL ;
+	}
+
+	if (!(GetFileAttributesW(wsource) & FILE_ATTRIBUTE_REPARSE_POINT)) { /* Ce n'est pas un lien symbolique , je sors */
+		g_free(wsource);
 		return NULL;
 	}
 
-	FilePath = malloc(maxchar + 1);
-	if (!FilePath) {
+	wchar_t *wFilePath = g_new(wchar_t, maxchar + 1);
+	if (!wFilePath) {
 		PRINT_ALLOC_ERR;
+		g_free(wsource);
 		return NULL;
 	}
-	FilePath[0] = 0;
+	wFilePath[0] = 0;
 
-	hFile = CreateFile(source, GENERIC_READ, FILE_SHARE_READ, NULL,
+	hFile = CreateFileW(wsource, GENERIC_READ, FILE_SHARE_READ, NULL,
 			OPEN_EXISTING, 0, NULL);
 	if (hFile == INVALID_HANDLE_VALUE) {
-		free(FilePath);
+		g_free(wFilePath);
+		g_free(wsource);
 		return NULL;
 	}
-	GetFinalPathNameByHandleA(hFile, FilePath, maxchar, 0);
-	gFilePath = g_locale_to_utf8(FilePath + 4, -1, NULL, NULL, NULL); // +4 = enleve les 4 caracteres du prefixe "//?/"
+
+	GetFinalPathNameByHandleW(hFile, wFilePath, maxchar, 0);
+
+	gchar *gFilePath = g_utf16_to_utf8(wFilePath + 4, -1, NULL, NULL, NULL); // +4 = enleve les 4 caracteres du prefixe "//?/"
+	g_free(wsource);
+	g_free(wFilePath);
 	CloseHandle(hFile);
 	return gFilePath;
 }

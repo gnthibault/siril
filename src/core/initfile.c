@@ -81,7 +81,7 @@ static int readinitfile() {
 	if (debayer_setting) {
 		config_setting_lookup_bool(debayer_setting, "ser_use_bayer_header", &com.pref.debayer.use_bayer_header);
 		config_setting_lookup_int(debayer_setting, "pattern", &com.pref.debayer.bayer_pattern);
-		config_setting_lookup_bool(debayer_setting, "compatibility", &com.pref.debayer.up_bottom);
+		config_setting_lookup_bool(debayer_setting, "debayer_top_down", &com.pref.debayer.top_down);
 		config_setting_lookup_int(debayer_setting, "debayer_algo", (int*)&com.pref.debayer.bayer_inter);
 		config_setting_lookup_int(debayer_setting, "xbayeroff", &com.pref.debayer.xbayeroff);
 		config_setting_lookup_int(debayer_setting, "ybayeroff", &com.pref.debayer.ybayeroff);
@@ -95,6 +95,7 @@ static int readinitfile() {
 
 		config_setting_lookup_bool(prepro_setting, "cfa", &com.pref.prepro_cfa);
 		config_setting_lookup_bool(prepro_setting, "equalize_cfa", &com.pref.prepro_equalize_cfa);
+		config_setting_lookup_bool(prepro_setting, "fix_xtrans", &com.pref.fix_xtrans);
 		config_setting_lookup_string(prepro_setting, "bias_lib", &bias);
 		com.pref.prepro_bias_lib = g_strdup(bias);
 		config_setting_lookup_bool(prepro_setting, "use_bias_lib", &com.pref.use_bias_lib);
@@ -104,6 +105,20 @@ static int readinitfile() {
 		config_setting_lookup_string(prepro_setting, "flat_lib", &flat);
 		com.pref.prepro_flat_lib = g_strdup(flat);
 		config_setting_lookup_bool(prepro_setting, "use_flat_lib", &com.pref.use_flat_lib);
+		prepro_setting = config_lookup(&config, "prepro-settings.xtrans_af");
+		if (prepro_setting != NULL) {
+			com.pref.xtrans_af.x = config_setting_get_int_elem(prepro_setting, 0);
+			com.pref.xtrans_af.y = config_setting_get_int_elem(prepro_setting, 1);
+			com.pref.xtrans_af.w = config_setting_get_int_elem(prepro_setting, 2);
+			com.pref.xtrans_af.h = config_setting_get_int_elem(prepro_setting, 3);
+		}
+		prepro_setting = config_lookup(&config, "prepro-settings.xtrans_sample");
+		if (prepro_setting != NULL) {
+			com.pref.xtrans_sample.x = config_setting_get_int_elem(prepro_setting, 0);
+			com.pref.xtrans_sample.y = config_setting_get_int_elem(prepro_setting, 1);
+			com.pref.xtrans_sample.w = config_setting_get_int_elem(prepro_setting, 2);
+			com.pref.xtrans_sample.h = config_setting_get_int_elem(prepro_setting, 3);
+		}
 	}
 
 	/* Registration setting */
@@ -256,8 +271,8 @@ static void _save_debayer(config_t *config, config_setting_t *root) {
 	debayer_setting = config_setting_add(debayer_group, "pattern", CONFIG_TYPE_INT);
 	config_setting_set_int(debayer_setting, com.pref.debayer.bayer_pattern);
 
-	debayer_setting = config_setting_add(debayer_group, "compatibility", CONFIG_TYPE_BOOL);
-	config_setting_set_bool(debayer_setting, com.pref.debayer.up_bottom);
+	debayer_setting = config_setting_add(debayer_group, "debayer_top_down", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(debayer_setting, com.pref.debayer.top_down);
 
 	debayer_setting = config_setting_add(debayer_group, "debayer_algo", CONFIG_TYPE_INT);
 	config_setting_set_int(debayer_setting, com.pref.debayer.bayer_inter);
@@ -278,6 +293,21 @@ static void _save_preprocessing(config_t *config, config_setting_t *root) {
 
 	prepro_setting = config_setting_add(prepro_group, "equalize_cfa", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(prepro_setting, com.pref.prepro_equalize_cfa);
+
+	prepro_setting = config_setting_add(prepro_group, "fix_xtrans", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(prepro_setting, com.pref.fix_xtrans);
+
+	prepro_setting = config_setting_add(prepro_group, "xtrans_af",	CONFIG_TYPE_LIST);
+	config_setting_set_int_elem(prepro_setting, -1, com.pref.xtrans_af.x);
+	config_setting_set_int_elem(prepro_setting, -1, com.pref.xtrans_af.y);
+	config_setting_set_int_elem(prepro_setting, -1, com.pref.xtrans_af.w);
+	config_setting_set_int_elem(prepro_setting, -1, com.pref.xtrans_af.h);
+
+	prepro_setting = config_setting_add(prepro_group, "xtrans_sample",	CONFIG_TYPE_LIST);
+	config_setting_set_int_elem(prepro_setting, -1, com.pref.xtrans_sample.x);
+	config_setting_set_int_elem(prepro_setting, -1, com.pref.xtrans_sample.y);
+	config_setting_set_int_elem(prepro_setting, -1, com.pref.xtrans_sample.w);
+	config_setting_set_int_elem(prepro_setting, -1, com.pref.xtrans_sample.h);
 
 	prepro_setting = config_setting_add(prepro_group, "bias_lib", CONFIG_TYPE_STRING);
 	config_setting_set_string(prepro_setting, com.pref.prepro_bias_lib);

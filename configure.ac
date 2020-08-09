@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 m4_define([siril_major_version], [0])
 m4_define([siril_minor_version], [99])
-m4_define([siril_micro_version], [2])
+m4_define([siril_micro_version], [3])
 m4_define([siril_prerelease_version], [beta])
 m4_define([siril_version],
           [siril_major_version.siril_minor_version.siril_micro_version])
@@ -98,6 +98,9 @@ AC_SUBST([LIBATOMIC_LIBS])
 
 dnl ================ PLATFORM CHECKS ================
 
+dnl Compute the canonical host-system type variable (need config.guess and config.sub)
+AC_CANONICAL_HOST
+
 AC_MSG_CHECKING([if compiling for Win32])
 case "$host_os" in
   mingw* | cygwin*)
@@ -108,7 +111,6 @@ case "$host_os" in
     ;;
 esac
 AC_MSG_RESULT([$platform_win32])
-AM_CONDITIONAL(PLATFORM_WIN32, test "$platform_win32" = "yes")
 
 dnl ================ MANDATORY DEPENDECIES ================
 dnl check math lib
@@ -254,9 +256,6 @@ if test "x$enable_debug" = "xyes"; then
 	CXXFLAGS="$CFLAGS"
 fi
 
-dnl Compute the canonical host-system type variable (need config.guess and config.sub)
-AC_CANONICAL_HOST
-
 #####################################
 # Check for Platform and architecture
 #####################################
@@ -272,6 +271,8 @@ case "$host_os" in
 	mingw*)
 		platform=windows
 		PATHSEP=';'
+		CFLAGS=" $CFLAGS -D_WIN32_WINNT=0x0600 -DWINVER=0x0600 "
+		CXXFLAGS=" $CXXFLAGS -D_WIN32_WINNT=0x0600 -DWINVER=0x0600 "
 		case "$host_cpu" in
 			x86_64)
 				;;

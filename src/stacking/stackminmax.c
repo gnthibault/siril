@@ -50,7 +50,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 	gboolean is_float = TRUE; // init only for warning
 	size_t nbdata = 0;
 	char *tmpmsg, filename[256];
-	int retval = 0, nb_frames, cur_nb = 0;
+	int retval = ST_OK, nb_frames, cur_nb = 0;
 	fits fit = { 0 };
 
 	/* should be pre-computed to display it in the stacking tab */
@@ -59,7 +59,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 
 	if (nb_frames <= 1) {
 		siril_log_message(_("No frame selected for stacking (select at least 2). Aborting.\n"));
-		return -1;
+		return ST_GENERIC_ERROR;
 	}
 
 	final_pixel[0] = NULL;
@@ -69,7 +69,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 
 	for (int j = 0; j < args->seq->number; ++j) {
 		if (!get_thread_run()) {
-			retval = -1;
+			retval = ST_GENERIC_ERROR;
 			goto free_and_reset_progress_bar;
 		}
 		if (!args->filtering_criterion(args->seq, j, args->filtering_parameter)) {
@@ -77,7 +77,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 			continue;
 		}
 		if (!seq_get_image_filename(args->seq, j, filename)) {
-			retval = -1;
+			retval = ST_GENERIC_ERROR;
 			goto free_and_reset_progress_bar;
 		}
 		tmpmsg = strdup(_("Processing image "));
@@ -89,7 +89,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 
 		if (seq_read_frame(args->seq, j, &fit, FALSE, -1)) {
 			siril_log_message(_("Stacking: could not read frame, aborting\n"));
-			retval = -3;
+			retval = ST_SEQUENCE_ERROR;
 			goto free_and_reset_progress_bar;
 		}
 
@@ -110,7 +110,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 				}
 				if (!ffinal_pixel[0]) {
 					PRINT_ALLOC_ERR;
-					retval = -2;
+					retval = ST_ALLOC_ERROR;
 					goto free_and_reset_progress_bar;
 				}
 				if (args->seq->nb_layers == 3) {
@@ -127,7 +127,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 				}
 				if (!final_pixel[0]) {
 					PRINT_ALLOC_ERR;
-					retval = -2;
+					retval = ST_ALLOC_ERROR;
 					goto free_and_reset_progress_bar;
 				}
 				if (args->seq->nb_layers == 3) {
@@ -137,7 +137,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 			}
 		} else if (fit.ry * fit.rx != nbdata) {
 			siril_log_message(_("Stacking: image in sequence doesn't has the same dimensions\n"));
-			retval = -3;
+			retval = ST_SEQUENCE_ERROR;
 			goto free_and_reset_progress_bar;
 		}
 
@@ -192,7 +192,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 		}
 	}
 	if (!get_thread_run()) {
-		retval = -1;
+		retval = ST_GENERIC_ERROR;
 		goto free_and_reset_progress_bar;
 	}
 	set_progress_bar_data(_("Finalizing stacking..."), (double) nb_frames / ((double) nb_frames + 1.));

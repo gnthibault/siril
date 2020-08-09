@@ -127,12 +127,18 @@ gpointer generic_sequence_worker(gpointer p) {
 
 #ifdef _OPENMP
 	omp_init_lock(&args->lock);
-#endif
-
-#ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) private(input_idx) schedule(static) \
+	if (args->has_output && (args->force_fitseq_output || args->seq->type == SEQ_FITSEQ))
+		omp_set_schedule(omp_sched_dynamic, 1);
+	else omp_set_schedule(omp_sched_static, 0);
+#ifdef HAVE_FFMS2
+	// we don't want to enable parallel processing for films, as ffms2 is not thread-safe
+#pragma omp parallel for num_threads(com.max_thread) private(input_idx) schedule(runtime) \
+	if(args->seq->type != SEQ_AVI && args->parallel && (args->seq->type == SEQ_SER || fits_is_reentrant()))
+#else
+#pragma omp parallel for num_threads(com.max_thread) private(input_idx) schedule(runtime) \
 	if(args->parallel && (args->seq->type == SEQ_SER || fits_is_reentrant()))
-#endif
+#endif // HAVE_FFMS2
+#endif // _OPENMP
 	for (frame = 0; frame < nb_frames; frame++) {
 		if (abort) continue;
 
@@ -215,6 +221,16 @@ gpointer generic_sequence_worker(gpointer p) {
 			}
 			clearfits(fit);
 			free(fit);
+			// for fitseq, we need to notify the failed frame
+			if (args->has_output &&
+					(args->force_fitseq_output || args->seq->type == SEQ_FITSEQ)) {
+				int retval;
+				if (args->save_hook)
+					retval = args->save_hook(args, frame, input_idx, NULL);
+				else retval = generic_save(args, frame, input_idx, NULL);
+				if (retval)
+					abort = 1;
+			}
 			continue;
 		}
 
@@ -359,7 +375,7 @@ int seq_prepare_hook(struct generic_seq_args *args) {
 			return 1;
 		} else {
 			// there doesn't seem to be any interest in having a larger queue
-			int max_queue_size = com.max_thread * 2;
+			int max_queue_size = com.max_thread * 3;
 			if (limit > max_queue_size)
 				limit = max_queue_size;
 		}

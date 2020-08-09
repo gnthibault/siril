@@ -36,10 +36,6 @@ static gchar **documenters = (gchar *[] ) { "Laurent Rogé <l.roge@siril.org>", 
 static gchar **artists = (gchar *[] ) { "Maxime Oudoux <max.oudoux@gmail.com>",
 				"Cyril Richard <cyril@free-astro.org>", NULL };
 
-// translator names
-static gchar *translator = N_("Cyril Richard <cyril@free-astro.org>\n"
-		"Vincent Hourdin <vh@free-astro.vinvin.tf>");
-
 void siril_show_about_dialog() {
 	GdkPixbuf *icon;
 	GtkWindow *parent;
@@ -66,7 +62,7 @@ void siril_show_about_dialog() {
 			"documenters", documenters,
 			"artists", artists,
 			"comments", _("Astronomical image (pre-)processing program"),
-			"translator-credits", _(translator),
+			"translator-credits", _("translator-credits"),
 			"website", PACKAGE_URL,
 			"website-label", _("Visit the Siril website"),
 			"license-type", GTK_LICENSE_GPL_3_0,

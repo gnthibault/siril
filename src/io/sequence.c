@@ -133,22 +133,22 @@ int read_single_sequence(char *realname, image_type imagetype) {
 	const char *film_ext;
 #endif
 	switch (imagetype) {
-		case TYPESER:
-			name[strlen(name)-1] = 'q';
-			break;
-		case TYPEFITS:
-			ext = get_filename_ext(realname);
-			assert(ext);
-			len = strlen(ext);
-			strncpy(name+strlen(name)-len, "seq", len);
-			break;
+	case TYPESER:
+		name[strlen(name) - 1] = 'q';
+		break;
+	case TYPEFITS:
+		ext = get_filename_ext(realname);
+		assert(ext);
+		len = strlen(ext);
+		strncpy(name + strlen(name) - len, "seq", len);
+		break;
 #ifdef HAVE_FFMS2
-		case TYPEAVI:
-			film_ext = get_filename_ext(realname);
-			assert(film_ext);
-			len = strlen(film_ext);
-			strncpy(name+strlen(name)-len, "seq", len);
-			break;
+	case TYPEAVI:
+		film_ext = get_filename_ext(realname);
+		assert(film_ext);
+		len = strlen(film_ext);
+		strncpy(name + strlen(name) - len, "seq", len);
+		break;
 #endif
 		default:
 			retval = 1;
@@ -479,7 +479,6 @@ int set_seq(const char *name){
 	set_GUI_photometry();
 
 	/* redraw and display image */
-//	show_main_gray_window();
 	close_tab();	//close Green and Blue Tab if a 1-layer sequence is loaded
 	adjust_vport_size_to_image();	// resize viewports to the displayed image size
 	redraw(com.cvport, REMAP_ALL);
@@ -593,16 +592,26 @@ int64_t seq_compute_size(sequence *seq, int nb_frames, data_type depth) {
  * @return TRUE if the name already exists, FALSE otherwise
  */
 gboolean check_if_seq_exist(gchar *name, gboolean name_is_base) {
-	gchar *path;
+	gchar *path, *path_;
 	if (name_is_base) {
 		gchar *seq = g_strdup_printf("%s.seq", name);
+		gchar *seq_ = g_strdup_printf("%s_.seq", name);
 		path = g_build_filename(com.wd, seq, NULL);
+		path_ = g_build_filename(com.wd, seq_, NULL);
 		g_free(seq);
+		gboolean retval = is_readable_file(path);
+		if (!retval) {
+			retval = is_readable_file(path_);
+		}
+		g_free(path);
+		g_free(path_);
+		return retval;
+	} else {
+		path = g_build_filename(com.wd, name, NULL);
+		gboolean retval = is_readable_file(path);
+		g_free(path);
+		return retval;
 	}
-	else path = g_build_filename(com.wd, name, NULL);
-	gboolean retval = is_readable_file(path);
-	g_free(path);
-	return retval;
 }
 
 /*****************************************************************************
@@ -878,8 +887,9 @@ static void set_fwhm_star_as_star_list_with_layer(sequence *seq, int layer) {
 	assert(seq->regparam);
 	/* we chose here the first layer that has been allocated, which doesn't
 	 * mean it contains data for all images. Handle with care. */
-	if (seq->regparam && layer >= 0 && layer < seq->nb_layers && seq->regparam[layer] &&
-			seq->regparam[layer][seq->current].fwhm_data && !com.stars) {
+	if (seq->regparam && layer >= 0 && layer < seq->nb_layers
+			&& seq->regparam[layer] && seq->current >= 0
+			&& seq->regparam[layer][seq->current].fwhm_data && !com.stars) {
 		com.stars = malloc(2 * sizeof(fitted_PSF *));
 		com.stars[0] = seq->regparam[layer][seq->current].fwhm_data;
 		com.stars[1] = NULL;
@@ -918,11 +928,13 @@ char *fit_sequence_get_image_filename(sequence *seq, int index, char *name_buffe
 
 char *fit_sequence_get_image_filename_prefixed(sequence *seq, const char *prefix, int index) {
 	char format[16];
+	gchar *basename = g_path_get_basename(seq->seqname);
 	GString *str = g_string_sized_new(70);
 	sprintf(format, "%%s%%s%%0%dd%%s", seq->fixed);
 	g_string_printf(str, format, prefix,
-			seq->seqname, seq->imgparam[index].filenum,
+			basename, seq->imgparam[index].filenum,
 			com.pref.ext);
+	g_free(basename);
 	return g_string_free(str, FALSE);
 }
 

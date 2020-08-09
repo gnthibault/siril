@@ -16,9 +16,9 @@ struct _convert_data {
 	int start;
 	int total;
 	int nb_converted_files;
-	gboolean compatibility;
 	gboolean command_line;
 	gboolean input_has_a_seq;
+	gboolean make_link;
 	gchar *destroot;
 	int retval;
 
@@ -33,14 +33,14 @@ extern supported_raw_list supported_raw[];	//supported raw extensions
 extern char *supported_extensions[MAX_EXTENSIONS];
 extern char *filter_pattern[];
 
-int retrieveBayerPattern(char *bayer);
+int retrieveBayerPatternFromChar(char *bayer);
 int get_nb_raw_supported();
 
 void list_format_available();
 image_type get_type_for_extension(const char *extension);
 gchar *initialize_converters();
 gpointer convert_thread_worker(gpointer p);
-int debayer_if_needed(image_type imagetype, fits *fit, gboolean compatibility, gboolean force_debayer);
+int debayer_if_needed(image_type imagetype, fits *fit, gboolean force_debayer);
 int any_to_fits(image_type imagetype, const char *source, fits *dest, gboolean interactive, gboolean force_float, gboolean debayer);
 
 #endif

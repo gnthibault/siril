@@ -131,7 +131,6 @@ void fitseq_init_struct(fitseq *fitseq) {
 #endif
 	fitseq->write_thread = NULL;
 	fitseq->writes_queue = NULL;
-	fitseq->frame_written= NULL;
 }
 
 int fitseq_open(const char *filename, fitseq *fitseq) {
@@ -182,8 +181,8 @@ int fitseq_open(const char *filename, fitseq *fitseq) {
 
 	fitseq->filename = strdup(filename);
 	fitseq->is_mt_capable = FALSE;
-	siril_debug_print("fitseq_open: sequence has %d frames, bitpix = %d, naxis = %d, naxes = { %ld, %ld, %ld }\n",
-			fitseq->frame_count, fitseq->bitpix, naxis,
+	siril_debug_print("fitseq_open: sequence %s has %d frames, bitpix = %d, naxis = %d, naxes = { %ld, %ld, %ld }\n",
+			filename, fitseq->frame_count, fitseq->bitpix, naxis,
 			fitseq->naxes[0], fitseq->naxes[1], fitseq->naxes[2]);
 
 #ifdef _OPENMP
@@ -214,7 +213,7 @@ static int fitseq_read_frame_internal(fitseq *fitseq, int index, fits *dest, gbo
 	dest->ry = dest->naxes[1];
 	dest->fptr = fptr;
 
-	siril_debug_print("reading HDU %d\n", fitseq->hdu_index[index]);
+	siril_debug_print("reading HDU %d (of %s)\n", fitseq->hdu_index[index], fitseq->filename);
 	int status = 0;
 	if (fits_movabs_hdu(fptr, fitseq->hdu_index[index], NULL, &status)) {
 		report_fits_error(status);
@@ -233,8 +232,10 @@ static int fitseq_read_frame_internal(fitseq *fitseq, int index, fits *dest, gbo
 int fitseq_read_frame(fitseq *fitseq, int index, fits *dest, gboolean force_float, int thread) {
 	fitsfile *fptr = fitseq->fptr;
 #ifdef _OPENMP
-	if (thread >= 0 && fitseq->thread_fptr)
+	if (thread >= 0 && fitseq->thread_fptr) {
 		fptr = fitseq->thread_fptr[thread];
+		siril_debug_print("fitseq: thread %d reading FITS image\n", thread);
+	}
 #endif
 	return fitseq_read_frame_internal(fitseq, index, dest, force_float, fptr);
 }
@@ -311,9 +312,6 @@ int fitseq_create_file(const char *filename, fitseq *fitseq, int frame_count) {
 
 	fitseq->filename = strdup(filename);
 	fitseq->frame_count = frame_count;
-	if (frame_count > 0)
-		fitseq->frame_written = calloc(frame_count, sizeof(gboolean));
-
 	fitseq->writes_queue = g_async_queue_new();
 	fitseq->write_thread = g_thread_new("processing", write_worker, fitseq);
 
@@ -323,27 +321,9 @@ int fitseq_create_file(const char *filename, fitseq *fitseq, int frame_count) {
 	return 0;
 }
 
-static int init_images(fitseq *fitseq, fits *example, gboolean create_images) {
+static void init_images(fitseq *fitseq, fits *example) {
 	fitseq->bitpix = example->bitpix;
 	memcpy(fitseq->naxes, example->naxes, sizeof fitseq->naxes);
-
-	if (create_images) {
-		// preallocate images
-		for (int i = 0; i < fitseq->frame_count; i++) {
-			int status = 0;
-			if (fits_create_img(fitseq->fptr, example->bitpix,
-						example->naxis, example->naxes, &status)) {
-				report_fits_error(status);
-				return 1;
-			}
-			siril_debug_print("fits_create_img(naxis = %d, naxes = { %ld, %ld, %ld }, bitpix = %d)\n",
-					example->naxis, example->naxes[0], example->naxes[1],
-					example->naxes[2], example->bitpix);
-		}
-		siril_debug_print("Successfully initialized the images of the FITS sequence file %s\n",
-				fitseq->filename);
-	}
-	return 0;
 }
 
 struct _pending_write {
@@ -353,6 +333,10 @@ struct _pending_write {
 
 #define ABORT_TASK ((void *)0x66)
 
+/* expected images (if a frame count is given on creation) MUST be notified in
+ * all cases, even with a NULL image if there is in fact no image to write for
+ * the index
+ */
 int fitseq_write_image(fitseq *fitseq, fits *image, int index) {
 	if (!fitseq->fptr) {
 		siril_log_color_message(_("Cannot save image in sequence not opened for writing\n"), "red");
@@ -376,50 +360,74 @@ typedef enum {
 static void *write_worker(void *a) {
 	fitseq *fitseq = (struct fits_sequence *)a;
 	fitseq_error retval = FITSEQ_OK;
-	int nb_frames_written = 0, status;
+	int nb_frames_written = 0, current_index = 0, status;
+	GList *next_images = NULL;
 
 	do {
-		siril_debug_print("fitseq write: waiting for message %d\n", nb_frames_written);
-		struct _pending_write *task = g_async_queue_pop(fitseq->writes_queue);
-		siril_debug_print("fitseq write: message acquired\n");
-		if (task == ABORT_TASK) {
-			siril_debug_print("fitseq write: abort message\n");
-			retval = FITSEQ_INCOMPLETE;
-			break;
+		struct _pending_write *task = NULL;
+		GList *stored;
+		for (stored = next_images; stored != NULL; stored = stored->next) {
+			struct _pending_write *stored_task = (struct _pending_write *)stored->data;
+			if (stored_task->index == current_index) {
+				task = stored_task;
+				next_images = g_list_delete_link(next_images, stored);
+				siril_debug_print("fitseq write: image %d obtained from waiting list\n", task->index);
+				break;
+			}
 		}
-		if (fitseq->bitpix && (memcmp(task->image->naxes, fitseq->naxes, sizeof fitseq->naxes) ||
-					task->image->bitpix != fitseq->bitpix)) {
-			siril_log_color_message(_("Cannot add an image with different properties to an existing sequence.\n"), "red");
-			retval = FITSEQ_WRITE_ERROR;
-			break;
+
+		if (!task) {	// if not in the waiting list, try to get it from processing threads
+			do {
+				siril_debug_print("fitseq write: waiting for message %d\n", current_index);
+				task = g_async_queue_pop(fitseq->writes_queue);	// blocking
+				if (task == ABORT_TASK) {
+					siril_debug_print("fitseq write: abort message\n");
+					retval = FITSEQ_INCOMPLETE;
+					break;
+				}
+
+				if (fitseq->bitpix && task->image &&
+						(memcmp(task->image->naxes, fitseq->naxes, sizeof fitseq->naxes) ||
+						 task->image->bitpix != fitseq->bitpix)) {
+					siril_log_color_message(_("Cannot add an image with different properties to an existing sequence.\n"), "red");
+					retval = FITSEQ_WRITE_ERROR;
+					break;
+				}
+
+				if (task->index >= 0 && task->index != current_index) {
+					siril_debug_print("fitseq write: image %d put stored for later use\n", task->index);
+					next_images = g_list_append(next_images, task);
+					task = NULL;
+				}
+				else siril_debug_print("fitseq write: image %d received\n", task->index);
+			} while (!task);
 		}
-		siril_debug_print("writing thread moving to HDU %d\n", task->index+1);
+		if (!task)
+			continue;
+		if (retval == FITSEQ_INCOMPLETE)
+			break;
+		if (!task->image) {
+			// failed image, hole in sequence, skip it
+			siril_debug_print("fitseq write: skipping image %d\n", task->index);
+			current_index++;
+			fitseq->frame_count--;
+			continue;
+		}
+
+		// from here on, we have a valid task and we will write an image
+		if (!fitseq->bitpix)
+			init_images(fitseq, task->image);
+
 		status = 0;
-		if (!fitseq->bitpix && init_images(fitseq, task->image, fitseq->frame_count > 0)) {
-			siril_log_color_message(_("Failed to initialize the FITS sequence, aborting\n"), "red");
+		if (fits_create_img(fitseq->fptr, task->image->bitpix,
+					task->image->naxis, task->image->naxes, &status)) {
+			report_fits_error(status);
 			retval = FITSEQ_WRITE_ERROR;
 			break;
 		}
 
-		if (task->index >= 0) {
-			fits_movabs_hdu(fitseq->fptr, task->index+1, NULL, &status); // move to the corresponding HDU
-			if (status) {
-				report_fits_error(status);
-				siril_log_color_message(_("Could not write image %d of the FITS sequence\n"), "red", task->index);
-				retval = FITSEQ_WRITE_ERROR;
-				break;
-			}
-		} else {
-			if (fits_create_img(fitseq->fptr, task->image->bitpix,
-						task->image->naxis, task->image->naxes, &status)) {
-				report_fits_error(status);
-				retval = FITSEQ_WRITE_ERROR;
-				break;
-			}
-		}
-
-		siril_log_message(_("Saving FITS: image %d, %ld layer(s), %ux%u pixels, %d bits\n"),
-				task->index + 1, task->image->naxes[2],
+		siril_log_message(_("fitseq write: Saving FITS image %d, %ld layer(s), %ux%u pixels, %d bits\n"),
+				task->index, task->image->naxes[2],
 				task->image->rx, task->image->ry,
 				task->image->type == DATA_FLOAT ? 32 : 16);
 		task->image->fptr = fitseq->fptr;
@@ -429,8 +437,8 @@ static void *write_worker(void *a) {
 
 		if (retval != FITSEQ_WRITE_ERROR) {
 			notify_data_freed();
-			fitseq->frame_written[task->index] = TRUE;
 			nb_frames_written++;
+			current_index++;
 		}
 		free(task->image);
 		free(task);
@@ -452,58 +460,16 @@ static void *write_worker(void *a) {
 			fitseq->frame_count = nb_frames_written;
 			retval = FITSEQ_OK;
 			siril_log_message(_("Successfully saved FITS sequence with %d images\n"), nb_frames_written);
+		} else {
+			siril_debug_print("fitseq write: write aborted, quitting thread\n");
 		}
-		// we don't know here if it's cancellation or end of
-		// processing, so we can't call compact
 	}
 
 	siril_debug_print("fitseq writer exits with retval %d (0: ok, 1: error, 2: incomplete)\n", retval);
 	return GINT_TO_POINTER(retval);
 }
 
-/*int fitseq_append_image_from_disk(fitseq *fitseq, fits *image) {
-	int retval = 0;
-	if (!image->fptr) {
-		return -1;
-	}
-
-	fits_copy_hdu(image->fptr, fitseq->fptr, 0, &retval);
-	return retval;
-}*/
-
-int fitseq_compact_file(fitseq *fitseq) {
-	if (!fitseq->frame_written || fitseq->frame_count <= 0)
-		return FITSEQ_OK;
-	int nb_hdu;
-	int status = 0;
-	fits_get_num_hdus(fitseq->fptr, &nb_hdu, &status);
-	siril_debug_print("compacting fitseq: %d HDU for %d frame count\n", nb_hdu, fitseq->frame_count);
-
-	for (int i = 0, j = 0; i < fitseq->frame_count; i++) {
-		if (!fitseq->frame_written[i]) {
-			siril_debug_print("removing failed image %d from sequence\n", i);
-			status = 0;
-			if (fits_movabs_hdu(fitseq->fptr, j + 1, NULL, &status)) {
-				siril_log_color_message(_("Failed to remove failed images from the sequence\n"), "red");
-				return FITSEQ_WRITE_ERROR;
-			}
-
-			status = 0;
-			if (fits_delete_hdu(fitseq->fptr, NULL, &status)) {
-				siril_log_color_message(_("Failed to remove failed images from the sequence\n"), "red");
-				return FITSEQ_WRITE_ERROR;
-			}
-		}
-		else j++;
-	}
-	status = 0;
-	fits_get_num_hdus(fitseq->fptr, &nb_hdu, &status);
-	fitseq->frame_count = nb_hdu;
-	siril_debug_print("after fitseq compaction: %d frame count\n", fitseq->frame_count);
-	return FITSEQ_OK;
-}
-
-static int fitseq_destroy(fitseq *fitseq, gboolean compact) {
+static int fitseq_destroy(fitseq *fitseq) {
 	int retval = 0;
 	if (fitseq->write_thread) {
 		g_async_queue_push(fitseq->writes_queue, ABORT_TASK);
@@ -513,8 +479,6 @@ static int fitseq_destroy(fitseq *fitseq, gboolean compact) {
 		g_async_queue_unref(fitseq->writes_queue);
 		retval = GPOINTER_TO_INT(ret);
 		siril_debug_print("fitseq writing thread joined (retval: %d)\n", retval);
-		if (retval == FITSEQ_INCOMPLETE && compact)
-			retval = fitseq_compact_file(fitseq);
 		fitseq_set_max_active_blocks(0); // wake-up the callers
 	}
 	int status = 0;
@@ -527,13 +491,13 @@ static int fitseq_destroy(fitseq *fitseq, gboolean compact) {
 void fitseq_close_and_delete_file(fitseq *fitseq) {
 	char *filename = fitseq->filename;
 	fitseq->filename = NULL;
-	fitseq_destroy(fitseq, FALSE);
+	fitseq_destroy(fitseq);
 	siril_log_message(_("Removing failed FITS sequence file: %s\n"), filename);
 	g_unlink(filename);
 }
 
 void fitseq_close_file(fitseq *fitseq) {
-	fitseq_destroy(fitseq, TRUE);
+	fitseq_destroy(fitseq);
 }
 
 // to call after open to read with several threads in the file

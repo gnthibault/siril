@@ -16,11 +16,11 @@
 #include <libintl.h>
 
 #include "gui/preferences.h"
+#include "core/atomic.h"
 
 #define _(String) gettext (String)
 #define gettext_noop(String) String
 #define N_(String) gettext_noop (String)
-
 
 #ifdef SIRIL_OUTPUT_DEBUG
 #define DEBUG_TEST 1
@@ -191,22 +191,6 @@ typedef struct save_config_struct save_config;
 
 /* global structures */
 
-/* operations on image data */
-typedef enum {
-	OPER_ADD,
-	OPER_SUB,
-	OPER_MUL,
-	OPER_DIV
-} image_operator;
-
-/* ORDER OF POLYNOMES */
-typedef enum {
-	POLY_1,
-	POLY_2,
-	POLY_3,
-	POLY_4,
-} poly_order;
-
 typedef enum {
 	NORMAL_DISPLAY,	
 	LOG_DISPLAY,
@@ -229,11 +213,11 @@ typedef enum {
 	USER
 } sliders_mode;
 
-enum {
+typedef enum {
 	OPEN_IMAGE_ERROR = -1,
 	OPEN_IMAGE_OK = 0,
 	OPEN_IMAGE_CANCEL = 10,
-};
+} open_image_status;
 
 typedef enum {
 	FILE_CONVERSION,
@@ -308,7 +292,7 @@ struct registration_data {
 	fitted_PSF *fwhm_data;	// used in PSF/FWHM registration, not saved
 	float fwhm;		// copy of fwhm->fwhmx, used as quality indicator, saved data
 	float weighted_fwhm; // used to exclude spurious images.
-	float roundness;	// fwhm->fwhmy / fwhm->fwhmx, 0 when uninit, ]0, 1] when set 
+	float roundness;	// fwhm->fwhmy / fwhm->fwhmx, 0 when uninit, ]0, 1] when set
 	double quality;
 };
 
@@ -428,6 +412,7 @@ struct ffit {
 	float pixel_size_x, pixel_size_y;	// XPIXSZ and YPIXSZ keys
 	unsigned int binning_x, binning_y;		// XBINNING and YBINNING keys
 	gboolean unbinned;
+	char row_order[FLEN_VALUE];
 	char date_obs[FLEN_VALUE];		// YYYY-MM-DDThh:mm:ss observation start, UT
 	char date[FLEN_VALUE];		// YYYY-MM-DDThh:mm:ss creation of file, UT
 	char instrume[FLEN_VALUE];		// INSTRUME key
@@ -486,7 +471,7 @@ struct debayer_config {
 	gboolean use_bayer_header;		// use the pattern given in the file header
 	sensor_pattern bayer_pattern;		// user-defined Bayer pattern
 	interpolation_method bayer_inter;	// interpolation method for non-libraw debayer
-	gboolean up_bottom;				// debayer up-bottom orientation
+	gboolean top_down;				// debayer top-down orientation
 	int xbayeroff, ybayeroff;			// x and y Bayer offsets
 };
 
@@ -563,6 +548,9 @@ struct pref_struct {
 
 	gboolean prepro_cfa;	// Use to save type of sensor for cosmetic correction in preprocessing
 	gboolean prepro_equalize_cfa;  // Use to save if flat will be equalized in preprocessing
+	gboolean fix_xtrans; // Use to fix xtrans darks and biases with the AF square
+	rectangle xtrans_af; // if no xtrans model found, use these values
+	rectangle xtrans_sample; // if no xtrans model found, use these values
 	gchar *prepro_bias_lib;
 	gboolean use_bias_lib;
 	gchar *prepro_dark_lib;
@@ -688,7 +676,7 @@ struct image_stats {
 	double mean, median, sigma, avgDev, mad, sqrtbwmv,
 	       location, scale, min, max, normValue, bgnoise;
 
-	int _nb_refs;	// reference counting for data management
+	atomic_int* _nb_refs;	// reference counting for data management
 };
 
 typedef struct Homo {

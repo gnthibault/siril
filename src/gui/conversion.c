@@ -160,11 +160,13 @@ static void initialize_convert() {
 		if (!confirm) return;
 	}
 
-	gboolean multiple, debayer;
-	GtkToggleButton *toggle = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "multipleSER"));
+	gboolean multiple, debayer, symbolic_link;
+	GtkToggleButton *toggle = GTK_TOGGLE_BUTTON(lookup_widget("multipleSER"));
 	multiple = gtk_toggle_button_get_active(toggle);
-	toggle = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "demosaicingButton"));
+	toggle = GTK_TOGGLE_BUTTON(lookup_widget("demosaicingButton"));
 	debayer = gtk_toggle_button_get_active(toggle);
+	toggle = GTK_TOGGLE_BUTTON(lookup_widget("convert_symlink"));
+	symbolic_link = gtk_toggle_button_get_active(toggle);
 
 	/* handle impossible cases */
 	/* why is it forbidden?
@@ -232,11 +234,11 @@ static void initialize_convert() {
 	args->list = files_to_convert;
 	args->total = count;
 	args->nb_converted_files = 0;
-	args->compatibility = com.pref.debayer.up_bottom;
 	args->command_line = FALSE;
 	args->input_has_a_seq = !no_sequence_to_convert;
 	args->destroot = g_strdup(destroot);
 	args->debayer = debayer;
+	args->make_link = symbolic_link;
 	args->output_type = output_type;
 	args->multiple_output = multiple;
 	gettimeofday(&(args->t_start), NULL);
@@ -392,11 +394,14 @@ void on_treeview_convert_drag_data_received(GtkWidget *widget,
 	list = g_slist_sort(list, (GCompareFunc) strcompare);
 	fill_convert_list(list);
 	if (bad_files) {
-		char *msg = siril_log_message(_("%d %s while drag and drop\n"), bad_files,
-				ngettext("file was ignored", "files were ignored", bad_files));
+		gchar *loc_str = ngettext("%d file was ignored while drag and drop\n",
+				"%d files were ignored while drag and drop\n", bad_files);
+		loc_str = g_strdup_printf(loc_str, bad_files);
+		char *msg = siril_log_message(loc_str);
 		siril_message_dialog(GTK_MESSAGE_INFO, msg,
 				_("Files with unknown extension cannot be dropped in this area. "
 						"Therefore they are ignored."));
+		g_free(loc_str);
 	}
 	g_strfreev(uris);
 	g_slist_free(list);
@@ -558,12 +563,15 @@ void on_demosaicing_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 }
 
 void on_prepro_output_type_combo1_changed(GtkComboBox *combo, gpointer user_data) {
-	static GtkWidget *multiple_ser = NULL;
-	if (!multiple_ser)
+	static GtkWidget *multiple_ser = NULL, *convert_symlink = NULL;
+	if (!multiple_ser) {
 		multiple_ser = lookup_widget("multipleSER");
+		convert_symlink = lookup_widget("convert_symlink");
+	}
 
 	sequence_type output = gtk_combo_box_get_active(combo);
 	gtk_widget_set_visible(multiple_ser, output == SEQ_SER);
+	gtk_widget_set_visible(convert_symlink, output == SEQ_REGULAR);
 	process_destroot(output);
 	check_for_conversion_form_completeness();
 }

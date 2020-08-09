@@ -109,7 +109,7 @@ void free_image_data() {
 	if (!com.headless) {
 		/* free alignment preview data */
 		int i;
-		for (i=0; i<PREVIEW_NB; i++) {
+		for (i = 0; i < PREVIEW_NB; i++) {
 			if (com.preview_surface[i]) {
 				cairo_surface_destroy(com.preview_surface[i]);
 				com.preview_surface[i] = NULL;
@@ -167,7 +167,7 @@ int read_single_image(const char *filename, fits *dest, char **realname_out,
 	} else {
 		retval = any_to_fits(imagetype, realname, dest, allow_dialogs, force_float, com.pref.debayer.open_debayer);
 		if (!retval)
-			debayer_if_needed(imagetype, dest, com.pref.debayer.up_bottom, FALSE);
+			debayer_if_needed(imagetype, dest, FALSE);
 	}
 	if (is_sequence) {
 		*is_sequence = single_sequence;

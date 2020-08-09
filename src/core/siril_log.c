@@ -22,6 +22,7 @@
 #include "core/proto.h"
 #include "core/command.h" // for process_clear()
 #include "core/OS_utils.h"
+#include "core/pipe.h"
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
@@ -115,7 +116,7 @@ static void save_log_file(gchar *filename) {
 	f = g_fopen(filename, "w");
 
 	for (i = 0; i < nargs; i++) {
-		fprintf(f, "%s%s", token[i], SIRIL_EOL);
+		fprintf(f, "%s\n", token[i]);
 	}
 
 	fclose(f);
@@ -159,6 +160,38 @@ static void save_log_dialog() {
 	}
 	siril_widget_destroy(widgetdialog);
 	g_free(filename);
+}
+
+/* This function writes a message on Siril's console/log. It is not thread safe.
+ * There is a limit in number of characters that it is able to write in one call: 1023.
+ * Return value is the string printed from arguments, or NULL if argument was empty or
+ * only newline. It is an allocated string and must not be freed. It can be
+ * reused until next call to this function.
+ */
+char* siril_log_internal(const char* format, const char* color, va_list arglist) {
+	static char *msg = NULL;
+
+	if (msg == NULL) {
+		msg = malloc(1024);
+		msg[1023] = '\0';
+	}
+
+	vsnprintf(msg, 1023, format, arglist);
+
+	if (msg == NULL || msg[0] == '\0')
+		return NULL;
+
+	if (msg[0] == '\n' && msg[1] == '\0') {
+		fputc('\n', stdout);
+		gui_log_message("\n", NULL);
+		return NULL;
+	}
+
+	fprintf(stdout, "log: %s", msg);
+	pipe_send_message(PIPE_LOG, PIPE_NA, msg);
+	gui_log_message(msg, color);
+
+	return msg;
 }
 
 char* siril_log_message(const char* format, ...) {

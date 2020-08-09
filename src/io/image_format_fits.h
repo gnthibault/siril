@@ -22,6 +22,7 @@ int save_opened_fits(fits *f);
 int savefits(const char*, fits*);
 int copyfits(fits *from, fits *to, unsigned char oper, int layer);
 int copy_fits_metadata(fits *from, fits *to);
+int copy_fits_from_file(char *source, char *destination);
 int save1fits16(const char *filename, fits *fit, int layer);
 int save1fits32(const char *filename, fits *fit, int layer);
 int siril_fits_open_diskfile(fitsfile **fptr, const char *filename, int iomode,
@@ -48,6 +49,7 @@ int read_fits_with_convert(fits* fit, const char* filename, gboolean force_float
 int internal_read_partial_fits(fitsfile *fptr, unsigned int ry,
 		int bitpix, void *dest, int layer, const rectangle *area);
 int siril_fits_create_diskfile(fitsfile **fptr, const char *filename, int *status);
+void save_fits_header(fits *fit);
 void report_fits_error(int status);
 
 #endif

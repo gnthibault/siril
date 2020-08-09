@@ -263,7 +263,8 @@ static void display_status() {
 		i++;
 	if (com.selected_star == -1) {
 		if (i > 0) {
-			text = g_strdup_printf(_("%d stars"), i);
+			text = ngettext("%d star", "%d stars", i);
+			text = g_strdup_printf(text, i);
 		} else {
 			text = g_strdup(" ");
 		}

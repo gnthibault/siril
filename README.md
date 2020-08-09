@@ -20,8 +20,8 @@ Main development is done with most recent versions of libraries.
 Requirements
 ------------
 For compilation, these tools are needed:
- * **autoconf**
- * **automake**
+ * **meson**
+ * **ninja**
  * **cmake**
  
 Then, mandatory build dependencies:
@@ -88,18 +88,18 @@ So far, we are using submodule for the use of some algorithms. You must therefor
 
 Building SIRIL for GNU/Linux
 ----------------------------
-The process is the usual GNU/Linux package build; the configure script is not
-directly shipped and has to be created the first time with the autogen script.
+The process now uses the meson build system that is faster and more modern than autotools.
+However, meson build is still experimental so we encourage you to report bugs.
 Run with the following commands:
 
-    ./autogen.sh
-    make
-    sudo make install
+    meson --buildtype release _build 
+    ninja -C _build
+    sudo ninja -C _build install
     
 To update Siril, run the following commands
     
     git pull --recurse-submodules
-    sudo make install
+    sudo ninja -C _build install
 
 
 Note that a binary package for stable version of SIRIL is maintained for Debian. 
@@ -131,15 +131,21 @@ Translation instructions for SIRIL
 The translation system is based on [intltool](https://www.freedesktop.org/wiki/Software/intltool/),
 common for GTK+ software, with the help of the [poedit](https://poedit.net/) editor.
 
-Get SIRIL sources. In the po directory, run 
+Get SIRIL sources. In the siril directory, run **meson** if not already done, then run
      
-    make update-po
+    ninja siril-pot -C _build
     
 Install poedit and open the **siril.pot** file in the po directory to start a new translation.
 
 Proceed to the translation of the English elements in the list. When you want
 to stop or when you have finished, send us the .po file that you created and
 we'll include it in the next version's sources and packages.
+
+If you want to work on an already existing language, run
+
+    ninja siril-update-po -C _build
+    
+to update po files and edit it with poedit.
 
 Notes on SIRIL FITS image format
 --------------------------------
