@@ -54,7 +54,7 @@ static void satu_close(gboolean revert) {
 		siril_preview_hide();
 	} else {
 		undo_save_state(get_preview_gfit_backup(),
-				"Processing: Saturation enhancement (amount=%4.2lf)", satu_amount);
+				_("Saturation enhancement (amount=%4.2lf)"), satu_amount);
 	}
 	clear_backup();
 	set_cursor_waiting(FALSE);

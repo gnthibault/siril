@@ -56,7 +56,7 @@ static void deconv_close(gboolean revert) {
 	} else {
 		invalidate_stats_from_fit(&gfit);
 		undo_save_state(get_preview_gfit_backup(),
-				"Processing: Deconv. (iter=%d, sig=%.3f)", deconv_iterations,
+				_("Deconv. (iter=%d, sig=%.3f)"), deconv_iterations,
 				deconv_radius);
 
 	}

@@ -797,7 +797,7 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 
 		int correction = get_correction_type();
 		poly_order degree = get_poly_order();
-		undo_save_state(&gfit, "Processing: Background extraction (Correction: %s)",
+		undo_save_state(&gfit, _("Background extraction (Correction: %s)"),
 				correction ? "Division" : "Subtraction");
 		remove_gradient_from_image(correction, degree);
 

@@ -19,10 +19,15 @@ insert_final_newline = true
 indent_style = space
 indent_size = 4
 
-# 4 spaces indentation .gitlab-ci.yml, meson.build, README.md
-[*.{yml,build,md}]
+# 2 spaces indentation .gitlab-ci.yml, meson.build, README.md, siril3.glade, siril-shortcut.ui
+[*.{yml,build,md,glade,ui}]
 indent_style = space
 indent_size = 2
+
+# 4 spaces indentation for siril.css
+[*.css]
+indent_style = space
+indent_size = 4
 
 # Tab indentation for configure.ac and Makefile.am
 [*.{ac,am}]

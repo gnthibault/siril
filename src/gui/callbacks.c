@@ -377,6 +377,7 @@ void update_MenuItem() {
 	gboolean is_a_single_image_loaded;		/* An image is loaded. Not a sequence or only the result of stacking process */
 	gboolean is_a_singleRGB_image_loaded;	/* A RGB image is loaded. Not a sequence or only the result of stacking process */
 	gboolean any_image_is_loaded;			/* Something is loaded. Single image or Sequence */
+	char *str;
 
 	is_a_singleRGB_image_loaded = isrgb(&gfit) && (!sequence_is_loaded()
 			|| (sequence_is_loaded() && (com.seq.current == RESULT_IMAGE
@@ -392,7 +393,19 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("header_precision_button"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("toolbarbox"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("header_undo_button"), is_undo_available());
+	if (is_undo_available()) {
+		str = g_strdup_printf(_("Undo: \"%s\""), com.history[com.hist_display - 1].history);
+		gtk_widget_set_tooltip_text(lookup_widget("header_undo_button"), str);
+		g_free(str);
+	}
+	else gtk_widget_set_tooltip_text(lookup_widget("header_undo_button"), _("Nothing to undo"));
 	gtk_widget_set_sensitive(lookup_widget("header_redo_button"), is_redo_available());
+	if (is_redo_available()) {
+		str = g_strdup_printf(_("Redo: \"%s\""), com.history[com.hist_display].history);
+		gtk_widget_set_tooltip_text(lookup_widget("header_redo_button"), str);
+		g_free(str);
+	}
+	else gtk_widget_set_tooltip_text(lookup_widget("header_redo_button"), _("Nothing to redo"));
 	/* File Menu */
 	gtk_widget_set_sensitive(lookup_widget("header_save_as_button"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("header_save_button"), is_a_single_image_loaded && com.uniq->fileexist);
@@ -1879,12 +1892,12 @@ void on_menu_rgb_align_select(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 void on_rgb_align_dft_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	undo_save_state(&gfit, "Processing: RGB alignment (DFT)");
+	undo_save_state(&gfit, _("RGB alignment (DFT)"));
 	rgb_align(1);
 }
 
 void on_rgb_align_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	undo_save_state(&gfit, "Processing: RGB alignment (PSF)");
+	undo_save_state(&gfit, _("RGB alignment (PSF)"));
 	rgb_align(0);
 }
 
