@@ -365,9 +365,9 @@ void on_button_apply_fixbanding_clicked(GtkButton *button, gpointer user_data) {
 			toggle_protect_highlights_banding);
 
 	if (!protect_highlights)
-		undo_save_state(&gfit, "Processing: Canon Banding Reduction (amount=%.2lf)", amount);
+		undo_save_state(&gfit, _("Canon Banding Reduction (amount=%.2lf)"), amount);
 	else
-		undo_save_state(&gfit, "Processing: Canon Banding Reduction (amount=%.2lf, Protect=TRUE, invsigma=%.2lf)",
+		undo_save_state(&gfit, _("Canon Banding Reduction (amount=%.2lf, Protect=TRUE, invsigma=%.2lf)"),
 				amount, invsigma);
 
 	args->fit = &gfit;

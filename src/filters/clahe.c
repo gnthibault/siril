@@ -55,7 +55,7 @@ static void clahe_close(gboolean revert) {
 	} else {
 		invalidate_stats_from_fit(&gfit);
 		undo_save_state(get_preview_gfit_backup(),
-				"Processing: CLAHE (size=%d, clip=%.2f)", clahe_tile_size, clahe_limit_value);
+				_("CLAHE (size=%d, clip=%.2f)"), clahe_tile_size, clahe_limit_value);
 	}
 	clear_backup();
 	set_cursor_waiting(FALSE);

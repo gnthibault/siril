@@ -48,7 +48,7 @@ static void asinh_close(gboolean revert) {
 	} else {
 		invalidate_stats_from_fit(&gfit);
 		undo_save_state(get_preview_gfit_backup(),
-				"Processing: Asinh Transformation: (stretch=%6.1lf, bp=%7.5lf)",
+				_("Asinh Transformation: (stretch=%6.1lf, bp=%7.5lf)"),
 				asinh_stretch_value, asinh_black_value);
 	}
 	clear_backup();

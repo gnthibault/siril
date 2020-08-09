@@ -211,7 +211,7 @@ void on_linearmatch_apply_clicked(GtkButton *button, gpointer user_data) {
 		}
 		g_free(filename);
 		set_cursor_waiting(TRUE);
-		undo_save_state(&gfit, "Linear Match");
+		undo_save_state(&gfit, _("Linear Match"));
 		if (!find_linear_coeff(&gfit, &ref, low, high, a, b, &error)) {
 			apply_linear_to_fits(&gfit, a, b);
 

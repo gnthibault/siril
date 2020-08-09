@@ -148,7 +148,7 @@ static void fits_rotate_pi(fits *fit) {
 static void mirrorx_gui(fits *fit) {
 	if (confirm_delete_wcs_keywords(fit)) {
 		set_cursor_waiting(TRUE);
-		undo_save_state(&gfit, "Processing: Mirror X");
+		undo_save_state(&gfit, _("Mirror X"));
 		mirrorx(fit, TRUE);
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
@@ -159,7 +159,7 @@ static void mirrorx_gui(fits *fit) {
 static void mirrory_gui(fits *fit) {
 	if (confirm_delete_wcs_keywords(fit)) {
 		set_cursor_waiting(TRUE);
-		undo_save_state(&gfit, "Processing: Mirror Y");
+		undo_save_state(&gfit, _("Mirror Y"));
 		mirrory(fit, TRUE);
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
@@ -183,7 +183,7 @@ static void rotate_gui(fits *fit) {
 		cropped = gtk_toggle_button_get_active(crop_rotation);
 
 		set_cursor_waiting(TRUE);
-		undo_save_state(&gfit, "Processing: Rotation (%.1lfdeg, cropped=%s)", angle,
+		undo_save_state(&gfit, _("Rotation (%.1lfdeg, cropped=%s)"), angle,
 				cropped ? "TRUE" : "FALSE");
 		verbose_rotate_image(fit, angle, interpolation, cropped);
 		
@@ -481,7 +481,7 @@ void on_menuitem_rotation90_activate(GtkMenuItem *menuitem, gpointer user_data) 
 		cropped = gtk_toggle_button_get_active(crop_rotation);
 
 		set_cursor_waiting(TRUE);
-		undo_save_state(&gfit, "Processing: Rotation (90.0deg)");
+		undo_save_state(&gfit, _("Rotation (90.0deg)"));
 		verbose_rotate_image(&gfit, 90.0, -1, cropped);	// fast rotation, no interpolation, no crop
 		adjust_vport_size_to_image();
 		redraw(com.cvport, REMAP_ALL);
@@ -502,7 +502,7 @@ void on_menuitem_rotation270_activate(GtkMenuItem *menuitem, gpointer user_data)
 		cropped = gtk_toggle_button_get_active(crop_rotation);
 
 		set_cursor_waiting(TRUE);
-		undo_save_state(&gfit, "Processing: Rotation (-90.0deg)");
+		undo_save_state(&gfit, _("Rotation (-90.0deg)"));
 		verbose_rotate_image(&gfit, 270.0, -1, cropped);// fast rotation, no interpolation, no crop
 		adjust_vport_size_to_image();
 		redraw(com.cvport, REMAP_ALL);
@@ -567,7 +567,7 @@ void on_button_resample_ok_clicked(GtkButton *button, gpointer user_data) {
 		set_cursor_waiting(TRUE);
 		int toX = round_to_int((sample[0] / 100.0) * gfit.rx);
 		int toY = round_to_int((sample[1] / 100.0) * gfit.ry);
-		undo_save_state(&gfit, "Processing: Resample (%g - %g)", sample[0] / 100.0,
+		undo_save_state(&gfit, _("Resample (%g - %g)"), sample[0] / 100.0,
 				sample[1] / 100.0);
 		verbose_resize_gaussian(&gfit, toX, toY, interpolation);
 		
@@ -624,7 +624,7 @@ void on_button_sample_ratio_toggled(GtkToggleButton *button, gpointer user_data)
 void on_menu_gray_crop_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	// if astrometry exists
 	if (confirm_delete_wcs_keywords(&gfit)) {
-		undo_save_state(&gfit, "Processing: Crop (x=%d, y=%d, w=%d, h=%d)",
+		undo_save_state(&gfit, _("Crop (x=%d, y=%d, w=%d, h=%d)"),
 				com.selection.x, com.selection.y, com.selection.w,
 				com.selection.h);
 		if (is_preview_active()) {

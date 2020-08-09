@@ -155,7 +155,7 @@ void on_SCNR_Apply_clicked(GtkButton *button, gpointer user_data) {
 	}
 
 	struct scnr_data *args = malloc(sizeof(struct scnr_data));
-	undo_save_state(&gfit, "Processing: SCNR (type=%d, amount=%0.2lf, preserve=%s)",
+	undo_save_state(&gfit, _("SCNR (type=%d, amount=%0.2lf, preserve=%s)"),
 			type, amount, preserve ? "true" : "false");
 
 	args->fit = &gfit;

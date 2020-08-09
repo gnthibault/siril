@@ -633,7 +633,7 @@ void on_button_cosmetic_ok_clicked(GtkButton *button, gpointer user_data) {
 		apply_cosmetic_to_sequence(args);
 	} else {
 		args->multithread = TRUE;
-		undo_save_state(&gfit, "Processing: Cosmetic Correction");
+		undo_save_state(&gfit, _("Cosmetic Correction"));
 		start_in_new_thread(autoDetectThreaded, args);
 	}
 }

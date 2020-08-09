@@ -221,7 +221,7 @@ void on_button_ok_w_clicked(GtkButton *button, gpointer user_data) {
 		param->show_preview = TRUE;
 		notify_update((gpointer) param);
 	}
-	undo_save_state(get_preview_gfit_backup(), "Processing: Wavelets Transformation");
+	undo_save_state(get_preview_gfit_backup(), _("Wavelets Transformation"));
 
 	siril_close_dialog("wavelets_dialog");
 }

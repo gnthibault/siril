@@ -804,7 +804,7 @@ void on_button_bkg_neutralization_clicked(GtkButton *button, gpointer user_data)
 	black_selection.w = gtk_spin_button_get_value(selection_black_value[2]);
 	black_selection.h = gtk_spin_button_get_value(selection_black_value[3]);
 
-	undo_save_state(&gfit, "Processing: Background neutralization");
+	undo_save_state(&gfit, _("Background neutralization"));
 
 	set_cursor_waiting(TRUE);
 	background_neutralize(&gfit, black_selection);
@@ -1042,7 +1042,7 @@ void on_calibration_apply_button_clicked(GtkButton *button, gpointer user_data) 
 	}
 
 	set_cursor_waiting(TRUE);
-	undo_save_state(&gfit, "Processing: Color Calibration");
+	undo_save_state(&gfit, _("Color Calibration"));
 	white_balance(&gfit, is_manual, white_selection, black_selection);
 
 	gettimeofday(&t_end, NULL);
@@ -1103,7 +1103,7 @@ int pos_to_neg(fits *fit) {
 
 void on_menu_negative_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	set_cursor_waiting(TRUE);
-	undo_save_state(&gfit, "Processing: Negative Transformation");
+	undo_save_state(&gfit, _("Negative Transformation"));
 	pos_to_neg(&gfit);
 	invalidate_stats_from_fit(&gfit);
 	invalidate_gfit_histogram();

@@ -87,7 +87,7 @@ void on_Median_Apply_clicked(GtkButton *button, gpointer user_data) {
 			args->ksize = 15;
 			break;
 	}
-	undo_save_state(&gfit, "Processing: Median Filter (filter=%dx%d px)",
+	undo_save_state(&gfit, _("Median Filter (filter=%dx%d px)"),
 			args->ksize, args->ksize);
 
 	args->fit = &gfit;
