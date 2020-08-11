@@ -357,11 +357,6 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 			/* we have a new rectangular selection zone,
 			 * or an unselection (empty zone) */
 			new_selection_zone();
-
-			/* calculate and display FWHM - not in event
-			 * callbacks because it's in the same file and
-			 * requires a special argument */
-			calculate_fwhm(widget);
 		} else if (mouse_status == MOUSE_ACTION_SELECT_PREVIEW1) {
 			set_preview_area(0, zoomedX, zoomedY);
 			mouse_status = MOUSE_ACTION_SELECT_REG_AREA;
@@ -392,7 +387,6 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 				com.selection.h = h;
 
 				new_selection_zone();
-				calculate_fwhm(widget);
 			}
 		}
 
@@ -493,6 +487,8 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 					com.selection.h = com.startY - zoomedY;
 			}
 		}
+		// Display the dimensions of the selection while drawing it
+		update_display_selection();
 		gtk_widget_queue_draw(widget);
 	}
 	if (inimage((GdkEvent *) event)) {
