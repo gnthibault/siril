@@ -528,7 +528,7 @@ int seq_load_image(sequence *seq, int index, gboolean load_it) {
 		display_filename();		// display filename in gray window
 		set_precision_switch(); // set precision on screen
 		adjust_reginfo();		// change registration displayed/editable values
-		calculate_fwhm(com.vport[com.cvport]);
+		update_display_fwhm();
 		update_gfit_histogram_if_needed();
 		set_cursor_waiting(FALSE);
 	}

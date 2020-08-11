@@ -667,33 +667,37 @@ int match_drawing_area_widget(GtkWidget *drawing_area, gboolean allow_rgb) {
 	return -1;
 }
 
-void calculate_fwhm(GtkWidget *widget) {
-	/* calculate and display FWHM */
-	int layer = match_drawing_area_widget(widget, FALSE);
-	if (layer != -1) {
-		gchar *buf, *label_name;
-		const char *layer_name = untranslated_vport_number_to_name(layer);
-		GtkLabel *label;
-		if (com.selection.w && com.selection.h) {// Now we don't care about the size of the sample. Minimization checks that
-			if (com.selection.w < 300 && com.selection.h < 300) {
-				double roundness;
-				double fwhm_val;
-
-				fwhm_val = psf_get_fwhm(&gfit, layer, &roundness);
-				buf = g_strdup_printf(_("fwhm = %.2f, r = %.2f"), fwhm_val,
-						roundness);
-			} else
-				buf = g_strdup_printf(_("fwhm: selection is too large"));
-		} else {
-			buf = g_strdup_printf(("fwhm: no selection"));
-		}
-		label_name = g_strdup_printf("labelfwhm%s", layer_name);
-		label = GTK_LABEL(lookup_widget(label_name));
-		gtk_label_set_text(label, buf);
-
-		g_free(label_name);
+void update_display_selection() {
+	const char *layer_name = untranslated_vport_number_to_name(com.cvport);
+	gchar *label_name = g_strdup_printf("labelselection_%s", layer_name);
+	if (com.selection.w && com.selection.h) {
+		gchar *buf = g_strdup_printf(_("w: %d h: %d ratio: %.4f"), com.selection.w, com.selection.h,
+			(double)com.selection.w / (double)com.selection.h);
+		gtk_label_set_text(GTK_LABEL(lookup_widget(label_name)), buf);
 		g_free(buf);
+	} else {
+		gtk_label_set_text(GTK_LABEL(lookup_widget(label_name)), "");
 	}
+	g_free(label_name);
+}
+
+void update_display_fwhm() {
+	gchar *buf;
+	const char *layer_name = untranslated_vport_number_to_name(com.cvport);
+	gchar *label_name = g_strdup_printf("labelfwhm%s", layer_name);
+	if (com.selection.w && com.selection.h) {// Now we don't care about the size of the sample. Minimization checks that
+		if (com.selection.w < 300 && com.selection.h < 300) {
+			double roundness;
+			double fwhm_val = psf_get_fwhm(&gfit, com.cvport, &roundness);
+			buf = g_strdup_printf(_("fwhm = %.2f, r = %.2f"), fwhm_val, roundness);
+		} else
+			buf = g_strdup_printf(_("fwhm: selection is too large"));
+	} else {
+		buf = g_strdup_printf(_("fwhm: no selection"));
+	}
+	gtk_label_set_text(GTK_LABEL(lookup_widget(label_name)), buf);
+	g_free(label_name);
+	g_free(buf);
 }
 
 /* displays the opened image file name in the layers window.
@@ -1305,6 +1309,8 @@ void initialize_all_GUI(gchar *supported_files) {
 
 	/* register some callbacks */
 	register_selection_update_callback(update_export_crop_label);
+	register_selection_update_callback(update_display_selection);
+	register_selection_update_callback(update_display_fwhm);
 
 	/* initialization of some paths */
 	initialize_path_directory();
@@ -1792,7 +1798,8 @@ void on_notebook1_switch_page(GtkNotebook *notebook, GtkWidget *page,
 	set_cutoff_sliders_values();// load the previous known values for sliders
 	set_display_mode();		// change the mode in the combo box if needed
 	redraw(com.cvport, REMAP_ONLY);
-	calculate_fwhm(com.vport[com.cvport]);
+	update_display_selection();	// update the dimensions of the selection when switching page
+	update_display_fwhm();
 }
 
 struct checkSeq_filter_data {
