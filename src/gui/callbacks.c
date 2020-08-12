@@ -668,6 +668,7 @@ int match_drawing_area_widget(GtkWidget *drawing_area, gboolean allow_rgb) {
 }
 
 void update_display_selection() {
+	if (com.cvport == RGB_VPORT) return;
 	const char *layer_name = untranslated_vport_number_to_name(com.cvport);
 	gchar *label_name = g_strdup_printf("labelselection_%s", layer_name);
 	if (com.selection.w && com.selection.h) {
@@ -682,6 +683,7 @@ void update_display_selection() {
 }
 
 void update_display_fwhm() {
+	if (com.cvport == RGB_VPORT) return;
 	gchar *buf;
 	const char *layer_name = untranslated_vport_number_to_name(com.cvport);
 	gchar *label_name = g_strdup_printf("labelfwhm%s", layer_name);
