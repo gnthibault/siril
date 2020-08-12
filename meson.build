@@ -379,7 +379,20 @@ subdir('3rdparty')
 ################################################################################
 # Install misc
 
-install_man(meson.project_name() + '.1')
+man_files = [
+  configure_file(
+    input : meson.project_name() + '.1',
+    output: meson.project_name() + '.1',
+    configuration: conf_data,
+  ),
+  configure_file(
+    input : meson.project_name() + '.1',
+    output: meson.project_name() + '-cli.1',
+    configuration: conf_data,
+  ),
+]
+
+install_man(man_files)
 install_data(['AUTHORS', 'LICENSE.md'],
              rename : ['doc/siril/AUTHORS', 'doc/siril/LICENSE.md'],
              install_dir : siril_share)
@@ -395,3 +408,4 @@ warning('''
         report bugs. Yet if you are a packager, DO NOT USE
         meson until we fix all known issues and bugs.
         ''')
+
