@@ -2522,7 +2522,7 @@ int process_convertraw(int nb) {
 					str_append(&destroot, com.pref.ext);
 			} else if (g_str_has_prefix(current, "-start=")) {
 				value = current + 7;
-				idx = (atoi(value) <= 0 || atoi(value) >= 100000) ? 1 : atoi(value);
+				idx = (atoi(value) <= 0 || atoi(value) >= INDEX_MAX) ? 1 : atoi(value);
 			} else if (g_str_has_prefix(current, "-out=")) {
 				value = current + 5;
 				if (value[0] == '\0') {
@@ -2629,7 +2629,7 @@ int process_link(int nb) {
 			char *current = word[i], *value;
 			if (g_str_has_prefix(current, "-start=")) {
 				value = current + 7;
-				idx = (atoi(value) <= 0 || atoi(value) >= 100000) ?
+				idx = (atoi(value) <= 0 || atoi(value) >= INDEX_MAX) ?
 						1 : atoi(value);
 			} else if (g_str_has_prefix(current, "-out=")) {
 				value = current + 5;
@@ -2745,7 +2745,7 @@ int process_convert(int nb) {
 					str_append(&destroot, com.pref.ext);
 			} else if (g_str_has_prefix(current, "-start=")) {
 				value = current + 7;
-				idx = (atoi(value) <= 0 || atoi(value) >= 100000) ?
+				idx = (atoi(value) <= 0 || atoi(value) >= INDEX_MAX) ?
 						1 : atoi(value);
 			} else if (g_str_has_prefix(current, "-out=")) {
 				value = current + 5;

@@ -1160,7 +1160,7 @@ void set_GUI_DiskSpace(int64_t space) {
 	const gchar *color = NULL;
 
 	if (space > 0) {
-		if (space < 1000000000) { // we wabt to warn user of space is less than 1GB
+		if (space < 1000000000) { // we want to warn user of space is less than 1GB
 			color = "red";
 		}
 		gchar *mem = pretty_print_memory(space);
