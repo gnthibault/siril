@@ -184,6 +184,7 @@ typedef struct image_stats imstats;
 typedef struct rectangle_struct rectangle;
 typedef struct point_struct point;
 typedef struct pointf_struct pointf;
+typedef struct pointi_struct pointi;
 typedef struct historic_struct historic;
 typedef struct dateTime_struct dateTime;
 typedef struct fwhm_struct fitted_PSF;
@@ -508,6 +509,10 @@ struct pointf_struct {
 	float x, y;
 };
 
+struct pointi_struct {
+	int x, y;
+};
+
 struct gradient_struct {
 	point centre;
 	double boxvalue[3];
@@ -610,9 +615,10 @@ struct cominf {
 	preferences pref; // saved variable in preferences
 
 	/* selection rectangle for registration, FWHM, PSF */
-	gboolean drawing;		// true if the rectangle is being set (clicked motion)
-	gint startX, startY;		// where the mouse was originally clicked to
-	gboolean freezeX, freezeY;
+	gboolean drawing;			// true if the rectangle is being set (clicked motion)
+	pointi start;				// where the mouse was originally clicked to
+	pointi origin;				// where the selection was originally located
+	gboolean freezeX, freezeY;	// locked axis during modification of a selection 
 	rectangle selection;		// coordinates of the selection rectangle
 
 	/* alignment preview data */
