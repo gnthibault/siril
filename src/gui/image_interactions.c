@@ -35,12 +35,11 @@ mouse_status_enum mouse_status;
 
 /* mouse callbacks */
 static double margin_size = 10;
-static gboolean is_shift_on = FALSE;
 
 static gboolean is_over_the_left_side_of_sel(double zoomedX, double zoomedY, double zoom) {
 	if (com.selection.w == 0 && com.selection.h == 0) return FALSE;
 	double s = margin_size / zoom;
-	if ((zoomedX > com.selection.x - s && zoomedX < com.selection.x + s)) {
+	if (zoomedX > com.selection.x - s && zoomedX < com.selection.x + s) {
 		if (zoomedY > com.selection.y - s
 				&& zoomedY < com.selection.y + com.selection.h + s)
 			return TRUE;
@@ -52,8 +51,8 @@ static gboolean is_over_the_left_side_of_sel(double zoomedX, double zoomedY, dou
 static gboolean is_over_the_right_side_of_sel(double zoomedX, double zoomedY, double zoom) {
 	if (com.selection.w == 0 && com.selection.h == 0) return FALSE;
 	double s = margin_size / zoom;
-	if ((zoomedX > com.selection.x + com.selection.w - s
-				&& zoomedX < com.selection.x + com.selection.w + s)) {
+	if (zoomedX > com.selection.x + com.selection.w - s
+				&& zoomedX < com.selection.x + com.selection.w + s) {
 		if (zoomedY > com.selection.y - s
 				&& zoomedY < com.selection.y + com.selection.h + s)
 			return TRUE;
@@ -64,8 +63,8 @@ static gboolean is_over_the_right_side_of_sel(double zoomedX, double zoomedY, do
 static gboolean is_over_the_bottom_of_sel(double zoomedX, double zoomedY, double zoom) {
 	if (com.selection.w == 0 && com.selection.h == 0) return FALSE;
 	double s = margin_size / zoom;
-	if ((zoomedY > com.selection.y + com.selection.h - s
-				&& zoomedY < com.selection.y + com.selection.h + s)) {
+	if (zoomedY > com.selection.y + com.selection.h - s
+				&& zoomedY < com.selection.y + com.selection.h + s) {
 		if (zoomedX > com.selection.x - s
 				&& zoomedX < com.selection.x + com.selection.w + s)
 			return TRUE;
@@ -76,9 +75,19 @@ static gboolean is_over_the_bottom_of_sel(double zoomedX, double zoomedY, double
 static gboolean is_over_the_top_of_sel(double zoomedX, double zoomedY, double zoom) {
 	if (com.selection.w == 0 && com.selection.h == 0) return FALSE;
 	double s = margin_size / zoom;
-	if ((zoomedY > com.selection.y - s && zoomedY < com.selection.y + s)) {
+	if (zoomedY > com.selection.y - s && zoomedY < com.selection.y + s) {
 		if (zoomedX > com.selection.x - s
 				&& zoomedX < com.selection.x + com.selection.w + s)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+static gboolean is_inside_of_sel(double zoomedX, double zoomedY, double zoom) {
+	if (com.selection.w == 0 && com.selection.h == 0) return FALSE;
+	double s = margin_size / zoom;
+	if (zoomedX >= com.selection.x + s && zoomedX <= com.selection.x + com.selection.w - s) {
+		if (zoomedY >= com.selection.y + s && zoomedY <= com.selection.y + com.selection.h - s)
 			return TRUE;
 	}
 	return FALSE;
@@ -220,8 +229,8 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
 	if (inimage((GdkEvent *) event)) {
 		double zoom = get_zoom_val();
-		double zoomedX = event->x / zoom;
-		double zoomedY = event->y / zoom;
+		int zoomedX = round_to_int(event->x / zoom);
+		int zoomedY = round_to_int(event->y / zoom);
 
 		/* click on RGB image */
 		if (widget == com.vport[RGB_VPORT]) {
@@ -241,40 +250,49 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 				if (com.drawing) {
 					com.drawing = FALSE;
 				} else {
-					// Default values
 					com.drawing = TRUE;
-					com.freezeX = com.freezeY = FALSE;
-					// The order matters if the selection is so small that edge detection overlaps
-					// and need to be the same as in the on_drawingarea_motion_notify_event()
-					gboolean left = is_over_the_left_side_of_sel(zoomedX, zoomedY, zoom);
-					gboolean right = is_over_the_right_side_of_sel(zoomedX, zoomedY, zoom);
-					gboolean bottom = is_over_the_bottom_of_sel(zoomedX, zoomedY, zoom);
-					gboolean top = is_over_the_top_of_sel(zoomedX, zoomedY, zoom);
-					if (left || right || bottom || top) {
-						// Freeze one axis when grabbing an edges far enough from a corner
-						if (right) {
-							com.startX = com.selection.x;
-							if (!bottom && !top)
-								com.freezeY = TRUE;
-						} else if (left) {
-							com.startX = com.selection.x + com.selection.w;
-							if (!bottom && !top)
-								com.freezeY = TRUE;
-						}
-						if (bottom) {
-							com.startY = com.selection.y;
-							if (!left && !right)
-								com.freezeX = TRUE;
-						} else if (top) {
-							com.startY = com.selection.y + com.selection.h;
-							if (!left && !right)
-								com.freezeX = TRUE;
-						}
+					if (is_inside_of_sel(zoomedX, zoomedY, zoom)) {
+						// Move selection
+						com.freezeX = com.freezeY = TRUE;
+						com.start.x = zoomedX;
+						com.start.y = zoomedY;
+						com.origin.x = com.selection.x;
+						com.origin.y = com.selection.y;
 					} else {
-						com.startX = zoomedX;
-						com.startY = zoomedY;
-						com.selection.h = 0;
-						com.selection.w = 0;
+						// Default values
+						com.freezeX = com.freezeY = FALSE;
+						// The order matters if the selection is so small that edge detection overlaps
+						// and need to be the same as in the on_drawingarea_motion_notify_event()
+						gboolean right = is_over_the_right_side_of_sel(zoomedX, zoomedY, zoom);
+						gboolean left = is_over_the_left_side_of_sel(zoomedX, zoomedY, zoom);
+						gboolean bottom = is_over_the_bottom_of_sel(zoomedX, zoomedY, zoom);
+						gboolean top = is_over_the_top_of_sel(zoomedX, zoomedY, zoom);
+						if (right || left || bottom || top) {
+							// Freeze one axis when grabbing an edges far enough from a corner
+							if (right) {
+								com.start.x = com.selection.x;
+								if (!bottom && !top)
+									com.freezeY = TRUE;
+							} else if (left) {
+								com.start.x = com.selection.x + com.selection.w;
+								if (!bottom && !top)
+									com.freezeY = TRUE;
+							}
+							if (bottom) {
+								com.start.y = com.selection.y;
+								if (!left && !right)
+									com.freezeX = TRUE;
+							} else if (top) {
+								com.start.y = com.selection.y + com.selection.h;
+								if (!left && !right)
+									com.freezeX = TRUE;
+							}
+						} else {
+							com.start.x = zoomedX;
+							com.start.y = zoomedY;
+							com.selection.h = 0;
+							com.selection.w = 0;
+						}
 					}
 				}
 				gtk_widget_queue_draw(widget);
@@ -317,46 +335,60 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
 	double zoom = get_zoom_val();
-	gdouble zoomedX, zoomedY;
+	int zoomedX, zoomedY;
 
 	if (inimage((GdkEvent *) event)) {
-		zoomedX = event->x / zoom;
-		zoomedY = event->y / zoom;
+		zoomedX = round_to_int(event->x / zoom);
+		zoomedY = round_to_int(event->y / zoom);
 	} else {
 		if (event->x < 0)
 			zoomedX = 0.0;
 		else if (event->x > gfit.rx * zoom)
 			zoomedX = gfit.rx;
 		else
-			zoomedX = event->x / zoom;
+			zoomedX = round_to_int(event->x / zoom);
 		if (event->y < 0)
 			zoomedY = 0.0;
 		else if (event->y > gfit.ry * zoom)
 			zoomedY = gfit.ry;
 		else
-			zoomedY = event->y / zoom;
+			zoomedY = round_to_int(event->y / zoom);
 	}
 	if (event->button == GDK_BUTTON_PRIMARY) {	// left click
 		if (com.drawing && mouse_status == MOUSE_ACTION_SELECT_REG_AREA) {
 			com.drawing = FALSE;
 			/* finalize selection rectangle coordinates */
 			if (!com.freezeX) {
-				if (zoomedX > com.startX) {
-					com.selection.x = com.startX;
+				if (zoomedX > com.start.x) {
+					com.selection.x = com.start.x;
 					com.selection.w = zoomedX - com.selection.x;
 				} else {
 					com.selection.x = zoomedX;
-					com.selection.w = com.startX - zoomedX;
+					com.selection.w = com.start.x - zoomedX;
 				}
 			}
 			if (!com.freezeY) {
-				if (zoomedY > com.startY) {
-					com.selection.y = com.startY;
+				if (zoomedY > com.start.y) {
+					com.selection.y = com.start.y;
 					com.selection.h = zoomedY - com.selection.y;
 				} else {
 					com.selection.y = zoomedY;
-					com.selection.h = com.startY - zoomedY;
+					com.selection.h = com.start.y - zoomedY;
 				}
+			}
+			if (com.freezeX && com.freezeY) {
+				// Move selection
+				com.selection.x = (zoomedX - com.start.x) + com.origin.x;
+				com.selection.y = (zoomedY - com.start.y) + com.origin.y;
+				// clamp it inside the image
+				if (com.selection.x < 0)
+					com.selection.x = 0;
+				else if (com.selection.x + com.selection.w > gfit.rx)
+					com.selection.x = gfit.rx - com.selection.w;
+				if (com.selection.y < 0)
+					com.selection.y = 0;
+				else if (com.selection.y + com.selection.h > gfit.ry)
+					com.selection.y = gfit.ry - com.selection.h;
 			}
 			/* we have a new rectangular selection zone,
 			 * or an unselection (empty zone) */
@@ -371,7 +403,6 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 			mouse_status = MOUSE_ACTION_SELECT_REG_AREA;
 			gtk_widget_queue_draw(widget);
 		}
-		is_shift_on = FALSE;
 	} else if (event->button == GDK_BUTTON_MIDDLE) {	// middle click
 		if (inimage((GdkEvent *) event)) {
 			double dX, dY, w, h;
@@ -404,41 +435,40 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 
 gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 		GdkEventMotion *event, gpointer user_data) {
-	fits *fit = &(gfit);
 	double zoom = get_zoom_val();
 	gint zoomedX = 0, zoomedY = 0;
 	const char *suffix = untranslated_vport_number_to_name(com.cvport);
 	gchar *label = g_strdup_printf("labeldensity_%s", suffix);
 
-	if (fit->type == DATA_UNSUPPORTED) return FALSE;
+	if (gfit.type == DATA_UNSUPPORTED) return FALSE;
 
 	if (inimage((GdkEvent *) event)) {
 		char *buffer;
 		char *format;
 		int coords_width = 3;
-		zoomedX = (gint) (event->x / zoom);
-		zoomedY = (gint) (event->y / zoom);
+		zoomedX = round_to_int(event->x / zoom);
+		zoomedY = round_to_int(event->y / zoom);
 
-		if (fit->rx >= 1000 || fit->ry >= 1000)
+		if (gfit.rx >= 1000 || gfit.ry >= 1000)
 			coords_width = 4;
-		if (fit->type == DATA_USHORT) {
+		if (gfit.type == DATA_USHORT) {
 			int val_width = 3;
 			char *format_base_ushort = "x: %%.%dd y: %%.%dd = %%.%dd";
-			if (fit->hi >= 1000)
+			if (gfit.hi >= 1000)
 				val_width = 4;
-			if (fit->hi >= 10000)
+			if (gfit.hi >= 10000)
 				val_width = 5;
 			format = g_strdup_printf(format_base_ushort,
 					coords_width, coords_width, val_width);
 			buffer = g_strdup_printf(format, zoomedX, zoomedY,
-					fit->pdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
+					gfit.pdata[com.cvport][gfit.rx * (gfit.ry - zoomedY - 1)
 					+ zoomedX]);
-		} else if (fit->type == DATA_FLOAT) {
+		} else if (gfit.type == DATA_FLOAT) {
 			char *format_base_float = "x: %%.%dd y: %%.%dd = %%f";
 			format = g_strdup_printf(format_base_float,
 					coords_width, coords_width);
 			buffer = g_strdup_printf(format, zoomedX, zoomedY,
-					fit->fpdata[com.cvport][fit->rx * (fit->ry - zoomedY - 1)
+					gfit.fpdata[com.cvport][gfit.rx * (gfit.ry - zoomedY - 1)
 					+ zoomedX]);
 		} else return FALSE;
 
@@ -468,28 +498,36 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 				zoomedY = round_to_int(event->y / zoom);
 		}
 		if (!com.freezeX) {
-			if (zoomedX > com.startX) {
-				com.selection.x = com.startX;
+			if (zoomedX > com.start.x) {
+				com.selection.x = com.start.x;
 				com.selection.w = zoomedX - com.selection.x;
 			} else {
 				com.selection.x = zoomedX;
-				com.selection.w = com.startX - zoomedX;
+				com.selection.w = com.start.x - zoomedX;
 			}
 		}
 		if (!com.freezeY) {
-			if (zoomedY > com.startY) {
-				com.selection.y = com.startY;
-				if (is_shift_on)
-					com.selection.h = com.selection.w;
-				else
-					com.selection.h = zoomedY - com.selection.y;
+			if (zoomedY > com.start.y) {
+				com.selection.y = com.start.y;
+				com.selection.h = zoomedY - com.selection.y;
 			} else {
 				com.selection.y = zoomedY;
-				if (is_shift_on)
-					com.selection.h = com.selection.w;
-				else
-					com.selection.h = com.startY - zoomedY;
+				com.selection.h = com.start.y - zoomedY;
 			}
+		}
+		if (com.freezeX && com.freezeY) {
+			// Move selection
+			com.selection.x = (zoomedX - com.start.x) + com.origin.x;
+			com.selection.y = (zoomedY - com.start.y) + com.origin.y;
+			// clamp it inside the image
+			if (com.selection.x < 0)
+				com.selection.x = 0;
+			else if (com.selection.x + com.selection.w > gfit.rx)
+				com.selection.x = gfit.rx - com.selection.w;
+			if (com.selection.y < 0)
+				com.selection.y = 0;
+			else if (com.selection.y + com.selection.h > gfit.ry)
+				com.selection.y = gfit.ry - com.selection.h;
 		}
 		// Display the dimensions of the selection while drawing it
 		update_display_selection();
@@ -522,6 +560,8 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 					set_cursor("s-resize");
 				} else if (top) {
 					set_cursor("n-resize");
+				} else if (is_inside_of_sel(zoomedX, zoomedY, zoom)) {
+					set_cursor("all-scroll");
 				} else {
 					set_cursor("crosshair");
 				}
