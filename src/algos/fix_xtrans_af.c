@@ -85,18 +85,18 @@ static void set_af_matrix(gchar *pattern, af_pixel_matrix af_matrix) {
 			}
 
 			// Print the matrix if debug is enabled.
-			siril_debug_print(_("  %.6s\n"), af_matrix[0]);
-			siril_debug_print(_("  %.6s\n"), af_matrix[1]);
-			siril_debug_print(_("  %.6s\n"), af_matrix[2]);
-			siril_debug_print(_("  %.6s\n"), af_matrix[3]);
-			siril_debug_print(_("  %.6s\n"), af_matrix[4]);
-			siril_debug_print(_("  %.6s\n"), af_matrix[5]);
-			siril_debug_print(_("  %.6s\n"), af_matrix[6]);
-			siril_debug_print(_("  %.6s\n"), af_matrix[7]);
-			siril_debug_print(_("  %.6s\n"), af_matrix[8]);
-			siril_debug_print(_("  %.6s\n"), af_matrix[9]);
-			siril_debug_print(_("  %.6s\n"), af_matrix[10]);
-			siril_debug_print(_("  %.6s\n"), af_matrix[11]);
+			siril_debug_print("  %.6s\n", af_matrix[0]);
+			siril_debug_print("  %.6s\n", af_matrix[1]);
+			siril_debug_print("  %.6s\n", af_matrix[2]);
+			siril_debug_print("  %.6s\n", af_matrix[3]);
+			siril_debug_print("  %.6s\n", af_matrix[4]);
+			siril_debug_print("  %.6s\n", af_matrix[5]);
+			siril_debug_print("  %.6s\n", af_matrix[6]);
+			siril_debug_print("  %.6s\n", af_matrix[7]);
+			siril_debug_print("  %.6s\n", af_matrix[8]);
+			siril_debug_print("  %.6s\n", af_matrix[9]);
+			siril_debug_print("  %.6s\n", af_matrix[10]);
+			siril_debug_print("  %.6s\n", af_matrix[11]);
 
 			break;
 		}
