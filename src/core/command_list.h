@@ -59,6 +59,7 @@ static command commands[] = {
 	{"findstar", 0, "findstar", process_findstar, STR_FINDSTAR, FALSE},
 	{"fmedian", 2, "fmedian ksize modulation", process_fmedian, STR_FMEDIAN, TRUE},
 	{"fmul", 1, "fmul scalar", process_fmul, STR_FMUL, TRUE},
+	{"fix_xtrans", 0, "fix_xtrans", process_fix_xtrans, STR_FIXXTRANS, TRUE},
 	{"fixbanding", 2, "fixbanding amount sigma", process_fixbanding, STR_FIXBANDING, TRUE},
 
 	{"gauss", 1, "gauss sigma", process_gauss, STR_GAUSS, TRUE},

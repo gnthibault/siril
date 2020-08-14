@@ -28,6 +28,8 @@ typedef struct {
 	rectangle sample;  // Sample size for computing adjustment.
 } supported_xtrans_list;
 
+typedef char af_pixel_matrix[12][6]; // I hope 12x6 works for all cases.
+
 int fix_xtrans_ac(fits *fit);
 
 #endif /* SRC_ALGOS_FIX_XTRANS_AF_H_ */

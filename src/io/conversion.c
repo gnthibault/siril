@@ -96,7 +96,14 @@ char *filter_pattern[] = {
 	"GRBG",
 
 /* XTRANS */
-	"RBGBRG"
+	"GGRGGB" // ----> XTRANS_1
+	"GGBGGR"
+	"BRGRBG"
+	"GGBGGR"
+	"GGRGGB"
+	"RBGBRG",
+
+	"RBGBRG" // ----> XTRANS_2
 	"GGRGGB"
 	"GGBGGR"
 	"BRGRBG"
@@ -115,14 +122,7 @@ char *filter_pattern[] = {
 	"GBGGRG"
 	"GRGGBG"
 	"BGBRGR"
-	"GRGGBG",
-
-	"GGRGGB"
-	"GGBGGR"
-	"BRGRBG"
-	"GGBGGR"
-	"GGRGGB"
-	"RBGBRG"
+	"GRGGBG"
 };
 
 static int film_conversion(const char *src_filename, int index, unsigned int *added_frames, struct ser_struct *ser_file, struct _convert_data *args);
