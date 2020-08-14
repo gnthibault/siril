@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril in Italiano\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-14 08:31+0200\n"
+"POT-Creation-Date: 2020-08-14 13:38+0200\n"
 "PO-Revision-Date: 2020-04-28 10:17+0200\n"
 "Last-Translator: Luca Benassi <bennolo@gmail.com>\n"
 "Language-Team: Italian <sonia@zonia3000.net>\n"
@@ -1360,7 +1360,8 @@ msgstr ""
 "essere parallelizzata e quindi girerà su un solo core della CPU."
 
 #: src/gui/siril3.glade:5088
-msgid "Cumul reg. data"
+#, fuzzy
+msgid "Accumulate reg. data"
 msgstr "Cumul reg. data"
 
 #: src/gui/siril3.glade:5091
@@ -1747,7 +1748,7 @@ msgstr "Normalizzazione:"
 #, fuzzy
 msgid ""
 "<b>Sum</b>: This is the simplest method.\n"
-"Pixel values are added in an image normalized to 16-bit values.\n"
+"Pixel values are added in an image normalized to 32-bit values.\n"
 "It increases signal/noise ratio (SNR) as square root of number of images.\n"
 "\n"
 "<b>Average with rejection</b>: This method is used to reject deviant pixels "
@@ -4569,7 +4570,7 @@ msgstr ""
 "Configurare una dimensione di memoria più grande di quella disponibile sul "
 "sistema potrebbe portare al crash di Siril o del sistema operativo."
 
-#: src/gui/siril3.glade:19315 src/core/command_def.h:111
+#: src/gui/siril3.glade:19315 src/core/command_def.h:112
 msgid ""
 "Sets a new ratio of free memory on memory used for stacking. Value should be "
 "between 0.05 and 2, depending on other activities of the machine. A higher "
@@ -6181,6 +6182,25 @@ msgstr "Memoria utilizzabile per lo stacking cambiata in %g\n"
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "********* LISTA DEI COMANDI DISPONIBILI *********\n"
 
+#: src/core/command.c:3593
+msgid "Required version is not correct.\n"
+msgstr ""
+
+#: src/core/command.c:3615
+msgid "The required version of Siril is ok.\n"
+msgstr ""
+
+#: src/core/command.c:3620
+msgid "A newer version of Siril is required, please update your version.\n"
+msgstr ""
+
+#: src/core/command.c:3622
+#, c-format
+msgid ""
+"The script you are executing requires a newer version of Siril to run (%s), "
+"aborting.\n"
+msgstr ""
+
 #: src/core/command_def.h:6
 msgid ""
 "Computes a new image IMG with IMG_1 and IMG_2. The pixel of IMG_1 is "
@@ -6668,6 +6688,12 @@ msgstr ""
 
 #: src/core/command_def.h:78
 msgid ""
+"This function returns an error if the version of Siril is older than the one "
+"passed in argument"
+msgstr ""
+
+#: src/core/command_def.h:79
+msgid ""
 "Creates two images, with a radial shift (\"dR\" in pixels) and a rotational "
 "shift (\"dalpha\" in degrees) with respect to the point (\"xc\", \"yc\"). "
 "Between these two images, the shifts have the same amplitude, but an "
@@ -6680,7 +6706,7 @@ msgstr ""
 "segno opposto. Le due immagini sono quindi sommate per creare l'immagine "
 "finale. Questo processo è chiamato anche filtro Larson Sekanina"
 
-#: src/core/command_def.h:79
+#: src/core/command_def.h:80
 msgid ""
 "Restores an image using the Richardson-Lucy method. \"Sigma\" is the size of "
 "the kernel to be applied, while \"corner_radius_boost\" is a value which is "
@@ -6693,7 +6719,7 @@ msgstr ""
 "angoli di un'immagine. \"Iterations\" è il numero di iterazioni che verranno "
 "eseguite"
 
-#: src/core/command_def.h:80
+#: src/core/command_def.h:81
 msgid ""
 "Chromatic noise reduction filter. It removes green noise in the current "
 "image. This filter is based on PixInsight's SCNR Average Neutral algorithm "
@@ -6707,11 +6733,11 @@ msgstr ""
 "Photoshop. \"Type\"=1 sta per Average Neutral Protection, mentre \"type\"=2 "
 "sta per Maximum Neutral Protection"
 
-#: src/core/command_def.h:81
+#: src/core/command_def.h:82
 msgid "Rotates the image of an angle of \"degree\" value"
 msgstr "Ruota l'immagine di un angolo del valore \"degree\""
 
-#: src/core/command_def.h:82
+#: src/core/command_def.h:83
 msgid ""
 "Rotates the image of an angle of 180° around its center. This is equivalent "
 "to the command \"ROTATE 180\" or \"ROTATE -180\""
@@ -6719,7 +6745,7 @@ msgstr ""
 "Ruota l'immagine di un angolo di 180° attorno al suo centro. Questo è "
 "equivalente al comando \"ROTATE 180\" o \"ROTATE -180\""
 
-#: src/core/command_def.h:84
+#: src/core/command_def.h:85
 msgid ""
 "Enhances the global saturation of the image. Try iteratively to obtain best "
 "results"
@@ -6727,7 +6753,7 @@ msgstr ""
 "Migliora la saturazione globale dell'immagine. Prova iterativamente ad "
 "ottenere i risultati migliori"
 
-#: src/core/command_def.h:85
+#: src/core/command_def.h:86
 msgid ""
 "Saves current image to \"filename\".fit. Fits headers MIPS-HI and MIPS-LO "
 "are added with values corresponding to the current viewing levels"
@@ -6736,15 +6762,16 @@ msgstr ""
 "LO sono aggiunti con valori corrispondenti ai livelli correntemente "
 "visualizzati"
 
-#: src/core/command_def.h:86
+#: src/core/command_def.h:87
+#, fuzzy
 msgid ""
 "Saves current image under the form of a bitmap file with 8-bit per channel: "
-"\"filename\".bmp (BMP 24-bit)."
+"\"filename\".bmp (BMP 24-bit)"
 msgstr ""
 "Salva l'immagine corrente sotto forma di un file bitmap con 8-bit per "
 "canale: \"filename\".bmp (BMP 24-bit)."
 
-#: src/core/command_def.h:87
+#: src/core/command_def.h:88
 msgid ""
 "Saves current image into a JPG file: \"filename\".jpg. You have the "
 "possibility to adjust the quality of the compression. A value 100 for "
@@ -6757,11 +6784,11 @@ msgstr ""
 "aumenta il rapporto di compressione. Se nessun valore è specificato, esso "
 "mantiene un valore di 100"
 
-#: src/core/command_def.h:88
+#: src/core/command_def.h:89
 msgid "Saves current image into a PNG file: \"filename\".png"
 msgstr "Salva l'immagine corrente in un file PNG: \"filename\".png"
 
-#: src/core/command_def.h:89
+#: src/core/command_def.h:90
 msgid ""
 "Saves current image under the form of a Netpbm file format with 16-bit per "
 "channel. The extension of the output will be \"filename\".ppm for RGB image "
@@ -6771,7 +6798,7 @@ msgstr ""
 "bit per canale. L'estensione dell'output sarà \"filename\".ppm per l' "
 "immagine RGB e \"filename\".pgm per l'immagine in scala di grigi"
 
-#: src/core/command_def.h:90
+#: src/core/command_def.h:91
 msgid ""
 "Saves current image under the form of a uncompressed TIFF file with 16-bit "
 "per channel: \"filename\".tif"
@@ -6779,7 +6806,7 @@ msgstr ""
 "Salva l'immagine corrente sotto forma di un file TIFF non compresso con 16-"
 "bit per canale: \"filename\".tif"
 
-#: src/core/command_def.h:91
+#: src/core/command_def.h:92
 #, fuzzy
 msgid ""
 "Same command as SAVE_TIF but the output file is saved in 32-bit per channel: "
@@ -6788,7 +6815,7 @@ msgstr ""
 "Lo stesso comando di SAVE_TIF ma il file in output è salvato a 8-bit per "
 "canale: \"filename\".tif"
 
-#: src/core/command_def.h:92
+#: src/core/command_def.h:93
 #, fuzzy
 msgid ""
 "Same command as SAVE_TIF but the output file is saved in 8-bit per channel: "
@@ -6797,7 +6824,7 @@ msgstr ""
 "Lo stesso comando di SAVE_TIF ma il file in output è salvato a 8-bit per "
 "canale: \"filename\".tif"
 
-#: src/core/command_def.h:93
+#: src/core/command_def.h:94
 msgid ""
 "This command allows easy mass selection of images in the loaded sequence "
 "(from \"from\" to \"to\" included)"
@@ -6805,47 +6832,47 @@ msgstr ""
 "Questo comando permette una semplice selezione di massa delle immagini nella "
 "sequenza caricata (da \"da\" a \"a\" inclusi)"
 
-#: src/core/command_def.h:94
+#: src/core/command_def.h:95
 msgid ""
 "Crops the loaded sequence. The output sequence name starts with the prefix "
 "\"cropped_\" unless otherwise specified with \"-prefix=\" option"
 msgstr ""
 
-#: src/core/command_def.h:95
+#: src/core/command_def.h:96
 msgid ""
 "Same command as EXTRACT_HA but for the sequence \"sequencename\". The output "
 "sequence name starts with the prefix \"Ha_\" unless otherwise specified with "
 "option \"-prefix=\""
 msgstr ""
 
-#: src/core/command_def.h:96
+#: src/core/command_def.h:97
 msgid ""
 "Same command as EXTRACT_HAOIII but for the sequence \"sequencename\". The "
 "output sequence name start with the prefix \"Ha_\" and \"OIII_\""
 msgstr ""
 
-#: src/core/command_def.h:97
+#: src/core/command_def.h:98
 msgid ""
 "Same command as FIND_COSME but for the sequence \"sequencename\". The output "
 "sequence name starts with the prefix \"cc_\" unless otherwise specified with "
 "\"-prefix=\" option"
 msgstr ""
 
-#: src/core/command_def.h:98
+#: src/core/command_def.h:99
 msgid ""
 "Same command as FIND_COSME_CFA but for the sequence \"sequencename\". The "
 "output sequence name starts with the prefix \"cc_\" unless otherwise "
 "specified with \"-prefix=\" option"
 msgstr ""
 
-#: src/core/command_def.h:99
+#: src/core/command_def.h:100
 msgid ""
 "Same command as MTF but for the sequence \"sequencename\".  The output "
 "sequence name starts with the prefix \"mtf_\" unless otherwise specified "
 "with \"-prefix=\" option"
 msgstr ""
 
-#: src/core/command_def.h:100
+#: src/core/command_def.h:101
 #, fuzzy
 msgid ""
 "Same command as PSF but works for sequences. Results are dumped in the "
@@ -6855,31 +6882,31 @@ msgstr ""
 "visualizzati nella console in una forma che può essere utilizzata per "
 "produrre curve di variazione della luminosità"
 
-#: src/core/command_def.h:101
+#: src/core/command_def.h:102
 msgid ""
 "Same command as SPLIT_CFA but for the sequence \"sequencename\". The output "
 "sequence name starts with the prefix \"CFA_\" unless otherwise specified "
 "with \"-prefix=\" option"
 msgstr ""
 
-#: src/core/command_def.h:102
+#: src/core/command_def.h:103
 msgid ""
 "Same command as SUBSKY but for the sequence \"sequencename\".  The output "
 "sequence name starts with the prefix \"bkg_\" unless otherwise specified "
 "with \"-prefix=\" option"
 msgstr ""
 
-#: src/core/command_def.h:103
+#: src/core/command_def.h:104
 msgid ""
 "Disallow images to be saved with 32 bits per channel on processing, use 16 "
 "instead"
 msgstr ""
 
-#: src/core/command_def.h:104
+#: src/core/command_def.h:105
 msgid "Allow images to be saved with 32 bits per channel on processing"
 msgstr ""
 
-#: src/core/command_def.h:105
+#: src/core/command_def.h:106
 msgid ""
 "Defines if images are compressed or not: 0 means no compression. If "
 "compression is enabled, the type must be explicitly written in the option \"-"
@@ -6890,7 +6917,7 @@ msgid ""
 "of 16"
 msgstr ""
 
-#: src/core/command_def.h:106
+#: src/core/command_def.h:107
 msgid ""
 "Defines the number of processing threads used for calculation. Can be as "
 "high as the number of virtual threads existing on the system, which is the "
@@ -6902,7 +6929,7 @@ msgstr ""
 "il numero di core della CPU o il doppio se l'hyperthreading (Intel HT) è "
 "disponibile"
 
-#: src/core/command_def.h:107
+#: src/core/command_def.h:108
 msgid ""
 "Sets the extension used and recognized by sequences. The argument \"extension"
 "\" can be \"fit\", \"fts\" or \"fits\""
@@ -6910,7 +6937,7 @@ msgstr ""
 "Imposta l'estensione utilizzata e riconosciuta per sequenza. L'argomento "
 "\"extension\" può essere \"fit\", \"fts\" o \"fits\""
 
-#: src/core/command_def.h:108
+#: src/core/command_def.h:109
 msgid ""
 "Defines thresholds above the noise and star roundness for stars detection "
 "with FINDSTAR and REGISTER commands. \"Sigma\" must be greater or equal to "
@@ -6921,7 +6948,7 @@ msgstr ""
 "essere maggiore o uguale a 0,05 e \"roundness\" deve essere compresa tra 0 e "
 "0,9"
 
-#: src/core/command_def.h:109
+#: src/core/command_def.h:110
 msgid ""
 "Calibrates the magnitude by selecting a star and giving the known apparent "
 "magnitude. All PSF computations will return the calibrated apparent "
@@ -6933,7 +6960,7 @@ msgstr ""
 "apparente calibrata, invee di una magnitudine apparenta relativa ai valori "
 "ADU. Per azzerare la costante di magnitudine vedi UNSETMAG"
 
-#: src/core/command_def.h:110
+#: src/core/command_def.h:111
 msgid ""
 "This command is only valid after having run SEQPSF or its graphical "
 "counterpart (select the area around a star and launch the PSF analysis for "
@@ -6956,11 +6983,11 @@ msgstr ""
 "comprendere. Per azzerare la stella di riferimento e l'offset della "
 "magnitudine vedi UNSETMAGSEQ"
 
-#: src/core/command_def.h:112
+#: src/core/command_def.h:113
 msgid "Sets the reference image of the loaded sequence"
 msgstr "Seleziona l'immagine di riferimento della sequenza caricata"
 
-#: src/core/command_def.h:113
+#: src/core/command_def.h:114
 msgid ""
 "Splits the color image into three distinct files (one for each color) and "
 "save them in \"r\" \"g\" and \"b\" file"
@@ -6968,7 +6995,7 @@ msgstr ""
 "Divide l'immagine a colori in tre file distinti (uno per ciascun colore) e "
 "li salva in file \"r\", \"g\" e \"b\""
 
-#: src/core/command_def.h:114
+#: src/core/command_def.h:115
 msgid ""
 "Splits the CFA image into four distinct files (one for each channel) and "
 "save them in files"
@@ -6976,7 +7003,7 @@ msgstr ""
 "Divide l'immagine a colori in tre file distinti (uno per ciascun colore) e "
 "li salva in file \"r\", \"g\" e \"b\""
 
-#: src/core/command_def.h:115
+#: src/core/command_def.h:116
 msgid ""
 "Stacks the \"sequencename\" sequence, using options. The allowed types are: "
 "sum, max, min, med or median, and rej or mean that requires the use of "
@@ -7012,7 +7039,7 @@ msgstr ""
 "opzione \"-filter-*\".\n"
 "Vedere la command reference per la documentazione completa di questo comando"
 
-#: src/core/command_def.h:116
+#: src/core/command_def.h:117
 msgid ""
 "Opens all sequences in the CWD and stacks them with the optionally specified "
 "stacking type and filtering or with sum stacking. See STACK command for "
@@ -7022,7 +7049,7 @@ msgstr ""
 "stacking con il tipo di stacking opzionalmente specificato o con lo stacking "
 "somma. Vedi il comando STACK per la descrizione delle opzioni"
 
-#: src/core/command_def.h:117
+#: src/core/command_def.h:118
 msgid ""
 "Returns global statistics of the current image. If a selection is made, the "
 "command returns statistics within the selection"
@@ -7031,7 +7058,7 @@ msgstr ""
 "una selezione il comando restituisce le statistiche all'interno della "
 "selezione"
 
-#: src/core/command_def.h:118
+#: src/core/command_def.h:119
 msgid ""
 "Computes the level of the local sky background thanks to a polynomial "
 "function of an order ''degree'' and subtracts it from the image. A synthetic "
@@ -7041,22 +7068,22 @@ msgstr ""
 "polinomiale di un certo \"grado\" e lo sottrae dall'immagine. Viene poi "
 "prodotta un'immagine artificiale e sottratta a quella originale"
 
-#: src/core/command_def.h:120
+#: src/core/command_def.h:121
 msgid "Replaces values below \"level\" with \"level\""
 msgstr "Rimpiazza i valori inferiori a \"level\" con \"level\""
 
-#: src/core/command_def.h:121
+#: src/core/command_def.h:122
 msgid "Replaces values above \"level\" with \"level\""
 msgstr "Rimpiazza i valori superiori a \"level\" con \"level\""
 
-#: src/core/command_def.h:122
+#: src/core/command_def.h:123
 msgid ""
 "Replaces values below \"lo\" with \"lo\" and values above \"hi\" with \"hi\""
 msgstr ""
 "Rimpiazza i valori inferiori a \"lo\" con \"lo\" e i valori superiori a \"hi"
 "\" con \"hi\""
 
-#: src/core/command_def.h:124
+#: src/core/command_def.h:125
 msgid ""
 "Allows easy mass unselection of images in the loaded sequence (from \"from\" "
 "to \"to\" included). See SELECT"
@@ -7064,11 +7091,11 @@ msgstr ""
 "Permette una semplice deselezione di massa delle immagini nella sequenza "
 "caricata (da \"da\" a \"a\" inclusi). Vedi SELECT"
 
-#: src/core/command_def.h:125
+#: src/core/command_def.h:126
 msgid "Reset the magnitude calibration to 0. See SETMAG"
 msgstr "Resetta la magnitudine di calibrazione a 0. Vedi SETMAG"
 
-#: src/core/command_def.h:126
+#: src/core/command_def.h:127
 msgid ""
 "Resets the magnitude calibration and reference star for the sequence. See "
 "SETMAGSEQ"
@@ -7076,7 +7103,7 @@ msgstr ""
 "Azzera la calibrazione della magnitudine e la stella di riferimento per la "
 "sequenza. Vedi SETMAGSEQ"
 
-#: src/core/command_def.h:127
+#: src/core/command_def.h:128
 msgid ""
 "Applies to the working image an unsharp mask with sigma \"sigma\" and "
 "coefficient \"multi\""
@@ -7084,14 +7111,14 @@ msgstr ""
 "Applica all'immagine su cui si sta lavorando una maschera di contrasto con "
 "un sigma \"sigma\" e un coefficiente \"multi\""
 
-#: src/core/command_def.h:129
+#: src/core/command_def.h:130
 msgid ""
 "Displays an image with \"low\" and \"high\" as the low and high threshold"
 msgstr ""
 "Visualizza un'immagine con \"low\" e \"high\" come il valori di soglia basso "
 "e alto"
 
-#: src/core/command_def.h:131
+#: src/core/command_def.h:132
 #, fuzzy
 msgid ""
 "Computes the wavelet transform on \"nbr_plan\" plans using linear (type=1) "
@@ -7104,7 +7131,7 @@ msgstr ""
 "è memorizzato in un file come una struttura contenente i piani, pronta per "
 "una ricostruzione pesata con WRECONS"
 
-#: src/core/command_def.h:132
+#: src/core/command_def.h:133
 msgid ""
 "Reconstructs to current image from the planes previously computed with "
 "wavelets and weighted with coefficients \"c1\", \"c2\", ..., \"cn\" "

@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-14 08:31+0200\n"
+"POT-Creation-Date: 2020-08-14 13:38+0200\n"
 "PO-Revision-Date: 2020-05-29 15:05+0200\n"
 "Last-Translator: Antoine Hoeffelman <antoine.hoeffelman[-at-]gmail.com>\n"
 "Language-Team: Dutch <antoine.hoeffelman[-at-]gmail.com>\n"
@@ -1345,7 +1345,8 @@ msgstr ""
 "worden."
 
 #: src/gui/siril3.glade:5088
-msgid "Cumul reg. data"
+#, fuzzy
+msgid "Accumulate reg. data"
 msgstr "Cumul reg. gegevens"
 
 #: src/gui/siril3.glade:5091
@@ -1719,7 +1720,7 @@ msgstr "Normalisatie:"
 #, fuzzy
 msgid ""
 "<b>Sum</b>: This is the simplest method.\n"
-"Pixel values are added in an image normalized to 16-bit values.\n"
+"Pixel values are added in an image normalized to 32-bit values.\n"
 "It increases signal/noise ratio (SNR) as square root of number of images.\n"
 "\n"
 "<b>Average with rejection</b>: This method is used to reject deviant pixels "
@@ -4497,7 +4498,7 @@ msgstr ""
 "uw systeem kan resulteren in een crash van siril of van het "
 "besturingssysteem."
 
-#: src/gui/siril3.glade:19315 src/core/command_def.h:111
+#: src/gui/siril3.glade:19315 src/core/command_def.h:112
 msgid ""
 "Sets a new ratio of free memory on memory used for stacking. Value should be "
 "between 0.05 and 2, depending on other activities of the machine. A higher "
@@ -6077,6 +6078,25 @@ msgstr "Bruikbare geheugen voor de stacking aangepast tot %g\n"
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "********* LIJST VAN BESCHIKBARE COMMANDO'S *********\n"
 
+#: src/core/command.c:3593
+msgid "Required version is not correct.\n"
+msgstr ""
+
+#: src/core/command.c:3615
+msgid "The required version of Siril is ok.\n"
+msgstr ""
+
+#: src/core/command.c:3620
+msgid "A newer version of Siril is required, please update your version.\n"
+msgstr ""
+
+#: src/core/command.c:3622
+#, c-format
+msgid ""
+"The script you are executing requires a newer version of Siril to run (%s), "
+"aborting.\n"
+msgstr ""
+
 #: src/core/command_def.h:6
 msgid ""
 "Computes a new image IMG with IMG_1 and IMG_2. The pixel of IMG_1 is "
@@ -6553,6 +6573,12 @@ msgstr ""
 
 #: src/core/command_def.h:78
 msgid ""
+"This function returns an error if the version of Siril is older than the one "
+"passed in argument"
+msgstr ""
+
+#: src/core/command_def.h:79
+msgid ""
 "Creates two images, with a radial shift (\"dR\" in pixels) and a rotational "
 "shift (\"dalpha\" in degrees) with respect to the point (\"xc\", \"yc\"). "
 "Between these two images, the shifts have the same amplitude, but an "
@@ -6565,7 +6591,7 @@ msgstr ""
 "beelden worden dan toegevoegd om het finaal beeld te produceren. Dit process "
 "is ook gekend als Larson Sekania filter"
 
-#: src/core/command_def.h:79
+#: src/core/command_def.h:80
 msgid ""
 "Restores an image using the Richardson-Lucy method. \"Sigma\" is the size of "
 "the kernel to be applied, while \"corner_radius_boost\" is a value which is "
@@ -6578,7 +6604,7 @@ msgstr ""
 "hoeken van een afbeelding. 'Iteraties' is het aantal iteraties dat moet "
 "worden uitgevoerd"
 
-#: src/core/command_def.h:80
+#: src/core/command_def.h:81
 msgid ""
 "Chromatic noise reduction filter. It removes green noise in the current "
 "image. This filter is based on PixInsight's SCNR Average Neutral algorithm "
@@ -6592,11 +6618,11 @@ msgstr ""
 "Photoshop. « Type »=1 staat voor Average Neutral Protection en « type »=2 "
 "staat voor Maximum Neutra Protection"
 
-#: src/core/command_def.h:81
+#: src/core/command_def.h:82
 msgid "Rotates the image of an angle of \"degree\" value"
 msgstr "Draait het beeld om een hoek van « degree » graden"
 
-#: src/core/command_def.h:82
+#: src/core/command_def.h:83
 msgid ""
 "Rotates the image of an angle of 180° around its center. This is equivalent "
 "to the command \"ROTATE 180\" or \"ROTATE -180\""
@@ -6604,7 +6630,7 @@ msgstr ""
 "Draait het beeld om een hoek van 180° rond het centrum. Dit equivalent met "
 "he commando « ROTATE 180 » of « ROTATE -180 »"
 
-#: src/core/command_def.h:84
+#: src/core/command_def.h:85
 msgid ""
 "Enhances the global saturation of the image. Try iteratively to obtain best "
 "results"
@@ -6612,7 +6638,7 @@ msgstr ""
 "Verbetert de globale saturatie van het beeld. Probeer iteratief om het beste "
 "resultaat te bekomen"
 
-#: src/core/command_def.h:85
+#: src/core/command_def.h:86
 msgid ""
 "Saves current image to \"filename\".fit. Fits headers MIPS-HI and MIPS-LO "
 "are added with values corresponding to the current viewing levels"
@@ -6620,15 +6646,16 @@ msgstr ""
 "Slaat het huidige beeld op met naam « filename ».fit. Fits headers MIPS-HI "
 "en MIPS-Lo worden toegevoegd met de huidige visualisatiewaarden"
 
-#: src/core/command_def.h:86
+#: src/core/command_def.h:87
+#, fuzzy
 msgid ""
 "Saves current image under the form of a bitmap file with 8-bit per channel: "
-"\"filename\".bmp (BMP 24-bit)."
+"\"filename\".bmp (BMP 24-bit)"
 msgstr ""
 "Slaat het huidige beeld op als bitmap bestand met 8-bit per kanaal onder de "
 "naam: \"filename\".bmp (BMP 24-bit)."
 
-#: src/core/command_def.h:87
+#: src/core/command_def.h:88
 msgid ""
 "Saves current image into a JPG file: \"filename\".jpg. You have the "
 "possibility to adjust the quality of the compression. A value 100 for "
@@ -6641,12 +6668,12 @@ msgstr ""
 "compressieniveau verhoogt. Indien geen waarde meegegeven wordt, wordt de "
 "waarde op 100 gesteld"
 
-#: src/core/command_def.h:88
+#: src/core/command_def.h:89
 msgid "Saves current image into a PNG file: \"filename\".png"
 msgstr ""
 "Slaat het huidige beeld op als PNG bestand onder de naam: « filename ».PNG"
 
-#: src/core/command_def.h:89
+#: src/core/command_def.h:90
 msgid ""
 "Saves current image under the form of a Netpbm file format with 16-bit per "
 "channel. The extension of the output will be \"filename\".ppm for RGB image "
@@ -6656,7 +6683,7 @@ msgstr ""
 "het bestand wordt « filename ».ppm voor RGB beelden en « filename ».pgm voor "
 "zwart-wit beelden"
 
-#: src/core/command_def.h:90
+#: src/core/command_def.h:91
 msgid ""
 "Saves current image under the form of a uncompressed TIFF file with 16-bit "
 "per channel: \"filename\".tif"
@@ -6664,7 +6691,7 @@ msgstr ""
 "Slaat het huidige beeld op als ongecomprimeerde TIFF bestand met 16-bit per "
 "kanaal onder de naam « filename ».tif"
 
-#: src/core/command_def.h:91
+#: src/core/command_def.h:92
 #, fuzzy
 msgid ""
 "Same command as SAVE_TIF but the output file is saved in 32-bit per channel: "
@@ -6673,7 +6700,7 @@ msgstr ""
 "Zelfde commando als SAVE_FIF maar het beeld wordt als 8-bit per kanaal beeld "
 "opgestaan met naam: « filename ».tif"
 
-#: src/core/command_def.h:92
+#: src/core/command_def.h:93
 #, fuzzy
 msgid ""
 "Same command as SAVE_TIF but the output file is saved in 8-bit per channel: "
@@ -6682,7 +6709,7 @@ msgstr ""
 "Zelfde commando als SAVE_FIF maar het beeld wordt als 8-bit per kanaal beeld "
 "opgestaan met naam: « filename ».tif"
 
-#: src/core/command_def.h:93
+#: src/core/command_def.h:94
 msgid ""
 "This command allows easy mass selection of images in the loaded sequence "
 "(from \"from\" to \"to\" included)"
@@ -6690,47 +6717,47 @@ msgstr ""
 "Deze commando laat toe gemakkelijk een selectie aan beelden de laden (van "
 "« from » tot « to », to inbegrepen)"
 
-#: src/core/command_def.h:94
+#: src/core/command_def.h:95
 msgid ""
 "Crops the loaded sequence. The output sequence name starts with the prefix "
 "\"cropped_\" unless otherwise specified with \"-prefix=\" option"
 msgstr ""
 
-#: src/core/command_def.h:95
+#: src/core/command_def.h:96
 msgid ""
 "Same command as EXTRACT_HA but for the sequence \"sequencename\". The output "
 "sequence name starts with the prefix \"Ha_\" unless otherwise specified with "
 "option \"-prefix=\""
 msgstr ""
 
-#: src/core/command_def.h:96
+#: src/core/command_def.h:97
 msgid ""
 "Same command as EXTRACT_HAOIII but for the sequence \"sequencename\". The "
 "output sequence name start with the prefix \"Ha_\" and \"OIII_\""
 msgstr ""
 
-#: src/core/command_def.h:97
+#: src/core/command_def.h:98
 msgid ""
 "Same command as FIND_COSME but for the sequence \"sequencename\". The output "
 "sequence name starts with the prefix \"cc_\" unless otherwise specified with "
 "\"-prefix=\" option"
 msgstr ""
 
-#: src/core/command_def.h:98
+#: src/core/command_def.h:99
 msgid ""
 "Same command as FIND_COSME_CFA but for the sequence \"sequencename\". The "
 "output sequence name starts with the prefix \"cc_\" unless otherwise "
 "specified with \"-prefix=\" option"
 msgstr ""
 
-#: src/core/command_def.h:99
+#: src/core/command_def.h:100
 msgid ""
 "Same command as MTF but for the sequence \"sequencename\".  The output "
 "sequence name starts with the prefix \"mtf_\" unless otherwise specified "
 "with \"-prefix=\" option"
 msgstr ""
 
-#: src/core/command_def.h:100
+#: src/core/command_def.h:101
 #, fuzzy
 msgid ""
 "Same command as PSF but works for sequences. Results are dumped in the "
@@ -6740,31 +6767,31 @@ msgstr ""
 "console weergegeven in een vorm dat voor helderheidscurven kan gebruikt "
 "worden"
 
-#: src/core/command_def.h:101
+#: src/core/command_def.h:102
 msgid ""
 "Same command as SPLIT_CFA but for the sequence \"sequencename\". The output "
 "sequence name starts with the prefix \"CFA_\" unless otherwise specified "
 "with \"-prefix=\" option"
 msgstr ""
 
-#: src/core/command_def.h:102
+#: src/core/command_def.h:103
 msgid ""
 "Same command as SUBSKY but for the sequence \"sequencename\".  The output "
 "sequence name starts with the prefix \"bkg_\" unless otherwise specified "
 "with \"-prefix=\" option"
 msgstr ""
 
-#: src/core/command_def.h:103
+#: src/core/command_def.h:104
 msgid ""
 "Disallow images to be saved with 32 bits per channel on processing, use 16 "
 "instead"
 msgstr ""
 
-#: src/core/command_def.h:104
+#: src/core/command_def.h:105
 msgid "Allow images to be saved with 32 bits per channel on processing"
 msgstr ""
 
-#: src/core/command_def.h:105
+#: src/core/command_def.h:106
 msgid ""
 "Defines if images are compressed or not: 0 means no compression. If "
 "compression is enabled, the type must be explicitly written in the option \"-"
@@ -6775,7 +6802,7 @@ msgid ""
 "of 16"
 msgstr ""
 
-#: src/core/command_def.h:106
+#: src/core/command_def.h:107
 msgid ""
 "Defines the number of processing threads used for calculation. Can be as "
 "high as the number of virtual threads existing on the system, which is the "
@@ -6787,7 +6814,7 @@ msgstr ""
 "het aantal CPU of dubbel het aantal CPU is in geval van hyperthreading "
 "(Inter HT)"
 
-#: src/core/command_def.h:107
+#: src/core/command_def.h:108
 msgid ""
 "Sets the extension used and recognized by sequences. The argument \"extension"
 "\" can be \"fit\", \"fts\" or \"fits\""
@@ -6795,7 +6822,7 @@ msgstr ""
 "Kiest de gebruikte en herkende extensies. De argumenten \"extensie\" kunnen "
 "\"fit\", \"fts\" of \"fits\" zijn"
 
-#: src/core/command_def.h:108
+#: src/core/command_def.h:109
 msgid ""
 "Defines thresholds above the noise and star roundness for stars detection "
 "with FINDSTAR and REGISTER commands. \"Sigma\" must be greater or equal to "
@@ -6805,7 +6832,7 @@ msgstr ""
 "worden met FINDSTAR en REGISTER commando's. \"SIGMA\" moet groter of gelijk "
 "aan 0.05 zijn en \"rondheid\" tussen 0.9"
 
-#: src/core/command_def.h:109
+#: src/core/command_def.h:110
 msgid ""
 "Calibrates the magnitude by selecting a star and giving the known apparent "
 "magnitude. All PSF computations will return the calibrated apparent "
@@ -6817,7 +6844,7 @@ msgstr ""
 "in plaats van magnituden relatie tot ADU waarden. Gebruik UNSETMAG om de "
 "calibratie te verwijderen"
 
-#: src/core/command_def.h:110
+#: src/core/command_def.h:111
 msgid ""
 "This command is only valid after having run SEQPSF or its graphical "
 "counterpart (select the area around a star and launch the PSF analysis for "
@@ -6839,11 +6866,11 @@ msgstr ""
 "duidelijk. Om de referentiestar en magnitude offset te resetten, zie "
 "UNSETMAGSEQ"
 
-#: src/core/command_def.h:112
+#: src/core/command_def.h:113
 msgid "Sets the reference image of the loaded sequence"
 msgstr "Stelt het referentiebeeld van de geladen reeks in"
 
-#: src/core/command_def.h:113
+#: src/core/command_def.h:114
 msgid ""
 "Splits the color image into three distinct files (one for each color) and "
 "save them in \"r\" \"g\" and \"b\" file"
@@ -6851,7 +6878,7 @@ msgstr ""
 "Splitst de kleurenafbeelding in drie verschillende bestanden (één voor elke "
 "kleur) en slaat ze op in \"r\" \"g\" en \"b\" bestand"
 
-#: src/core/command_def.h:114
+#: src/core/command_def.h:115
 msgid ""
 "Splits the CFA image into four distinct files (one for each channel) and "
 "save them in files"
@@ -6859,7 +6886,7 @@ msgstr ""
 "Splitst de CFA-afbeelding in vier verschillende bestanden (één voor elk "
 "kanaal) en slaat ze op in bestanden"
 
-#: src/core/command_def.h:115
+#: src/core/command_def.h:116
 msgid ""
 "Stacks the \"sequencename\" sequence, using options. The allowed types are: "
 "sum, max, min, med or median, and rej or mean that requires the use of "
@@ -6894,7 +6921,7 @@ msgstr ""
 "manueel geselecteerd, ifv. FWHM, met sommige \"-filter-*\" opties.\n"
 "Zie de commando referentie voor een volledige beschrijving van dit commando"
 
-#: src/core/command_def.h:116
+#: src/core/command_def.h:117
 msgid ""
 "Opens all sequences in the CWD and stacks them with the optionally specified "
 "stacking type and filtering or with sum stacking. See STACK command for "
@@ -6904,7 +6931,7 @@ msgstr ""
 "gespecifieerde stackingstype of met som stacking. Zie de STACK command voor "
 "beschrijving van de opties"
 
-#: src/core/command_def.h:117
+#: src/core/command_def.h:118
 msgid ""
 "Returns global statistics of the current image. If a selection is made, the "
 "command returns statistics within the selection"
@@ -6912,7 +6939,7 @@ msgstr ""
 "Geeft de globale statistieken van het huidige beeld weer. Als een selectie "
 "werd gemaakt geeft dit de statistieken van de selectie weer"
 
-#: src/core/command_def.h:118
+#: src/core/command_def.h:119
 msgid ""
 "Computes the level of the local sky background thanks to a polynomial "
 "function of an order ''degree'' and subtracts it from the image. A synthetic "
@@ -6923,22 +6950,22 @@ msgstr ""
 "Vervolgens wordt een synthetisch beeld gemaakt en afgetrokken van het "
 "originele beeld"
 
-#: src/core/command_def.h:120
+#: src/core/command_def.h:121
 msgid "Replaces values below \"level\" with \"level\""
 msgstr "Vervangt de waarden onder \"level\" met \"level\""
 
-#: src/core/command_def.h:121
+#: src/core/command_def.h:122
 msgid "Replaces values above \"level\" with \"level\""
 msgstr "Vervangt de waarden boven \"level\" met \"level\""
 
-#: src/core/command_def.h:122
+#: src/core/command_def.h:123
 msgid ""
 "Replaces values below \"lo\" with \"lo\" and values above \"hi\" with \"hi\""
 msgstr ""
 "Vervangt de waarden onder \"lo\" met \"lo\" en de waarden boven \"hi\" met "
 "\"hi\""
 
-#: src/core/command_def.h:124
+#: src/core/command_def.h:125
 msgid ""
 "Allows easy mass unselection of images in the loaded sequence (from \"from\" "
 "to \"to\" included). See SELECT"
@@ -6946,11 +6973,11 @@ msgstr ""
 "Laat toe massaal beelden uit een selectie uit een geladen sequentie uit te "
 "vinken (van \"from\" tot \"to\"). Zie SELECT"
 
-#: src/core/command_def.h:125
+#: src/core/command_def.h:126
 msgid "Reset the magnitude calibration to 0. See SETMAG"
 msgstr "Reset de magnitude calibrate tot 0. Zie SETMAG"
 
-#: src/core/command_def.h:126
+#: src/core/command_def.h:127
 msgid ""
 "Resets the magnitude calibration and reference star for the sequence. See "
 "SETMAGSEQ"
@@ -6958,7 +6985,7 @@ msgstr ""
 "Reset de calibratie magnitude en referentiester voor de sequentie. Zie "
 "SETMAGSEQ"
 
-#: src/core/command_def.h:127
+#: src/core/command_def.h:128
 msgid ""
 "Applies to the working image an unsharp mask with sigma \"sigma\" and "
 "coefficient \"multi\""
@@ -6966,12 +6993,12 @@ msgstr ""
 "Past een unsharp mask toe met sigma \"sigma\" en coëfficient \"multi\" toe "
 "op het geladen beeld"
 
-#: src/core/command_def.h:129
+#: src/core/command_def.h:130
 msgid ""
 "Displays an image with \"low\" and \"high\" as the low and high threshold"
 msgstr "Toont een beeld met \"low\" en \"high\" met low en high grenzen"
 
-#: src/core/command_def.h:131
+#: src/core/command_def.h:132
 #, fuzzy
 msgid ""
 "Computes the wavelet transform on \"nbr_plan\" plans using linear (type=1) "
@@ -6984,7 +7011,7 @@ msgstr ""
 "Het resultaat word in een bestand opgeslaan met een structuur bevattende de "
 "vlakken, klaar voor de gewogen reconstructie met WRECONS"
 
-#: src/core/command_def.h:132
+#: src/core/command_def.h:133
 msgid ""
 "Reconstructs to current image from the planes previously computed with "
 "wavelets and weighted with coefficients \"c1\", \"c2\", ..., \"cn\" "

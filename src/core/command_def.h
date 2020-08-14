@@ -75,7 +75,7 @@
 #define STR_REGISTER N_("Performs geometric transforms on images of the sequence given in argument so that they may be superimposed on the reference image. The output sequence name starts with the prefix \"r_\" unless otherwise specified with \"-prefix=\" option. Using stars for registration, this algorithm only works with deepsky images. The registration is done on the green layer for RGB images. The option \"-drizzle\" activates the sub-pixel stacking, either by up-scaling by 2 the images created in the rotated sequence or by setting a flag that will proceed to the up-scaling during stacking if \"-norot\" is passed")
 #define STR_RESAMPLE N_("Resamples image with a factor \"factor\"")
 #define STR_RELOADSCRIPTS N_("Rescans the scripts folders and updates scripts menu")
-#define STR_REQUIRES N_("This function returns an error if the version of Siril is older that the one passed in argument")
+#define STR_REQUIRES N_("This function returns an error if the version of Siril is older than the one passed in argument")
 #define STR_RGRADIENT N_("Creates two images, with a radial shift (\"dR\" in pixels) and a rotational shift (\"dalpha\" in degrees) with respect to the point (\"xc\", \"yc\"). Between these two images, the shifts have the same amplitude, but an opposite sign. The two images are then added to create the final image. This process is also called Larson Sekanina filter")
 #define STR_RL N_("Restores an image using the Richardson-Lucy method. \"Sigma\" is the size of the kernel to be applied, while \"corner_radius_boost\" is a value which is added to Gaussian sigma for the tiles in the corners of an image. \"Iterations\" is the number of iterations to be performed")
 #define STR_RMGREEN N_("Chromatic noise reduction filter. It removes green noise in the current image. This filter is based on PixInsight's SCNR Average Neutral algorithm and it is the same filter used by HLVG plugin in Photoshop. \"Type\"=1 stands for Average Neutral Protection, while \"type\"=2 stands for Maximum Neutral Protection")
@@ -84,7 +84,7 @@
 
 #define STR_SATU N_("Enhances the global saturation of the image. Try iteratively to obtain best results")
 #define STR_SAVE N_("Saves current image to \"filename\".fit. Fits headers MIPS-HI and MIPS-LO are added with values corresponding to the current viewing levels")
-#define STR_SAVEBMP N_("Saves current image under the form of a bitmap file with 8-bit per channel: \"filename\".bmp (BMP 24-bit).")
+#define STR_SAVEBMP N_("Saves current image under the form of a bitmap file with 8-bit per channel: \"filename\".bmp (BMP 24-bit)")
 #define STR_SAVEJPG N_("Saves current image into a JPG file: \"filename\".jpg. You have the possibility to adjust the quality of the compression. A value 100 for \"quality\" parameter offers best fidelity while a low value increases the compression ratio. If no value is specified, it holds a value of 100")
 #define STR_SAVEPNG N_("Saves current image into a PNG file: \"filename\".png")
 #define STR_SAVEPNM N_("Saves current image under the form of a Netpbm file format with 16-bit per channel. The extension of the output will be \"filename\".ppm for RGB image and \"filename\".pgm for gray-level image")
