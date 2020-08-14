@@ -431,6 +431,16 @@ static void *write_worker(void *a) {
 				task->image->rx, task->image->ry,
 				task->image->type == DATA_FLOAT ? 32 : 16);
 		task->image->fptr = fitseq->fptr;
+
+		if (com.pref.comp.fits_enabled) {
+			status = siril_fits_compress(task->image);
+			if (status) {
+				report_fits_error(status);
+				retval = FITSEQ_WRITE_ERROR;
+				break;
+			}
+		}
+
 		if (save_opened_fits(task->image)) // warning: will change HDU
 			retval = FITSEQ_WRITE_ERROR;
 		clearfits(task->image);

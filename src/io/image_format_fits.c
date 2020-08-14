@@ -1503,6 +1503,45 @@ int read_opened_fits_partial(sequence *seq, int layer, int index, void *buffer,
 	return 0;
 }
 
+int siril_fits_compress(fits *f) {
+	int status = 0;
+	int comp_type = -1;
+	siril_debug_print("Compressing FIT file with method %d and quantization %f\n",
+				com.pref.comp.fits_method,
+				com.pref.comp.fits_quantization);
+	comp_type = get_compression_type(com.pref.comp.fits_method);
+	siril_debug_print("cfitsio compression type %d\n",
+				comp_type);
+	if (comp_type < 0) {
+		siril_log_message(_("Unknown FITS compression method in internal conversion\n"));
+		return 1;
+	}
+	if (fits_set_compression_type(f->fptr, comp_type, &status)) {
+		report_fits_error(status);
+		return 1;
+	}
+	status = 0;
+
+	if (fits_set_quantize_level(f->fptr, com.pref.comp.fits_quantization, &status)) {
+		report_fits_error(status);
+		return 1;
+	}
+
+	status = 0;
+
+	/* Set the Hcompress scale factor if relevant */
+	if (comp_type == HCOMPRESS_1) {
+		if (fits_set_hcomp_scale(f->fptr, com.pref.comp.fits_hcompress_scale, &status)) {
+			report_fits_error(status);
+			return 1;
+		}
+		siril_debug_print("FITS HCompress scale factor %f\n",
+				com.pref.comp.fits_hcompress_scale);
+		status = 0;
+	}
+	return status;
+}
+
 /* creates, saves and closes the file associated to f, overwriting previous  */
 int savefits(const char *name, fits *f) {
 	int status;
@@ -1531,39 +1570,10 @@ int savefits(const char *name, fits *f) {
 	}
 
 	if (com.pref.comp.fits_enabled) {
-		int comp_type = -1;
-		siril_debug_print("Compressing FIT file with method %d and quantization %f\n",
-					com.pref.comp.fits_method,
-					com.pref.comp.fits_quantization);
-		comp_type = get_compression_type(com.pref.comp.fits_method);
-		siril_debug_print("cfitsio compression type %d\n",
-					comp_type);
-		if (comp_type < 0) {
-			siril_log_message(_("Unknown FITS compression method in internal conversion\n"));
-			return 1;
-		}
-		if (fits_set_compression_type(f->fptr, comp_type, &status)) {
+		status = siril_fits_compress(f);
+		if (status) {
 			report_fits_error(status);
 			return 1;
-		}
-		status = 0;
-
-		if (fits_set_quantize_level(f->fptr, com.pref.comp.fits_quantization, &status)) {
-			report_fits_error(status);
-			return 1;
-		}
-
-		status = 0;
-
-		/* Set the Hcompress scale factor if relevant */
-		if (comp_type == HCOMPRESS_1) {
-			if (fits_set_hcomp_scale(f->fptr, com.pref.comp.fits_hcompress_scale, &status)) {
-				report_fits_error(status);
-				return 1;
-			}
-			siril_debug_print("FITS HCompress scale factor %f\n",
-					com.pref.comp.fits_hcompress_scale);
-			status = 0;
 		}
 	}
 
