@@ -18,7 +18,7 @@ int	process_clahe(int nb);
 int	process_clear(int nb);
 int	process_clearstar(int nb);
 int	process_close(int nb);
-int process_convert(int nb);
+int	process_convert(int nb);
 int	process_convertraw(int nb);
 int	process_cosme(int nb);
 
@@ -27,8 +27,8 @@ int	process_ddp(int nb);
 int	process_entropy(int nb);
 int	process_exit(int nb);
 int	process_extract(int nb);
-int process_extractHa(int nb);
-int process_extractHaOIII(int nb);
+int	process_extractHa(int nb);
+int	process_extractHaOIII(int nb);
 
 int	process_fdiv(int nb);
 int	process_fft(int nb);
@@ -37,6 +37,7 @@ int	process_fill2(int nb);
 int	process_findcosme(int nb);
 int	process_findhot(int nb);
 int	process_findstar(int nb);
+int	process_fix_xtrans(int nb);
 int	process_fixbanding(int nb);
 int	process_fmedian(int nb);
 int	process_fmul(int nb);
@@ -49,8 +50,8 @@ int	process_histo(int nb);
 
 int	process_imoper(int nb);
 
-int process_link(int nb);
-int process_linear_match(int nb);
+int	process_link(int nb);
+int	process_linear_match(int nb);
 int	process_load(int nb);
 int	process_log(int nb);
 #ifndef _WIN32
@@ -59,9 +60,9 @@ int	process_ls(int nb);
 
 int	process_mirrorx(int nb);
 int	process_mirrory(int nb);
-int process_mtf(int nb);
+int	process_mtf(int nb);
 
-int process_neg(int nb);
+int	process_neg(int nb);
 int	process_new(int nb);
 int	process_nozero(int nb);
 
@@ -72,8 +73,8 @@ int	process_psf(int nb);
 
 int	process_register(int nb);
 int	process_resample(int nb);
-int process_reloadscripts(int nb);
-int process_requires(int nb);
+int	process_reloadscripts(int nb);
+int	process_requires(int nb);
 int	process_rgradient(int nb);
 int	process_rl(int nb);
 int	process_rotate(int nb);
@@ -95,23 +96,23 @@ int	process_savetif(int nb);
 int	process_scnr(int nb);
 int	process_select(int nb);
 int	process_set_32bits(int nb);
-int process_set_compress(int nb);
+int	process_set_compress(int nb);
 #ifdef _OPENMP
 int	process_set_cpu(int nb);
 #endif
 int	process_set_ext(int nb);
-int process_seq_extractHa(int nb);
-int process_seq_extractHaOIII(int nb);
+int	process_seq_extractHa(int nb);
+int	process_seq_extractHaOIII(int nb);
 int	process_set_findstar(int nb);
 int	process_set_mag(int nb);
 int	process_set_mag_seq(int nb);
 int	process_set_mem(int nb);
-int process_set_ref(int nb);
+int	process_set_ref(int nb);
 int	process_seq_crop(int nb);
-int process_seq_mtf(int nb);
+int	process_seq_mtf(int nb);
 int	process_seq_psf(int nb);
 int	process_seq_split_cfa(int nb);
-int process_subsky(int nb);
+int	process_subsky(int nb);
 int	process_split(int nb);
 int	process_split_cfa(int nb);
 int	process_stat(int nb);

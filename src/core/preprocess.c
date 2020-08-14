@@ -119,9 +119,9 @@ static float goldenSectionSearch(fits *raw, fits *dark, float a, float b,
 	return ((b + a) * 0.5f);
 }
 
-
 static int preprocess(fits *raw, struct preprocessing_data *args) {
 	int ret = 0;
+
 	if (args->use_bias) {
 		ret = imoper(raw, args->bias, OPER_SUB, args->allow_32bit_output);
 	}

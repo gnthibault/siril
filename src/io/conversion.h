@@ -4,6 +4,9 @@
 #include <glib.h>
 #include "core/siril.h" // for image_type
 
+#define XTRANS_1 4
+#define XTRANS_2 5
+
 typedef struct {
 	char *extension;			// name of the extension of raw
 	char *manufacturer;			// name of the manufacturer

@@ -82,6 +82,7 @@
 #include "stacking/sum.h"
 #include "registration/registration.h"
 #include "registration/matching/match.h"
+#include "algos/fix_xtrans_af.h"
 
 #include "command.h"
 #include "command_def.h"
@@ -1539,6 +1540,15 @@ int process_findhot(int nb){
 	free(dev);
 	fclose(cosme_file);
 
+	return 0;
+}
+
+int process_fix_xtrans(int nb) {
+	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
+
+	fix_xtrans_ac(&gfit);
+	adjust_cutoff_from_updated_gfit();
+	redraw(com.cvport, REMAP_ALL);
 	return 0;
 }
 

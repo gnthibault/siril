@@ -41,6 +41,7 @@
 #define STR_FMEDIAN N_("Performs a median filter of size \"ksize\" x \"ksize\" (\"ksize\" MUST be odd) to the original image with a modulation parameter \"modulation\". The output pixel is computed as : out=mod x m + (1 − mod) x in, where m is the median-filtered pixel value. A modulation's value of 1 will apply no modulation")
 #define STR_FMUL N_("Multiplies the loaded image by the \"scalar\" given in argument")
 #define STR_FIXBANDING N_("Tries to remove the canon banding. Argument \"amount\" define the amount of correction. \"Sigma\" defines a protection level of the algorithm, higher sigma gives higher protection")
+#define STR_FIXXTRANS N_("Fixes the Fujifilm X-Trans Auto Focus pixels. Indeed, because of the phase detection auto focus system, the photosites used for auto focus get a little less light than the surrounding photosites. The camera compensates for this and increases the values from these specific photosites giving a visible square in the middle of the dark/bias frames.")
 
 #define STR_GAUSS N_("Performs a Gaussian filter with the given \"sigma\"")
 #define STR_GREY_FLAT N_("The function equalizes the mean intensity of RGB layers in a CFA images")
