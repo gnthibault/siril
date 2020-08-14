@@ -73,6 +73,7 @@ int	process_psf(int nb);
 int	process_register(int nb);
 int	process_resample(int nb);
 int process_reloadscripts(int nb);
+int process_requires(int nb);
 int	process_rgradient(int nb);
 int	process_rl(int nb);
 int	process_rotate(int nb);

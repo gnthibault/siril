@@ -27,7 +27,7 @@
 
 project('siril',
   ['c','cpp'],
-  version : '0.99.3',
+  version : '0.99.4',
   license : ['GPL3'],
   meson_version: '>=0.51.0',
   default_options : [
