@@ -655,7 +655,7 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 	/* 1% of cold pixels seems to be a reasonable limit */
 	if (rate > 0.01) {
 		str[0] = g_markup_printf_escaped(_("<span foreground=\"red\">Cold: %ld px</span>"), icold);
-		gtk_widget_set_tooltip_text(widget[0], _("This value may be to high. Please, consider to change sigma value or uncheck the box."));
+		gtk_widget_set_tooltip_text(widget[0], _("This value may be too high. Please, consider to change sigma value or uncheck the box."));
 	}
 	else {
 		str[0] = g_markup_printf_escaped(_("Cold: %ld px"), icold);
@@ -667,7 +667,7 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 	/* 1% of hot pixels seems to be a reasonable limit */
 	if (rate > 0.01) {
 		str[1] = g_markup_printf_escaped(_("<span foreground=\"red\">Hot: %ld px</span>"), ihot);
-		gtk_widget_set_tooltip_text(widget[1], _("This value may be to high. Please, consider to change sigma value or uncheck the box."));
+		gtk_widget_set_tooltip_text(widget[1], _("This value may be too high. Please, consider to change sigma value or uncheck the box."));
 	}
 	else {
 		str[1] = g_markup_printf_escaped(_("Hot: %ld px"), ihot);
