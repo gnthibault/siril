@@ -1291,6 +1291,126 @@ enter a visible wavelength in nm</property>
       </object>
     </child>
     <child>
+      <object class="GtkMenuItem" id="menu_gray_selection">
+        <property name="visible">True</property>
+        <property name="can_focus">False</property>
+        <property name="label" translatable="yes">Selection</property>
+        <property name="use_underline">True</property>
+        <child type="submenu">
+          <object class="GtkMenu" id="menu5">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <child>
+              <object class="GtkRadioMenuItem" id="menuitem_selection_free">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Free ratio</property>
+                <property name="tooltip_text" translatable="yes">Free ratio</property>
+                <property name="use_underline">True</property>
+                <property name="draw_as_radio">True</property>
+                <property name="active">True</property>
+                <signal name="toggled" handler="on_menuitem_selection_free_toggled" swapped="no"/>
+              </object>
+            </child>
+            <child>
+              <object class="GtkRadioMenuItem" id="menuitem_selection_preserve">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Preserve ratio</property>
+                <property name="tooltip_text" translatable="yes">Preserve the original ratio of the image</property>
+                <property name="use_underline">True</property>
+                <property name="draw_as_radio">True</property>
+                <property name="group">menuitem_selection_free</property>
+                <signal name="toggled" handler="on_menuitem_selection_preserve_toggled" swapped="no"/>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSeparatorMenuItem" id="menu_gray_separator_selection_1">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkRadioMenuItem" id="menuitem_selection_16_9">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label">16/9</property>
+                <property name="tooltip_text" translatable="yes">Landscape 16/9th ratio</property>
+                <property name="use_underline">True</property>
+                <property name="draw_as_radio">True</property>
+                <property name="group">menuitem_selection_free</property>
+                <signal name="toggled" handler="on_menuitem_selection_16_9_toggled" swapped="no"/>
+              </object>
+            </child>
+            <child>
+              <object class="GtkRadioMenuItem" id="menuitem_selection_4_3">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label">4/3</property>
+                <property name="tooltip_text" translatable="yes">Landscape 4/3th ratio</property>
+                <property name="use_underline">True</property>
+                <property name="draw_as_radio">True</property>
+                <property name="group">menuitem_selection_free</property>
+                <signal name="toggled" handler="on_menuitem_selection_4_3_toggled" swapped="no"/>
+              </object>
+            </child>
+            <child>
+              <object class="GtkRadioMenuItem" id="menuitem_selection_1_1">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label">1/1</property>
+                <property name="tooltip_text" translatable="yes">Squared ratio</property>
+                <property name="use_underline">True</property>
+                <property name="draw_as_radio">True</property>
+                <property name="group">menuitem_selection_free</property>
+                <signal name="toggled" handler="on_menuitem_selection_1_1_toggled" swapped="no"/>
+              </object>
+            </child>
+            <child>
+              <object class="GtkRadioMenuItem" id="menuitem_selection_3_4">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label">3/4</property>
+                <property name="tooltip_text" translatable="yes">Portrait 3/4th ratio</property>
+                <property name="use_underline">True</property>
+                <property name="draw_as_radio">True</property>
+                <property name="group">menuitem_selection_free</property>
+                <signal name="toggled" handler="on_menuitem_selection_3_4_toggled" swapped="no"/>
+              </object>
+            </child>
+            <child>
+              <object class="GtkRadioMenuItem" id="menuitem_selection_9_16">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label">9/16</property>
+                <property name="tooltip_text" translatable="yes">Portrait 9/16th ratio</property>
+                <property name="use_underline">True</property>
+                <property name="draw_as_radio">True</property>
+                <property name="group">menuitem_selection_free</property>
+                <signal name="toggled" handler="on_menuitem_selection_9_16_toggled" swapped="no"/>
+              </object>
+            </child>
+            <child>
+              <object class="GtkSeparatorMenuItem" id="menu_gray_separator_selection_2">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkMenuItem" id="menuitem_selection_all">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Select All</property>
+                <property name="tooltip_text" translatable="yes">Select the whole image and reset ratio</property>
+                <property name="use_underline">True</property>
+                <signal name="activate" handler="on_menuitem_selection_all_activate" swapped="no"/>
+              </object>
+            </child>
+          </object>
+        </child>
+      </object>
+    </child>
+    <child>
       <object class="GtkMenuItem" id="menu_gray_crop">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
