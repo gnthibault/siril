@@ -505,6 +505,13 @@ void on_miscAskScript_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 	writeinitfile();
 }
 
+void on_miscCopyright_changed(GtkEditable *editable, gpointer user_data) {
+	g_free(com.pref.copyright);
+	com.pref.copyright = NULL;
+	const gchar *value = gtk_entry_get_text(GTK_ENTRY(editable));
+	com.pref.copyright = g_strdup(value);
+}
+
 void on_play_introduction_clicked(GtkButton *button, gpointer user_data) {
 	siril_close_dialog("settings_window");
 	start_intro_script();

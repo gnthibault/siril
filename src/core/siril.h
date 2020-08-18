@@ -586,6 +586,7 @@ struct pref_struct {
 
 	gboolean force_to_16bit;
 
+	gchar *copyright;		// User copyright when saving image as TIFF
 };
 
 /* The global data structure of siril, the only with gfit and the gtk builder,

@@ -138,7 +138,7 @@ static image_type get_filetype(const gchar *filter) {
 	return type;
 }
 
-static void set_programm_name_in_TIFF() {
+static void set_copyright_in_TIFF() {
 	static GtkTextView *TIFF_txt = NULL;
 	GtkTextBuffer *tbuf;
 	GtkTextIter itStart, itEnd;
@@ -149,8 +149,12 @@ static void set_programm_name_in_TIFF() {
 
 	tbuf = gtk_text_view_get_buffer(TIFF_txt);
 
-	copyright = g_strdup_printf("%s v%s", PACKAGE, VERSION);
-	copyright[0] = toupper(copyright[0]);			// convert siril to Siril
+	if (com.pref.copyright && (com.pref.copyright[0] != '\0')) {
+		copyright = g_strdup(com.pref.copyright);
+	} else {
+		copyright = g_strdup_printf("%s v%s", PACKAGE, VERSION);
+		copyright[0] = toupper(copyright[0]);			// convert siril to Siril
+	}
 
 	gtk_text_buffer_get_bounds(tbuf, &itStart, &itEnd);
 	gtk_text_buffer_delete(tbuf, &itStart, &itEnd);
@@ -229,7 +233,7 @@ static void prepare_savepopup() {
 		break;
 	case TYPETIFF:
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving TIFF"));
-		set_programm_name_in_TIFF();
+		set_copyright_in_TIFF();
 		set_description_in_TIFF();
 		tab = PAGE_TIFF;
 		break;
@@ -541,7 +545,7 @@ void on_menu_rgb_savetiff_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		gtk_window_set_title(GTK_WINDOW(savepopup), _("Saving TIFF"));
 		set_entry_filename();
 		type_of_image = TYPETIFF;
-		set_programm_name_in_TIFF(); //Write "Siril Version X.Y in Copyright_Txt
+		set_copyright_in_TIFF(); //Write "Siril Version X.Y" (or user defined) in Copyright_txt
 		set_description_in_TIFF();
 		gtk_notebook_set_current_page(notebookFormat, PAGE_TIFF);
 		gtk_widget_set_visible(savetxt, TRUE);

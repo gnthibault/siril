@@ -173,7 +173,7 @@ static int readinitfile() {
 	config_setting_t *misc_setting = config_lookup(&config, keywords[MISC]);
 	if (misc_setting) {
 		int type;
-		const char *swap_dir = NULL, *extension = NULL, *lang = NULL;
+		const char *swap_dir = NULL, *extension = NULL, *lang = NULL, *copyright = NULL;
 
 		config_setting_lookup_bool(misc_setting, "first_use_1_0_0", &com.pref.first_use);
 		config_setting_lookup_bool(misc_setting, "confirm_quit", &com.pref.save.quit);
@@ -191,7 +191,8 @@ static int readinitfile() {
 		com.pref.ext = g_strdup(extension);
 		config_setting_lookup_int(misc_setting, "FITS_type", &type);
 		com.pref.force_to_16bit = (type == 0);
-
+		config_setting_lookup_string(misc_setting, "copyright", &copyright);
+		com.pref.copyright = g_strdup(copyright);
 
 		misc_setting = config_lookup(&config, "misc-settings.scripts_paths");
 		if (misc_setting != NULL) {
@@ -426,6 +427,9 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 
 	misc_setting = config_setting_add(misc_group, "FITS_type", CONFIG_TYPE_INT);
 	config_setting_set_int(misc_setting, com.pref.force_to_16bit ? 0 : 1);
+
+	misc_setting = config_setting_add(misc_group, "copyright", CONFIG_TYPE_STRING);
+	config_setting_set_string(misc_setting, com.pref.copyright);
 
 	misc_setting = config_setting_add(misc_group, "confirm_quit", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.pref.save.quit);
