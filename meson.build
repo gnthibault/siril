@@ -230,6 +230,13 @@ libjpeg_dep = dependency('libjpeg', required : false)
 libpng_dep = dependency('libpng', required : false)
 libheif_dep = dependency('libheif', required : false)
 ffms2_dep = dependency('ffms2', required : false)
+ffmpeg = [
+  dependency('libavformat', required : false),
+  dependency('libavcodec', required : false),
+  dependency('libavutil', version : '>= 55.20', required : false),
+  dependency('libswscale', required : false),
+  dependency('libswresample', required : false)
+]
 libcurl_dep = dependency('libcurl', required : false)
 criterion_dep = dependency('criterion', required : false)
 
@@ -315,6 +322,18 @@ else
   warning('libheif not found. Not using HEIF importer.')
 endif
 
+ffmpeg_found = false
+foreach dep : ffmpeg
+  if not dep.found()
+    ffmpeg_found = false
+    warning('An FFmpeg library (' + dep.name() + ') not found or too old. Not using film export formats.')
+    break
+  else
+    ffmpeg_found = true
+  endif
+endforeach
+conf_data.set('HAVE_FFMPEG', ffmpeg_found, description : 'Using FFMS.')
+
 if ffms2_dep.found()
   conf_data.set('HAVE_FFMS2', true, description : 'Using FFMS.')
 else 
@@ -361,7 +380,8 @@ externals_dep = declare_dependency(
     ffms2_dep,
     libcurl_dep,
     openmp_dep,
-    kplot_dep
+    kplot_dep,
+    ffmpeg
   ]
 )
 
