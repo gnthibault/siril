@@ -33,9 +33,10 @@ struct _update_data {
 	gchar *url;
 	long code;
 	gchar *content;
+	gboolean verbose;
 };
 
-void siril_check_updates();
+void siril_check_updates(gboolean verbose);
 
 #endif /* HAVE_LIBCURL */
 #endif /* SRC_CORE_SIRIL_UPDATE_H_ */

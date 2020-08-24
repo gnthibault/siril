@@ -1111,6 +1111,8 @@ void set_GUI_misc() {
 
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskQuit"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.save.quit);
+	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskUpdateStartup"));
+	gtk_toggle_button_set_active(ToggleButton, com.pref.check_update);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskScript"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.save.script);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("show_preview_button"));

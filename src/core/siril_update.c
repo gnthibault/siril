@@ -247,7 +247,7 @@ static gchar *get_changelog(gint x, gint y, gint z, gint p) {
 
 static gboolean end_update_idle(gpointer p) {
 	gint ret;
-	char *msg;
+	char *msg = NULL;
 	gchar *changelog = NULL;
 	gchar *data = NULL;
 	version_number current_version, last_version_available;
@@ -279,15 +279,20 @@ static gboolean end_update_idle(gpointer p) {
 					download_url, x, y, z, download_url, x, y, z);
 			changelog = get_changelog(x, y, z, patch);
 			data = parse_changelog(changelog);
+			/* force the verbose variable */
+			args->verbose = TRUE;
 		} else if (compare_version(current_version, last_version_available) > 0) {
-			msg = siril_log_message(_("No update check: this is a development version\n"));
+			if (args->verbose)
+				msg = siril_log_message(_("No update check: this is a development version\n"));
 		} else {
-			msg = siril_log_message(_("Siril is up to date\n"));
+			if (args->verbose)
+				msg = siril_log_message(_("Siril is up to date\n"));
 		}
 		ret = 0;
 	}
 	set_cursor_waiting(FALSE);
-	siril_data_dialog(type[ret], _("Software Update"), msg, data);
+	if (msg && args->verbose)
+		siril_data_dialog(type[ret], _("Software Update"), msg, data);
 
 	/* free data */
 	g_free(args->content);
@@ -384,13 +389,14 @@ static gpointer fetch_url(gpointer p) {
 	return NULL;
 }
 
-void siril_check_updates() {
+void siril_check_updates(gboolean verbose) {
 	struct _update_data *args;
 
 	args = malloc(sizeof(struct _update_data));
 	args->url = (gchar *)gitlab_tags;
 	args->code = 0L;
 	args->content = NULL;
+	args->verbose = verbose;
 
 	set_progress_bar_data(_("Looking for updates..."), PROGRESS_NONE);
 	set_cursor_waiting(TRUE);

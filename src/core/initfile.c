@@ -193,6 +193,7 @@ static int readinitfile() {
 		com.pref.force_to_16bit = (type == 0);
 		config_setting_lookup_string(misc_setting, "copyright", &copyright);
 		com.pref.copyright = g_strdup(copyright);
+		config_setting_lookup_bool(misc_setting, "check_update", &com.pref.check_update);
 
 		misc_setting = config_lookup(&config, "misc-settings.scripts_paths");
 		if (misc_setting != NULL) {
@@ -466,6 +467,8 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 	misc_setting = config_setting_add(misc_group, "is_maximized", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.pref.is_maximized);
 
+	misc_setting = config_setting_add(misc_group, "check_update", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(misc_setting, com.pref.check_update);
 }
 
 static int siril_config_write_file(config_t *config, const char *filename) {

@@ -96,7 +96,7 @@ void scripts_action_activate(GSimpleAction *action, GVariant *parameter,
 #ifdef HAVE_LIBCURL
 void updates_action_activate(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
-	siril_check_updates();
+	siril_check_updates(TRUE);
 }
 #endif
 

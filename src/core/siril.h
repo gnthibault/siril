@@ -568,6 +568,7 @@ struct pref_struct {
 	save_config save;
 	gboolean show_thumbnails; // show or don't show thumbnails in open dialog box
 	gint thumbnail_size;
+	gboolean check_update; // check update at startup
 
 	gint combo_theme;           // value of the combobox theme
 	gchar *combo_lang;           // string value of the combobox lang

@@ -505,6 +505,13 @@ void on_miscAskScript_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 	writeinitfile();
 }
 
+void on_miscAskUpdateStartup_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+
+	com.pref.check_update = gtk_toggle_button_get_active(togglebutton);
+	set_GUI_misc();
+	writeinitfile();
+}
+
 void on_miscCopyright_changed(GtkEditable *editable, gpointer user_data) {
 	g_free(com.pref.copyright);
 	com.pref.copyright = NULL;
