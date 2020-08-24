@@ -115,8 +115,8 @@ siril_cpp_flag = []
 siril_c_flag = []
 siril_link_arg = []
 
-siril_c_flag += ['-DHAVE_CONFIG_H']
-siril_cpp_flag += ['-DHAVE_CONFIG_H']
+siril_c_flag += ['-DHAVE_CONFIG_H', '-fcommon']
+siril_cpp_flag += ['-DHAVE_CONFIG_H', '-fcommon']
 
 if platform_linux
   siril_link_arg += '-rdynamic'
