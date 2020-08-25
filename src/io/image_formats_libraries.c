@@ -477,8 +477,8 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 
 		norm = fit->orig_bitpix != BYTE_IMG ? UCHAR_MAX_SINGLE / USHRT_MAX_SINGLE : 1.f;
 
-		for (int32 row = height - 1; row >= 0; row--) {
-			for (int32 col = 0; col < width; col++) {
+		for (uint32 row = height; row-- > 0;) {
+			for (uint32 col = 0; col < width; col++) {
 				for (uint16 n = 0; n < nsamples; n++) {
 					buf8[col * nsamples + n] =
 							(fit->type == DATA_USHORT) ?
@@ -505,8 +505,8 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 
 		norm = fit->orig_bitpix == BYTE_IMG ? USHRT_MAX_SINGLE / UCHAR_MAX_SINGLE : 1.f;
 
-		for (int32 row = height - 1; row >= 0; row--) {
-			for (int32 col = 0; col < width; col++) {
+		for (uint32 row = height; row-- > 0;) {
+			for (uint32 col = 0; col < width; col++) {
 				for (uint16 n = 0; n < nsamples; n++) {
 					buf16[col * nsamples + n] =
 							(fit->type == DATA_USHORT) ?
@@ -531,8 +531,8 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 			break;
 		}
 
-		for (int32 row = height - 1; row >= 0; row--) {
-			for (int32 col = 0; col < width; col++) {
+		for (uint32 row = height; row-- > 0;) {
+			for (uint32 col = 0; col < width; col++) {
 				for (uint16 n = 0; n < nsamples; n++) {
 					buf32[col * nsamples + n] =
 							(fit->type == DATA_USHORT) ?
