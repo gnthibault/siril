@@ -22,6 +22,7 @@ struct registration_args {
 	rectangle selection;		// the selection rectangle
 	gboolean x2upscale;		// apply an x2 upscale for pseudo drizzle
 	gboolean cumul;			// cumul reg data with previous one
+	int min_pairs;			// Minimum number of star pairs for success
 
 	/* data for generated sequence, for star alignment registration */
 	gboolean translation_only;	// don't rotate images => no new sequence

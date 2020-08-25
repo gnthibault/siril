@@ -98,7 +98,7 @@ static command commands[] = {
 	{"preprocess", 1, "preprocess sequencename [-bias=filename] [-dark=filename] [-flat=filename] [-cfa] [-debayer] [-flip] [-equalize_cfa] [-opt] [-prefix=]", process_preprocess, STR_PREPROCESS, TRUE},
 	{"psf", 0, "psf", process_psf, STR_PSF, FALSE},
 
-	{"register", 1, "register sequence [-norot] [-drizzle] [-prefix=]", process_register, STR_REGISTER, TRUE},
+	{"register", 1, "register sequence [-norot] [-drizzle] [-prefix=] [-minpairs=]", process_register, STR_REGISTER, TRUE},
 	{"resample", 1, "resample factor", process_resample, STR_RESAMPLE, TRUE},
 	{"reloadscripts", 0, "reloadscripts", process_reloadscripts, STR_RELOADSCRIPTS, FALSE},
 	{"requires", 1, "requires", process_requires, STR_REQUIRES, TRUE},

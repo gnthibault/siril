@@ -2883,9 +2883,10 @@ int process_register(int nb) {
 	reg_args->translation_only = FALSE;
 	reg_args->x2upscale = FALSE;
 	reg_args->prefix = "r_";
+	reg_args->min_pairs = AT_MATCH_MINPAIRS;
 
 	/* check for options */
-	for (i = 2; i < 5; i++) {
+	for (i = 2; i < 6; i++) {
 		if (word[i]) {
 			if (!strcmp(word[i], "-drizzle")) {
 				reg_args->x2upscale = TRUE;
@@ -2899,7 +2900,20 @@ int process_register(int nb) {
 					return 1;
 				}
 				reg_args->prefix = strdup(value);
+			} else if (g_str_has_prefix(word[i], "-minpairs=")) {
+				char *current = word[i], *value;
+				value = current + 10;
+				if (value[0] == '\0') {
+					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+					return 1;
 				}
+				if (atoi(value) < AT_MATCH_MINPAIRS) {
+					siril_log_message(_("%d smaller than minimum allowable star pairs: %d, aborting.\n"),
+						atoi(value), AT_MATCH_MINPAIRS);
+					return 1;
+				}
+				reg_args->min_pairs = atoi(value);
+			}
 		}
 	}
 
