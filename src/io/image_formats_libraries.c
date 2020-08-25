@@ -447,7 +447,6 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		TIFFSetField(tif, TIFFTAG_IMAGEDESCRIPTION, description);
 	if (copyright)
 		TIFFSetField(tif, TIFFTAG_COPYRIGHT, copyright);
-	TIFFSetField(tif, TIFFTAG_ORIENTATION, ORIENTATION_BOTLEFT);
 	TIFFSetField(tif, TIFFTAG_MINSAMPLEVALUE, fit->mini);
 	TIFFSetField(tif, TIFFTAG_MAXSAMPLEVALUE, fit->maxi);
 	TIFFSetField(tif, TIFFTAG_SOFTWARE, PACKAGE " v" VERSION);
@@ -478,8 +477,8 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 
 		norm = fit->orig_bitpix != BYTE_IMG ? UCHAR_MAX_SINGLE / USHRT_MAX_SINGLE : 1.f;
 
-		for (uint32 row = 0; row < height; row++) {
-			for (uint32 col = 0; col < width; col++) {
+		for (int32 row = height - 1; row >= 0; row--) {
+			for (int32 col = 0; col < width; col++) {
 				for (uint16 n = 0; n < nsamples; n++) {
 					buf8[col * nsamples + n] =
 							(fit->type == DATA_USHORT) ?
@@ -506,8 +505,8 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 
 		norm = fit->orig_bitpix == BYTE_IMG ? USHRT_MAX_SINGLE / UCHAR_MAX_SINGLE : 1.f;
 
-		for (uint32 row = 0; row < height; row++) {
-			for (uint32 col = 0; col < width; col++) {
+		for (int32 row = height - 1; row >= 0; row--) {
+			for (int32 col = 0; col < width; col++) {
 				for (uint16 n = 0; n < nsamples; n++) {
 					buf16[col * nsamples + n] =
 							(fit->type == DATA_USHORT) ?
@@ -532,8 +531,8 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 			break;
 		}
 
-		for (uint32 row = 0; row < height; row++) {
-			for (uint32 col = 0; col < width; col++) {
+		for (int32 row = height - 1; row >= 0; row--) {
+			for (int32 col = 0; col < width; col++) {
 				for (uint16 n = 0; n < nsamples; n++) {
 					buf32[col * nsamples + n] =
 							(fit->type == DATA_USHORT) ?
