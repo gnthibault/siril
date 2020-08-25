@@ -285,6 +285,12 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 			free_fitted_stars(stars);
 			return 1;
 		}
+		if (H.pair_matched < regargs->min_pairs) {
+			siril_log_color_message(_("Not enough star pairs (%d): Image %d skipped\n"),
+					"red", H.pair_matched, filenum);
+			free_fitted_stars(stars);
+			return 1;
+		}
 
 		FWHM_average(stars, nbpoints, &FWHMx, &FWHMy, &units);
 #ifdef _OPENMP

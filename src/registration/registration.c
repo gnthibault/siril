@@ -865,6 +865,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 			*cumul;
 	GtkComboBox *cbbt_layers;
 	GtkComboBoxText *ComboBoxRegInter;
+	GtkSpinButton *minpairs;
 
 	if (!reserve_thread()) {	// reentrant from here
 		PRINT_ANOTHER_THREAD_RUNNING;
@@ -903,6 +904,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	cbbt_layers = GTK_COMBO_BOX(lookup_widget("comboboxreglayer"));
 	ComboBoxRegInter = GTK_COMBO_BOX_TEXT(lookup_widget("ComboBoxRegInter"));
 	cumul = GTK_TOGGLE_BUTTON(lookup_widget("check_button_comet"));
+	minpairs = GTK_SPIN_BUTTON(lookup_widget("spinbut_minpairs"));
 
 	reg_args->func = method->method_ptr;
 	reg_args->seq = &com.seq;
@@ -914,6 +916,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	reg_args->x2upscale = gtk_toggle_button_get_active(x2upscale);
 	reg_args->cumul = gtk_toggle_button_get_active(cumul);
 	reg_args->prefix = gtk_entry_get_text(GTK_ENTRY(lookup_widget("regseqname_entry")));
+	reg_args->min_pairs = gtk_spin_button_get_value_as_int(minpairs);
 
 	/* We check that available disk space is enough when:
 	 * - activating the subpixel alignment, which requires generating a new
