@@ -60,8 +60,8 @@
 #ifdef HAVE_LIBTIFF
 
 static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data) {
-	uint32 rowsperstrip;
-	uint16 config;
+	uint32_t rowsperstrip;
+	uint16_t config;
 	int retval = nsamples;
 
 	TIFFGetField(tif, TIFFTAG_PLANARCONFIG, &config);
@@ -88,8 +88,8 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 		PRINT_ALLOC_ERR;
 		return OPEN_IMAGE_ERROR;
 	}
-	for (uint32 row = 0; row < height; row += rowsperstrip){
-		uint32 nrow = (row + rowsperstrip > height ? height - row : rowsperstrip);
+	for (uint32_t row = 0; row < height; row += rowsperstrip){
+		uint32_t nrow = (row + rowsperstrip > height ? height - row : rowsperstrip);
 		switch (config) {
 		case PLANARCONFIG_CONTIG:
 			if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, 0), buf, nrow * scanline) < 0) {
@@ -127,9 +127,9 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 	return retval;
 }
 
-static int readtifstrip32(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, float **data) {
-	uint32 rowsperstrip;
-	uint16 config;
+static int readtifstrip32(TIFF* tif, uint32_t width, uint32_t height, uint16_t nsamples, float **data) {
+	uint32_t rowsperstrip;
+	uint16_t config;
 	int retval = nsamples;
 
 	TIFFGetField(tif, TIFFTAG_PLANARCONFIG, &config);
@@ -156,8 +156,8 @@ static int readtifstrip32(TIFF* tif, uint32 width, uint32 height, uint16 nsample
 		PRINT_ALLOC_ERR;
 		return OPEN_IMAGE_ERROR;
 	}
-	for (uint32 row = 0; row < height; row += rowsperstrip) {
-		uint32 nrow = (row + rowsperstrip > height ? height - row : rowsperstrip);
+	for (uint32_t row = 0; row < height; row += rowsperstrip) {
+		uint32_t nrow = (row + rowsperstrip > height ? height - row : rowsperstrip);
 		switch (config) {
 		case PLANARCONFIG_CONTIG:
 			if (TIFFReadEncodedStrip(tif, TIFFComputeStrip(tif, row, 0), buf, nrow * scanline) < 0) {
@@ -196,7 +196,7 @@ static int readtifstrip32(TIFF* tif, uint32 width, uint32 height, uint16 nsample
 	return retval;
 }
 
-static int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data) {
+static int readtif8bits(TIFF* tif, uint32_t width, uint32_t height, uint16_t nsamples, WORD **data) {
 	int retval = nsamples;
 
 	size_t npixels = width * height;
@@ -215,7 +215,7 @@ static int readtif8bits(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 	}
 
 	/* get the data */
-	uint32 *raster = (uint32*) _TIFFmalloc(npixels * sizeof(uint32));
+	uint32_t *raster = (uint32_t*) _TIFFmalloc(npixels * sizeof(uint32_t));
 	if (raster != NULL) {
 		if (TIFFReadRGBAImage(tif, width, height, raster, 0)) {
 			for (int j = 0; j < height; j++) {
@@ -269,8 +269,8 @@ static TIFF* Siril_TIFFOpen(const char *name, const char *mode) {
  */
 int readtif(const char *name, fits *fit, gboolean force_float) {
 	int retval = 0;
-	uint32 height, width;
-	uint16 nbits, nsamples, color;
+	uint32_t height, width;
+	uint16_t nbits, nsamples, color;
 	WORD *data = NULL;
 	float *fdata = NULL;
 	
@@ -411,7 +411,7 @@ static void get_tif_data_from_ui(gchar **description, gchar **copyright) {
 
 /*** This function save the current image into a uncompressed 8- or 16-bit file *************/
 
-int savetif(const char *name, fits *fit, uint16 bitspersample){
+int savetif(const char *name, fits *fit, uint16_t bitspersample){
 	int retval = 0;
 	float norm;
 	gchar *description = NULL, *copyright = NULL;
@@ -426,9 +426,9 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 		free(filename);
 		return 1;
 	}
-	const uint16 nsamples = (uint16) fit->naxes[2];
-	const uint32 width = (uint32) fit->rx;
-	const uint32 height = (uint32) fit->ry;
+	const uint16_t nsamples = (uint16_t) fit->naxes[2];
+	const uint32_t width = (uint32_t) fit->rx;
+	const uint32_t height = (uint32_t) fit->ry;
 	
 	get_tif_data_from_ui(&description, &copyright);
 
@@ -477,9 +477,9 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 
 		norm = fit->orig_bitpix != BYTE_IMG ? UCHAR_MAX_SINGLE / USHRT_MAX_SINGLE : 1.f;
 
-		for (uint32 row = height; row-- > 0;) {
-			for (uint32 col = 0; col < width; col++) {
-				for (uint16 n = 0; n < nsamples; n++) {
+		for (uint32_t row = height; row-- > 0;) {
+			for (uint32_t col = 0; col < width; col++) {
+				for (uint16_t n = 0; n < nsamples; n++) {
 					buf8[col * nsamples + n] =
 							(fit->type == DATA_USHORT) ?
 									*gbuf[n]++ * norm :
@@ -505,9 +505,9 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 
 		norm = fit->orig_bitpix == BYTE_IMG ? USHRT_MAX_SINGLE / UCHAR_MAX_SINGLE : 1.f;
 
-		for (uint32 row = height; row-- > 0;) {
-			for (uint32 col = 0; col < width; col++) {
-				for (uint16 n = 0; n < nsamples; n++) {
+		for (uint32_t row = height; row-- > 0;) {
+			for (uint32_t col = 0; col < width; col++) {
+				for (uint16_t n = 0; n < nsamples; n++) {
 					buf16[col * nsamples + n] =
 							(fit->type == DATA_USHORT) ?
 									*gbuf[n]++ * norm :
@@ -531,9 +531,9 @@ int savetif(const char *name, fits *fit, uint16 bitspersample){
 			break;
 		}
 
-		for (uint32 row = height; row-- > 0;) {
-			for (uint32 col = 0; col < width; col++) {
-				for (uint16 n = 0; n < nsamples; n++) {
+		for (uint32_t row = height; row-- > 0;) {
+			for (uint32_t col = 0; col < width; col++) {
+				for (uint16_t n = 0; n < nsamples; n++) {
 					buf32[col * nsamples + n] =
 							(fit->type == DATA_USHORT) ?
 									(fit->orig_bitpix == BYTE_IMG ? *gbuf[n]++ / UCHAR_MAX_SINGLE :
