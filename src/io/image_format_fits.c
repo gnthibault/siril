@@ -542,6 +542,8 @@ static void convert_data_float(int bitpix, const void *from, float *to, size_t n
 	int16_t *data16;
 	double *pixels_double;
 	long *sdata32;	// TO BE TESTED on 32-bit arch, seems to be a cfitsio bug
+	long mini = LONG_MAX;
+	long maxi = -LONG_MAX;
 	unsigned long *data32;
 	float *data32f;
 
@@ -567,13 +569,21 @@ static void convert_data_float(int bitpix, const void *from, float *to, size_t n
 			break;
 		case ULONG_IMG:		// 32-bit unsigned integer pixels
 			data32 = (unsigned long *)from;
+			for (i = 0; i < nbdata; i++) {
+				mini = min(data32[i], mini);
+				maxi = max(data32[i], maxi);
+			}
 			for (i = 0; i < nbdata; i++)
-				to[i] = (float)data32[i] / 4294967295;
+				to[i] = (float)((data32[i] - mini)) / (maxi - mini);
 			break;
 		case LONG_IMG:		// 32-bit signed integer pixels
 			sdata32 = (long *)from;
+			for (i = 0; i < nbdata; i++) {
+				mini = min(sdata32[i], mini);
+				maxi = max(sdata32[i], maxi);
+			}
 			for (i = 0; i < nbdata; i++)
-				to[i] = (float)((sdata32[i] + 2147483647)) / 4294967295; // 2147483647 is bzero
+				to[i] = (float)((sdata32[i] - mini)) / (maxi - mini);
 			break;
 		case FLOAT_IMG:		// 32-bit floating point pixels, we use it only if float is not in the [0, 1] range
 			data32f = (float *)from;
@@ -2240,34 +2250,6 @@ void fit_debayer_buffer(fits *fit, void *newbuf) {
 		fit->fpdata[RLAYER] = fit->fdata;
 		fit->fpdata[GLAYER] = fit->fdata + nbdata;
 		fit->fpdata[BLAYER] = fit->fdata + nbdata * 2;
-	}
-}
-
-/* In-place conversion to one channel.
- * See copyfits with CP_EXTRACT for the same in a new fits */
-void keep_first_channel_from_fits(fits *fit) {
-	if (fit->naxis == 1)
-		return;
-	fit->naxis = 2;
-	fit->naxes[2] = 1;
-	size_t nbdata = fit->naxes[0] * fit->naxes[1];
-	if (fit->type == DATA_USHORT) {
-		fit->data = realloc(fit->data, nbdata * sizeof(WORD));
-		fit->pdata[RLAYER] = fit->data;
-		fit->pdata[GLAYER] = fit->data;
-		fit->pdata[BLAYER] = fit->data;
-	}
-	else if (fit->type == DATA_FLOAT) {
-		fit->fdata = realloc(fit->fdata, nbdata * sizeof(float));
-		fit->fpdata[RLAYER] = fit->fdata;
-		fit->fpdata[GLAYER] = fit->fdata;
-		fit->fpdata[BLAYER] = fit->fdata;
-	}
-	if (fit->maxi > 0.0) {
-		if (fit->maxi != fit_get_max(fit, RLAYER))
-			fit->maxi = 0.0;
-		if (fit->mini != fit_get_min(fit, RLAYER))
-			fit->mini = 0.0;
 	}
 }
 
