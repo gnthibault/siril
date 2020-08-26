@@ -67,7 +67,12 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 	TIFFGetField(tif, TIFFTAG_PLANARCONFIG, &config);
 	TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
 
+	printf("rowsperstrip=%ld\n", rowsperstrip);
+
+	/* hack to fix #526 */
 	if (rowsperstrip == 0) rowsperstrip = height;
+
+	printf("rowsperstrip=%ld\n", rowsperstrip);
 
 	size_t npixels = width * height;
 	*data = malloc(npixels * sizeof(WORD) * nsamples);
