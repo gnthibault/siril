@@ -32,6 +32,7 @@
 #include "gui/message_dialog.h"
 #include "gui/dialogs.h"
 #include "io/sequence.h"
+#include "io/fits_sequence.h"
 #include "io/image_format_fits.h"
 #include "io/conversion.h"
 #include "algos/demosaicing.h"
@@ -1400,13 +1401,15 @@ int extractHaOIII_float(fits *in, fits *Ha, fits *OIII, sensor_pattern pattern) 
 	return 0;
 }
 
+struct _double_split {
+	int index;
+	fits *ha;
+	fits *oiii;
+};
+
 int extractHaOIII_image_hook(struct generic_seq_args *args, int o, int i, fits *fit, rectangle *_) {
 	int ret = 1;
 	struct split_cfa_data *cfa_args = (struct split_cfa_data *) args->user;
-
-	fits f_Ha = { 0 }, f_OIII = { 0 };
-	gchar *Ha = g_strdup_printf("Ha_%s%05d%s", cfa_args->seq->seqname, o, com.pref.ext);
-	gchar *OIII = g_strdup_printf("OIII_%s%05d%s", cfa_args->seq->seqname, o, com.pref.ext);
 
 	/* Get Bayer informations from header if available */
 	sensor_pattern tmp_pattern = com.pref.debayer.bayer_pattern;
@@ -1438,21 +1441,144 @@ int extractHaOIII_image_hook(struct generic_seq_args *args, int o, int i, fits *
 
 	retrieve_Bayer_pattern(fit, &tmp_pattern);
 
+	/* Demosaic and store images for write */
+	struct _double_split *double_data = malloc(sizeof(struct _double_split));
+	double_data->ha = calloc(1, sizeof(fits));
+	double_data->oiii = calloc(1, sizeof(fits));
+	double_data->index = o;
+
 	if (fit->type == DATA_USHORT) {
-		if (!(ret = extractHaOIII_ushort(fit, &f_Ha, &f_OIII, tmp_pattern))) {
-			ret = save1fits16(Ha, &f_Ha, 0) || save1fits16(OIII, &f_OIII, 0);
-		}
+		ret = extractHaOIII_ushort(fit, double_data->ha, double_data->oiii, tmp_pattern);
 	}
 	else if (fit->type == DATA_FLOAT) {
-		if (!(ret = extractHaOIII_float(fit, &f_Ha, &f_OIII, tmp_pattern))) {
-			ret = save1fits16(Ha, &f_Ha, 0) || save1fits16(OIII, &f_OIII, 0);
-		}
+		ret = extractHaOIII_float(fit, double_data->ha, double_data->oiii, tmp_pattern);
 	}
-	g_free(Ha);
-	g_free(OIII);
-	clearfits(&f_Ha);
-	clearfits(&f_OIII);
+
+	if (ret) {
+		clearfits(double_data->ha);
+		clearfits(double_data->oiii);
+		free(double_data);
+	} else {
+#ifdef _OPENMP
+		omp_set_lock(&args->lock);
+#endif
+		cfa_args->processed_images = g_list_append(cfa_args->processed_images, double_data);
+#ifdef _OPENMP
+		omp_unset_lock(&args->lock);
+#endif
+		siril_debug_print("Ha-OIII: processed images added to the save list (%d)\n", o);
+	}
 	return ret;
+}
+
+static int dual_prepare(struct generic_seq_args *args) {
+	struct split_cfa_data *cfa_args = (struct split_cfa_data *) args->user;
+	// we call the generic prepare twice with different prefixes
+	args->new_seq_prefix = "Ha_";
+	if (seq_prepare_hook(args))
+		return 1;
+	// but we copy the result between each call
+	cfa_args->new_ser_ha = args->new_ser;
+	cfa_args->new_fitseq_ha = args->new_fitseq;
+
+	args->new_seq_prefix = "OIII_";
+	if (seq_prepare_hook(args))
+		return 1;
+	cfa_args->new_ser_oiii = args->new_ser;
+	cfa_args->new_fitseq_oiii = args->new_fitseq;
+
+	args->new_seq_prefix = NULL;
+	args->new_ser = NULL;
+	args->new_fitseq = NULL;
+
+	fitseq_set_number_of_outputs(2);
+	return 0;
+}
+
+static int dual_finalize(struct generic_seq_args *args) {
+	struct split_cfa_data *cfa_args = (struct split_cfa_data *) args->user;
+	args->new_ser = cfa_args->new_ser_ha;
+	args->new_fitseq = cfa_args->new_fitseq_ha;
+	int retval = seq_finalize_hook(args);
+	cfa_args->new_ser_ha = NULL;
+	cfa_args->new_fitseq_ha = NULL;
+
+	args->new_ser = cfa_args->new_ser_oiii;
+	args->new_fitseq = cfa_args->new_fitseq_oiii;
+	retval = seq_finalize_hook(args) || retval;
+	cfa_args->new_ser_oiii = NULL;
+	cfa_args->new_fitseq_oiii = NULL;
+	fitseq_set_number_of_outputs(1);
+	return retval;
+}
+
+static int dual_save(struct generic_seq_args *args, int out_index, int in_index, fits *fit) {
+	struct split_cfa_data *cfa_args = (struct split_cfa_data *) args->user;
+	struct _double_split *double_data = NULL;
+	// images are passed from the image_hook to the save in a list, because
+	// there are two, which is unsupported by the generic arguments
+#ifdef _OPENMP
+	omp_set_lock(&args->lock);
+#endif
+	GList *list = cfa_args->processed_images;
+	while (list) {
+		if (((struct _double_split *)list->data)->index == out_index) {
+			double_data = list->data;
+			break;
+		}
+		list = g_list_next(cfa_args->processed_images);
+	}
+	if (double_data)
+		cfa_args->processed_images = g_list_remove(cfa_args->processed_images, double_data);
+#ifdef _OPENMP
+	omp_unset_lock(&args->lock);
+#endif
+	if (!double_data) {
+		siril_log_color_message(_("Image %d not found for writing\n"), "red", in_index);
+		return 1;
+	}
+
+	siril_debug_print("Ha-OIII: images to be saved (%d)\n", out_index);
+	if (double_data->ha->naxes[0] == 0 || double_data->oiii->naxes[0] == 0) {
+		siril_debug_print("empty data\n");
+		return 1;
+	}
+
+	int retval1, retval2;
+	if (args->force_ser_output || args->seq->type == SEQ_SER) {
+		retval1 = ser_write_frame_from_fit(cfa_args->new_ser_ha, double_data->ha, out_index);
+		retval2 = ser_write_frame_from_fit(cfa_args->new_ser_oiii, double_data->oiii, out_index);
+		clearfits(double_data->ha);
+		clearfits(double_data->oiii);
+	} else if (args->force_fitseq_output || args->seq->type == SEQ_FITSEQ) {
+		retval1 = fitseq_write_image(cfa_args->new_fitseq_ha, double_data->ha, out_index);
+		retval2 = fitseq_write_image(cfa_args->new_fitseq_oiii, double_data->oiii, out_index);
+		// the two fits are freed by the writing thread
+		if (!retval1 && !retval2) {
+			/* special case because it's not done in the generic */
+			clearfits(fit);
+			free(fit);
+		}
+	} else {
+		char *dest = fit_sequence_get_image_filename_prefixed(args->seq, "Ha_", in_index);
+		if (fit->type == DATA_USHORT) {
+			retval1 = save1fits16(dest, double_data->ha, RLAYER);
+		} else {
+			retval1 = save1fits32(dest, double_data->ha, RLAYER);
+		}
+		free(dest);
+		dest = fit_sequence_get_image_filename_prefixed(args->seq, "OIII_", in_index);
+		if (fit->type == DATA_USHORT) {
+			retval2 = save1fits16(dest, double_data->oiii, RLAYER);
+		} else {
+			retval2 = save1fits32(dest, double_data->oiii, RLAYER);
+		}
+		free(dest);
+		clearfits(double_data->ha);
+		clearfits(double_data->oiii);
+	}
+	free(double_data);
+	return retval1 || retval2;
 }
 
 void apply_extractHaOIII_to_sequence(struct split_cfa_data *split_cfa_args) {
@@ -1462,17 +1588,23 @@ void apply_extractHaOIII_to_sequence(struct split_cfa_data *split_cfa_args) {
 	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = split_cfa_args->seq->selnum;
-	args->prepare_hook = seq_prepare_hook;
-	args->finalize_hook = seq_finalize_hook;
-	args->save_hook = NULL;
+	args->compute_size_hook = NULL;
+	args->prepare_hook = dual_prepare;
+	args->finalize_hook = dual_finalize;
+	args->save_hook = dual_save;
 	args->image_hook = extractHaOIII_image_hook;
 	args->idle_function = NULL;
 	args->stop_on_error = TRUE;
 	args->description = _("Extract Ha and OIII");
-	args->has_output = FALSE;
-	args->new_seq_prefix = split_cfa_args->seqEntry;
+	args->has_output = TRUE;
+	args->output_type = get_data_type(args->seq->bitpix);
+	args->upscale_ratio = 1.23;	// sqrt(1.5), for memory management
+	args->new_seq_prefix = NULL;
 	args->load_new_sequence = FALSE;
 	args->force_ser_output = FALSE;
+	args->new_ser = NULL;
+	args->force_fitseq_output = FALSE;
+	args->new_fitseq = NULL;
 	args->user = split_cfa_args;
 	args->already_in_a_thread = FALSE;
 	args->parallel = TRUE;
@@ -1575,18 +1707,18 @@ int split_cfa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 
 	if (fit->type == DATA_USHORT) {
 		if (!(ret = split_cfa_ushort(fit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3))) {
-			ret = save1fits16(cfa0, &f_cfa0, 0) ||
-				save1fits16(cfa1, &f_cfa1, 0) ||
-				save1fits16(cfa2, &f_cfa2, 0) ||
-				save1fits16(cfa3, &f_cfa3, 0);
+			ret = save1fits16(cfa0, &f_cfa0, RLAYER) ||
+				save1fits16(cfa1, &f_cfa1, RLAYER) ||
+				save1fits16(cfa2, &f_cfa2, RLAYER) ||
+				save1fits16(cfa3, &f_cfa3, RLAYER);
 		}
 	}
 	else if (fit->type == DATA_FLOAT) {
 		if (!(ret = split_cfa_float(fit, &f_cfa0, &f_cfa1, &f_cfa2, &f_cfa3))) {
-			ret = save1fits32(cfa0, &f_cfa0, 0) ||
-				save1fits32(cfa1, &f_cfa1, 0) ||
-				save1fits32(cfa2, &f_cfa2, 0) ||
-				save1fits32(cfa3, &f_cfa3, 0);
+			ret = save1fits32(cfa0, &f_cfa0, RLAYER) ||
+				save1fits32(cfa1, &f_cfa1, RLAYER) ||
+				save1fits32(cfa2, &f_cfa2, RLAYER) ||
+				save1fits32(cfa3, &f_cfa3, RLAYER);
 		}
 	}
 
@@ -1640,7 +1772,7 @@ void on_split_cfa_apply_clicked(GtkButton *button, gpointer user_data) {
 	gint method = gtk_combo_box_get_active(GTK_COMBO_BOX(lookup_widget("combo_split_cfa_method")));
 
 	if (gtk_toggle_button_get_active(seq) && sequence_is_loaded()) {
-		struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
+		struct split_cfa_data *args = calloc(1, sizeof(struct split_cfa_data));
 
 		set_cursor_waiting(TRUE);
 		args->seq = &com.seq;

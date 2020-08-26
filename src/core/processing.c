@@ -332,6 +332,7 @@ gboolean end_generic_sequence(gpointer p) {
 
 int seq_prepare_hook(struct generic_seq_args *args) {
 	int retval = 0;
+	g_assert(args->has_output); // don't call this hook otherwise
 	if (args->force_ser_output || args->seq->type == SEQ_SER) {
 		gchar *dest;
 		const char *ptr = strrchr(args->seq->seqname, G_DIR_SEPARATOR);
@@ -387,6 +388,7 @@ int seq_prepare_hook(struct generic_seq_args *args) {
 
 int seq_finalize_hook(struct generic_seq_args *args) {
 	int retval = 0;
+	g_assert(args->has_output); // don't call this hook otherwise
 	if ((args->force_ser_output || args->seq->type == SEQ_SER) && args->new_ser) {
 		retval = ser_write_and_close(args->new_ser);
 		free(args->new_ser);

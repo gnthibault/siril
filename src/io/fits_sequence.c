@@ -409,6 +409,7 @@ static void *write_worker(void *a) {
 		if (!task->image) {
 			// failed image, hole in sequence, skip it
 			siril_debug_print("fitseq write: skipping image %d\n", task->index);
+			notify_data_freed(fitseq, task->index);
 			current_index++;
 			fitseq->frame_count--;
 			continue;
@@ -446,7 +447,7 @@ static void *write_worker(void *a) {
 		clearfits(task->image);
 
 		if (retval != FITSEQ_WRITE_ERROR) {
-			notify_data_freed();
+			notify_data_freed(fitseq, task->index);
 			nb_frames_written++;
 			current_index++;
 		}
@@ -559,7 +560,7 @@ int fitseq_multiple_close(fitseq *fitseq) {
  * when the processing ends, but the thread is ready to process more, hence
  * allocate more. We have to pause the processing until the writing thread has
  * saved a result and freed the data, otherwise siril will go out of the memory
- * limits. In case the memory it larger than what the number of thread can
+ * limits. In case the memory is larger than what the number of thread can
  * support, the threads won't be blocked until too many images are pending
  * write.
  * The code below counts the number of active memory blocks and provides a
@@ -567,8 +568,17 @@ int fitseq_multiple_close(fitseq *fitseq) {
  */
 
 static int nb_blocks_active, configured_max_active_blocks;
+static int nb_outputs = 1;
 static GCond pool_cond;
 static GMutex pool_mutex;
+
+/* here we keep the latest frame index written for each output sequence, to
+ * synchronize in case of several output sequences for a single processing */
+struct _outputs_struct {
+	void *seq;
+	int index;
+};
+static struct _outputs_struct *outputs;
 
 void fitseq_set_max_active_blocks(int max) {
 	siril_log_message(_("Number of images allowed in the FITS write queue: %d\n"), max);
@@ -590,10 +600,59 @@ void fitseq_wait_for_memory() {
 	g_mutex_unlock(&pool_mutex);
 }
 
-static void notify_data_freed() {
+static int get_output_for_seq(void *seq) {
+	for (int i = 0; i < nb_outputs; i++) {
+		if (!outputs[i].seq) {
+			outputs[i].seq = seq;
+			outputs[i].index = -1;
+			return i;
+		}
+		if (outputs[i].seq == seq)
+			return i;
+	}
+	siril_debug_print("### fitseq get_output_for_seq: not found! should never happen ###\n");
+	return -1;
+}
+
+static gboolean all_outputs_to_index(int index) {
+	for (int i = 0; i < nb_outputs; i++) {
+		if (!outputs[i].seq)
+			return FALSE;
+		if (outputs[i].index < index)
+			return FALSE;
+	}
+	siril_debug_print("\tgot all outputs notified for index %d, signaling\n", index);
+	return TRUE;
+}
+
+static void notify_data_freed(fitseq *fitseq, int index) {
 	g_mutex_lock(&pool_mutex);
+	if (nb_outputs > 1) {
+		int output_num = get_output_for_seq(fitseq);
+		if (outputs[output_num].index + 1 != index) {
+			fprintf(stderr, "inconsistent index in memory management (%d for expected %d)\n",
+					outputs[output_num].index + 1, index);
+		}
+		outputs[output_num].index = index;
+		if (!all_outputs_to_index(index)) {
+			g_mutex_unlock(&pool_mutex);
+			return;
+		}
+	}
+
 	nb_blocks_active--;
 	g_cond_signal(&pool_cond);
 	g_mutex_unlock(&pool_mutex);
 }
 
+void fitseq_set_number_of_outputs(int number_of_outputs) {
+	siril_debug_print("fitseq number of outputs: %d\n", number_of_outputs);
+	nb_outputs = number_of_outputs;
+	if (number_of_outputs > 1) {
+		outputs = calloc(number_of_outputs, sizeof(struct _outputs_struct));
+	} else {
+		if (outputs)
+			free(outputs);
+		outputs = NULL;
+	}
+}

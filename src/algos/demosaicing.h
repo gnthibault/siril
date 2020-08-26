@@ -1,10 +1,22 @@
 #ifndef _DEMOSAICING_H
 #define _DEMOSAICING_H
+#include <glib.h>
+#include "io/ser.h"
+#include "io/fits_sequence.h"
 
 struct split_cfa_data {
 	fits *fit;
 	sequence *seq;
-	const gchar *seqEntry;
+	const gchar *seqEntry;	// not used for Ha-OIII split
+
+	/* below: internal algorithm usage */
+	struct ser_struct *new_ser_ha;
+	fitseq *new_fitseq_ha;
+
+	struct ser_struct *new_ser_oiii;
+	fitseq *new_fitseq_oiii;
+
+	GList *processed_images;
 };
 
 WORD *debayer_buffer(WORD *buf, int *width, int *height,

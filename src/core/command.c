@@ -2348,7 +2348,7 @@ int process_seq_split_cfa(int nb) {
 		return 1;
 	}
 
-	struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
+	struct split_cfa_data *args = calloc(1, sizeof(struct split_cfa_data));
 
 	args->seq = seq;
 	args->fit = &gfit;
@@ -2394,7 +2394,7 @@ int process_seq_extractHa(int nb) {
 		return 1;
 	}
 
-	struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
+	struct split_cfa_data *args = calloc(1, sizeof(struct split_cfa_data));
 
 	args->seq = seq;
 	args->seqEntry = "Ha_";
@@ -2439,7 +2439,7 @@ int process_seq_extractHaOIII(int nb) {
 		return 1;
 	}
 
-	struct split_cfa_data *args = malloc(sizeof(struct split_cfa_data));
+	struct split_cfa_data *args = calloc(1, sizeof(struct split_cfa_data));
 
 	args->seq = seq;
 	args->seqEntry = ""; // not used
