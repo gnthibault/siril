@@ -467,7 +467,18 @@ static int ser_write_header_from_fit(struct ser_struct *ser_file, fits *fit) {
 	}
 	if (ser_file->color_id == SER_RGB)
 		ser_file->number_of_planes = 3;
-	else ser_file->number_of_planes = 1;
+	else {
+		if (!g_strcmp0(fit->bayer_pattern, "RGGB")) {
+			ser_file->color_id = SER_BAYER_RGGB;
+		} else if (!g_strcmp0(fit->bayer_pattern, "BGGR")) {
+			ser_file->color_id = SER_BAYER_BGGR;
+		} else if (!g_strcmp0(fit->bayer_pattern, "GBRG")) {
+			ser_file->color_id = SER_BAYER_GBRG;
+		} else if (!g_strcmp0(fit->bayer_pattern, "GRBG")) {
+			ser_file->color_id = SER_BAYER_GRBG;
+		}
+		ser_file->number_of_planes = 1;
+	}
 
 	if (fit->bitpix == BYTE_IMG) {
 		ser_file->byte_pixel_depth = SER_PIXEL_DEPTH_8;
