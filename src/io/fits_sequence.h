@@ -46,6 +46,7 @@ int fitseq_multiple_close(fitseq *fitseq);
 
 void fitseq_set_max_active_blocks(int max);
 void fitseq_wait_for_memory();
+void fitseq_set_number_of_outputs(int number_of_outputs);
 
 #endif
 

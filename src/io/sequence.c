@@ -1623,7 +1623,7 @@ int compute_nb_images_fit_memory(sequence *seq, double factor, gboolean force_fl
 		return -1;
 	}
 	if (factor < 1.0 || factor > 2.0) {
-		fprintf(stderr, "############ FACTOR UNINIT ############\n");
+		fprintf(stderr, "############ FACTOR UNINIT (set to 1) ############\n");
 		factor = 1.0;
 	}
 	uint64_t newx = round_to_int((double)seq->rx * factor);
