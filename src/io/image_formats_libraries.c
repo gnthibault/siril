@@ -64,11 +64,8 @@ static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples,
 	uint16_t config;
 	int retval = nsamples;
 
-	TIFFGetField(tif, TIFFTAG_PLANARCONFIG, &config);
-	TIFFGetField(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
-
-	/* hack to fix #526 */
-	if (rowsperstrip == 0) rowsperstrip = height;
+	TIFFGetFieldDefaulted(tif, TIFFTAG_PLANARCONFIG, &config);
+	TIFFGetFieldDefaulted(tif, TIFFTAG_ROWSPERSTRIP, &rowsperstrip);
 
 	size_t npixels = width * height;
 	*data = malloc(npixels * sizeof(WORD) * nsamples);
@@ -283,13 +280,13 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 		return OPEN_IMAGE_ERROR;
 	}
 
-	TIFFGetField(tif, TIFFTAG_IMAGEWIDTH, &width);
-	TIFFGetField(tif, TIFFTAG_IMAGELENGTH, &height);
-	TIFFGetField(tif, TIFFTAG_SAMPLESPERPIXEL, &nsamples);	
-	TIFFGetField(tif, TIFFTAG_BITSPERSAMPLE, &nbits);
-	TIFFGetField(tif, TIFFTAG_PHOTOMETRIC, &color);
-	TIFFGetField(tif, TIFFTAG_MINSAMPLEVALUE, &(fit->lo));
-	TIFFGetField(tif, TIFFTAG_MAXSAMPLEVALUE, &(fit->hi));
+	TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGEWIDTH, &width);
+	TIFFGetFieldDefaulted(tif, TIFFTAG_IMAGELENGTH, &height);
+	TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLESPERPIXEL, &nsamples);
+	TIFFGetFieldDefaulted(tif, TIFFTAG_BITSPERSAMPLE, &nbits);
+	TIFFGetFieldDefaulted(tif, TIFFTAG_PHOTOMETRIC, &color);
+	TIFFGetFieldDefaulted(tif, TIFFTAG_MINSAMPLEVALUE, &(fit->lo));
+	TIFFGetFieldDefaulted(tif, TIFFTAG_MAXSAMPLEVALUE, &(fit->hi));
 
 	size_t npixels = width * height;
 
