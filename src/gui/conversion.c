@@ -190,6 +190,13 @@ static void initialize_convert() {
 		return;
 	}
 
+	if (debayer && symbolic_link) {
+		siril_message_dialog(GTK_MESSAGE_WARNING, _("A conflict has been detected."),
+				_("The symbolic link option is not allowed with the debayer one, please uncheck one option."));
+		g_list_free_full(list, g_free);
+		return;
+	}
+
 	index = gtk_entry_get_text(startEntry);
 
 	siril_log_color_message(_("Conversion: processing %d files...\n"), "green", count);
