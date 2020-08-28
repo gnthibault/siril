@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Siril in Italiano\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-25 16:30+0200\n"
+"POT-Creation-Date: 2020-08-28 09:02+0200\n"
 "PO-Revision-Date: 2020-04-28 10:17+0200\n"
 "Last-Translator: Luca Benassi <bennolo@gmail.com>\n"
 "Language-Team: Italian <sonia@zonia3000.net>\n"
@@ -3655,7 +3655,7 @@ msgstr "Sel"
 msgid "Quality"
 msgstr "Qualità"
 
-#: src/gui/siril3.glade:15041 src/algos/demosaicing.c:1613
+#: src/gui/siril3.glade:15041 src/algos/demosaicing.c:1745
 msgid "Split CFA"
 msgstr "Suddivisione CFA"
 
@@ -3682,7 +3682,7 @@ msgstr "Selezionare il canale da visualizzare."
 msgid "Split CFA Channels"
 msgstr "Suddivisione CFA"
 
-#: src/gui/siril3.glade:15170 src/algos/demosaicing.c:1283
+#: src/gui/siril3.glade:15170 src/algos/demosaicing.c:1284
 #, fuzzy
 msgid "Extract Ha"
 msgstr "Estrazione"
@@ -4706,7 +4706,7 @@ msgstr ""
 msgid "<b>FITS Compression</b>"
 msgstr "<b>Compressione</b>"
 
-#: src/gui/siril3.glade:19723 src/gui/siril3.glade:20037
+#: src/gui/siril3.glade:19723 src/gui/siril3.glade:20081
 msgid "Miscellaneous"
 msgstr "Varie"
 
@@ -4789,6 +4789,15 @@ msgstr "Interpolazione polinomiale"
 #, fuzzy
 msgid "Introduction Tips"
 msgstr "Interpolazione: "
+
+#: src/gui/siril3.glade:20047
+#, fuzzy
+msgid "Check update at startup"
+msgstr "Controlla se ci sono aggiornamenti"
+
+#: src/gui/siril3.glade:20064
+msgid "Update"
+msgstr ""
 
 #: src/gui/siril-shortcuts.ui:14
 msgctxt "shortcut window"
@@ -5060,7 +5069,7 @@ msgstr "Luminosità: "
 msgid "Value: "
 msgstr "Blu: "
 
-#: src/algos/demosaicing.c:877
+#: src/algos/demosaicing.c:878
 msgid ""
 "FITS header does not contain a proper XTRANS pattern, demosaicing cannot be "
 "done"
@@ -5068,23 +5077,23 @@ msgstr ""
 "Gli header FITS non contengono un pattern XTRANS corretto, non posso "
 "effettuare il demosaicing"
 
-#: src/algos/demosaicing.c:1124 src/algos/demosaicing.c:1172
-#: src/algos/demosaicing.c:1302
+#: src/algos/demosaicing.c:1125 src/algos/demosaicing.c:1173
+#: src/algos/demosaicing.c:1303
 #, fuzzy
 msgid "Extract_Ha does not work on non-Bayer filter camera images!\n"
 msgstr ""
 "La suddivisione CFA non funziona su immagini di macchine fotografiche con un "
 "filtro non-Bayer\n"
 
-#: src/algos/demosaicing.c:1228 src/algos/demosaicing.c:1420
+#: src/algos/demosaicing.c:1229 src/algos/demosaicing.c:1423
 #: src/core/command.c:2180 src/core/command.c:2249 src/io/conversion.c:634
-#: src/io/ser.c:893 src/io/ser.c:1113
+#: src/io/ser.c:904 src/io/ser.c:1124
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "Nessun pattern Bayer trovato nell'intestazione del file.\n"
 
-#: src/algos/demosaicing.c:1231 src/algos/demosaicing.c:1423
+#: src/algos/demosaicing.c:1232 src/algos/demosaicing.c:1426
 #: src/core/command.c:2183 src/core/command.c:2252 src/io/conversion.c:637
-#: src/io/ser.c:897 src/io/ser.c:1117
+#: src/io/ser.c:908 src/io/ser.c:1128
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -5093,29 +5102,34 @@ msgstr ""
 "Il pattern Bayer trovato nell'intestazione (%s) è diverso dal pattern Bayer "
 "presente nelle impostazioni (%s). Sovrascrivo le impostazioni.\n"
 
-#: src/algos/demosaicing.c:1238 src/algos/demosaicing.c:1430
+#: src/algos/demosaicing.c:1239 src/algos/demosaicing.c:1433
 #: src/core/command.c:2190 src/core/command.c:2259
 msgid "XTRANS pattern not handled for this feature.\n"
 msgstr ""
 
-#: src/algos/demosaicing.c:1243 src/algos/demosaicing.c:1435
+#: src/algos/demosaicing.c:1244 src/algos/demosaicing.c:1438
 #: src/core/command.c:2195 src/core/command.c:2264 src/io/conversion.c:650
 #, c-format
 msgid "Filter Pattern: %s\n"
 msgstr "Modello del filtro: %s\n"
 
-#: src/algos/demosaicing.c:1355
+#: src/algos/demosaicing.c:1356
 #, fuzzy
 msgid "Extract_HaOIII does not work on non-Bayer filter camera images!\n"
 msgstr ""
 "La suddivisione CFA non funziona su immagini di macchine fotografiche con un "
 "filtro non-Bayer\n"
 
-#: src/algos/demosaicing.c:1471
+#: src/algos/demosaicing.c:1537
+#, c-format
+msgid "Image %d not found for writing\n"
+msgstr ""
+
+#: src/algos/demosaicing.c:1598
 msgid "Extract Ha and OIII"
 msgstr ""
 
-#: src/algos/demosaicing.c:1490 src/algos/demosaicing.c:1530
+#: src/algos/demosaicing.c:1622 src/algos/demosaicing.c:1662
 msgid "Split CFA does not work on non-Bayer filter camera images!\n"
 msgstr ""
 "La suddivisione CFA non funziona su immagini di macchine fotografiche con un "
@@ -5284,7 +5298,7 @@ msgid "Fetch failed with code %ld for URL %s\n"
 msgstr "Recupero fallito con codice %ld per l'UTL %s\n"
 
 #: src/algos/plateSolver.c:500 src/filters/fft.c:551 src/filters/fft.c:557
-#: src/filters/fft.c:578 src/gui/conversion.c:203 src/gui/open_dialog.c:329
+#: src/filters/fft.c:578 src/gui/conversion.c:210 src/gui/open_dialog.c:329
 #: src/gui/plot.c:401 src/gui/plot.c:469 src/gui/preferences.c:406
 #: src/gui/PSF_list.c:217 src/gui/save_dialog.c:377 src/io/single_image.c:153
 msgid "Error"
@@ -5931,7 +5945,7 @@ msgstr ""
 msgid "Cannot create output folder: %s\n"
 msgstr "Non posso aprire il file: %s\n"
 
-#: src/core/command.c:2556 src/gui/conversion.c:202
+#: src/core/command.c:2556 src/gui/conversion.c:209
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "Conversione: errore durante l'apertura della directory di lavoro %s.\n"
@@ -7319,7 +7333,7 @@ msgid "Open File"
 msgstr "Apri file"
 
 #: src/core/OS_utils.c:531 src/core/OS_utils.c:540 src/core/OS_utils.c:546
-#: src/io/image_formats_libraries.c:1645
+#: src/io/image_formats_libraries.c:1644
 msgid "_Cancel"
 msgstr "_Annulla"
 
@@ -7558,7 +7572,7 @@ msgstr "Elaborazione della sequenza terminata con successo.\n"
 msgid "Finalizing sequence processing failed.\n"
 msgstr "Finalizzazione elaborazione della sequenza fallita.\n"
 
-#: src/core/processing.c:371
+#: src/core/processing.c:372
 #, fuzzy
 msgid ""
 "Configured memory limits do not seem to allow these images to be processed, "
@@ -7567,7 +7581,7 @@ msgstr ""
 "Le opzioni scelte per il filtraggio non permettono di processare almeno due "
 "immagini.\n"
 
-#: src/core/processing.c:534
+#: src/core/processing.c:536
 msgid "Process aborted by user\n"
 msgstr "Processo abortito dall'utente\n"
 
@@ -7831,15 +7845,15 @@ msgstr ""
 msgid "Successfully loaded '%s'\n"
 msgstr "Caricato con successo '%s'\n"
 
-#: src/core/utils.c:1089 src/io/image_format_fits.c:2342
-#: src/io/image_format_fits.c:2347 src/io/ser.c:1379
+#: src/core/utils.c:1089 src/io/image_format_fits.c:2324
+#: src/io/image_format_fits.c:2329 src/io/ser.c:1390
 msgid "pixel"
 msgid_plural "pixels"
 msgstr[0] "pixel"
 msgstr[1] "pixel"
 
-#: src/core/utils.c:1090 src/io/image_format_fits.c:2343
-#: src/io/image_format_fits.c:2348 src/io/ser.c:1380
+#: src/core/utils.c:1090 src/io/image_format_fits.c:2325
+#: src/io/image_format_fits.c:2330 src/io/ser.c:1391
 msgid "channel"
 msgid_plural "channels"
 msgstr[0] "canale"
@@ -8254,6 +8268,7 @@ msgid ""
 msgstr ""
 
 #: src/gui/conversion.c:175 src/gui/conversion.c:181 src/gui/conversion.c:187
+#: src/gui/conversion.c:194
 msgid "A conflict has been detected."
 msgstr "Un conflitto è stato rilevato."
 
@@ -8278,20 +8293,29 @@ msgid "Creating multiple SER can only be done with only films as input."
 msgstr ""
 
 #: src/gui/conversion.c:195
+#, fuzzy
+msgid ""
+"The symbolic link option is not allowed with the debayer one, please uncheck "
+"one option."
+msgstr ""
+"L'opzione SER Multiple non è consentita nella conversione SER, si prega di "
+"deselezionare l'opzione."
+
+#: src/gui/conversion.c:202
 #, fuzzy, c-format
 msgid "Conversion: processing %d files...\n"
 msgstr ""
 "Conversione: elaborazione %d file RAW...\n"
 "\n"
 
-#: src/gui/conversion.c:397
+#: src/gui/conversion.c:404
 #, fuzzy, c-format
 msgid "%d file was ignored while drag and drop\n"
 msgid_plural "%d files were ignored while drag and drop\n"
 msgstr[0] "%d file(s) sono stati ignorati durante il drag and drop\n"
 msgstr[1] "%d file(s) sono stati ignorati durante il drag and drop\n"
 
-#: src/gui/conversion.c:402
+#: src/gui/conversion.c:409
 msgid ""
 "Files with unknown extension cannot be dropped in this area. Therefore they "
 "are ignored."
@@ -8299,14 +8323,14 @@ msgstr ""
 "I file con esensioni non riconosciute non possono essere droppati in "
 "quest'area. Pertanto verranno ignorati."
 
-#: src/gui/conversion.c:483
+#: src/gui/conversion.c:490
 #, fuzzy, c-format
 msgid "%d file loaded"
 msgid_plural "%d files loaded"
 msgstr[0] "%d file caricati"
 msgstr[1] "%d file caricati"
 
-#: src/gui/conversion.c:488
+#: src/gui/conversion.c:495
 #, fuzzy, c-format
 msgid "%d file selected"
 msgid_plural "%d files selected"
@@ -9204,7 +9228,7 @@ msgstr "Non posso aprire il file: %s\n"
 msgid "Cannot open FITS file %s: doesn't seem to be a FITS sequence\n"
 msgstr ""
 
-#: src/io/fits_sequence.c:176 src/io/image_format_fits.c:1255
+#: src/io/fits_sequence.c:176 src/io/image_format_fits.c:1265
 msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
@@ -9217,7 +9241,7 @@ msgid "Your version of cfitsio does not support multi-threading\n"
 msgstr "La tua versione di cfitsio non supporta il multi-threading\n"
 
 #: src/io/fits_sequence.c:247 src/io/image_format_fits.c:531
-#: src/io/image_format_fits.c:591 src/io/image_format_fits.c:1372
+#: src/io/image_format_fits.c:601 src/io/image_format_fits.c:1382
 msgid "Unknown FITS data format in internal conversion\n"
 msgstr ""
 "Formato dati FITS sconosciuto in conversione interna\n"
@@ -9232,32 +9256,32 @@ msgid ""
 "Cannot add an image with different properties to an existing sequence.\n"
 msgstr ""
 
-#: src/io/fits_sequence.c:429
+#: src/io/fits_sequence.c:430
 #, fuzzy, c-format
 msgid ""
 "fitseq write: Saving FITS image %d, %ld layer(s), %ux%u pixels, %d bits\n"
 msgstr "Salvataggio FITS: file %s, %ld livello/i, %ux%u pixel\n"
 
-#: src/io/fits_sequence.c:464
+#: src/io/fits_sequence.c:465
 #, c-format
 msgid ""
 "Frame number mismatch at the end of sequence saving (%d saved for %d "
 "written)\n"
 msgstr ""
 
-#: src/io/fits_sequence.c:472
+#: src/io/fits_sequence.c:473
 #, c-format
 msgid "Successfully saved FITS sequence with %d images\n"
 msgstr ""
 
-#: src/io/fits_sequence.c:505
+#: src/io/fits_sequence.c:506
 #, fuzzy, c-format
 msgid "Removing failed FITS sequence file: %s\n"
 msgstr ""
 "Sto rimuovendo il file SER fallito: %s\n"
 "\n"
 
-#: src/io/fits_sequence.c:574
+#: src/io/fits_sequence.c:584
 #, c-format
 msgid "Number of images allowed in the FITS write queue: %d\n"
 msgstr ""
@@ -9272,107 +9296,107 @@ msgstr "Il file FITS caricato ha un BSCALE diverso da 1 (%f)\n"
 msgid "FITS error: %s\n"
 msgstr "Errore FITS: %s\n"
 
-#: src/io/image_format_fits.c:635
+#: src/io/image_format_fits.c:645
 #, fuzzy
 msgid "Cannot move to first image in FITS file\n"
 msgstr "Non posso convertire una sequenza di file"
 
-#: src/io/image_format_fits.c:645
+#: src/io/image_format_fits.c:655
 msgid "Cannot get dimension of FITS file\n"
 msgstr ""
 
-#: src/io/image_format_fits.c:655
+#: src/io/image_format_fits.c:665
 msgid "Cannot move to next image in FITS file\n"
 msgstr ""
 
-#: src/io/image_format_fits.c:722 src/io/image_format_fits.c:856
+#: src/io/image_format_fits.c:732 src/io/image_format_fits.c:866
 #, c-format
 msgid "FITS image format %d is not supported by Siril.\n"
 msgstr "Il formato di immagine FITS %d non è supportato da Siril.\n"
 
-#: src/io/image_format_fits.c:788
+#: src/io/image_format_fits.c:798
 #, c-format
 msgid "Fitsio error reading data, file: %s.\n"
 msgstr "Errore Fitsio leggendo i dati del file %s.\n"
 
-#: src/io/image_format_fits.c:1194
+#: src/io/image_format_fits.c:1204
 #, c-format
 msgid "%s.[any_allowed_extension] not found.\n"
 msgstr "%s.[qualsiasi_estensione_consentita] non trovato.\n"
 
-#: src/io/image_format_fits.c:1201
+#: src/io/image_format_fits.c:1211
 #, c-format
 msgid ""
 "The file %s is not a FITS file or doesn't exists with FITS extensions.\n"
 msgstr ""
 "Il file %s non è un file FITS oppure non esiste con un'estensione FITS.\n"
 
-#: src/io/image_format_fits.c:1220 src/io/image_format_fits.c:1330
-#: src/io/image_format_fits.c:2319
+#: src/io/image_format_fits.c:1230 src/io/image_format_fits.c:1340
+#: src/io/image_format_fits.c:2301
 #, c-format
 msgid "Selecting the primary header failed, is the FITS file '%s' malformed?\n"
 msgstr ""
 "Selezione dell'header primario fallita, il file FITS '%s' è malformato?\n"
 
-#: src/io/image_format_fits.c:1229
+#: src/io/image_format_fits.c:1239
 #, c-format
 msgid "FITSIO error getting image parameters, file %s.\n"
 msgstr "Errore FITSIO ottenendo i parametri dell'immagine nel file %s.\n"
 
-#: src/io/image_format_fits.c:1242
+#: src/io/image_format_fits.c:1252
 #, c-format
 msgid ""
 "The FITS image contains more than 3 channels (%ld). Opening only the three "
 "first.\n"
 msgstr ""
 
-#: src/io/image_format_fits.c:1273
+#: src/io/image_format_fits.c:1283
 #, c-format
 msgid "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Lettura FITS: file %s, %ld livello/i, %ux%u pixel\n"
 
-#: src/io/image_format_fits.c:1354
+#: src/io/image_format_fits.c:1364
 #, c-format
 msgid "FITS read partial: there is no layer %d in the image %s\n"
 msgstr "Lettura parziale del FITS: non c'è il livello %d nell'immagine %s\n"
 
-#: src/io/image_format_fits.c:1362
+#: src/io/image_format_fits.c:1372
 #, c-format
 msgid "Unsupported FITS image format (%ld axes).\n"
 msgstr "Formato d'immagine FITS non supportato (%ld assi).\n"
 
-#: src/io/image_format_fits.c:1437
+#: src/io/image_format_fits.c:1447
 #, c-format
 msgid "Loaded partial FITS file %s\n"
 msgstr "Caricato file FITS parziale %s\n"
 
-#: src/io/image_format_fits.c:1516
+#: src/io/image_format_fits.c:1526
 #, fuzzy
 msgid "Unknown FITS compression method in internal conversion\n"
 msgstr ""
 "Formato dati FITS sconosciuto in conversione interna\n"
 "\n"
 
-#: src/io/image_format_fits.c:1590
+#: src/io/image_format_fits.c:1600
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Salvataggio FITS: file %s, %ld livello/i, %ux%u pixel\n"
 
-#: src/io/image_format_fits.c:1671
+#: src/io/image_format_fits.c:1681
 #, c-format
 msgid "ERROR: trying to save a FITS image with an unsupported format (%d).\n"
 msgstr ""
 "ERRORE: tentativo di salvare un'immagine FITS in un formato non supportato "
 "(%d).\n"
 
-#: src/io/image_format_fits.c:2344 src/io/ser.c:1381
+#: src/io/image_format_fits.c:2326 src/io/ser.c:1392
 msgid "frame"
 msgid_plural "frames"
 msgstr[0] "frame"
 msgstr[1] "frame"
 
-#: src/io/image_format_fits.c:2344 src/io/image_format_fits.c:2349
-#: src/io/ser.c:1381
+#: src/io/image_format_fits.c:2326 src/io/image_format_fits.c:2331
+#: src/io/ser.c:1392
 msgid "(Monochrome Preview)"
 msgstr "(Anteprima Monocromatica)"
 
@@ -9504,85 +9528,85 @@ msgstr "Lettura TIFF: file a %d-bit %s, %ld livello/i, %ux%u pixel\n"
 msgid "Siril cannot create TIFF file.\n"
 msgstr "Siril non può creare il file TIFF.\n"
 
-#: src/io/image_formats_libraries.c:461
+#: src/io/image_formats_libraries.c:460
 msgid "TIFF file has unexpected number of channels (not 1 or 3).\n"
 msgstr "Il file TIFF ha un numero di canali inaspettato (non 1 o 3).\n"
 
-#: src/io/image_formats_libraries.c:557
+#: src/io/image_formats_libraries.c:556
 #, c-format
 msgid "Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Salvataggio TIFF: file a %d-bit %s, %ld livello/i, %ux%u pixel\n"
 
-#: src/io/image_formats_libraries.c:574 src/io/image_formats_libraries.c:737
+#: src/io/image_formats_libraries.c:573 src/io/image_formats_libraries.c:736
 #, c-format
 msgid "Sorry but Siril cannot open the file: %s.\n"
 msgstr "Spiacente ma Siril non può aprire il file: %s.\n"
 
-#: src/io/image_formats_libraries.c:625
+#: src/io/image_formats_libraries.c:624
 #, c-format
 msgid "Reading JPG: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Lettura JPG: file %s, %ld livello/i, %ux%u pixel\n"
 
-#: src/io/image_formats_libraries.c:648
+#: src/io/image_formats_libraries.c:647
 msgid "Siril cannot create JPG file.\n"
 msgstr "Siril non può creare il file JPG.\n"
 
-#: src/io/image_formats_libraries.c:721
+#: src/io/image_formats_libraries.c:720
 #, c-format
 msgid "Saving JPG: file %s, quality=%d%%, %ld layer(s), %ux%u pixels\n"
 msgstr "Salvataggio JPG: file %s, qualità=%d%%, %ld livello/i, %ux%u pixel\n"
 
-#: src/io/image_formats_libraries.c:860
+#: src/io/image_formats_libraries.c:859
 #, c-format
 msgid "Reading PNG: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Lettura PNG: file a %d-bit %s, %ld livello/i, %ux%u pixel\n"
 
-#: src/io/image_formats_libraries.c:1036
+#: src/io/image_formats_libraries.c:1035
 #, c-format
 msgid "Saving PNG: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Salvataggio PNG: file %s, %ld livello/i, %ux%u pixel\n"
 
-#: src/io/image_formats_libraries.c:1145
+#: src/io/image_formats_libraries.c:1144
 #, c-format
 msgid "Error in libraw %s.\n"
 msgstr "Errore in libraw %s.\n"
 
-#: src/io/image_formats_libraries.c:1152
+#: src/io/image_formats_libraries.c:1151
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%gs)\n"
 msgstr "Decodificando %s %s file (ISO=%g, Esposizione=%gs)\n"
 
-#: src/io/image_formats_libraries.c:1155
+#: src/io/image_formats_libraries.c:1154
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%gs)\n"
 msgstr "Decodificando %s %s file (ISO=%g, Esposizione=1/%gs)\n"
 
-#: src/io/image_formats_libraries.c:1175 src/io/image_formats_libraries.c:1184
+#: src/io/image_formats_libraries.c:1174 src/io/image_formats_libraries.c:1183
 #, c-format
 msgid "Daylight multipliers: %f, %f, %f\n"
 msgstr "Moltiplicatori diurni; %f, %f, %f\n"
 
-#: src/io/image_formats_libraries.c:1189
+#: src/io/image_formats_libraries.c:1188
 msgid "XTRANS Sensor detected.\n"
 msgstr "Rilevato sensore XTRANS.\n"
 
-#: src/io/image_formats_libraries.c:1195
+#: src/io/image_formats_libraries.c:1194
 msgid "Bilinear interpolation...\n"
 msgstr "Interpolazione bilineare...\n"
 
-#: src/io/image_formats_libraries.c:1199
+#: src/io/image_formats_libraries.c:1198
 msgid "VNG interpolation...\n"
 msgstr "Interpolazione VNG...\n"
 
-#: src/io/image_formats_libraries.c:1203
+#: src/io/image_formats_libraries.c:1202
 msgid "PPG interpolation...\n"
 msgstr "Interpolazione PPG...\n"
 
-#: src/io/image_formats_libraries.c:1208
+#: src/io/image_formats_libraries.c:1207
 msgid "AHD interpolation...\n"
 msgstr "Interpolazione AHD...\n"
 
-#: src/io/image_formats_libraries.c:1362
+#: src/io/image_formats_libraries.c:1361
 msgid ""
 "Siril cannot open this file in CFA mode (no data available). Try to switch "
 "into RGB.\n"
@@ -9590,52 +9614,52 @@ msgstr ""
 "Siril non può aprire questo file in modalità CFA (nessun dato disponibile). "
 "Tento di passare a RGB.\n"
 
-#: src/io/image_formats_libraries.c:1391
+#: src/io/image_formats_libraries.c:1390
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%0.1f sec)\n"
 msgstr "Decodificando %s %s file (ISO=%g, Esposizione=1/%0.1f sec)\n"
 
-#: src/io/image_formats_libraries.c:1394
+#: src/io/image_formats_libraries.c:1393
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%0.1f sec)\n"
 msgstr "Decodificando %s %s file (ISO=%g, Esposizione=%0.1f sec)\n"
 
-#: src/io/image_formats_libraries.c:1417
+#: src/io/image_formats_libraries.c:1416
 #, fuzzy, c-format
 msgid "Filter pattern: %s\n"
 msgstr "Modello del filtro: %s\n"
 
-#: src/io/image_formats_libraries.c:1483
+#: src/io/image_formats_libraries.c:1482
 #, c-format
 msgid "Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Lettura RAW: file %s, %ld livello/i, %ux%u pixel\n"
 
-#: src/io/image_formats_libraries.c:1534
+#: src/io/image_formats_libraries.c:1533
 msgid "primary"
 msgstr "principale"
 
-#: src/io/image_formats_libraries.c:1643
+#: src/io/image_formats_libraries.c:1642
 msgid "Load HEIF image content"
 msgstr "Caarica contenuto dell'immagine HEIF"
 
-#: src/io/image_formats_libraries.c:1645
+#: src/io/image_formats_libraries.c:1644
 msgid "_OK"
 msgstr "_OK"
 
-#: src/io/image_formats_libraries.c:1651
+#: src/io/image_formats_libraries.c:1650
 msgid "Select image"
 msgstr "Seleziona l'immagine"
 
-#: src/io/image_formats_libraries.c:1756
+#: src/io/image_formats_libraries.c:1755
 msgid "Input file contains no readable images.\n"
 msgstr "Il file di ingresso non contiene alcuna immagine leggibile.\n"
 
-#: src/io/image_formats_libraries.c:1783
+#: src/io/image_formats_libraries.c:1782
 #, c-format
 msgid "This is a sequence of %d images: loading the primary one.\n"
 msgstr "Questa è una sequenza di %d immagini: carico quella primaria.\n"
 
-#: src/io/image_formats_libraries.c:1861
+#: src/io/image_formats_libraries.c:1860
 #, c-format
 msgid "Reading HEIF: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Lettura HEIF: file %s, %ld livello/i, %ux%u pixel\n"
@@ -9895,7 +9919,7 @@ msgstr "Sto tentando di riparare un file SER danneggiato...\n"
 msgid "SER file has been fixed...\n"
 msgstr "Il file SER è stato riparato...\n"
 
-#: src/io/ser.c:479
+#: src/io/ser.c:490
 msgid ""
 "Writing to SER files from larger than 16-bit FITS images is not yet "
 "implemented\n"
@@ -9904,36 +9928,36 @@ msgstr ""
 "implementata\n"
 
 #. closes, frees and zeroes
-#: src/io/ser.c:619
+#: src/io/ser.c:630
 #, c-format
 msgid "Removing failed SER file: %s\n"
 msgstr ""
 "Sto rimuovendo il file SER fallito: %s\n"
 "\n"
 
-#: src/io/ser.c:628
+#: src/io/ser.c:639
 msgid "The SER sequence is being created with no image in it.\n"
 msgstr "La sequenza SER viene creata con nessun immagine all'interno.\n"
 
-#: src/io/ser.c:666
+#: src/io/ser.c:677
 msgid "Compacting SER file after parallel output to it...\n"
 msgstr "Compattando il file SER dopo l'output parallelo ad esso...\n"
 
-#: src/io/ser.c:756
+#: src/io/ser.c:767
 #, c-format
 msgid "Created SER file %s\n"
 msgstr "Creato file SER %s\n"
 
-#: src/io/ser.c:941 src/io/ser.c:1179
+#: src/io/ser.c:952 src/io/ser.c:1190
 msgid "This type of Bayer pattern is not handled yet.\n"
 msgstr "Questo tipo di pattern Bayer non è ancora gestito.\n"
 
-#: src/io/ser.c:1127
+#: src/io/ser.c:1138
 msgid "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 msgstr ""
 "Per demosaicizzare un'immagine il livello deve essere R, G o B (da 0 a 2).\n"
 
-#: src/io/ser.c:1217
+#: src/io/ser.c:1228
 msgid "Trying to add an image of different size in a SER\n"
 msgstr ""
 "Tentando di aggiungere un'immagine di dimensione differente in un SER\n"

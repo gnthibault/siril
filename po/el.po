@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-08-25 16:30+0200\n"
+"POT-Creation-Date: 2020-08-28 09:02+0200\n"
 "PO-Revision-Date: 2020-07-09 19:45+0300\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -3674,7 +3674,7 @@ msgstr "Eπιλεγμένο"
 msgid "Quality"
 msgstr "Ποιότητα"
 
-#: src/gui/siril3.glade:15041 src/algos/demosaicing.c:1613
+#: src/gui/siril3.glade:15041 src/algos/demosaicing.c:1745
 msgid "Split CFA"
 msgstr "Διαχωρισμός CFA"
 
@@ -3699,7 +3699,7 @@ msgstr "Επιλέξτε τη μέθοδο που θέλετε να εφαρμό
 msgid "Split CFA Channels"
 msgstr "Διαχωρισμός καναλιών CFA"
 
-#: src/gui/siril3.glade:15170 src/algos/demosaicing.c:1283
+#: src/gui/siril3.glade:15170 src/algos/demosaicing.c:1284
 msgid "Extract Ha"
 msgstr "Εξαγωγή Ηa"
 
@@ -4799,7 +4799,7 @@ msgstr ""
 msgid "<b>FITS Compression</b>"
 msgstr "<b>Συμπίεση FITS </b>"
 
-#: src/gui/siril3.glade:19723 src/gui/siril3.glade:20037
+#: src/gui/siril3.glade:19723 src/gui/siril3.glade:20081
 msgid "Miscellaneous"
 msgstr "Διάφορα"
 
@@ -4887,6 +4887,15 @@ msgstr "Αναπαραγωγή Εισαγωγής"
 #: src/gui/siril3.glade:20020
 msgid "Introduction Tips"
 msgstr "Συμβουλές εισαγωγής"
+
+#: src/gui/siril3.glade:20047
+#, fuzzy
+msgid "Check update at startup"
+msgstr "Έλεγχος ενημερώσεων"
+
+#: src/gui/siril3.glade:20064
+msgid "Update"
+msgstr ""
 
 #: src/gui/siril-shortcuts.ui:14
 msgctxt "shortcut window"
@@ -5152,7 +5161,7 @@ msgstr "Φωτεινότητα: "
 msgid "Value: "
 msgstr "Τιμή: "
 
-#: src/algos/demosaicing.c:877
+#: src/algos/demosaicing.c:878
 msgid ""
 "FITS header does not contain a proper XTRANS pattern, demosaicing cannot be "
 "done"
@@ -5160,20 +5169,20 @@ msgstr ""
 "Η κεφαλίδα FITS δεν περιέχει ένα κατάλληλο μοτίβο XTRANS, δεν είναι δυνατό "
 "το η demosaic"
 
-#: src/algos/demosaicing.c:1124 src/algos/demosaicing.c:1172
-#: src/algos/demosaicing.c:1302
+#: src/algos/demosaicing.c:1125 src/algos/demosaicing.c:1173
+#: src/algos/demosaicing.c:1303
 msgid "Extract_Ha does not work on non-Bayer filter camera images!\n"
 msgstr "Το Extract_Ha δεν λειτουργεί σε εικόνες κάμερας φίλτρου μη-Bayer!\n"
 
-#: src/algos/demosaicing.c:1228 src/algos/demosaicing.c:1420
+#: src/algos/demosaicing.c:1229 src/algos/demosaicing.c:1423
 #: src/core/command.c:2180 src/core/command.c:2249 src/io/conversion.c:634
-#: src/io/ser.c:893 src/io/ser.c:1113
+#: src/io/ser.c:904 src/io/ser.c:1124
 msgid "No Bayer pattern found in the header file.\n"
 msgstr "Δεν βρέθηκε διάταξη Bayer στην κεφαλίδα του αρχείου.\n"
 
-#: src/algos/demosaicing.c:1231 src/algos/demosaicing.c:1423
+#: src/algos/demosaicing.c:1232 src/algos/demosaicing.c:1426
 #: src/core/command.c:2183 src/core/command.c:2252 src/io/conversion.c:637
-#: src/io/ser.c:897 src/io/ser.c:1117
+#: src/io/ser.c:908 src/io/ser.c:1128
 #, c-format
 msgid ""
 "Bayer pattern found in header (%s) is different from Bayer pattern in "
@@ -5182,27 +5191,34 @@ msgstr ""
 "Η διάταξη Bayer που βρέθηκε στην επικεφαλίδα (%s) είναι διαφορετική από την "
 "διάταξη Bayer στις ρυθμίσεις (%s). Γίνεται παράκαμψη των ρυθμίσεων.\n"
 
-#: src/algos/demosaicing.c:1238 src/algos/demosaicing.c:1430
+#: src/algos/demosaicing.c:1239 src/algos/demosaicing.c:1433
 #: src/core/command.c:2190 src/core/command.c:2259
 msgid "XTRANS pattern not handled for this feature.\n"
 msgstr ""
 
-#: src/algos/demosaicing.c:1243 src/algos/demosaicing.c:1435
+#: src/algos/demosaicing.c:1244 src/algos/demosaicing.c:1438
 #: src/core/command.c:2195 src/core/command.c:2264 src/io/conversion.c:650
 #, c-format
 msgid "Filter Pattern: %s\n"
 msgstr "Διάταξη Φίλτρου: %s\n"
 
-#: src/algos/demosaicing.c:1355
+#: src/algos/demosaicing.c:1356
 msgid "Extract_HaOIII does not work on non-Bayer filter camera images!\n"
 msgstr ""
 "Το Extract_HaOIII δεν λειτουργεί σε εικόνες κάμερας φίλτρου μη-Bayer!\n"
 
-#: src/algos/demosaicing.c:1471
+#: src/algos/demosaicing.c:1537
+#, fuzzy, c-format
+msgid "Image %d not found for writing\n"
+msgstr ""
+"Δεν είναι δυνατή η αποθήκευση της εικόνας σε μια αλληλουχία που δεν "
+"ανοίχθηκε για γράψιμο\n"
+
+#: src/algos/demosaicing.c:1598
 msgid "Extract Ha and OIII"
 msgstr "Εξαγωγή Ηa και ΟΙΙΙ"
 
-#: src/algos/demosaicing.c:1490 src/algos/demosaicing.c:1530
+#: src/algos/demosaicing.c:1622 src/algos/demosaicing.c:1662
 msgid "Split CFA does not work on non-Bayer filter camera images!\n"
 msgstr ""
 "Ο Διαχωρισμός CFA δεν λειτουργεί σε εικόνες κάμερας φίλτρου μη-Bayer!\n"
@@ -5368,7 +5384,7 @@ msgid "Fetch failed with code %ld for URL %s\n"
 msgstr "Η ανάκτηση απέτυχε με κωδικό %ld για τη διεύθυνση URL %s\n"
 
 #: src/algos/plateSolver.c:500 src/filters/fft.c:551 src/filters/fft.c:557
-#: src/filters/fft.c:578 src/gui/conversion.c:203 src/gui/open_dialog.c:329
+#: src/filters/fft.c:578 src/gui/conversion.c:210 src/gui/open_dialog.c:329
 #: src/gui/plot.c:401 src/gui/plot.c:469 src/gui/preferences.c:406
 #: src/gui/PSF_list.c:217 src/gui/save_dialog.c:377 src/io/single_image.c:153
 msgid "Error"
@@ -6012,7 +6028,7 @@ msgstr ""
 msgid "Cannot create output folder: %s\n"
 msgstr "Το αρχείο δεν μπορεί να ανοιχτεί: %s\n"
 
-#: src/core/command.c:2556 src/gui/conversion.c:202
+#: src/core/command.c:2556 src/gui/conversion.c:209
 #, c-format
 msgid "Conversion: error opening working directory %s.\n"
 msgstr "Μετατροπή: σφάλμα ανοίγματος καταλόγου εργασίας %s.\n"
@@ -7463,7 +7479,7 @@ msgid "Open File"
 msgstr "Άνοιγμα αρχείου"
 
 #: src/core/OS_utils.c:531 src/core/OS_utils.c:540 src/core/OS_utils.c:546
-#: src/io/image_formats_libraries.c:1645
+#: src/io/image_formats_libraries.c:1644
 msgid "_Cancel"
 msgstr "_Άκυρο"
 
@@ -7706,7 +7722,7 @@ msgstr "Επιτυχής επεξεργασία της αλληλουχίας.\n
 msgid "Finalizing sequence processing failed.\n"
 msgstr "Η οριστικοποίηση επεξεργασίας της αλληλουχίας απέτυχε.\n"
 
-#: src/core/processing.c:371
+#: src/core/processing.c:372
 msgid ""
 "Configured memory limits do not seem to allow these images to be processed, "
 "aborting\n"
@@ -7714,7 +7730,7 @@ msgstr ""
 "Τα επιλεγμένα όρια μνήμης δεν φαίνεται να επιτρέπουν αυτές τις εικόνες να "
 "επεξεργαστούν, γίνετε ακύρωση\n"
 
-#: src/core/processing.c:534
+#: src/core/processing.c:536
 msgid "Process aborted by user\n"
 msgstr "Η διαδικασία ακυρώθηκε από τον χρήστη\n"
 
@@ -7986,15 +8002,15 @@ msgstr ""
 msgid "Successfully loaded '%s'\n"
 msgstr "Το '%s' φορτώθηκε με επιτυχία\n"
 
-#: src/core/utils.c:1089 src/io/image_format_fits.c:2342
-#: src/io/image_format_fits.c:2347 src/io/ser.c:1379
+#: src/core/utils.c:1089 src/io/image_format_fits.c:2324
+#: src/io/image_format_fits.c:2329 src/io/ser.c:1390
 msgid "pixel"
 msgid_plural "pixels"
 msgstr[0] "εικονοστοιχείο"
 msgstr[1] "εικονοστοιχεία"
 
-#: src/core/utils.c:1090 src/io/image_format_fits.c:2343
-#: src/io/image_format_fits.c:2348 src/io/ser.c:1380
+#: src/core/utils.c:1090 src/io/image_format_fits.c:2325
+#: src/io/image_format_fits.c:2330 src/io/ser.c:1391
 msgid "channel"
 msgid_plural "channels"
 msgstr[0] "κανάλι"
@@ -8424,6 +8440,7 @@ msgstr ""
 "μια αλληλουχία FITS."
 
 #: src/gui/conversion.c:175 src/gui/conversion.c:181 src/gui/conversion.c:187
+#: src/gui/conversion.c:194
 msgid "A conflict has been detected."
 msgstr "Εντοπίστηκε αντίθεση."
 
@@ -8448,18 +8465,27 @@ msgid "Creating multiple SER can only be done with only films as input."
 msgstr "Η δημιουργία πολλαπλών SER μπορεί να γίνει μόνο με ταινίες σαν είσοδο."
 
 #: src/gui/conversion.c:195
+#, fuzzy
+msgid ""
+"The symbolic link option is not allowed with the debayer one, please uncheck "
+"one option."
+msgstr ""
+"Η επιλογή πολλαπλών SER δεν επιτρέπεται στη μετατροπή των SER, παρακαλώ "
+"αφαιρέστε την επιλογή."
+
+#: src/gui/conversion.c:202
 #, c-format
 msgid "Conversion: processing %d files...\n"
 msgstr "Μετατροπή: γίνεται επεξεργασία %d αρχείων...\n"
 
-#: src/gui/conversion.c:397
+#: src/gui/conversion.c:404
 #, fuzzy, c-format
 msgid "%d file was ignored while drag and drop\n"
 msgid_plural "%d files were ignored while drag and drop\n"
 msgstr[0] "%d %s κατά το drag and drop\n"
 msgstr[1] "%d %s κατά το drag and drop\n"
 
-#: src/gui/conversion.c:402
+#: src/gui/conversion.c:409
 msgid ""
 "Files with unknown extension cannot be dropped in this area. Therefore they "
 "are ignored."
@@ -8467,14 +8493,14 @@ msgstr ""
 "Αρχεία με άγνωστη επέκταση δεν μπορούν να τοποθετηθούν σε αυτή την περιοχή. "
 "Έτσι λοιπόν αγνοούνται."
 
-#: src/gui/conversion.c:483
+#: src/gui/conversion.c:490
 #, fuzzy, c-format
 msgid "%d file loaded"
 msgid_plural "%d files loaded"
 msgstr[0] "%d αρχεία φορτώθηκαν"
 msgstr[1] "%d αρχεία φορτώθηκαν"
 
-#: src/gui/conversion.c:488
+#: src/gui/conversion.c:495
 #, fuzzy, c-format
 msgid "%d file selected"
 msgid_plural "%d files selected"
@@ -9385,7 +9411,7 @@ msgstr ""
 "Δεν ήταν δυνατόν να ανοιχτεί το αρχείο FITS %s: δεν μοιάζει να είναι "
 "αλληλουχία FITS\n"
 
-#: src/io/fits_sequence.c:176 src/io/image_format_fits.c:1255
+#: src/io/fits_sequence.c:176 src/io/image_format_fits.c:1265
 msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
@@ -9398,7 +9424,7 @@ msgid "Your version of cfitsio does not support multi-threading\n"
 msgstr "Η έκδοση σας του cfitsio δεν υποστηρίζει πολυδιεργασίες\n"
 
 #: src/io/fits_sequence.c:247 src/io/image_format_fits.c:531
-#: src/io/image_format_fits.c:591 src/io/image_format_fits.c:1372
+#: src/io/image_format_fits.c:601 src/io/image_format_fits.c:1382
 msgid "Unknown FITS data format in internal conversion\n"
 msgstr "Άγνωστα δεδομένα FITS κατά την εσωτερική μετατροπή\n"
 
@@ -9415,7 +9441,7 @@ msgstr ""
 "Δεν μπορεί να γίνει προσθήκη μιας εικόνας με διαφορετικές ιδιότητες σε μια "
 "υπάρχουσα αλληλουχία.\n"
 
-#: src/io/fits_sequence.c:429
+#: src/io/fits_sequence.c:430
 #, fuzzy, c-format
 msgid ""
 "fitseq write: Saving FITS image %d, %ld layer(s), %ux%u pixels, %d bits\n"
@@ -9424,7 +9450,7 @@ msgstr ""
 "εικονοστοιχεία, %d bits\n"
 "\n"
 
-#: src/io/fits_sequence.c:464
+#: src/io/fits_sequence.c:465
 #, c-format
 msgid ""
 "Frame number mismatch at the end of sequence saving (%d saved for %d "
@@ -9433,17 +9459,17 @@ msgstr ""
 "Αναντιστοιχία αριθμού καρέ στο τέλος της αποθήκευσης της αλληλουχίας  (%d "
 "αποθηκεύτηκαν για %d που γράφτηκαν)\n"
 
-#: src/io/fits_sequence.c:472
+#: src/io/fits_sequence.c:473
 #, c-format
 msgid "Successfully saved FITS sequence with %d images\n"
 msgstr "Η αλληλουχία FITS με %d αποθηκεύτηκε με επιτυχία \n"
 
-#: src/io/fits_sequence.c:505
+#: src/io/fits_sequence.c:506
 #, c-format
 msgid "Removing failed FITS sequence file: %s\n"
 msgstr "Γίνεται αφαίρεση του αποτυχημένου αρχείου της αλληλουχίας FITS: %s\n"
 
-#: src/io/fits_sequence.c:574
+#: src/io/fits_sequence.c:584
 #, c-format
 msgid "Number of images allowed in the FITS write queue: %d\n"
 msgstr ""
@@ -9459,106 +9485,106 @@ msgstr "Το αρχείο FITS που φορτώθηκε έχει διαφορε
 msgid "FITS error: %s\n"
 msgstr "Σφάλμα FITS: %s\n"
 
-#: src/io/image_format_fits.c:635
+#: src/io/image_format_fits.c:645
 msgid "Cannot move to first image in FITS file\n"
 msgstr "Δεν είναι δυνατή η μετακίνηση στην πρώτη εικόνα στο αρχείο FITS\n"
 
-#: src/io/image_format_fits.c:645
+#: src/io/image_format_fits.c:655
 msgid "Cannot get dimension of FITS file\n"
 msgstr "Δεν είναι δυνατή η ανάκτηση διάστασης του αρχείου FITS\n"
 
-#: src/io/image_format_fits.c:655
+#: src/io/image_format_fits.c:665
 msgid "Cannot move to next image in FITS file\n"
 msgstr "Δεν είναι δυνατή η μετακίνηση στην επόμενη εικόνα στο αρχείο FITS\n"
 
-#: src/io/image_format_fits.c:722 src/io/image_format_fits.c:856
+#: src/io/image_format_fits.c:732 src/io/image_format_fits.c:866
 #, c-format
 msgid "FITS image format %d is not supported by Siril.\n"
 msgstr "Ο τύπος εικόνας FITS %d δεν υποστηρίζεται από το Siril.\n"
 
-#: src/io/image_format_fits.c:788
+#: src/io/image_format_fits.c:798
 #, c-format
 msgid "Fitsio error reading data, file: %s.\n"
 msgstr "Σφάλμα ανάγνωσης δεδομένω fitsio, αρχείο: %s.\n"
 
-#: src/io/image_format_fits.c:1194
+#: src/io/image_format_fits.c:1204
 #, c-format
 msgid "%s.[any_allowed_extension] not found.\n"
 msgstr "%s.[any_allowed_extension] δεν βρέθηκε.\n"
 
-#: src/io/image_format_fits.c:1201
+#: src/io/image_format_fits.c:1211
 #, c-format
 msgid ""
 "The file %s is not a FITS file or doesn't exists with FITS extensions.\n"
 msgstr "Το αρχείο %s δεν είναι αρχείο FITS ή δεν υπάρχει με προεκτάσεις FITS\n"
 
-#: src/io/image_format_fits.c:1220 src/io/image_format_fits.c:1330
-#: src/io/image_format_fits.c:2319
+#: src/io/image_format_fits.c:1230 src/io/image_format_fits.c:1340
+#: src/io/image_format_fits.c:2301
 #, c-format
 msgid "Selecting the primary header failed, is the FITS file '%s' malformed?\n"
 msgstr ""
 "Η επιλογή της κυρίως κεφαλίδας απέτυχε, είναι το αρχείο FITS '%s' "
 "αλλοιωμένο;\n"
 
-#: src/io/image_format_fits.c:1229
+#: src/io/image_format_fits.c:1239
 #, c-format
 msgid "FITSIO error getting image parameters, file %s.\n"
 msgstr "Σφάλμα FITSIO στην λήψη των παραμέτρων εικόνας, αρχείο %s.\n"
 
-#: src/io/image_format_fits.c:1242
+#: src/io/image_format_fits.c:1252
 #, c-format
 msgid ""
 "The FITS image contains more than 3 channels (%ld). Opening only the three "
 "first.\n"
 msgstr ""
 
-#: src/io/image_format_fits.c:1273
+#: src/io/image_format_fits.c:1283
 #, c-format
 msgid "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
 "Γίνεται ανάγνωση του FITS: αρχείο %s, %ld επίπεδο(α), %ux%u εικονοστοιχεία\n"
 
-#: src/io/image_format_fits.c:1354
+#: src/io/image_format_fits.c:1364
 #, c-format
 msgid "FITS read partial: there is no layer %d in the image %s\n"
 msgstr "Μερική ανάγνωση FITS: δεν υπάρχει επίπεδο %d στην εικόνα %s\n"
 
-#: src/io/image_format_fits.c:1362
+#: src/io/image_format_fits.c:1372
 #, c-format
 msgid "Unsupported FITS image format (%ld axes).\n"
 msgstr "Άγνωστος τύπος εικόνας FITS (%ld άξονες).\n"
 
-#: src/io/image_format_fits.c:1437
+#: src/io/image_format_fits.c:1447
 #, c-format
 msgid "Loaded partial FITS file %s\n"
 msgstr "Έγινε μερική φόρτωση του αρχείου FITS %s\n"
 
-#: src/io/image_format_fits.c:1516
+#: src/io/image_format_fits.c:1526
 msgid "Unknown FITS compression method in internal conversion\n"
 msgstr "Άγνωστη μέθοδος συμπίεσης FITS στην εσωτερική μετατροπή\n"
 
-#: src/io/image_format_fits.c:1590
+#: src/io/image_format_fits.c:1600
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
 "Γίνεται αποθήκευση του FITS: αρχείο %s, %ld επίπεδο(α), %ux%u "
 "εικονοστοιχεία\n"
 
-#: src/io/image_format_fits.c:1671
+#: src/io/image_format_fits.c:1681
 #, c-format
 msgid "ERROR: trying to save a FITS image with an unsupported format (%d).\n"
 msgstr ""
 "ΣΦΑΛΜΑ: γίνεται προσπάθεια αποθήκευσης εικόνας FITS σε μη υποστηριζόμενο "
 "τύπο (%d).\n"
 
-#: src/io/image_format_fits.c:2344 src/io/ser.c:1381
+#: src/io/image_format_fits.c:2326 src/io/ser.c:1392
 msgid "frame"
 msgid_plural "frames"
 msgstr[0] "καρέ"
 msgstr[1] "καρέ"
 
-#: src/io/image_format_fits.c:2344 src/io/image_format_fits.c:2349
-#: src/io/ser.c:1381
+#: src/io/image_format_fits.c:2326 src/io/image_format_fits.c:2331
+#: src/io/ser.c:1392
 msgid "(Monochrome Preview)"
 msgstr "(Μονόχρωμη προεπισκόπηση)"
 
@@ -9705,52 +9731,52 @@ msgstr ""
 msgid "Siril cannot create TIFF file.\n"
 msgstr "Το Siril δεν μπορεί να δημιουργήσει αρχείο TIFF.\n"
 
-#: src/io/image_formats_libraries.c:461
+#: src/io/image_formats_libraries.c:460
 msgid "TIFF file has unexpected number of channels (not 1 or 3).\n"
 msgstr "Το αρχείο TIFF έχει ένα απροσδόκητο αριθμό καναλιών (όχι 1 ή 3).\n"
 
-#: src/io/image_formats_libraries.c:557
+#: src/io/image_formats_libraries.c:556
 #, c-format
 msgid "Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
 "Γίνεται αποθήκευση του TIFF: %d-bit αρχείο %s, %ld επίπεδο(α), %ux%u "
 "εικονοστοιχεία\n"
 
-#: src/io/image_formats_libraries.c:574 src/io/image_formats_libraries.c:737
+#: src/io/image_formats_libraries.c:573 src/io/image_formats_libraries.c:736
 #, c-format
 msgid "Sorry but Siril cannot open the file: %s.\n"
 msgstr "Συγγνώμη αλλά το Siril δεν μπορεί να ανοίξει το αρχείο: %s.\n"
 
-#: src/io/image_formats_libraries.c:625
+#: src/io/image_formats_libraries.c:624
 #, c-format
 msgid "Reading JPG: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
 "Γίνεται ανάγνωση του JPG: αρχείο %s, %ld επίπεδο(α), %ux%u εικονοστοιχεία\n"
 
-#: src/io/image_formats_libraries.c:648
+#: src/io/image_formats_libraries.c:647
 msgid "Siril cannot create JPG file.\n"
 msgstr "Το Siril δεν μπορεί να δημιουργήσει το αρχείο JPG.\n"
 
-#: src/io/image_formats_libraries.c:721
+#: src/io/image_formats_libraries.c:720
 #, c-format
 msgid "Saving JPG: file %s, quality=%d%%, %ld layer(s), %ux%u pixels\n"
 msgstr ""
 "Γίνεται αποθήκευση του JPG: αρχείο %s, ποιότητα=%d%%, %ld επίπεδο(α), %ux%u "
 "εικονοστοιχεία\n"
 
-#: src/io/image_formats_libraries.c:860
+#: src/io/image_formats_libraries.c:859
 #, c-format
 msgid "Reading PNG: %d-bit file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
 "Γίνεται ανάγνωση του PNG: %d-bit αρχείο %s, %ld επίπεδο(α), %ux%u "
 "εικονοστοιχεία\n"
 
-#: src/io/image_formats_libraries.c:1036
+#: src/io/image_formats_libraries.c:1035
 #, c-format
 msgid "Saving PNG: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Αποθήκευση του PNG: αρχείο %s, %ld επίπεδο(α), %ux%u εικονοστοιχεία\n"
 
-#: src/io/image_formats_libraries.c:1145
+#: src/io/image_formats_libraries.c:1144
 #, c-format
 msgid "Error in libraw %s.\n"
 msgstr "Σφάλμα στο libraw %s.\n"
@@ -9758,43 +9784,43 @@ msgstr "Σφάλμα στο libraw %s.\n"
 # eg. Decoding 30% DSC001 file (ISO=800, Exposure=30) correct example?
 # No.
 # Decoding Canon EOS 500D file (ISO=800, Exposure=10s)
-#: src/io/image_formats_libraries.c:1152
+#: src/io/image_formats_libraries.c:1151
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%gs)\n"
 msgstr "Αποκωδικοποίηση του αρχείου από %s %s (ISO=%g, Έκθεση=%gs)\n"
 
 # Decoding Canon EOS 500D file (ISO=800, Exposure=10s)
-#: src/io/image_formats_libraries.c:1155
+#: src/io/image_formats_libraries.c:1154
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%gs)\n"
 msgstr "Αποκωδικοποίηση του αρχείου %s %s (ISO=%g, Έκθεση=1/%gs)\n"
 
-#: src/io/image_formats_libraries.c:1175 src/io/image_formats_libraries.c:1184
+#: src/io/image_formats_libraries.c:1174 src/io/image_formats_libraries.c:1183
 #, c-format
 msgid "Daylight multipliers: %f, %f, %f\n"
 msgstr "Πολλαπλασιαστές φωτός ημέρας: %f, %f, %f\n"
 
-#: src/io/image_formats_libraries.c:1189
+#: src/io/image_formats_libraries.c:1188
 msgid "XTRANS Sensor detected.\n"
 msgstr "Ανιχνεύτηκε αισθητήρας XTRANS.\n"
 
-#: src/io/image_formats_libraries.c:1195
+#: src/io/image_formats_libraries.c:1194
 msgid "Bilinear interpolation...\n"
 msgstr "Διγραμμική παρεμβολή...\n"
 
-#: src/io/image_formats_libraries.c:1199
+#: src/io/image_formats_libraries.c:1198
 msgid "VNG interpolation...\n"
 msgstr "Παρεμβολή VNG...\n"
 
-#: src/io/image_formats_libraries.c:1203
+#: src/io/image_formats_libraries.c:1202
 msgid "PPG interpolation...\n"
 msgstr "Παρεμβολή PPG...\n"
 
-#: src/io/image_formats_libraries.c:1208
+#: src/io/image_formats_libraries.c:1207
 msgid "AHD interpolation...\n"
 msgstr "Παρεμβολή AHD...\n"
 
-#: src/io/image_formats_libraries.c:1362
+#: src/io/image_formats_libraries.c:1361
 msgid ""
 "Siril cannot open this file in CFA mode (no data available). Try to switch "
 "into RGB.\n"
@@ -9802,54 +9828,54 @@ msgstr ""
 "Το Siril δεν μπορεί να ανοίξει αυτό το αρχείο σε λειτουργία CFA (δεν "
 "υπάρχουν διαθέσιμα δεδομένα). Δοκιμάστε να γυρίσετε σε RGB.\n"
 
-#: src/io/image_formats_libraries.c:1391
+#: src/io/image_formats_libraries.c:1390
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=1/%0.1f sec)\n"
 msgstr "Γίνεται αποκωδικοποίηση %s %s αρχείο (ISO=%g, Έκθεση=1/%0.1f sec)\n"
 
-#: src/io/image_formats_libraries.c:1394
+#: src/io/image_formats_libraries.c:1393
 #, c-format
 msgid "Decoding %s %s file (ISO=%g, Exposure=%0.1f sec)\n"
 msgstr "Γίνεται αποκωδικοποίηση %s %s αρχείο (ISO=%g, Έκθεση=%0.1f sec)\n"
 
-#: src/io/image_formats_libraries.c:1417
+#: src/io/image_formats_libraries.c:1416
 #, fuzzy, c-format
 msgid "Filter pattern: %s\n"
 msgstr "Διάταξη Φίλτρου: %s\n"
 
-#: src/io/image_formats_libraries.c:1483
+#: src/io/image_formats_libraries.c:1482
 #, c-format
 msgid "Reading RAW: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
 "Γίνεται ανάγνωση του RAW: αρχείο %s, %ld επίπεδο(α), %ux%u εικονοστοιχεία\n"
 
-#: src/io/image_formats_libraries.c:1534
+#: src/io/image_formats_libraries.c:1533
 msgid "primary"
 msgstr "κυρίως"
 
-#: src/io/image_formats_libraries.c:1643
+#: src/io/image_formats_libraries.c:1642
 msgid "Load HEIF image content"
 msgstr "Φόρτωμα περιεχομένου εικόνας HEIF"
 
-#: src/io/image_formats_libraries.c:1645
+#: src/io/image_formats_libraries.c:1644
 msgid "_OK"
 msgstr "_OK"
 
-#: src/io/image_formats_libraries.c:1651
+#: src/io/image_formats_libraries.c:1650
 msgid "Select image"
 msgstr "Επιλέξτε εικόνα"
 
-#: src/io/image_formats_libraries.c:1756
+#: src/io/image_formats_libraries.c:1755
 msgid "Input file contains no readable images.\n"
 msgstr "Το αρχείο εισόδου δεν περιέχει αναγνώσιμες εικόνες.\n"
 
-#: src/io/image_formats_libraries.c:1783
+#: src/io/image_formats_libraries.c:1782
 #, c-format
 msgid "This is a sequence of %d images: loading the primary one.\n"
 msgstr ""
 "Αυτή είναι μια αλληλουχία %d εικόνων: γίνεται φόρτωση της κυρίως εικόνας.\n"
 
-#: src/io/image_formats_libraries.c:1861
+#: src/io/image_formats_libraries.c:1860
 #, c-format
 msgid "Reading HEIF: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr ""
@@ -10115,7 +10141,7 @@ msgstr "Γίνεται προσπάθεια για επιδιόρθωση το �
 msgid "SER file has been fixed...\n"
 msgstr "Το αρχείο SER επιδιορθώθηκε...\n"
 
-#: src/io/ser.c:479
+#: src/io/ser.c:490
 msgid ""
 "Writing to SER files from larger than 16-bit FITS images is not yet "
 "implemented\n"
@@ -10124,35 +10150,35 @@ msgstr ""
 "εφαρμοστεί ακόμα\n"
 
 #. closes, frees and zeroes
-#: src/io/ser.c:619
+#: src/io/ser.c:630
 #, c-format
 msgid "Removing failed SER file: %s\n"
 msgstr "Γίνεται αφαίρεση του αποτυχημένου αρχείου SER: %s\n"
 
-#: src/io/ser.c:628
+#: src/io/ser.c:639
 msgid "The SER sequence is being created with no image in it.\n"
 msgstr "Η αλληλουχία SER δημιουργείται χωρίς εικόνα σε αυτή.\n"
 
-#: src/io/ser.c:666
+#: src/io/ser.c:677
 msgid "Compacting SER file after parallel output to it...\n"
 msgstr "Συμπίεση του αρχείου SER μετά από παράλληλη έξοδο σε αυτό...\n"
 
-#: src/io/ser.c:756
+#: src/io/ser.c:767
 #, c-format
 msgid "Created SER file %s\n"
 msgstr "Το αρχείο SER δημιουργήθηκε %s\n"
 
-#: src/io/ser.c:941 src/io/ser.c:1179
+#: src/io/ser.c:952 src/io/ser.c:1190
 msgid "This type of Bayer pattern is not handled yet.\n"
 msgstr "Αυτή η διάταξη Bayer δεν υποστηρίζεται ακόμα.\n"
 
-#: src/io/ser.c:1127
+#: src/io/ser.c:1138
 msgid "For a demosaiced image, layer has to be R, G or B (0 to 2).\n"
 msgstr ""
 "Για μια εικόνα που έχει γίνει demosaic, το επίπεδο πρέπει να είναι R, G ή B "
 "(0 έως 2).\n"
 
-#: src/io/ser.c:1217
+#: src/io/ser.c:1228
 msgid "Trying to add an image of different size in a SER\n"
 msgstr ""
 "Γίνεται προσπάθεια προσθήκης μιας εικόνας διαφορετικού μεγέθους σε ένα SER\n"
