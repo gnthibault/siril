@@ -177,6 +177,12 @@ static void initialize_convert() {
 		g_list_free_full(list, g_free);
 		return;
 	}
+	if (debayer && symbolic_link) {
+		siril_message_dialog(GTK_MESSAGE_WARNING, _("A conflict has been detected."),
+				_("The symbolic link option is not allowed with the debayer one, please uncheck one option."));
+		g_list_free_full(list, g_free);
+		return;
+	}
 	if (multiple && there_is_a_ser) {
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("A conflict has been detected."),
 				_("The Multiple SER option is not allowed in SER conversion, please uncheck the option."));
@@ -186,13 +192,6 @@ static void initialize_convert() {
 	if (multiple && there_is_an_image) {
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("A conflict has been detected."),
 				_("Creating multiple SER can only be done with only films as input."));
-		g_list_free_full(list, g_free);
-		return;
-	}
-
-	if (debayer && symbolic_link) {
-		siril_message_dialog(GTK_MESSAGE_WARNING, _("A conflict has been detected."),
-				_("The symbolic link option is not allowed with the debayer one, please uncheck one option."));
 		g_list_free_full(list, g_free);
 		return;
 	}
