@@ -3210,38 +3210,6 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkCheckButton" id="demosaicingButton">
-                                    <property name="label" translatable="yes">Debayer</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Debayer single-channel images (CFA format) using the Bayer matrix layout given in the settings. Also applies to image opening, not only conversion.
-Only for RAW and FITS input images and SER films.
-Colour image target also applies to the debayer result for conversion.</property>
-                                    <property name="halign">start</property>
-                                    <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_demosaicing_toggled" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">3</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkCheckButton" id="multipleSER">
-                                    <property name="label" translatable="yes">Multiple SER</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Tick this to create several SER files instead of a single SER file for all input elements. Use this if input elements (films) don't share the same image size or must not be processed together.</property>
-                                    <property name="halign">start</property>
-                                    <property name="draw_indicator">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
                                   <object class="GtkButton" id="convert_button">
                                     <property name="label">gtk-convert</property>
                                     <property name="visible">True</property>
@@ -3287,22 +3255,67 @@ Note: FITS images will have no effect when the pre-processed sequence is SER or 
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkCheckButton" id="convert_symlink">
-                                    <property name="label" translatable="yes">Symbolic Link</property>
+                                  <object class="GtkBox">
                                     <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_markup" translatable="yes">Create a symbolic link for FITS files instead of copying them. This is useful to rename a sequence without duplicating files on the disk.
+                                    <property name="can_focus">False</property>
+                                    <child>
+                                      <object class="GtkCheckButton" id="multipleSER">
+                                        <property name="label" translatable="yes">Multiple SER</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">Tick this to create several SER files instead of a single SER file for all input elements. Use this if input elements (films) don't share the same image size or must not be processed together.</property>
+                                        <property name="halign">start</property>
+                                        <property name="draw_indicator">True</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="convert_symlink">
+                                        <property name="label" translatable="yes">Symbolic Link</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="tooltip_markup" translatable="yes">Create a symbolic link for FITS files instead of copying them. This is useful to rename a sequence without duplicating files on the disk.
 
 &lt;b&gt;WARNING: on Windows, the symbolic link operations are only possible in Development mode.&lt;/b&gt;</property>
-                                    <property name="halign">start</property>
-                                    <property name="active">True</property>
-                                    <property name="draw_indicator">True</property>
+                                        <property name="halign">start</property>
+                                        <property name="active">True</property>
+                                        <property name="draw_indicator">True</property>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkCheckButton" id="demosaicingButton">
+                                        <property name="label" translatable="yes">Debayer</property>
+                                        <property name="visible">True</property>
+                                        <property name="can_focus">True</property>
+                                        <property name="receives_default">False</property>
+                                        <property name="tooltip_text" translatable="yes">Debayer single-channel images (CFA format) using the Bayer matrix layout given in the settings. Also applies to image opening, not only conversion.
+Only for RAW and FITS input images and SER films.
+Colour image target also applies to the debayer result for conversion.</property>
+                                        <property name="halign">start</property>
+                                        <property name="draw_indicator">True</property>
+                                        <signal name="toggled" handler="on_demosaicing_toggled" swapped="no"/>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">2</property>
+                                      </packing>
+                                    </child>
                                   </object>
                                   <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">2</property>
-                                    <property name="width">4</property>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">1</property>
+                                    <property name="width">2</property>
                                   </packing>
                                 </child>
                               </object>
@@ -19904,6 +19917,48 @@ The technique gives very good compression for astronomical images and is relativ
                       </packing>
                     </child>
                     <child>
+                      <object class="GtkFrame" id="frame23">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label_xalign">0</property>
+                        <property name="shadow_type">none</property>
+                        <child>
+                          <object class="GtkAlignment" id="alignment24">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="left_padding">12</property>
+                            <child>
+                              <object class="GtkEntry" id="miscCopyright">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Copyright when saving image as TIFF</property>
+                                <property name="width_chars">50</property>
+                                <signal name="changed" handler="on_miscCopyright_changed" swapped="no"/>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel" id="label120">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_top">10</property>
+                            <property name="margin_bottom">10</property>
+                            <property name="label" translatable="yes">Copyright TIFF</property>
+                            <property name="single_line_mode">True</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                            </attributes>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkFrame" id="frame16">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -19934,48 +19989,6 @@ The technique gives very good compression for astronomical images and is relativ
                             <property name="margin_top">10</property>
                             <property name="margin_bottom">10</property>
                             <property name="label" translatable="yes">Warning Dialog</property>
-                            <property name="single_line_mode">True</property>
-                            <attributes>
-                              <attribute name="weight" value="bold"/>
-                            </attributes>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">3</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkFrame" id="frame23">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label_xalign">0</property>
-                        <property name="shadow_type">none</property>
-                        <child>
-                          <object class="GtkAlignment" id="alignment24">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="left_padding">12</property>
-                            <child>
-                              <object class="GtkEntry" id="miscCopyright">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="tooltip_text" translatable="yes">Copyright when saving image as TIFF</property>
-                                <property name="width_chars">50</property>
-                                <signal name="changed" handler="on_miscCopyright_changed" swapped="no"/>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child type="label">
-                          <object class="GtkLabel" id="label120">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_top">10</property>
-                            <property name="margin_bottom">10</property>
-                            <property name="label" translatable="yes">Copyright TIFF</property>
                             <property name="single_line_mode">True</property>
                             <attributes>
                               <attribute name="weight" value="bold"/>
@@ -20074,7 +20087,7 @@ The technique gives very good compression for astronomical images and is relativ
                         <property name="fill">True</property>
                         <property name="position">6</property>
                       </packing>
-                    </child>                    
+                    </child>
                   </object>
                   <packing>
                     <property name="name">preferences_p7</property>
