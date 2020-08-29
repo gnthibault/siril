@@ -1112,7 +1112,11 @@ void set_GUI_misc() {
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskQuit"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.save.quit);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskUpdateStartup"));
+#ifdef HAVE_LIBCURL
 	gtk_toggle_button_set_active(ToggleButton, com.pref.check_update);
+#else
+	gtk_widget_set_visible(lookup_widget("frame24"), FALSE);
+#endif
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskScript"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.save.script);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("show_preview_button"));

@@ -317,8 +317,10 @@ static void siril_app_activate(GApplication *application) {
 		/* Load state of the main windows (position and maximized) */
 		load_main_window_state();
 		/* Check for update */
+#ifdef HAVE_LIBCURL
 		if (com.pref.check_update)
 			siril_check_updates(FALSE);
+#endif
 #if 0 //we need to think about it
 		/* see https://gitlab.gnome.org/GNOME/gtk/issues/2342 */
 		NSEvent *focusevent;
