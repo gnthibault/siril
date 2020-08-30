@@ -2844,11 +2844,12 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                                   <object class="GtkDrawingArea" id="drawingareargb">
                                     <property name="visible">True</property>
                                     <property name="can_focus">False</property>
-                                    <property name="events">GDK_BUTTON_PRESS_MASK | GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK | GDK_SCROLL_MASK</property>
+                                    <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK | GDK_SCROLL_MASK</property>
                                     <signal name="button-press-event" handler="on_drawingarea_button_press_event" swapped="no"/>
                                     <signal name="button-release-event" handler="on_drawingarea_button_release_event" swapped="no"/>
                                     <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
                                     <signal name="popup-menu" handler="rgb_area_popup_menu_handler" swapped="no"/>
+									<signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
                                     <signal name="scroll-event" handler="on_drawingarea_scroll_event" object="zoom_to_fit_check_button" swapped="no"/>
                                   </object>
                                 </child>

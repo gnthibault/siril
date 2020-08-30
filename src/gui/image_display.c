@@ -34,6 +34,14 @@
 
 #include "image_display.h"
 
+typedef struct draw_data {
+	cairo_t *cr;
+	int vport;
+	double zoom;
+	cairo_filter_t filter;
+	guint image_width, image_height;
+	guint window_width, window_height;
+} draw_data_t;
 
 /* remap index data, an index for each layer */
 static BYTE *remap_index[MAXGRAYVPORT];
@@ -43,116 +51,6 @@ static display_mode last_mode[MAXGRAYVPORT];
 /* STF (auto-stretch) data */
 static gboolean stfComputed;	// Flag to know if STF parameters are available
 static float stfShadows, stfHighlights, stfM;
-
-void initialize_image_display() {
-	int i;
-	for (i = 0; i < MAXGRAYVPORT; i++) {
-		remap_index[i] = NULL;
-		last_pente[i] = 0.f;
-		last_mode[i] = HISTEQ_DISPLAY;
-		// only HISTEQ mode always computes the index, it's a good initializer here
-	}
-}
-
-/* this function calculates the "fit to window" zoom values, given the window
- * size in argument and the image size in gfit.
- * Should not be called before displaying the main gray window when using zoom to fit */
-double get_zoom_val() {
-	int window_width, window_height;
-	double wtmp, htmp;
-	static GtkWidget *scrolledwin = NULL;
-	if (scrolledwin == NULL)
-		scrolledwin = lookup_widget("scrolledwindowr");
-	if (com.zoom_value > 0.)
-		return com.zoom_value;
-	/* else if zoom is < 0, it means fit to window */
-	window_width = gtk_widget_get_allocated_width(scrolledwin);
-	window_height = gtk_widget_get_allocated_height(scrolledwin);
-	if (gfit.rx == 0 || gfit.ry == 0 || window_height <= 1 || window_width <= 1)
-		return 1.0;
-	wtmp = (double) window_width / (double) gfit.rx;
-	htmp = (double) window_height / (double) gfit.ry;
-	return min(wtmp, htmp);
-}
-
-void adjust_vport_size_to_image() {
-	if (com.script) return;
-	int vport;
-	// make GtkDrawingArea the same size than the image
-	// http://developer.gnome.org/gtk3/3.4/GtkWidget.html#gtk-widget-set-size-request
-	double zoom = get_zoom_val();
-	int w, h;
-	if (zoom <= 0)
-		return;
-	w = (int) (((double) gfit.rx) * zoom);
-	h = (int) (((double) gfit.ry) * zoom);
-	for (vport = 0; vport < MAXVPORT; vport++)
-		gtk_widget_set_size_request(com.vport[vport], w, h);
-	siril_debug_print("set new vport size (%d, %d)\n", w, h);
-}
-
-static void draw_empty_image(cairo_t *cr, guint width, guint height) {
-	cairo_rectangle(cr, 0, 0, width, height);
-	cairo_fill(cr);
-
-	/* Create pixbuf */
-	gchar *image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "siril.svg", NULL);
-	GdkPixbuf *pix = gdk_pixbuf_new_from_file(image, NULL);
-	int pix_w = gdk_pixbuf_get_width(pix);
-	int pix_h = gdk_pixbuf_get_height(pix);
-
-	gdk_cairo_set_source_pixbuf(cr, pix, (width - pix_w) / 2, (height - pix_h) / 2);
-	cairo_paint(cr);
-	cairo_fill(cr);
-
-#ifdef SIRIL_UNSTABLE
-	{
-		GtkWidget *widget = lookup_widget("drawingareargb");
-		GtkStyleContext *context = gtk_widget_get_style_context(widget);
-		GtkStateFlags state = gtk_widget_get_state_flags(widget);
-		PangoLayout *layout;
-		gchar *msg;
-		GtkAllocation allocation;
-		gdouble scale;
-		GdkRGBA color;
-		gint w, h;
-
-		layout = gtk_widget_create_pango_layout(widget, NULL);
-
-		msg = g_strdup_printf(_("<big>Unstable Development Version</big>\n\n"
-				"<small>commit <tt>%s</tt></small>\n\n"
-				"<small>Please test bugs against "
-				"latest git master branch\n"
-				"before reporting them.</small>"),
-				SIRIL_GIT_VERSION_ABBREV);
-		pango_layout_set_markup(layout, msg, -1);
-		g_free(msg);
-		pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
-
-		pango_layout_get_pixel_size(layout, &w, &h);
-		gtk_widget_get_allocation(widget, &allocation);
-
-		scale = MIN(((gdouble ) allocation.width / 2.0) / (gdouble ) w,
-				((gdouble ) allocation.height / 2.0) / (gdouble ) h / 2);
-
-		gtk_style_context_get_color(context, state, &color);
-		gdk_cairo_set_source_rgba(cr, &color);
-
-		cairo_move_to(cr, (allocation.width - (w * scale)) / 2,
-				(allocation.height - (h * scale)) / 2 - pix_h);
-
-		cairo_scale(cr, scale, scale);
-
-		pango_cairo_show_layout(cr, layout);
-
-		g_object_unref(layout);
-	}
-#endif /* SIRIL_UNSTABLE */
-	g_free(image);
-	if (pix != NULL) {
-		g_object_unref(pix);
-	}
-}
 
 static void remaprgb(void) {
 	uint32_t *dst;
@@ -221,6 +119,7 @@ static void remaprgb(void) {
 
 static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 		int vport);
+
 static int make_index_for_rainbow(BYTE index[][3]);
 
 static void remap(int vport) {
@@ -551,6 +450,280 @@ static int make_index_for_rainbow(BYTE index[][3]) {
 	return 0;
 }
 
+static void draw_empty_image(const draw_data_t* dd) {
+	cairo_t *cr = dd->cr;
+	guint width = dd->window_width;
+	guint height = dd->window_height;
+
+	cairo_rectangle(cr, 0, 0, width, height);
+	cairo_fill(cr);
+
+	int pix_w = gdk_pixbuf_get_width(com.siril_pix);
+	int pix_h = gdk_pixbuf_get_height(com.siril_pix);
+
+	gdk_cairo_set_source_pixbuf(cr, com.siril_pix, (width - pix_w) / 2, (height - pix_h) / 2);
+	cairo_paint(cr);
+	cairo_fill(cr);
+
+#ifdef SIRIL_UNSTABLE
+	{
+		GtkWidget *widget = lookup_widget("drawingareargb");
+		GtkStyleContext *context = gtk_widget_get_style_context(widget);
+		GtkStateFlags state = gtk_widget_get_state_flags(widget);
+		PangoLayout *layout;
+		gchar *msg;
+		GtkAllocation allocation;
+		gdouble scale;
+		GdkRGBA color;
+		gint w, h;
+
+		layout = gtk_widget_create_pango_layout(widget, NULL);
+
+		msg = g_strdup_printf(_("<big>Unstable Development Version</big>\n\n"
+				"<small>commit <tt>%s</tt></small>\n\n"
+				"<small>Please test bugs against "
+				"latest git master branch\n"
+				"before reporting them.</small>"),
+				SIRIL_GIT_VERSION_ABBREV);
+		pango_layout_set_markup(layout, msg, -1);
+		g_free(msg);
+		pango_layout_set_alignment(layout, PANGO_ALIGN_CENTER);
+
+		pango_layout_get_pixel_size(layout, &w, &h);
+		gtk_widget_get_allocation(widget, &allocation);
+
+		scale = MIN(((gdouble ) allocation.width / 2.0) / (gdouble ) w,
+				((gdouble ) allocation.height / 2.0) / (gdouble ) h / 2);
+
+		gtk_style_context_get_color(context, state, &color);
+		gdk_cairo_set_source_rgba(cr, &color);
+
+		cairo_move_to(cr, (allocation.width - (w * scale)) / 2,
+				(allocation.height - (h * scale)) / 2 - pix_h);
+
+		cairo_scale(cr, scale, scale);
+
+		pango_cairo_show_layout(cr, layout);
+
+		g_object_unref(layout);
+	}
+#endif /* SIRIL_UNSTABLE */
+}
+
+static void draw_vport(const draw_data_t* dd) {
+	cairo_set_source_surface(dd->cr, com.surface[dd->vport], 0, 0);
+	cairo_pattern_set_filter(cairo_get_source(dd->cr), dd->filter);
+	cairo_paint(dd->cr);
+}
+
+static void draw_main_image(const draw_data_t* dd) {
+	if ((dd->vport == RGB_VPORT && com.rgbbuf) || com.graybuf[dd->vport]) {
+		draw_vport(dd);
+	} else {
+		draw_empty_image(dd);
+	}
+}
+
+static void draw_selection(const draw_data_t* dd) {
+	if (com.selection.w > 0 && com.selection.h > 0) {
+		static double dash_format[] = { 4.0, 2.0 };
+		cairo_set_line_width(dd->cr, 0.8 / dd->zoom);
+		cairo_set_dash(dd->cr, dash_format, 2, 0);
+		cairo_set_source_rgb(dd->cr, 0.8, 1.0, 0.8);
+		cairo_rectangle(dd->cr, (double) com.selection.x, (double) com.selection.y,
+						(double) com.selection.w, (double) com.selection.h);
+		cairo_stroke(dd->cr);
+	}
+}
+
+static void draw_stars(const draw_data_t* dd) {
+	cairo_t *cr = dd->cr;
+	int i = 0;
+
+	if (com.stars && !com.script) {
+		/* com.stars is a NULL-terminated array */
+		cairo_set_dash(cr, NULL, 0, 0);
+		cairo_set_source_rgba(cr, 1.0, 0.4, 0.0, 0.9);
+		cairo_set_line_width(cr, 1.5 / dd->zoom);
+
+		while (com.stars[i]) {
+			double size = com.stars[i]->sx;
+
+			if (i == com.selected_star) {
+				// We draw horizontal and vertical lines to show the star
+				cairo_set_line_width(cr, 2.0 / dd->zoom);
+				cairo_set_source_rgba(cr, 0.0, 0.4, 1.0, 0.6);
+
+				cairo_move_to(cr, com.stars[i]->xpos, 0);
+				cairo_line_to(cr, com.stars[i]->xpos, dd->image_height);
+				cairo_stroke(cr);
+				cairo_move_to(cr, 0, com.stars[i]->ypos);
+				cairo_line_to(cr, dd->image_width, com.stars[i]->ypos);
+				cairo_stroke(cr);
+
+				cairo_set_source_rgba(cr, 1.0, 0.4, 0.0, 0.9);
+				cairo_set_line_width(cr, 1.5 / dd->zoom);
+			}
+			cairo_arc(cr, com.stars[i]->xpos, com.stars[i]->ypos, size, 0., 2. * M_PI);
+			cairo_stroke(cr);
+			i++;
+		}
+	}
+
+	if (sequence_is_loaded() && com.seq.current >= 0) {
+		/* draw seqpsf stars */
+		for (i = 0; i < MAX_SEQPSF && com.seq.photometry[i]; i++) {
+			cairo_set_dash(cr, NULL, 0, 0);
+			cairo_set_source_rgba(cr, com.seq.photometry_colors[i][0],
+								  com.seq.photometry_colors[i][1],
+								  com.seq.photometry_colors[i][2], 1.0);
+			cairo_set_line_width(cr, 2.0 / dd->zoom);
+			fitted_PSF *the_psf = com.seq.photometry[i][com.seq.current];
+			if (the_psf) {
+				double size = the_psf->sx;
+				cairo_arc(cr, the_psf->xpos, the_psf->ypos, size, 0., 2. * M_PI);
+				cairo_stroke(cr);
+				cairo_arc(cr, the_psf->xpos, the_psf->ypos, com.pref.phot_set.inner, 0.,
+						  2. * M_PI);
+				cairo_stroke(cr);
+				cairo_arc(cr, the_psf->xpos, the_psf->ypos, com.pref.phot_set.outer, 0.,
+						  2. * M_PI);
+				cairo_stroke(cr);
+				cairo_select_font_face(cr, "Purisa", CAIRO_FONT_SLANT_NORMAL,
+									   CAIRO_FONT_WEIGHT_BOLD);
+				cairo_set_font_size(cr, 40);
+				cairo_move_to(cr, the_psf->xpos + com.pref.phot_set.outer + 5, the_psf->ypos);
+				if (i == 0) {
+					cairo_show_text(cr, "V");
+				}
+				else {
+					gchar *tmp;
+					tmp = g_strdup_printf("%d", i);
+					cairo_show_text(cr, tmp);
+
+					g_free(tmp);
+				}
+				cairo_stroke(cr);
+			}
+		}
+
+		/* draw a cross on excluded images */
+		if (com.seq.imgparam && com.seq.current >= 0 &&
+				!com.seq.imgparam[com.seq.current].incl) {
+			int w = dd->image_width > gfit.rx ? gfit.rx : dd->image_width;
+			int h = dd->image_height > gfit.ry ? gfit.ry : dd->image_height;
+			cairo_set_dash(cr, NULL, 0, 0);
+			cairo_set_source_rgb(cr, 1.0, 0.8, 0.7);
+			cairo_set_line_width(cr, 2.0 / dd->zoom);
+			cairo_move_to(cr, 0, 0);
+			cairo_line_to(cr, w, h);
+			cairo_move_to(cr, 0, h);
+			cairo_line_to(cr, w, 0.0);
+			cairo_stroke(cr);
+		}
+
+		/* draw preview rectangles for the manual registration */
+		for (i = 0; i < PREVIEW_NB; i++) {
+			if (com.seq.previewX[i] >= 0) {
+				int textX, textY;
+				gchar *text;
+				cairo_set_line_width(cr, 1.0 / dd->zoom);
+				cairo_set_source_rgb(cr, 0.1, 0.6, 0.0);
+				cairo_rectangle(cr,
+						com.seq.previewX[i] - com.seq.previewW[i] / 2,
+						com.seq.previewY[i] - com.seq.previewH[i] / 2,
+						com.seq.previewW[i], com.seq.previewH[i]);
+				cairo_stroke(cr);
+
+				textX = com.seq.previewX[i] - com.seq.previewW[i] / 2;
+				textX += 0.1 * com.seq.previewW[i];
+
+				textY = com.seq.previewY[i] - com.seq.previewH[i] / 2;
+				textY += 0.1 * com.seq.previewH[i];
+
+				text = g_strdup_printf("%d", i + 1);
+
+				cairo_set_font_size(cr, 12.0 / dd->zoom);
+				cairo_move_to(cr, textX, textY);
+				cairo_show_text(cr, text);
+				g_free(text);
+			}
+		}
+	}
+}
+
+static void draw_brg_boxes(const draw_data_t* dd) {
+	GSList *list;
+	for (list = com.grad_samples; list; list = list->next) {
+		background_sample *sample = (background_sample *)list->data;
+		if (sample->valid) {
+			int radius = (int) (sample->size / 2);
+			cairo_set_line_width(dd->cr, 1.5 / dd->zoom);
+			cairo_set_source_rgba(dd->cr, 0.2, 1.0, 0.3, 1.0);
+			cairo_rectangle(dd->cr, sample->position.x - radius, sample->position.y - radius,
+							sample->size, sample->size);
+			cairo_stroke(dd->cr);
+		}
+	}
+}
+
+static gboolean redraw_idle(gpointer p) {
+	redraw(com.cvport, GPOINTER_TO_INT(p)); // draw stars
+	return FALSE;
+}
+
+void initialize_image_display() {
+	int i;
+	for (i = 0; i < MAXGRAYVPORT; i++) {
+		remap_index[i] = NULL;
+		last_pente[i] = 0.f;
+		last_mode[i] = HISTEQ_DISPLAY;
+		// only HISTEQ mode always computes the index, it's a good initializer here
+	}
+
+	/* Create pixbuf from siril.svg file */
+	gchar *image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "siril.svg", NULL);
+	com.siril_pix = gdk_pixbuf_new_from_file(image, NULL);
+	g_free(image);
+
+	cairo_matrix_init_identity(&com.display_matrix);
+}
+
+/* this function calculates the "fit to window" zoom values, given the window
+ * size in argument and the image size in gfit.
+ * Should not be called before displaying the main gray window when using zoom to fit */
+double get_zoom_val() {
+	int window_width, window_height;
+	double wtmp, htmp;
+	static GtkWidget *scrolledwin = NULL;
+	if (scrolledwin == NULL)
+		scrolledwin = lookup_widget("scrolledwindowr");
+	if (com.zoom_value > 0.)
+		return com.zoom_value;
+	/* else if zoom is < 0, it means fit to window */
+	window_width = gtk_widget_get_allocated_width(scrolledwin);
+	window_height = gtk_widget_get_allocated_height(scrolledwin);
+	if (gfit.rx == 0 || gfit.ry == 0 || window_height <= 1 || window_width <= 1)
+		return 1.0;
+	wtmp = (double) window_width / (double) gfit.rx;
+	htmp = (double) window_height / (double) gfit.ry;
+	return min(wtmp, htmp);
+}
+
+void adjust_vport_size_to_image() {
+	if (com.script) return;
+	double zoom = get_zoom_val();
+	if (zoom <= 0.0) return;
+	/* Init display matrix from current display state */
+	cairo_matrix_init(&com.display_matrix,
+					  zoom, 0, 0, zoom,
+					  com.display_offset_x,
+					  com.display_offset_y);
+	/* Compute the inverse display matrix used for coordinate transformation */
+	com.image_matrix = com.display_matrix;
+	cairo_matrix_invert(&com.image_matrix);
+}
+
 void redraw(int vport, int doremap) {
 	if (com.script) return;
 	GtkWidget *widget;
@@ -602,12 +775,8 @@ void redraw(int vport, int doremap) {
 	}
 }
 
-static gboolean redraw_idle(gpointer p) {
-	redraw(com.cvport, GPOINTER_TO_INT(p)); // draw stars
-	return FALSE;
-}
-
-void queue_redraw(int doremap) {	// request a redraw from another thread
+void queue_redraw(int doremap) {
+	// request a redraw from another thread
 	siril_add_idle(redraw_idle, GINT_TO_POINTER(doremap));
 }
 
@@ -618,184 +787,42 @@ void queue_redraw(int doremap) {	// request a redraw from another thread
  * http://www.cairographics.org/manual/cairo-Image-Surfaces.html#cairo-image-surface-create-for-data
  */
 gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
-	int image_width, image_height, window_width, window_height;
-	int vport, i = 0;
-	double zoom;
-	cairo_filter_t filter;
+	draw_data_t dd;
 
 	// we need to identify which vport is being redrawn
-	vport = match_drawing_area_widget(widget, TRUE);
-	if (vport == -1) {
+	dd.vport = match_drawing_area_widget(widget, TRUE);
+	if (dd.vport == -1) {
 		fprintf(stderr, "Could not find the vport for the draw callback\n");
 		return TRUE;
 	}
 
-	window_width = gtk_widget_get_allocated_width(widget);
-	window_height = gtk_widget_get_allocated_height(widget);
-	zoom = get_zoom_val();
-	image_width = (int) (((double) window_width) / zoom);
-	image_height = (int) (((double) window_height) / zoom);
+	/* catch and compute rendering data */
+	dd.cr = cr;
+	dd.window_width = gtk_widget_get_allocated_width(widget);
+	dd.window_height = gtk_widget_get_allocated_height(widget);
+	dd.zoom = get_zoom_val();
+	dd.image_width = (int) (((double) dd.window_width) / dd.zoom);
+	dd.image_height = (int) (((double) dd.window_height) / dd.zoom);
+	dd.filter = (dd.zoom < 1.0) ? CAIRO_FILTER_GOOD : CAIRO_FILTER_FAST;
 
-	filter = (zoom < 1.0) ? CAIRO_FILTER_GOOD : CAIRO_FILTER_FAST;
+	cairo_save(cr);
 
-	/* draw the RGB and gray images */
-	if (vport == RGB_VPORT) {
-		if (com.rgbbuf) {
-			cairo_scale(cr, zoom, zoom);
-			cairo_set_source_surface(cr, com.surface[RGB_VPORT], 0, 0);
-			cairo_pattern_set_filter(cairo_get_source(cr), filter);
-			cairo_paint(cr);
-		} else {
-			draw_empty_image(cr, window_width, window_height);
-		}
-	} else {
-		if (com.graybuf[vport]) {
-			cairo_scale(cr, zoom, zoom);
-			cairo_set_source_surface(cr, com.surface[vport], 0, 0);
-			cairo_pattern_set_filter(cairo_get_source(cr), filter);
-			cairo_paint(cr);
-		} else {
-			draw_empty_image(cr, window_width, window_height);
-		}
-	}
+	/* change to image coordinates */
+	cairo_transform(cr, &com.display_matrix);
 
-	/* draw the selection rectangle */
-	if (com.selection.w > 0 && com.selection.h > 0) {
-		static double dash_format[] = { 4.0, 2.0 };
-		cairo_set_line_width(cr, 0.8 / zoom);
-		cairo_set_dash(cr, dash_format, 2, 0);
-		cairo_set_source_rgb(cr, 0.8, 1.0, 0.8);
-		cairo_rectangle(cr, (double) com.selection.x, (double) com.selection.y,
-				(double) com.selection.w, (double) com.selection.h);
-		cairo_stroke(cr);
-	}
+	/* RGB or gray images */
+	draw_main_image(&dd);
 
-	/* draw detected stars and highlight the selected star */
-	if (com.stars && !com.script) {
-		/* com.stars is a NULL-terminated array */
-		cairo_set_dash(cr, NULL, 0, 0);
-		cairo_set_source_rgba(cr, 1.0, 0.4, 0.0, 0.9);
-		cairo_set_line_width(cr, 1.5 / zoom);
+	/* selection rectangle */
+	draw_selection(&dd);
 
-		while (com.stars[i]) {
-			double size = com.stars[i]->sx;
+	/* detected stars and highlight the selected star */
+	draw_stars(&dd);
 
-			if (i == com.selected_star) {
-				// We draw horizontal and vertical lines to show the star
-				cairo_set_line_width(cr, 2.0 / zoom);
-				cairo_set_source_rgba(cr, 0.0, 0.4, 1.0, 0.6);
+	/* background removal gradient selection boxes */
+	draw_brg_boxes(&dd);
 
-				cairo_move_to(cr, com.stars[i]->xpos, 0);
-				cairo_line_to(cr, com.stars[i]->xpos, image_height);
-				cairo_stroke(cr);
-				cairo_move_to(cr, 0, com.stars[i]->ypos);
-				cairo_line_to(cr, image_width, com.stars[i]->ypos);
-				cairo_stroke(cr);
+	cairo_restore(cr);
 
-				cairo_set_source_rgba(cr, 1.0, 0.4, 0.0, 0.9);
-				cairo_set_line_width(cr, 1.5 / zoom);
-			}
-			cairo_arc(cr, com.stars[i]->xpos, com.stars[i]->ypos, size, 0., 2. * M_PI);
-			cairo_stroke(cr);
-			i++;
-		}
-	}
-
-	if (sequence_is_loaded() && com.seq.current >= 0) {
-		/* draw seqpsf stars */
-		for (i = 0; i < MAX_SEQPSF && com.seq.photometry[i]; i++) {
-			cairo_set_dash(cr, NULL, 0, 0);
-			cairo_set_source_rgba(cr, com.seq.photometry_colors[i][0],
-					com.seq.photometry_colors[i][1],
-					com.seq.photometry_colors[i][2], 1.0);
-			cairo_set_line_width(cr, 2.0 / zoom);
-			fitted_PSF *the_psf = com.seq.photometry[i][com.seq.current];
-			if (the_psf) {
-				double size = the_psf->sx;
-				cairo_arc(cr, the_psf->xpos, the_psf->ypos, size, 0., 2. * M_PI);
-				cairo_stroke(cr);
-				cairo_arc(cr, the_psf->xpos, the_psf->ypos, com.pref.phot_set.inner, 0.,
-						2. * M_PI);
-				cairo_stroke(cr);
-				cairo_arc(cr, the_psf->xpos, the_psf->ypos, com.pref.phot_set.outer, 0.,
-						2. * M_PI);
-				cairo_stroke(cr);
-				cairo_select_font_face(cr, "Purisa", CAIRO_FONT_SLANT_NORMAL,
-						CAIRO_FONT_WEIGHT_BOLD);
-				cairo_set_font_size(cr, 40);
-				cairo_move_to(cr, the_psf->xpos + com.pref.phot_set.outer + 5, the_psf->ypos);
-				if (i == 0) {
-					cairo_show_text(cr, "V");
-				}
-				else {
-					gchar *tmp;
-					tmp = g_strdup_printf("%d", i);
-					cairo_show_text(cr, tmp);
-
-					g_free(tmp);
-				}
-				cairo_stroke(cr);
-			}
-		}
-
-		/* draw a cross on excluded images */
-		if (com.seq.imgparam && com.seq.current >= 0 &&
-				!com.seq.imgparam[com.seq.current].incl) {
-			if (image_width > gfit.rx)
-				image_width = gfit.rx;
-			if (image_height > gfit.ry)
-				image_height = gfit.ry;
-			cairo_set_dash(cr, NULL, 0, 0);
-			cairo_set_source_rgb(cr, 1.0, 0.8, 0.7);
-			cairo_set_line_width(cr, 2.0 / zoom);
-			cairo_move_to(cr, 0, 0);
-			cairo_line_to(cr, image_width, image_height);
-			cairo_move_to(cr, 0, image_height);
-			cairo_line_to(cr, image_width, 0.0);
-			cairo_stroke(cr);
-		}
-
-		/* draw preview rectangles for the manual registration */
-		for (i = 0; i < PREVIEW_NB; i++) {
-			if (com.seq.previewX[i] >= 0) {
-				int textX, textY;
-				gchar *text;
-				cairo_set_line_width(cr, 1.0 / zoom);
-				cairo_set_source_rgb(cr, 0.1, 0.6, 0.0);
-				cairo_rectangle(cr,
-						com.seq.previewX[i] - com.seq.previewW[i] / 2,
-						com.seq.previewY[i] - com.seq.previewH[i] / 2,
-						com.seq.previewW[i], com.seq.previewH[i]);
-				cairo_stroke(cr);
-
-				textX = com.seq.previewX[i] - com.seq.previewW[i] / 2;
-				textX += 0.1 * com.seq.previewW[i];
-
-				textY = com.seq.previewY[i] - com.seq.previewH[i] / 2;
-				textY += 0.1 * com.seq.previewH[i];
-
-				text = g_strdup_printf("%d", i + 1);
-
-				cairo_set_font_size(cr, 12.0 / zoom);
-				cairo_move_to(cr, textX, textY);
-				cairo_show_text(cr, text);
-				g_free(text);
-			}
-		}
-	}
-
-	/* draw background removal gradient selection boxes */
-	GSList *list;
-	for (list = com.grad_samples; list; list = list->next) {
-		background_sample *sample = (background_sample *)list->data;
-		if (sample->valid) {
-			int radius = (int) (sample->size / 2);
-			cairo_set_line_width(cr, 1.5 / zoom);
-			cairo_set_source_rgba(cr, 0.2, 1.0, 0.3, 1.0);
-			cairo_rectangle(cr, sample->position.x - radius, sample->position.y - radius,
-					sample->size, sample->size);
-			cairo_stroke(cr);
-		}
-	}
 	return FALSE;
 }

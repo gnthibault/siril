@@ -93,13 +93,28 @@ static gboolean is_inside_of_sel(double zoomedX, double zoomedY, double zoom) {
 	return FALSE;
 }
 
+/* Clamp given coordinates to image boundaries.
+   Returns true if point was inside, false otherwise.
+*/
+static gboolean clamp2image(gint* x, gint* y) {
+	gboolean x_inside = 0;
+	gboolean y_inside = 0;
+	if (*x < 0) {
+		*x = 0;
+	} else if (*x >= gfit.rx) {
+		*x = gfit.rx - 1;
+	} else {
+		x_inside = 1;
+	}
 
-static gboolean inimage(GdkEvent *event) {
-	double zoom = get_zoom_val();
-	return ((GdkEventButton*) event)->x > 0
-		&& ((GdkEventButton*) event)->x < gfit.rx * zoom
-		&& ((GdkEventButton*) event)->y > 0
-		&& ((GdkEventButton*) event)->y < gfit.ry * zoom;
+	if (*y < 0) {
+		*y = 0;
+	} else if (*y >= gfit.ry) {
+		*y = gfit.ry - 1;
+	} else {
+		y_inside = 1;
+	}
+	return x_inside && y_inside;
 }
 
 /*
@@ -227,10 +242,28 @@ gboolean rgb_area_popup_menu_handler(GtkWidget *widget) {
 
 gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
-	if (inimage((GdkEvent *) event)) {
-		double zoom = get_zoom_val();
-		int zoomedX = round_to_int(event->x / zoom);
-		int zoomedY = round_to_int(event->y / zoom);
+	double zoom = get_zoom_val();
+
+	// evpos_x/evpos_y = cursor position in image coordinate
+	double evpos_x = event->x;
+	double evpos_y = event->y;
+	cairo_matrix_transform_point(&com.image_matrix, &evpos_x, &evpos_y);
+
+	// same as evpos but rounded to integer and clamped to image bounds
+	gint zoomedX = round_to_int(evpos_x);
+	gint zoomedY = round_to_int(evpos_y);
+	gboolean inside = clamp2image(&zoomedX, &zoomedY);
+
+	if (inside) {
+		if ((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK) {
+			if (event->button == GDK_BUTTON_PRIMARY) {
+				// viewport translation
+				com.translating = TRUE;
+				com.start.x = round_to_int(event->x);
+				com.start.y = round_to_int(event->y);
+				return TRUE;
+			}
+		}
 
 		/* click on RGB image */
 		if (widget == com.vport[RGB_VPORT]) {
@@ -334,28 +367,20 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 
 gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
-	double zoom = get_zoom_val();
-	int zoomedX, zoomedY;
+	// evpos_x/evpos_y = cursor position in image coordinate
+	double evpos_x = event->x;
+	double evpos_y = event->y;
+	cairo_matrix_transform_point(&com.image_matrix, &evpos_x, &evpos_y);
 
-	if (inimage((GdkEvent *) event)) {
-		zoomedX = round_to_int(event->x / zoom);
-		zoomedY = round_to_int(event->y / zoom);
-	} else {
-		if (event->x < 0)
-			zoomedX = 0.0;
-		else if (event->x > gfit.rx * zoom)
-			zoomedX = gfit.rx;
-		else
-			zoomedX = round_to_int(event->x / zoom);
-		if (event->y < 0)
-			zoomedY = 0.0;
-		else if (event->y > gfit.ry * zoom)
-			zoomedY = gfit.ry;
-		else
-			zoomedY = round_to_int(event->y / zoom);
-	}
+	// same as evpos but rounded to integer and clamped to image bounds
+	gint zoomedX = round_to_int(evpos_x);
+	gint zoomedY = round_to_int(evpos_y);
+	gboolean inside = clamp2image(&zoomedX, &zoomedY);
+
 	if (event->button == GDK_BUTTON_PRIMARY) {	// left click
-		if (com.drawing && mouse_status == MOUSE_ACTION_SELECT_REG_AREA) {
+		if (com.translating) {
+			com.translating = FALSE;
+		} else if (com.drawing && mouse_status == MOUSE_ACTION_SELECT_REG_AREA) {
 			com.drawing = FALSE;
 			/* finalize selection rectangle coordinates */
 			if (!com.freezeX) {
@@ -404,7 +429,7 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 			gtk_widget_queue_draw(widget);
 		}
 	} else if (event->button == GDK_BUTTON_MIDDLE) {	// middle click
-		if (inimage((GdkEvent *) event)) {
+		if (inside) {
 			double dX, dY, w, h;
 
 			dX = 1.5 * com.pref.phot_set.outer;
@@ -435,23 +460,31 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 
 gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 		GdkEventMotion *event, gpointer user_data) {
+	if (gfit.type == DATA_UNSUPPORTED) return FALSE;
+
 	double zoom = get_zoom_val();
-	gint zoomedX = 0, zoomedY = 0;
+
+	// evpos_x/evpos_y = cursor position in image coordinate
+	double evpos_x = event->x;
+	double evpos_y = event->y;
+	cairo_matrix_transform_point(&com.image_matrix, &evpos_x, &evpos_y);
+
+	// same as evpos but rounded to integer and clamped to image bounds
+	gint zoomedX = round_to_int(evpos_x);
+	gint zoomedY = round_to_int(evpos_y);
+	gboolean inside = clamp2image(&zoomedX, &zoomedY);
+
 	const char *suffix = untranslated_vport_number_to_name(com.cvport);
 	gchar *label = g_strdup_printf("labeldensity_%s", suffix);
 
-	if (gfit.type == DATA_UNSUPPORTED) return FALSE;
-
-	if (inimage((GdkEvent *) event)) {
-		char *buffer;
-		char *format;
+	if (inside) {
+		char *buffer = NULL;
+		char *format = NULL;
 		int coords_width = 3;
-		zoomedX = round_to_int(event->x / zoom);
-		zoomedY = round_to_int(event->y / zoom);
 
 		if (gfit.rx >= 1000 || gfit.ry >= 1000)
 			coords_width = 4;
-		if (gfit.type == DATA_USHORT) {
+		if (gfit.type == DATA_USHORT && gfit.pdata[com.cvport] != NULL) {
 			int val_width = 3;
 			char *format_base_ushort = "x: %%.%dd y: %%.%dd = %%.%dd";
 			if (gfit.hi >= 1000)
@@ -463,40 +496,36 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 			buffer = g_strdup_printf(format, zoomedX, zoomedY,
 					gfit.pdata[com.cvport][gfit.rx * (gfit.ry - zoomedY - 1)
 					+ zoomedX]);
-		} else if (gfit.type == DATA_FLOAT) {
+		} else if (gfit.type == DATA_FLOAT  && gfit.fpdata[com.cvport] != NULL) {
 			char *format_base_float = "x: %%.%dd y: %%.%dd = %%f";
 			format = g_strdup_printf(format_base_float,
 					coords_width, coords_width);
 			buffer = g_strdup_printf(format, zoomedX, zoomedY,
 					gfit.fpdata[com.cvport][gfit.rx * (gfit.ry - zoomedY - 1)
 					+ zoomedX]);
-		} else return FALSE;
+		}
 
-		gtk_label_set_text(GTK_LABEL(lookup_widget(label)), buffer);
-		g_free(buffer);
-		g_free(format);
-	} else {
+		if (buffer) {
+			gtk_label_set_text(GTK_LABEL(lookup_widget(label)), buffer);
+			g_free(buffer);
+			g_free(format);
+		}
+	} else if (widget != com.vport[RGB_VPORT]) {
 		gtk_label_set_text(GTK_LABEL(lookup_widget(label)), "");
 	}
 
 	g_free(label);
 
-	if (com.drawing) {	// with button 1 down
-		if (!inimage((GdkEvent *) event)) {
-			set_cursor("crosshair");
-			if (event->x < 0)
-				zoomedX = 0;
-			else if (event->x > gfit.rx * zoom)
-				zoomedX = gfit.rx;
-			else
-				zoomedX = round_to_int(event->x / zoom);
-			if (event->y < 0)
-				zoomedY = 0;
-			else if (event->y > gfit.ry * zoom)
-				zoomedY = gfit.ry;
-			else
-				zoomedY = round_to_int(event->y / zoom);
-		}
+	if (com.translating) {
+		gint ev_x = round_to_int(event->x);
+		gint ev_y = round_to_int(event->y);
+		double delta_x = ev_x - com.start.x; com.start.x = ev_x;
+		double delta_y = ev_y - com.start.y; com.start.y = ev_y;
+		com.display_offset_x += delta_x;
+		com.display_offset_y += delta_y;
+		adjust_vport_size_to_image();
+		gtk_widget_queue_draw(widget);
+	} else if (com.drawing) {	// with button 1 down
 		if (!com.freezeX) {
 			if (zoomedX > com.start.x) {
 				com.selection.x = com.start.x;
@@ -533,11 +562,12 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 		update_display_selection();
 		gtk_widget_queue_draw(widget);
 	}
-	if (inimage((GdkEvent *) event)) {
+
+	if (inside) {
 		if (mouse_status == MOUSE_ACTION_DRAW_SAMPLES) {
 			set_cursor("cell");
 		} else {
-			if (!com.drawing) {
+			if (!com.drawing && !com.translating) {
 				// The order matters if the selection is so small that edge detection overlaps
 				// and need to be the same as in the on_drawingarea_button_press_event()
 				gboolean right = is_over_the_right_side_of_sel(zoomedX, zoomedY, zoom);
@@ -565,8 +595,12 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 				} else {
 					set_cursor("crosshair");
 				}
+			} else {
+				set_cursor("crosshair");
 			}
 		}
+	} else {
+		set_cursor("default");
 	}
 
 	return FALSE;
@@ -583,35 +617,6 @@ void on_drawingarea_leave_notify_event(GtkWidget *widget, GdkEvent *event,
 	}
 }
 
-static void get_scroll_position(GtkWidget *widget, int *x, int *y, int *width, int *height) {
-	// the GtkScrolledWindow are the grand parents of the drawing areas
-	GtkWidget *scrwindow = gtk_widget_get_parent(gtk_widget_get_parent(widget));
-	GtkAdjustment *hadj = gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(scrwindow));
-	GtkAdjustment *vadj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scrwindow));
-
-	*x = gtk_adjustment_get_value(hadj);
-	*y = gtk_adjustment_get_value(vadj);
-	*width = gtk_adjustment_get_page_size(hadj);
-	*height = gtk_adjustment_get_page_size(vadj);
-
-	siril_debug_print("get_scroll_position: %d %d %d %d\n", *x, *y, *width, *height);
-}
-
-static void set_scroll_position(GtkWidget *widget, int x, int y) {
-	GtkWidget *scrwindow = gtk_widget_get_parent(gtk_widget_get_parent(widget));
-	GtkAdjustment *hadj = gtk_scrolled_window_get_hadjustment(GTK_SCROLLED_WINDOW(scrwindow));
-	GtkAdjustment *vadj = gtk_scrolled_window_get_vadjustment(GTK_SCROLLED_WINDOW(scrwindow));
-
-	siril_debug_print("set_scroll_position: %d %d (for adj of size %g and %g)\n", x,
-			y, gtk_adjustment_get_upper(hadj), gtk_adjustment_get_upper(vadj));
-
-	x = CLAMP(x, 0, gtk_adjustment_get_upper(hadj) - gtk_adjustment_get_page_size(hadj));
-	y = CLAMP(y, 0, gtk_adjustment_get_upper(vadj) - gtk_adjustment_get_page_size(vadj));
-
-	gtk_adjustment_set_value(hadj, x);
-	gtk_adjustment_set_value(vadj, y);
-}
-
 static GdkModifierType get_primary() {
 	return gdk_keymap_get_modifier_mask(
 			gdk_keymap_get_for_display(gdk_display_get_default()),
@@ -619,23 +624,22 @@ static GdkModifierType get_primary() {
 }
 
 gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, gpointer user_data) {
-	GtkToggleToolButton *button;
-	gdouble delta_x, delta_y, evpos_x, evpos_y;
 	gboolean handled = FALSE;
-	int pix_x, pix_y, pix_width, pix_height;
 
 	if (!single_image_is_loaded() && !sequence_is_loaded())
 		return FALSE;
 
 	if (event->state & get_primary()) {
-		button = (GtkToggleToolButton *)user_data;
+		GtkToggleToolButton *button = (GtkToggleToolButton *)user_data;
 		if (gtk_toggle_tool_button_get_active(button))
 			gtk_toggle_tool_button_set_active(button, FALSE);
 
-		get_scroll_position(widget, &pix_x, &pix_y, &pix_width, &pix_height);
 		// event position in image coordinates before changing the zoom value
-		evpos_x = (event->x) / com.zoom_value;
-		evpos_y = (event->y) / com.zoom_value;
+		gdouble evpos_x = event->x;
+		gdouble evpos_y = event->y;
+		cairo_matrix_transform_point(&com.image_matrix, &evpos_x, &evpos_y);
+
+		gdouble delta_x, delta_y, factor;
 
 		switch (event->direction) {
 		case GDK_SCROLL_SMOOTH:	// what's that?
@@ -645,51 +649,41 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 				if (com.zoom_value * 1.5 > ZOOM_MAX) {
 					return handled;
 				}
-				com.zoom_value *= 1.5;
+				factor = 1.5;
 			}
 			if (delta_y > 0) {
 				if (com.zoom_value / 1.5 < ZOOM_MIN) {
 					return handled;
 				}
-				com.zoom_value /= 1.5 ;
+				factor = 1. / 1.5;
 			}
-			adjust_vport_size_to_image();
-			set_scroll_position(widget, evpos_x * com.zoom_value - pix_width / 2,
-					evpos_y * com.zoom_value - pix_height / 2);
-			redraw(com.cvport, REMAP_NONE);
 			break;
 		case GDK_SCROLL_DOWN:
 			handled = TRUE;
 			if (com.zoom_value / 1.5 < ZOOM_MIN) {
 				return handled;
 			}
-			com.zoom_value /= 1.5 ;
-			adjust_vport_size_to_image();
-			// event->[xy] - pix_[xy] are the coordinates of the click in the widget
-			siril_debug_print("zoom out (%f) at %f,%f in image, %f,%f on area %d,%d,%d,%d\n",
-					com.zoom_value, evpos_x, evpos_y, event->x - pix_x,
-					event->y - pix_y, pix_x, pix_y, pix_width, pix_height);
-			// evpos_[xy] * zoom_value are the coordinates of the event in the new zoom value
-			set_scroll_position(widget, evpos_x * com.zoom_value - (event->x - pix_x),
-					 evpos_y * com.zoom_value - (event->y - pix_y));
-			redraw(com.cvport, REMAP_NONE);
+			factor = 1. / 1.5;
 			break;
 		case GDK_SCROLL_UP:
 			handled = TRUE;
 			if (com.zoom_value * 1.5 > ZOOM_MAX) {
 				return handled;
 			}
-			com.zoom_value *= 1.5;
-			adjust_vport_size_to_image();
-			siril_debug_print("zoom in (%f) at %f,%f in image, %f,%f on area %d,%d,%d,%d\n",
-					com.zoom_value, evpos_x, evpos_y, event->x - pix_x,
-					event->y - pix_y, pix_x, pix_y, pix_width, pix_height);
-			set_scroll_position(widget, evpos_x * com.zoom_value - (event->x - pix_x),
-					 evpos_y * com.zoom_value - (event->y - pix_y));
-			redraw(com.cvport, REMAP_NONE);
+			factor = 1.5;
 			break;
 		default:
 			handled = FALSE;
+		}
+
+		if (handled) {
+			com.zoom_value *= factor;
+			adjust_vport_size_to_image();
+			cairo_matrix_transform_point(&com.display_matrix, &evpos_x, &evpos_y);
+			com.display_offset_x += event->x - evpos_x;
+			com.display_offset_y += event->y - evpos_y;
+			adjust_vport_size_to_image();
+			redraw(com.cvport, REMAP_NONE);
 		}
 	}
 	return handled;
