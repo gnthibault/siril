@@ -21,7 +21,7 @@ double histogram_median_float(float *a, size_t n, gboolean multithread);
 /* Sorting netnork */
 double sortnet_median(WORD *a, size_t n);
 double sortnet_median_double(double *a, size_t n);
-double sortnet_median_float(double *a, size_t n);
+double sortnet_median_float(float *a, size_t n);
 void sortnet(WORD *a, size_t n);
 
 gint strcompare(gconstpointer *a, gconstpointer *b);
