@@ -602,7 +602,8 @@ struct cominf {
 	int surface_height[MAXVPORT];	// allocated height
 	cairo_surface_t *surface[MAXVPORT];
 	gboolean buf_is_dirty[MAXVPORT];// dirtyness of each buffer (= need to redraw)
-	
+	GdkPixbuf *siril_pix; // Siril.svg image loaded at initialization
+
 	/* Color map */
 	color_map color;
 
@@ -612,7 +613,12 @@ struct cominf {
 	GtkAdjustment *vadj[MAXVPORT];	// adjustments of vport scrollbars
 	sliders_mode sliders;		// 0: min/max, 1: MIPS-LO/HI, 2: user
 	gboolean show_excluded;		// show excluded images in sequences
+
+	cairo_matrix_t display_matrix; // matrix used for image rendering (convert image to display coordinates)
+	cairo_matrix_t image_matrix; // inverse of display_matrix (convert display to image coordinates)
 	double zoom_value;		// 1.0 is normal zoom, use get_zoom_val() to access it
+	double display_offset_x, display_offset_y; // image display offset
+	gboolean translating;		// true we are in display transating mode
 
 	preferences pref; // saved variable in preferences
 
