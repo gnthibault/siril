@@ -600,14 +600,14 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 					set_cursor("all-scroll");
 				} else {
 					if (event->state & get_primary()) {
-						set_cursor("pointer");
+						set_cursor("grab");
 					} else {
 						set_cursor("crosshair");
 					}
 				}
 			} else {
 				if (event->state & get_primary()) {
-					set_cursor("pointer");
+					set_cursor("grabbing");
 				} else {
 					set_cursor("crosshair");
 				}
