@@ -458,6 +458,12 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 	return FALSE;
 }
 
+static GdkModifierType get_primary() {
+	return gdk_keymap_get_modifier_mask(
+			gdk_keymap_get_for_display(gdk_display_get_default()),
+			GDK_MODIFIER_INTENT_PRIMARY_ACCELERATOR);
+}
+
 gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 		GdkEventMotion *event, gpointer user_data) {
 	if (gfit.type == DATA_UNSUPPORTED) return FALSE;
@@ -477,7 +483,7 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 	const char *suffix = untranslated_vport_number_to_name(com.cvport);
 	gchar *label = g_strdup_printf("labeldensity_%s", suffix);
 
-	if (inside) {
+	if (inside && com.cvport < RGB_VPORT) {
 		char *buffer = NULL;
 		char *format = NULL;
 		int coords_width = 3;
@@ -563,7 +569,7 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 		gtk_widget_queue_draw(widget);
 	}
 
-	if (inside) {
+	if (inside && com.cvport < RGB_VPORT) {
 		if (mouse_status == MOUSE_ACTION_DRAW_SAMPLES) {
 			set_cursor("cell");
 		} else {
@@ -593,10 +599,18 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 				} else if (is_inside_of_sel(zoomedX, zoomedY, zoom)) {
 					set_cursor("all-scroll");
 				} else {
-					set_cursor("crosshair");
+					if (event->state & get_primary()) {
+						set_cursor("pointer");
+					} else {
+						set_cursor("crosshair");
+					}
 				}
 			} else {
-				set_cursor("crosshair");
+				if (event->state & get_primary()) {
+					set_cursor("pointer");
+				} else {
+					set_cursor("crosshair");
+				}
 			}
 		}
 	} else {
@@ -615,12 +629,6 @@ void on_drawingarea_leave_notify_event(GtkWidget *widget, GdkEvent *event,
 		/* trick to get default cursor */
 		set_cursor_waiting(FALSE);
 	}
-}
-
-static GdkModifierType get_primary() {
-	return gdk_keymap_get_modifier_mask(
-			gdk_keymap_get_for_display(gdk_display_get_default()),
-			GDK_MODIFIER_INTENT_PRIMARY_ACCELERATOR);
 }
 
 gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, gpointer user_data) {
