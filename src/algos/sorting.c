@@ -239,6 +239,8 @@ double quickmedian(WORD *a, size_t n) {
  * @return median as double for even size average the middle two elements
  */
 double quickmedian_float(float *a, size_t n) {
+	if (n == 1)
+		return a[0];
 	size_t k = n / 2;	// size to sort
 	size_t pindex;		// pivot index
 	size_t left = 0; 	// left index
@@ -280,6 +282,9 @@ double quickmedian_float(float *a, size_t n) {
  * @return median as double for even size average the middle two elements
  */
 double quickmedian_double(double *a, size_t n) {
+	// Use faster and robust sorting network for small size array
+	if (n < 9)
+		return sortnet_median_double(a, n);
 	size_t k = n / 2;	// size to sort
 	size_t pindex;		// pivot index
 	size_t left = 0; 	// left index
@@ -362,6 +367,57 @@ double quickmedian_int(int *a, size_t n) {
  */
 #define sw(i,j) if(a[i] > a[j]) { register WORD t=a[i]; a[i]=a[j]; a[j]=t; }
 double sortnet_median (WORD *a, size_t n) {
+	size_t k = n / 2;
+
+	switch (n) {
+		case 1: return a[0]; break;
+
+		case 2: sw(0,1); break;
+
+		case 3: sw(0,1); sw(1,2); sw(0,1); break;
+
+		case 4: sw(0,1); sw(2,3); sw(0,2); sw(1,3); sw(1,2); break;
+
+		case 5: sw(0,1); sw(2,3); sw(1,3); sw(2,4); sw(0,2);
+			sw(1,4); sw(1,2); sw(3,4); sw(2,3); break;
+
+		case 6: sw(0,1); sw(2,3); sw(4,5); sw(0,2); sw(3,5);
+			sw(1,4); sw(0,1); sw(2,3); sw(4,5); sw(1,2); sw(3,4);
+			sw(2,3); break;
+
+		case 7: sw(1,2); sw(3,4); sw(5,6); sw(0,2); sw(4,6); sw(3,5);
+			sw(2,6); sw(1,5); sw(0,4); sw(2,5); sw(0,3); sw(2,4);
+			sw(1,3); sw(0,1); sw(2,3); sw(4,5); break;
+
+		case 8: sw(0,1); sw(2,3); sw(4,5); sw(6,7);
+			sw(0,2); sw(1,3); sw(4,6); sw(5,7);
+			sw(1,2); sw(5,6);
+			sw(0,4); sw(1,5); sw(2,6); sw(3,7);
+			sw(2,4); sw(3,5);
+			sw(1,2); sw(3,4); sw(5,6); break;
+
+		case 9: sw(1,8); sw(2,7); sw(3,6); sw(4,5);
+			sw(1,4); sw(5,8);
+			sw(0,2); sw(6,7);
+			sw(2,6); sw(7,8);
+			sw(0,3); sw(4,5);
+			sw(0,1); sw(3,5); sw(6,7);
+			sw(2,4);
+			sw(1,3); sw(5,7);
+			sw(4,6);
+			sw(1,2); sw(3,4); sw(5,6); sw(7,8);
+			sw(2,3); sw(4,5); break;
+
+		default: return 0.0; break; // no sort
+	}
+	return (n % 2 == 0) ? (a[k - 1] + a[k]) / 2.0 : a[k];
+}
+#undef sw
+
+/*
+ */
+#define sw(i,j) if(a[i] > a[j]) { register double t=a[i]; a[i]=a[j]; a[j]=t; }
+double sortnet_median_double (double *a, size_t n) {
 	size_t k = n / 2;
 
 	switch (n) {
