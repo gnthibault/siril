@@ -469,7 +469,7 @@ double sortnet_median_double(double *a, size_t n) {
 /*
  */
 #define sw(i,j) if(a[i] > a[j]) { register float t=a[i]; a[i]=a[j]; a[j]=t; }
-double sortnet_median_float(double *a, size_t n) {
+double sortnet_median_float(float *a, size_t n) {
 	size_t k = n / 2;
 
 	switch (n) {
