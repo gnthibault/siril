@@ -717,8 +717,8 @@ void adjust_vport_size_to_image() {
 	/* Init display matrix from current display state */
 	cairo_matrix_init(&com.display_matrix,
 					  zoom, 0, 0, zoom,
-					  com.display_offset_x,
-					  com.display_offset_y);
+					  com.display_offset.x,
+					  com.display_offset.y);
 	/* Compute the inverse display matrix used for coordinate transformation */
 	com.image_matrix = com.display_matrix;
 	cairo_matrix_invert(&com.image_matrix);
