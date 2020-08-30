@@ -801,8 +801,8 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	dd.window_width = gtk_widget_get_allocated_width(widget);
 	dd.window_height = gtk_widget_get_allocated_height(widget);
 	dd.zoom = get_zoom_val();
-	dd.image_width = (int) (((double) dd.window_width) / dd.zoom);
-	dd.image_height = (int) (((double) dd.window_height) / dd.zoom);
+	dd.image_width = gfit.rx;
+	dd.image_height = gfit.ry;
 	dd.filter = (dd.zoom < 1.0) ? CAIRO_FILTER_GOOD : CAIRO_FILTER_FAST;
 
 	cairo_save(cr);
