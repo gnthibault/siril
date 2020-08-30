@@ -617,7 +617,7 @@ struct cominf {
 	cairo_matrix_t display_matrix; // matrix used for image rendering (convert image to display coordinates)
 	cairo_matrix_t image_matrix; // inverse of display_matrix (convert display to image coordinates)
 	double zoom_value;		// 1.0 is normal zoom, use get_zoom_val() to access it
-	double display_offset_x, display_offset_y; // image display offset
+	point display_offset; // image display offset
 	gboolean translating;		// true we are in display transating mode
 
 	preferences pref; // saved variable in preferences
