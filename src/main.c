@@ -163,6 +163,7 @@ static void global_initialization() {
 	/* initialize the com struct and zoom level */
 	com.sliders = MINMAX;
 	com.zoom_value = ZOOM_DEFAULT;
+	com.ratio = 0.0;
 	com.siril_pix = NULL;
 }
 

@@ -149,8 +149,8 @@ void unregister_selection_update_callback(selection_update_callback f) {
 // send the events
 static void new_selection_zone() {
 	int i;
-	siril_debug_print("selection: %d,%d,\t%dx%d\n", com.selection.x, com.selection.y,
-			com.selection.w, com.selection.h);
+	siril_debug_print("selection: %d,%d,\t%dx%d (%lf)\n", com.selection.x, com.selection.y,
+			com.selection.w, com.selection.h, com.ratio);
 	for (i = 0; i < _nb_registered_callbacks; ++i) {
 		_registered_callbacks[i]();
 	}
@@ -217,6 +217,18 @@ static void do_popup_graymenu(GtkWidget *my_widget, GdkEventButton *event) {
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_crop"), selected && is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_crop_seq"), selected && sequence_is_loaded());
 
+	// selection submenu
+	double original_ratio = (double)gfit.rx / (double)gfit.ry;
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(lookup_widget("menuitem_selection_free")), com.ratio == 0.0);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(lookup_widget("menuitem_selection_preserve")), com.ratio == original_ratio);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(lookup_widget("menuitem_selection_16_9")), com.ratio == 16.0 / 9.0);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(lookup_widget("menuitem_selection_4_3")), com.ratio == 4.0 / 3.0);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(lookup_widget("menuitem_selection_1_1")), com.ratio == 1.0 / 1.0);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(lookup_widget("menuitem_selection_3_4")), com.ratio == 3.0 / 4.0);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(lookup_widget("menuitem_selection_9_16")), com.ratio == 9.0 / 16.0);
+	gtk_widget_set_sensitive(lookup_widget("menuitem_selection_preserve"), is_a_single_image_loaded || sequence_is_loaded());
+	gtk_widget_set_sensitive(lookup_widget("menuitem_selection_all"), is_a_single_image_loaded || sequence_is_loaded());
+
 #if GTK_CHECK_VERSION(3, 22, 0)
 	gtk_menu_popup_at_pointer(GTK_MENU(menu), NULL);
 #else
@@ -234,6 +246,104 @@ static void do_popup_graymenu(GtkWidget *my_widget, GdkEventButton *event) {
 #endif
 }
 
+
+static void enforce_ratio_and_clamp() {
+	if (com.ratio > 0.0
+		&& !(com.freezeX && com.freezeY)) {
+		// Enforce a ratio for the selection
+		if (com.freezeY) {
+			com.selection.h = round_to_int(com.selection.w / com.ratio);
+		} else if (com.freezeX) {
+			com.selection.w = round_to_int(com.selection.h * com.ratio);
+		} else {
+			gint delta_w = round_to_int(com.selection.h * com.ratio) - com.selection.w;
+			com.selection.w += delta_w;
+
+			if (com.selection.x < com.start.x) { // Changing selection from the left
+				com.selection.x -= delta_w;
+			}
+		}
+
+		// clamp the selection dimensions
+		if (com.selection.w > gfit.rx) {
+			com.selection.w = gfit.rx;
+			com.selection.h = round_to_int(com.selection.w / com.ratio);
+		}
+		else if (com.selection.h > gfit.ry) {
+			com.selection.h = gfit.ry;
+			com.selection.w = round_to_int(com.selection.h * com.ratio);
+		}
+	}
+
+	// clamp the selection inside the image (needed when enforcing a ratio or moving)
+	com.selection.x = set_int_in_interval(com.selection.x, 0, gfit.rx - com.selection.w);
+	com.selection.y = set_int_in_interval(com.selection.y, 0, gfit.ry - com.selection.h);
+}
+
+static void set_selection_ratio(double ratio) {
+	com.ratio = ratio;
+	enforce_ratio_and_clamp();
+	update_display_selection();
+	new_selection_zone();
+	gtk_widget_queue_draw(com.vport[com.cvport]);
+}
+
+void on_menuitem_selection_free_toggled(GtkCheckMenuItem *menuitem, gpointer user_data) {
+	if (gtk_check_menu_item_get_active(menuitem)) {
+		com.ratio = 0.0;
+	}
+}
+
+void on_menuitem_selection_preserve_toggled(GtkCheckMenuItem *menuitem, gpointer user_data) {
+	if (gtk_check_menu_item_get_active(menuitem)) {
+		set_selection_ratio((double)gfit.rx / (double)gfit.ry);
+	}
+}
+
+void on_menuitem_selection_16_9_toggled(GtkCheckMenuItem *menuitem, gpointer user_data) {
+	if (gtk_check_menu_item_get_active(menuitem)) {
+		set_selection_ratio(16.0 / 9.0);
+	}
+}
+
+void on_menuitem_selection_4_3_toggled(GtkCheckMenuItem *menuitem, gpointer user_data) {
+	if (gtk_check_menu_item_get_active(menuitem)) {
+		set_selection_ratio(4.0 / 3.0);
+	}
+}
+
+void on_menuitem_selection_1_1_toggled(GtkCheckMenuItem *menuitem, gpointer user_data) {
+	if (gtk_check_menu_item_get_active(menuitem)) {
+		set_selection_ratio(1.0 / 1.0);
+	}
+}
+
+void on_menuitem_selection_3_4_toggled(GtkCheckMenuItem *menuitem, gpointer user_data) {
+	if (gtk_check_menu_item_get_active(menuitem)) {
+		set_selection_ratio(3.0 / 4.0);
+	}
+}
+
+void on_menuitem_selection_9_16_toggled(GtkCheckMenuItem *menuitem, gpointer user_data) {
+	if (gtk_check_menu_item_get_active(menuitem)) {
+		set_selection_ratio(9.0 / 16.0);
+	}
+}
+
+void on_menuitem_selection_all_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	com.selection.x = 0;
+	com.selection.y = 0;
+	com.selection.w = gfit.rx;
+	com.selection.h = gfit.ry;
+	// "Select All" need to reset any enforced ratio that would not match the ratio of the image
+	// 1. it's nice to NOT enforce a ratio when the user just want to select the whole image
+	// 2. it's nice to keep the enforced ratio if it does match the image
+	if (com.ratio != ((double)gfit.rx / (double)gfit.ry)) {
+		set_selection_ratio(0.0);
+	} else {
+		set_selection_ratio((double)gfit.rx / (double)gfit.ry); // triggers the new_selection() callbacks etc.
+	}
+}
 
 gboolean rgb_area_popup_menu_handler(GtkWidget *widget) {
 	do_popup_rgbmenu(widget, NULL);
@@ -395,17 +505,21 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 					com.selection.h = com.start.y - zoomed.y;
 				}
 			}
-			if (com.freezeX && com.freezeY) {
-				// Move selection
+
+			if (com.freezeX && com.freezeY) { // Move selection
 				com.selection.x = (zoomed.x - com.start.x) + com.origin.x;
 				com.selection.y = (zoomed.y - com.start.y) + com.origin.y;
-				// clamp it inside the image
-				com.selection.x = set_int_in_interval(com.selection.x, 0, gfit.rx - com.selection.w);
-				com.selection.y = set_int_in_interval(com.selection.y, 0, gfit.ry - com.selection.h);
 			}
+
+			// Enforce a ratio and clamp selection to the image
+			enforce_ratio_and_clamp();
+
 			/* we have a new rectangular selection zone,
 			 * or an unselection (empty zone) */
 			new_selection_zone();
+
+			// Terminate any specific selection modification mode
+			com.freezeX = com.freezeY = FALSE;
 		} else if (mouse_status == MOUSE_ACTION_SELECT_PREVIEW1) {
 			set_preview_area(0, zoomed.x, zoomed.y);
 			mouse_status = MOUSE_ACTION_SELECT_REG_AREA;
@@ -535,16 +649,18 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 				com.selection.h = com.start.y - zoomed.y;
 			}
 		}
-		if (com.freezeX && com.freezeY) {
-			// Move selection
+
+		if (com.freezeX && com.freezeY) { // Move selection
 			com.selection.x = (zoomed.x - com.start.x) + com.origin.x;
 			com.selection.y = (zoomed.y - com.start.y) + com.origin.y;
-			// clamp it inside the image
-			com.selection.x = set_int_in_interval(com.selection.x, 0, gfit.rx - com.selection.w);
-			com.selection.y = set_int_in_interval(com.selection.y, 0, gfit.ry - com.selection.h);
 		}
+
+		// Enforce a ratio and clamp selection to the image
+		enforce_ratio_and_clamp();
+
 		// Display the dimensions of the selection while drawing it
 		update_display_selection();
+
 		gtk_widget_queue_draw(widget);
 	}
 

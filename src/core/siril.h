@@ -628,6 +628,7 @@ struct cominf {
 	pointi origin;				// where the selection was originally located
 	gboolean freezeX, freezeY;	// locked axis during modification of a selection 
 	rectangle selection;		// coordinates of the selection rectangle
+	double ratio;				// enforced ratio of the selection (default is 0: none)
 
 	/* alignment preview data */
 	//guchar *preview_buf[PREVIEW_NB];
