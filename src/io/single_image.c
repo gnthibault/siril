@@ -258,7 +258,6 @@ void open_single_image_from_gfit() {
 
 	close_tab();
 	update_gfit_histogram_if_needed();
-	adjust_vport_size_to_image();
 	redraw(com.cvport, REMAP_ALL);
 	
 }

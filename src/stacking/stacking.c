@@ -425,8 +425,6 @@ static gboolean end_stacking(gpointer p) {
 		/* update menus */
 		update_MenuItem();
 
-		if (com.seq.current == SCALED_IMAGE)
-			adjust_vport_size_to_image();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 		sequence_list_change_current();
