@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.22.2 
+<!-- Generated with glade 3.22.2
 
 Copyright (C) The free-astro development team, 2019
 
@@ -1355,6 +1355,18 @@ enter a visible wavelength in nm</property>
               </object>
             </child>
             <child>
+              <object class="GtkRadioMenuItem" id="menuitem_selection_3_2">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Landscape 3/2th ratio</property>
+                <property name="label">3/2</property>
+                <property name="use_underline">True</property>
+                <property name="draw_as_radio">True</property>
+                <property name="group">menuitem_selection_free</property>
+                <signal name="toggled" handler="on_menuitem_selection_3_2_toggled" swapped="no"/>
+              </object>
+            </child>
+            <child>
               <object class="GtkRadioMenuItem" id="menuitem_selection_1_1">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
@@ -1376,6 +1388,18 @@ enter a visible wavelength in nm</property>
                 <property name="draw_as_radio">True</property>
                 <property name="group">menuitem_selection_free</property>
                 <signal name="toggled" handler="on_menuitem_selection_3_4_toggled" swapped="no"/>
+              </object>
+            </child>
+            <child>
+              <object class="GtkRadioMenuItem" id="menuitem_selection_2_3">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Portrait 2/3th ratio</property>
+                <property name="label">2/3</property>
+                <property name="use_underline">True</property>
+                <property name="draw_as_radio">True</property>
+                <property name="group">menuitem_selection_free</property>
+                <signal name="toggled" handler="on_menuitem_selection_2_3_toggled" swapped="no"/>
               </object>
             </child>
             <child>
@@ -5232,7 +5256,7 @@ WARNING: no new sequence is built, registration data is stored in the original s
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">Activate the simplified drizzle algorithm for the processing of this sequence. An up-scale (x2) will be applied to the registered frame or during stacking depending on which registration is chosen, that will result in higher resolution images. 
+                                    <property name="tooltip_text" translatable="yes">Activate the simplified drizzle algorithm for the processing of this sequence. An up-scale (x2) will be applied to the registered frame or during stacking depending on which registration is chosen, that will result in higher resolution images.
 This option is adapted for under-sampled images, i.e, when the telescope focal length is too short for the pixel size. One may consider that the system is under-sampled when FWHM is smaller than 2 pixels.
 The correct name of this method should be super-resolution stacking, but for a more convenient understanding we called it "Simplified Drizzle x2".
 
@@ -17909,7 +17933,7 @@ If the selection is empty, the whole image will be used as reference.</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
-                                    <property name="tooltip_markup" translatable="yes">Siril read FITS data in the bottom-up orientation but a lot of capture software do not meet this specification. If data are stored in top-down orientation (as they usual do), you need to check this box in order to debayer the file in the right orientation. 
+                                    <property name="tooltip_markup" translatable="yes">Siril read FITS data in the bottom-up orientation but a lot of capture software do not meet this specification. If data are stored in top-down orientation (as they usual do), you need to check this box in order to debayer the file in the right orientation.
 
 &lt;b&gt;If the keyword ROWORDER is found while you are using Bayer information from file's header, then Siril will follow its value rather than this option.&lt;/b&gt;</property>
                                     <property name="halign">start</property>
@@ -19650,8 +19674,8 @@ Configuring a memory amount larger than what is available on your system may res
                                     <property name="can_focus">False</property>
                                     <property name="tooltip_markup" translatable="yes">Select an algorithm method for FITS compression:
 
-* &lt;b&gt;Rice&lt;/b&gt;: The Rice algorithm is simple and very fast 
-* &lt;b&gt;GZIP 1&lt;/b&gt;: The gzip algorithm is used to compress and uncompress the image pixels. Gzip is the compression algorithm used in the free GNU software utility of the same name. 
+* &lt;b&gt;Rice&lt;/b&gt;: The Rice algorithm is simple and very fast
+* &lt;b&gt;GZIP 1&lt;/b&gt;: The gzip algorithm is used to compress and uncompress the image pixels. Gzip is the compression algorithm used in the free GNU software utility of the same name.
 * &lt;b&gt;GZIP 2&lt;/b&gt;: The bytes in the array of image pixel values are shuffled into decreasing order of significance before being compressed with the gzip algorithm. This is usually especially effective when compressing floating-point arrays.
 * &lt;b&gt;Hcompress&lt;/b&gt;: Briefly, the method used is:
 	- 1. a wavelet transform called the H-transform (a Haar transform generalized to two dimensions), followed by
