@@ -480,7 +480,6 @@ int set_seq(const char *name){
 
 	/* redraw and display image */
 	close_tab();	//close Green and Blue Tab if a 1-layer sequence is loaded
-	adjust_vport_size_to_image();	// resize viewports to the displayed image size
 	redraw(com.cvport, REMAP_ALL);
 	drawPlot();
 
@@ -502,7 +501,6 @@ int seq_load_image(sequence *seq, int index, gboolean load_it) {
 	if (seq->current == SCALED_IMAGE) {
 		gfit.rx = seq->rx;
 		gfit.ry = seq->ry;
-		adjust_vport_size_to_image();
 	}
 	seq->current = index;
 

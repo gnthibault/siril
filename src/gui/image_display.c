@@ -805,6 +805,8 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	dd.image_height = gfit.ry;
 	dd.filter = (dd.zoom < 1.0) ? CAIRO_FILTER_GOOD : CAIRO_FILTER_FAST;
 
+	adjust_vport_size_to_image();
+
 	cairo_save(cr);
 
 	/* change to image coordinates */
