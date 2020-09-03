@@ -499,6 +499,7 @@ int process_crop(int nb) {
 
 	crop(&gfit, &area);
 	delete_selected_area();
+	reset_display_offset();
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();

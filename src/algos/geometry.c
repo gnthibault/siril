@@ -631,6 +631,7 @@ void on_menu_gray_crop_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		}
 		crop(&gfit, &com.selection);
 		delete_selected_area();
+		reset_display_offset();
 		adjust_cutoff_from_updated_gfit();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
