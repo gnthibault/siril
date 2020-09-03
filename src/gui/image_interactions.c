@@ -313,15 +313,15 @@ void on_menuitem_selection_16_9_toggled(GtkCheckMenuItem *menuitem, gpointer use
 	}
 }
 
-void on_menuitem_selection_4_3_toggled(GtkCheckMenuItem *menuitem, gpointer user_data) {
-	if (gtk_check_menu_item_get_active(menuitem)) {
-		set_selection_ratio(4.0 / 3.0);
-	}
-}
-
 void on_menuitem_selection_3_2_toggled(GtkCheckMenuItem *menuitem, gpointer user_data) {
 	if (gtk_check_menu_item_get_active(menuitem)) {
 		set_selection_ratio(3.0 / 2.0);
+	}
+}
+
+void on_menuitem_selection_4_3_toggled(GtkCheckMenuItem *menuitem, gpointer user_data) {
+	if (gtk_check_menu_item_get_active(menuitem)) {
+		set_selection_ratio(4.0 / 3.0);
 	}
 }
 
