@@ -187,7 +187,6 @@ static void rotate_gui(fits *fit) {
 				cropped ? "TRUE" : "FALSE");
 		verbose_rotate_image(fit, angle, interpolation, cropped);
 		
-		adjust_vport_size_to_image();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 		set_cursor_waiting(FALSE);
@@ -483,7 +482,6 @@ void on_menuitem_rotation90_activate(GtkMenuItem *menuitem, gpointer user_data) 
 		set_cursor_waiting(TRUE);
 		undo_save_state(&gfit, _("Rotation (90.0deg)"));
 		verbose_rotate_image(&gfit, 90.0, -1, cropped);	// fast rotation, no interpolation, no crop
-		adjust_vport_size_to_image();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 		set_cursor_waiting(FALSE);
@@ -504,7 +502,6 @@ void on_menuitem_rotation270_activate(GtkMenuItem *menuitem, gpointer user_data)
 		set_cursor_waiting(TRUE);
 		undo_save_state(&gfit, _("Rotation (-90.0deg)"));
 		verbose_rotate_image(&gfit, 270.0, -1, cropped);// fast rotation, no interpolation, no crop
-		adjust_vport_size_to_image();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 		set_cursor_waiting(FALSE);
@@ -571,7 +568,6 @@ void on_button_resample_ok_clicked(GtkButton *button, gpointer user_data) {
 				sample[1] / 100.0);
 		verbose_resize_gaussian(&gfit, toX, toY, interpolation);
 		
-		adjust_vport_size_to_image();
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 		set_cursor_waiting(FALSE);

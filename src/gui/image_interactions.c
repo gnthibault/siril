@@ -637,6 +637,10 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 	g_free(label);
 
 	if (com.translating) {
+		GtkToggleToolButton *button = (GtkToggleToolButton *)user_data;
+		if (gtk_toggle_tool_button_get_active(button))
+			gtk_toggle_tool_button_set_active(button, FALSE);
+
 		pointi ev = { round_to_int(event->x), round_to_int(event->y) };
 		point delta = { ev.x - com.start.x , ev.y - com.start.y };
 		com.start = ev;
@@ -708,14 +712,10 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 				} else if (is_inside_of_sel(zoomed, zoom)) {
 					set_cursor("all-scroll");
 				} else {
-					if (event->state & get_primary()) {
-						set_cursor("all-scroll");
-					} else {
-						set_cursor("crosshair");
-					}
+					set_cursor("crosshair");
 				}
 			} else {
-				if (event->state & get_primary()) {
+				if ((event->state & get_primary()) || is_inside_of_sel(zoomed, zoom)) {
 					set_cursor("all-scroll");
 				} else {
 					set_cursor("crosshair");
@@ -811,7 +811,6 @@ void on_zoom_to_fit_check_button_toggled(GtkToggleToolButton *button, gpointer d
 		com.zoom_value = -1;
 		com.display_offset.x = 0;
 		com.display_offset.y = 0;
-		adjust_vport_size_to_image();
 		redraw(com.cvport, REMAP_NONE);
 	} else {
 		com.zoom_value = get_zoom_val();
@@ -825,6 +824,5 @@ void on_zoom_to_one_button_clicked(GtkToolButton *button, gpointer user_data) {
 	com.zoom_value = 1;
 	com.display_offset.x = 0;
 	com.display_offset.y = 0;
-	adjust_vport_size_to_image();
 	redraw(com.cvport, REMAP_NONE);
 }
