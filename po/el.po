@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-03 16:01+0200\n"
+"POT-Creation-Date: 2020-09-04 10:03+0200\n"
 "PO-Revision-Date: 2020-07-09 19:45+0300\n"
 "Last-Translator: Konstantinos Stavropoulos <kookoo_gr@yahoo.com>\n"
 "Language-Team: \n"
@@ -156,14 +156,19 @@ msgstr "Στατιστικά"
 msgid "Selection"
 msgstr "Δεν έχει γίνει επιλογή"
 
-#: src/gui/siril3.glade:1307 src/gui/siril3.glade:1308
+#: src/gui/siril3.glade:1307
+#, fuzzy
+msgid "Free aspect ratio"
+msgstr "Ρυθμός καρέ"
+
+#: src/gui/siril3.glade:1308
 #, fuzzy
 msgid "Free ratio"
 msgstr "Ρυθμός καρέ"
 
 #: src/gui/siril3.glade:1319
 #, fuzzy
-msgid "Preserve the original ratio of the image"
+msgid "Preserve the original aspect ratio of the image"
 msgstr "Διατηρεί την αρχική CIE L* συνιστώσα στην επεξεργασμένη εικόνα."
 
 #: src/gui/siril3.glade:1320
@@ -171,34 +176,13 @@ msgstr "Διατηρεί την αρχική CIE L* συνιστώσα στην 
 msgid "Preserve ratio"
 msgstr "Διατήρηση Λόγου Διαστάσεων"
 
-#: src/gui/siril3.glade:1337
-msgid "Landscape 16/9th ratio"
-msgstr ""
-
-#: src/gui/siril3.glade:1349
-msgid "Landscape 4/3th ratio"
-msgstr ""
-
-#: src/gui/siril3.glade:1361
-msgid "Landscape 3/2th ratio"
-msgstr ""
-
-#: src/gui/siril3.glade:1373
-#, fuzzy
-msgid "Squared ratio"
-msgstr "Τετραγωνική Ρίζα"
-
-#: src/gui/siril3.glade:1385
-msgid "Portrait 3/4th ratio"
-msgstr ""
-
-#: src/gui/siril3.glade:1397
-msgid "Portrait 2/3th ratio"
-msgstr ""
-
+#: src/gui/siril3.glade:1337 src/gui/siril3.glade:1349
+#: src/gui/siril3.glade:1361 src/gui/siril3.glade:1373
+#: src/gui/siril3.glade:1385 src/gui/siril3.glade:1397
 #: src/gui/siril3.glade:1409
-msgid "Portrait 9/16th ratio"
-msgstr ""
+#, fuzzy
+msgid "Aspect ratio of the selection"
+msgstr "Ύψος της επιλογής υποβάθρου"
 
 #: src/gui/siril3.glade:1427
 msgid "Select the whole image and reset ratio"
@@ -218,28 +202,33 @@ msgid "Crop Sequence..."
 msgstr "Περικοπής αλληλουχίας..."
 
 #: src/gui/siril3.glade:1463
-msgid "Save RGB image to 48-bit FITS"
+#, fuzzy
+msgid "Save RGB image to FITS"
 msgstr "Αποθήκευση εικόνας RGB σε 48-bit FITS"
 
 #: src/gui/siril3.glade:1472
-msgid "Save RGB image to 24- or 48-bit TIFF"
-msgstr "Αποθήκευση εικόνας RGB σε 24- ή 48-bit TIFF"
+#, fuzzy
+msgid "Save RGB image to TIFF"
+msgstr "Αποθήκευση εικόνας RGB σε JPG"
 
 #: src/gui/siril3.glade:1481
-msgid "Save RGB image to 24-bit BMP"
-msgstr "Αποθήκευση εικόνας RGB σε 24-bit BMP"
+#, fuzzy
+msgid "Save RGB image to BMP"
+msgstr "Αποθήκευση εικόνας RGB σε JPG"
 
 #: src/gui/siril3.glade:1490
 msgid "Save RGB image to JPG"
 msgstr "Αποθήκευση εικόνας RGB σε JPG"
 
 #: src/gui/siril3.glade:1499
-msgid "Save RGB image to 48-bit PNG"
-msgstr "Αποθήκευση εικόνας RGB σε 48-bit PNG"
+#, fuzzy
+msgid "Save RGB image to PNG"
+msgstr "Αποθήκευση εικόνας RGB σε JPG"
 
 #: src/gui/siril3.glade:1508
-msgid "Save RGB image to 48-bit PPM"
-msgstr "Αποθήκευση εικόνας RGB σε 48-bit PPM"
+#, fuzzy
+msgid "Save RGB image to PPM"
+msgstr "Αποθήκευση εικόνας RGB σε JPG"
 
 #: src/gui/siril3.glade:1523
 msgid "RGB Align"
@@ -4564,7 +4553,7 @@ msgstr ""
 msgid "Don't show warning before script execution"
 msgstr "Να μην εμφανιστεί προειδοποίηση πριν την εκτέλεση της δέσμης εντολών"
 
-#: src/gui/siril3.glade:19136 src/gui/siril3.glade:20095
+#: src/gui/siril3.glade:19136 src/gui/siril3.glade:20137
 msgid "Warning Dialog"
 msgstr "Παράθυρο Προειδοποίησης"
 
@@ -4928,17 +4917,17 @@ msgstr "Προεπιλεγμένος τύπος:"
 msgid "<b>FITS Format</b>"
 msgstr "<b>Τύπος Αρχείου FITS</b>"
 
-#: src/gui/siril3.glade:20078
-msgid "Don't ask before quitting"
-msgstr "Να μην ρωτηθώ πριν την έξοδο"
-
-#: src/gui/siril3.glade:20124
+#: src/gui/siril3.glade:20080
 msgid "Copyright when saving image as TIFF"
 msgstr ""
 
-#: src/gui/siril3.glade:20137
+#: src/gui/siril3.glade:20093
 msgid "Copyright TIFF"
 msgstr ""
+
+#: src/gui/siril3.glade:20120
+msgid "Don't ask before quitting"
+msgstr "Να μην ρωτηθώ πριν την έξοδο"
 
 #: src/gui/siril3.glade:20164
 msgid "Play introduction"
@@ -8769,8 +8758,8 @@ msgstr "Φωτομετρική Βαθμονόμηση Χρώματος σε εξ
 
 #: src/gui/photometric_cc.c:347
 #, fuzzy, c-format
-msgid "%d star excluded from the calculation"
-msgid_plural "%d stars excluded from the calculation"
+msgid "%d star excluded from the calculation\n"
+msgid_plural "%d stars excluded from the calculation\n"
 msgstr[0] "%d αστέρια εξαιρέθηκαν από τον υπολογισμό.\n"
 msgstr[1] "%d αστέρια εξαιρέθηκαν από τον υπολογισμό.\n"
 
@@ -11102,6 +11091,22 @@ msgstr ""
 #: src/stacking/upscaling.c:174
 msgid "Up-scaling sequence for stacking"
 msgstr "Αλληλουχία αύξησης της κλίμακας για σώρευση"
+
+#, fuzzy
+#~ msgid "Squared ratio"
+#~ msgstr "Τετραγωνική Ρίζα"
+
+#~ msgid "Save RGB image to 24- or 48-bit TIFF"
+#~ msgstr "Αποθήκευση εικόνας RGB σε 24- ή 48-bit TIFF"
+
+#~ msgid "Save RGB image to 24-bit BMP"
+#~ msgstr "Αποθήκευση εικόνας RGB σε 24-bit BMP"
+
+#~ msgid "Save RGB image to 48-bit PNG"
+#~ msgstr "Αποθήκευση εικόνας RGB σε 48-bit PNG"
+
+#~ msgid "Save RGB image to 48-bit PPM"
+#~ msgstr "Αποθήκευση εικόνας RGB σε 48-bit PPM"
 
 #, fuzzy
 #~ msgid "10"
