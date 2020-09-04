@@ -54,20 +54,19 @@ static void initialize_methods() {
 // uses the references, so we have to do it here as a special case
 static void free_internal_sequence(sequence *seq) {
 	if (seq) {
-		int i;
-		for (i=0; i<seq->number; i++)
+		for (int i = 0; i < seq->number; i++)
 			clearfits(internal_sequence_get(seq, i));
 		free_sequence(seq, TRUE);
 	}
 }
 
 static int initialize_internal_rgb_sequence() {
-	int i;
 	if (seq) free_internal_sequence(seq);
 
 	seq = create_internal_sequence(3);
-	for (i = 0; i < 3; i++) {
+	for (int i = 0; i < 3; i++) {
 		fits *fit = calloc(1, sizeof(fits));
+		fit->type = gfit.type;
 		copyfits(&gfit, fit, CP_ALLOC | CP_EXTRACT, i);
 		internal_sequence_set(seq, i, fit);
 	}
@@ -78,23 +77,37 @@ static int initialize_internal_rgb_sequence() {
 }
 
 static void align_and_compose() {
-	int x, y, i = 0;	// i is browsing the 1D buffer, i = y * rx + x
-	for (y = 0; y < gfit.ry; ++y) {
-		for (x = 0; x < gfit.rx; ++x) {
-			int channel;
-			for (channel = 0; channel < 3; channel++) {
+	int i = 0;	// i is browsing the 1D buffer, i = y * rx + x
+	for (int y = 0; y < gfit.ry; ++y) {
+		for (int x = 0; x < gfit.rx; ++x) {
+			for (int channel = 0; channel < 3; channel++) {
 				fits *fit = internal_sequence_get(seq, channel);
 				if (seq && seq->regparam) {
-					WORD pixel;
-					int realX = x - roundf_to_int(seq->regparam[REGLAYER][channel].shiftx);
-					int realY = y - roundf_to_int(seq->regparam[REGLAYER][channel].shifty);
-					if (realX < 0 || realX >= gfit.rx)
-						pixel = 0;
-					else if (realY < 0 || realY >= gfit.ry)
-						pixel = 0;
-					else
-						pixel = fit->pdata[0][realX + gfit.rx * realY];
-					gfit.pdata[channel][i] = pixel;
+					if (fit->type == DATA_USHORT) {
+						WORD pixel;
+						int realX = x - roundf_to_int(seq->regparam[REGLAYER][channel].shiftx);
+						int realY = y - roundf_to_int(seq->regparam[REGLAYER][channel].shifty);
+						if (realX < 0 || realX >= gfit.rx)
+							pixel = 0;
+						else if (realY < 0 || realY >= gfit.ry)
+							pixel = 0;
+						else {
+							pixel = fit->pdata[0][realX + gfit.rx * realY];
+						}
+						gfit.pdata[channel][i] = pixel;
+					} else {
+							float pixel;
+							int realX = x - roundf_to_int(seq->regparam[REGLAYER][channel].shiftx);
+							int realY = y - roundf_to_int(seq->regparam[REGLAYER][channel].shifty);
+							if (realX < 0 || realX >= gfit.rx)
+								pixel = 0.f;
+							else if (realY < 0 || realY >= gfit.ry)
+								pixel = 0.f;
+							else {
+								pixel = fit->fpdata[0][realX + gfit.rx * realY];
+							}
+							gfit.fpdata[channel][i] = pixel;
+					}
 				}
 			}
 			i++;
