@@ -29,6 +29,7 @@
 #include "gui/callbacks.h"
 #include "gui/image_display.h"
 #include "gui/progress_and_log.h"
+#include "gui/PSF_list.h"
 #include "core/proto.h"
 #include "registration/registration.h"
 #include "io/sequence.h"
@@ -58,6 +59,7 @@ static void free_internal_sequence(sequence *seq) {
 			clearfits(internal_sequence_get(seq, i));
 		free_sequence(seq, TRUE);
 	}
+	clear_stars_list();
 }
 
 static int initialize_internal_rgb_sequence() {
