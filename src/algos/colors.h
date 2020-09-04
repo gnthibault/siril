@@ -5,7 +5,7 @@
 struct extract_channels_data {
 	gboolean process;
 	fits *fit;
-	const char *channel[3];
+	char *channel[3];
 	int type;
 	const char* str_type;
 };

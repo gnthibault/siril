@@ -2076,23 +2076,30 @@ int process_split(int nb){
 		siril_log_message(_("Siril cannot split layers. Make sure your image is in RGB mode.\n"));
 		return 1;
 	}
-	gchar *R = g_strdup_printf("%s%s", word[1], com.pref.ext);
-	gchar *G = g_strdup_printf("%s%s", word[2], com.pref.ext);
-	gchar *B = g_strdup_printf("%s%s", word[3], com.pref.ext);
 
-	if (gfit.type == DATA_USHORT) {
-		save1fits16(R, &gfit, RLAYER);
-		save1fits16(G, &gfit, GLAYER);
-		save1fits16(B, &gfit, BLAYER);
-	} else {
-		save1fits32(R, &gfit, RLAYER);
-		save1fits32(G, &gfit, GLAYER);
-		save1fits32(B, &gfit, BLAYER);
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
 	}
 
-	g_free(R);
-	g_free(G);
-	g_free(B);
+	struct extract_channels_data *args = malloc(sizeof(struct extract_channels_data));
+	if (args == NULL) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
+
+	args->type = 0;
+	args->str_type = _("RGB");
+
+	args->channel[0] = g_strdup_printf("%s%s", word[1], com.pref.ext);
+	args->channel[1] = g_strdup_printf("%s%s", word[2], com.pref.ext);
+	args->channel[2] = g_strdup_printf("%s%s", word[3], com.pref.ext);
+
+	args->fit = calloc(1, sizeof(fits));
+	set_cursor_waiting(TRUE);
+	copyfits(&gfit, args->fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
+	start_in_new_thread(extract_channels, args);
+
 	return 0;
 }
 

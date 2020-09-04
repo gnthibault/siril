@@ -167,6 +167,13 @@ void reset_display_offset() {
 	com.display_offset.y = 0;
 }
 
+void reset_zoom_default() {
+	com.zoom_value = ZOOM_DEFAULT;
+	if (com.zoom_value == ZOOM_FIT && !com.script) {
+		gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(lookup_widget("zoom_to_fit_check_button")), TRUE);
+	}
+}
+
 /*
  * Button events
  */
@@ -813,7 +820,7 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 
 void on_zoom_to_fit_check_button_toggled(GtkToggleToolButton *button, gpointer data) {
 	if (gtk_toggle_tool_button_get_active(button)) {
-		com.zoom_value = -1;
+		com.zoom_value = ZOOM_DEFAULT;
 		reset_display_offset();
 		redraw(com.cvport, REMAP_NONE);
 	} else {
@@ -825,7 +832,7 @@ void on_zoom_to_one_button_clicked(GtkToolButton *button, gpointer user_data) {
 	GtkToggleToolButton *tbutton = (GtkToggleToolButton*) user_data;
 	if (gtk_toggle_tool_button_get_active(tbutton))
 		gtk_toggle_tool_button_set_active(tbutton, FALSE);
-	com.zoom_value = 1;
+	com.zoom_value = ZOOM_NONE;
 	reset_display_offset();
 	redraw(com.cvport, REMAP_NONE);
 }

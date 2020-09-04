@@ -6,6 +6,7 @@ void register_selection_update_callback(selection_update_callback f);
 void unregister_selection_update_callback(selection_update_callback f);
 void delete_selected_area();
 void reset_display_offset();
+void reset_zoom_default();
 
 /* mouse behaviour */
 typedef enum {

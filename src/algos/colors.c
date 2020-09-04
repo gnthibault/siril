@@ -473,6 +473,9 @@ int equalize_cfa_fit_with_coeffs(fits *fit, float coeff1, float coeff2, int conf
 static gboolean end_extract_channels(gpointer p) {
 	struct extract_channels_data *args = (struct extract_channels_data *) p;
 	stop_processing_thread();
+	free(args->channel[0]);
+	free(args->channel[1]);
+	free(args->channel[2]);
 	free(args);
 	set_cursor_waiting(FALSE);
 
@@ -1187,9 +1190,9 @@ void on_extract_channel_button_ok_clicked(GtkButton *button, gpointer user_data)
 	args->type = gtk_combo_box_get_active(combo_extract_channel);
 	args->str_type = gtk_combo_box_get_active_id(combo_extract_channel);
 
-	args->channel[0] = gtk_entry_get_text(channel_extract_entry[0]);
-	args->channel[1] = gtk_entry_get_text(channel_extract_entry[1]);
-	args->channel[2] = gtk_entry_get_text(channel_extract_entry[2]);
+	args->channel[0] = g_strdup_printf("%s%s", gtk_entry_get_text(channel_extract_entry[0]), com.pref.ext);
+	args->channel[1] = g_strdup_printf("%s%s", gtk_entry_get_text(channel_extract_entry[1]), com.pref.ext);
+	args->channel[2] = g_strdup_printf("%s%s", gtk_entry_get_text(channel_extract_entry[2]), com.pref.ext);
 
 	if ((args->channel[0][0] != '\0') && (args->channel[1][0] != '\0')
 			&& (args->channel[2][0] != '\0')) {
@@ -1199,6 +1202,9 @@ void on_extract_channel_button_ok_clicked(GtkButton *button, gpointer user_data)
 		start_in_new_thread(extract_channels, args);
 	}
 	else {
+		free(args->channel[0]);
+		free(args->channel[1]);
+		free(args->channel[2]);
 		free(args);
 	}
 }

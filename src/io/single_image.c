@@ -76,6 +76,8 @@ void free_image_data() {
 		clear_sampling_setting_box();	// clear focal and pixel pitch info
 		free_background_sample_list(com.grad_samples);
 		com.grad_samples = NULL;
+		reset_display_offset();
+		reset_zoom_default();
 	}
 	clear_histograms();
 
