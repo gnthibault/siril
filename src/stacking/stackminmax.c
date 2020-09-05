@@ -190,6 +190,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 				++i;
 			}
 		}
+		clearfits(&fit);
 	}
 	if (!get_thread_run()) {
 		retval = ST_GENERIC_ERROR;
@@ -198,7 +199,18 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 	set_progress_bar_data(_("Finalizing stacking..."), (double) nb_frames / ((double) nb_frames + 1.));
 
 	clearfits(&gfit);
-	copyfits(&fit, &gfit, CP_FORMAT, 0);
+	fits *result = &gfit;
+	if (new_fit_image(&result, args->seq->rx, args->seq->ry, args->seq->nb_layers, is_float ? DATA_FLOAT : DATA_USHORT))
+		return ST_GENERIC_ERROR;
+
+	/* We copy metadata from reference to the final fit */
+	if (args->seq->type == SEQ_REGULAR) {
+		int ref = args->ref_image;
+		if (!seq_open_image(args->seq, ref)) {
+			import_metadata_from_fitsfile(args->seq->fptr[ref], &gfit);
+			seq_close_image(args->seq, ref);
+		}
+	}
 	if (is_float) {
 		gfit.fdata = ffinal_pixel[0];
 		gfit.fpdata[RLAYER] = gfit.fdata;
