@@ -226,7 +226,7 @@ endif
 libraw_dep = dependency('libraw', required : false)
 libtiff_dep = dependency('libtiff-4', required : false)
 libjpeg_dep = dependency('libjpeg', required : false)
-libpng_dep = dependency('libpng', required : false)
+libpng_dep = dependency('libpng', required : false, version: '>= 1.6.0')
 libheif_dep = dependency('libheif', required : false)
 ffms2_dep = dependency('ffms2', required : false)
 ffmpeg = [

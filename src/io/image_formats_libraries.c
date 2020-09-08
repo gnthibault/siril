@@ -49,6 +49,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/icc_profile.h"
 #include "algos/geometry.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
@@ -416,6 +417,9 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 	float norm;
 	gchar *description = NULL, *copyright = NULL;
 	gchar *filename = g_strdup(name);
+	uint32_t profile_len = -1;
+	const unsigned char *profile;
+
 	if (!ends_with(filename, ".tif") && (!ends_with(filename, ".tiff"))) {
 		filename = str_append(&filename, ".tif");
 	}
@@ -439,6 +443,7 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 	TIFFSetField(tif, TIFFTAG_SAMPLEFORMAT, bitspersample == 32 ? SAMPLEFORMAT_IEEEFP : SAMPLEFORMAT_UINT);
 	TIFFSetField(tif, TIFFTAG_IMAGEWIDTH, width);
 	TIFFSetField(tif, TIFFTAG_IMAGELENGTH, height);
+	TIFFSetField(tif, TIFFTAG_ORIENTATION, ORIENTATION_TOPLEFT);
 	TIFFSetField(tif, TIFFTAG_ROWSPERSTRIP, TIFFDefaultStripSize(tif, -1));
 	TIFFSetField(tif, TIFFTAG_PLANARCONFIG, PLANARCONFIG_CONTIG);
 	TIFFSetField(tif, TIFFTAG_SAMPLESPERPIXEL, nsamples);
@@ -451,15 +456,21 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 	TIFFSetField(tif, TIFFTAG_MAXSAMPLEVALUE, fit->maxi);
 	TIFFSetField(tif, TIFFTAG_SOFTWARE, PACKAGE " v" VERSION);
 
-	if (nsamples == 1)
+	if (nsamples == 1) {
 		TIFFSetField(tif, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_MINISBLACK);
-	else if (nsamples == 3)
+		profile = get_gray_profile_data(&profile_len);
+	} else if (nsamples == 3) {
 		TIFFSetField(tif, TIFFTAG_PHOTOMETRIC, PHOTOMETRIC_RGB);
-	else {
+		profile = get_sRGB_profile_data(&profile_len);
+	} else {
 		TIFFClose(tif);
 		siril_log_message(_("TIFF file has unexpected number of channels (not 1 or 3).\n"));
 		free(filename);
 		return 1;
+	}
+
+	if (profile_len > 0) {
+		TIFFSetField(tif, TIFFTAG_ICCPROFILE, profile_len, profile);
 	}
 
 	WORD *gbuf[3] =	{ fit->pdata[RLAYER], fit->pdata[GLAYER], fit->pdata[BLAYER] };
@@ -714,6 +725,7 @@ int savejpg(const char *name, fits *fit, int quality){
 
 	//## FINISH COMPRESSION AND CLOSE FILE:
 	jpeg_finish_compress(&cinfo);
+
 	fclose(f);
 	jpeg_destroy_compress(&cinfo);
 	free(image_buffer);
@@ -863,76 +875,6 @@ int readpng(const char *name, fits* fit) {
 	return nbplanes;
 }
 
-/* Code borrowed from SER Player */
-
-// ------------------------------------------
-// Save PNG image (colour)
-// ------------------------------------------
-static int32_t save_colour_file(const char *filename,
-		const void *p_image_data, uint32_t width, uint32_t height,
-		uint32_t bytes_per_sample) {
-	int32_t ret = OPEN_IMAGE_ERROR;
-	png_image image; // The control structure used by libpng
-
-	// Initialize the 'png_image' structure.
-	memset(&image, 0, (sizeof image));
-	image.version = PNG_IMAGE_VERSION;
-	image.width = width;
-	image.height = height;
-	image.format = PNG_FORMAT_RGB;
-	if (bytes_per_sample == 2) {
-		image.format |= PNG_FORMAT_FLAG_LINEAR;
-	}
-
-	FILE *p_png_file = g_fopen(filename, "wb");
-	int row_stride = image.width * -3;
-
-	if (p_png_file != NULL) {
-		png_image_write_to_stdio(&image, p_png_file, 0,
-				(png_bytep) (p_image_data), row_stride,  // row_stride
-				NULL);  // colormap
-
-		ret = OPEN_IMAGE_OK;
-		fclose(p_png_file);
-	}
-
-	return ret;
-}
-
-// ------------------------------------------
-// Save PNG image (mono B, G or R)
-// ------------------------------------------
-static int32_t save_mono_file(const char *filename, const void *p_image_data,
-		uint32_t width, uint32_t height, uint32_t bytes_per_sample) {
-	int32_t ret = OPEN_IMAGE_ERROR;
-	png_image image; // The control structure used by libpng
-
-	// Initialize the 'png_image' structure.
-	memset(&image, 0, (sizeof image));
-	image.version = PNG_IMAGE_VERSION;
-	image.width = width;
-	image.height = height;
-
-	if (bytes_per_sample == 1) {
-		image.format = PNG_FORMAT_GRAY;  // 8-bit data
-	} else {
-		image.format = PNG_FORMAT_LINEAR_Y;  // 16-bit data
-	}
-
-	FILE *p_png_file = g_fopen(filename, "wb");
-	int row_stride = image.width * -1;
-
-	if (p_png_file != NULL) {
-		png_image_write_to_stdio(&image, p_png_file, 0,  // convert_to_8bit
-				(png_bytep) p_image_data, row_stride,  // row_stride
-				NULL);  // colormap
-		ret = OPEN_IMAGE_OK;
-		fclose(p_png_file);
-	}
-
-	return ret;
-}
-
 static WORD *convert_data(fits *image) {
 	size_t ndata = image->rx * image->ry;
 	int ch = image->naxes[2];
@@ -997,7 +939,9 @@ static uint8_t *convert_data8(fits *image) {
 
 int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 		gboolean is_colour) {
-	int ret = OPEN_IMAGE_ERROR;
+	int32_t ret = -1;
+	png_structp png_ptr;
+	png_infop info_ptr;
 	const uint32_t width = fit->rx;
 	const uint32_t height = fit->ry;
 
@@ -1006,39 +950,116 @@ int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 		filename = str_append(&filename, ".png");
 	}
 
+	FILE *p_png_file = g_fopen(name, "wb");
+	if (p_png_file == NULL) {
+		return ret;
+	}
+
+	/* Create and initialize the png_struct with the desired error handler
+	 * functions.  If you want to use the default stderr and longjump method,
+	 * you can supply NULL for the last three parameters.  We also check that
+	 * the library version is compatible with the one used at compile time,
+	 * in case we are using dynamically linked libraries.  REQUIRED.
+	 */
+	png_ptr = png_create_write_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+	if (png_ptr == NULL) {
+		fclose(p_png_file);
+		return ret;
+	}
+
+	/* Allocate/initialize the image information data.  REQUIRED */
+	info_ptr = png_create_info_struct(png_ptr);
+	if (info_ptr == NULL) {
+		fclose(p_png_file);
+		png_destroy_write_struct(&png_ptr, NULL);
+		return ret;
+	}
+
+	/* Set error handling.  REQUIRED if you aren't supplying your own
+	 * error handling functions in the png_create_write_struct() call.
+	 */
+	if (setjmp(png_jmpbuf(png_ptr))) {
+		/* If we get here, we had a problem writing the file */
+		fclose(p_png_file);
+		png_destroy_write_struct(&png_ptr, &info_ptr);
+		return ret;
+	}
+
+	/* Set up the output control if you are using standard C streams */
+	png_init_io(png_ptr, p_png_file);
+
+	/* Set the image information here.  Width and height are up to 2^31,
+	 * bit_depth is one of 1, 2, 4, 8, or 16, but valid values also depend on
+	 * the color_type selected. color_type is one of PNG_COLOR_TYPE_GRAY,
+	 * PNG_COLOR_TYPE_GRAY_ALPHA, PNG_COLOR_TYPE_PALETTE, PNG_COLOR_TYPE_RGB,
+	 * or PNG_COLOR_TYPE_RGB_ALPHA.  interlace is either PNG_INTERLACE_NONE or
+	 * PNG_INTERLACE_ADAM7, and the compression_type and filter_type MUST
+	 * currently be PNG_COMPRESSION_TYPE_BASE and PNG_FILTER_TYPE_BASE. REQUIRED
+	 */
+	uint32_t profile_len = -1;
+	const unsigned char *profile;
+
 	if (is_colour) {
-		// Create colour PNG file
-		if (bytes_per_sample == 2) {
-			WORD *data = convert_data(fit);
-			ret = save_colour_file(filename, data, width, height,
-					bytes_per_sample);
-			free(data);
-		} else {
-			uint8_t *data = convert_data8(fit);
-			ret = save_colour_file(filename, data, width, height,
-					bytes_per_sample);
-			free(data);
+		png_set_IHDR(png_ptr, info_ptr, width, height, bytes_per_sample * 8,
+				PNG_COLOR_TYPE_RGB,
+				PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE,
+				PNG_FILTER_TYPE_DEFAULT);
+		profile = get_sRGB_profile_data(&profile_len);
+
+		if (profile_len > 0) {
+			png_set_iCCP(png_ptr, info_ptr, "icc", 0, (png_const_bytep) profile, profile_len);
 		}
 	} else {
-		// Create monochrome PNG file
-		if (bytes_per_sample == 2) {
-			WORD *data = convert_data(fit);
-			ret = save_mono_file(filename, data, width, height,
-					bytes_per_sample);
-		} else {
-			uint8_t *data = convert_data8(fit);
-			ret = save_mono_file(filename, data, width, height,
-					bytes_per_sample);
-			free(data);
-		}
+		png_set_IHDR(png_ptr, info_ptr, width, height, bytes_per_sample * 8,
+				PNG_COLOR_TYPE_GRAY,
+				PNG_INTERLACE_NONE, PNG_COMPRESSION_TYPE_BASE,
+				PNG_FILTER_TYPE_DEFAULT);
+		profile = get_gray_profile_data(&profile_len);
 	}
+
+	if (profile_len > 0) {
+		png_set_iCCP(png_ptr, info_ptr, "icc", 0, (png_const_bytep) profile, profile_len);
+	}
+
+	/* Write the file header information.  REQUIRED */
+	png_write_info(png_ptr, info_ptr);
+
+	png_bytep *row_pointers = malloc((size_t) height * sizeof(png_bytep));
+
+	int samples_per_pixel;
+	if (is_colour) {
+		samples_per_pixel = 3;
+	} else {
+		samples_per_pixel = 1;
+	}
+
+	if (bytes_per_sample == 2) {
+		/* swap bytes of 16 bit files to most significant bit first */
+		png_set_swap(png_ptr);
+		WORD *data = convert_data(fit);
+		for (unsigned i = 0, j = height - 1; i < height; i++)
+			row_pointers[j--] = (png_bytep) ((uint16_t*) data + (size_t) samples_per_pixel * i * width);
+	} else {
+		uint8_t *data = convert_data8(fit);
+		for (unsigned i = 0, j = height - 1; i < height; i++)
+			row_pointers[j--] = (uint8_t*) data + (size_t) samples_per_pixel * i * width;
+	}
+
+	png_write_image(png_ptr, row_pointers);
+
+	/* Clean up after the write, and free any memory allocated */
+	png_write_end(png_ptr, info_ptr);
+	png_destroy_write_struct(&png_ptr, &info_ptr);
+
 	siril_log_message(_("Saving PNG: file %s, %ld layer(s), %ux%u pixels\n"),
-			filename, fit->naxes[2], fit->rx, fit->ry);
+				filename, fit->naxes[2], fit->rx, fit->ry);
 
+	/* Close the file */
+	fclose(p_png_file);
+	free(row_pointers);
 	free(filename);
-	return ret;
+	return 0;
 }
-
 #endif	// HAVE_LIBPNG
 
 /********************* RAW IMPORT *********************/
@@ -1063,8 +1084,8 @@ static void get_FITS_date(time_t date, char *date_obs) {
 	/* If the gmtime() call has failed, "secs" is too big. */
 	if (t) {
 		g_snprintf(date_obs, FLEN_VALUE, "%04d-%02d-%02dT%02d:%02d:%02d",
-				t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min,
-				t->tm_sec);
+				t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour,
+				t->tm_min, t->tm_sec);
 	}
 }
 

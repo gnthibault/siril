@@ -76,6 +76,8 @@ siril_common_SOURCES = \
 	core/command_line_processor.c \
 	core/command_line_processor.h \
 	core/command_list.h \
+	core/icc_profile.c \
+	core/icc_profile.h \
 	core/initfile.c \
 	core/initfile.h \
 	core/OS_utils.c \
