@@ -417,7 +417,7 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 	float norm;
 	gchar *description = NULL, *copyright = NULL;
 	gchar *filename = g_strdup(name);
-	uint32_t profile_len = -1;
+	uint32_t profile_len = 0;
 	const unsigned char *profile;
 
 	if (!ends_with(filename, ".tif") && (!ends_with(filename, ".tiff"))) {
@@ -996,7 +996,7 @@ int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 	 * PNG_INTERLACE_ADAM7, and the compression_type and filter_type MUST
 	 * currently be PNG_COMPRESSION_TYPE_BASE and PNG_FILTER_TYPE_BASE. REQUIRED
 	 */
-	uint32_t profile_len = -1;
+	uint32_t profile_len = 0;
 	const unsigned char *profile;
 
 	if (is_colour) {
