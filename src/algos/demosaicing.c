@@ -793,13 +793,14 @@ static WORD *debayer_buffer_siril(WORD *buf, int *width, int *height,
 
 int retrieve_Bayer_pattern(fits *fit, sensor_pattern *pattern) {
 	int xbayeroff = 0, ybayeroff = 0;
-	gboolean top_down = FALSE;
+	gboolean top_down = com.pref.debayer.top_down;
 
-	if ((com.pref.debayer.use_bayer_header
-				&& !g_strcmp0(fit->row_order, "TOP-DOWN"))) {
-		top_down = TRUE;
-	} else if (g_strcmp0(fit->row_order, "TOP-DOWN") && g_strcmp0(fit->row_order, "BOTTOM-UP")) {
-		top_down = com.pref.debayer.top_down;
+	if (com.pref.debayer.use_bayer_header) {
+		if (!g_strcmp0(fit->row_order, "TOP-DOWN")) {
+			top_down = TRUE;
+		} else if (!g_strcmp0(fit->row_order, "BOTTOM-UP")) {
+			top_down = FALSE;
+		}
 	}
 
 	if (!com.pref.debayer.use_bayer_header) {
