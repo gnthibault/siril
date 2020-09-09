@@ -1377,7 +1377,7 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 
 	/* This test checks if raw data exist. Sometimes it doesn't. This is
 	 * the case for DNG built from lightroom for example */
-	if ((void*) raw->rawdata.raw_image == 0x00
+	if (raw->rawdata.raw_image == NULL
 			&& (raw->rawdata.color3_image || raw->rawdata.color4_image)) {
 		siril_log_message(_("Siril cannot open this file in CFA mode (no data available). "
 				"Try to switch into RGB.\n"));
