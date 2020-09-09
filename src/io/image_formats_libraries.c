@@ -947,7 +947,7 @@ int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 
 	char *filename = strdup(name);
 	if (!ends_with(filename, ".png")) {
-		filename = str_append(&name, ".png");
+		filename = str_append(&filename, ".png");
 	}
 
 	FILE *p_png_file = g_fopen(filename, "wb");
