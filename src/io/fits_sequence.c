@@ -29,8 +29,7 @@
 #include "gui/progress_and_log.h"
 #include "core/siril_log.h"
 
-static void *write_worker(void *a);
-static void notify_data_freed();
+static int fitseq_write_image_for_writer(struct seqwriter_data *writer, fits *image, int index);
 
 static int _find_hdus(fitsfile *fptr, int **hdus, int *nb_im) {
 	int status = 0;
@@ -129,8 +128,7 @@ void fitseq_init_struct(fitseq *fitseq) {
 #ifdef _OPENMP
 	fitseq->thread_fptr = NULL;
 #endif
-	fitseq->write_thread = NULL;
-	fitseq->writes_queue = NULL;
+	fitseq->writer = NULL;
 }
 
 int fitseq_open(const char *filename, fitseq *fitseq) {
@@ -312,26 +310,37 @@ int fitseq_create_file(const char *filename, fitseq *fitseq, int frame_count) {
 
 	fitseq->filename = strdup(filename);
 	fitseq->frame_count = frame_count;
-	fitseq->writes_queue = g_async_queue_new();
-	fitseq->write_thread = g_thread_new("processing", write_worker, fitseq);
-
+	fitseq->writer = malloc(sizeof(struct seqwriter_data));
+	fitseq->writer->write_image_hook = fitseq_write_image_for_writer;
+	fitseq->writer->sequence = fitseq;
 	siril_debug_print("Successfully created the FITS sequence file %s, for %d images, waiting for data\n",
 			fitseq->filename, fitseq->frame_count);
 
+	start_writer(fitseq->writer, frame_count);
 	return 0;
 }
 
-static void init_images(fitseq *fitseq, fits *example) {
-	fitseq->bitpix = example->bitpix;
-	memcpy(fitseq->naxes, example->naxes, sizeof fitseq->naxes);
+static int fitseq_write_image_for_writer(struct seqwriter_data *writer, fits *image, int index) {
+	fitseq *fitseq = (struct fits_sequence *)writer->sequence;
+	int status = 0;
+	if (fits_create_img(fitseq->fptr, image->bitpix,
+				image->naxis, image->naxes, &status)) {
+		report_fits_error(status);
+		return 1;
+	}
+
+	image->fptr = fitseq->fptr;
+
+	if (com.pref.comp.fits_enabled) {
+		status = siril_fits_compress(image);
+		if (status) {
+			report_fits_error(status);
+			return 1;
+		}
+	}
+
+	return save_opened_fits(image); // warning: will change HDU
 }
-
-struct _pending_write {
-	fits *image;
-	int index;
-};
-
-#define ABORT_TASK ((void *)0x66)
 
 /* expected images (if a frame count is given on creation) MUST be notified in
  * all cases, even with a NULL image if there is in fact no image to write for
@@ -343,154 +352,15 @@ int fitseq_write_image(fitseq *fitseq, fits *image, int index) {
 		return 1;
 	}
 	siril_debug_print("FITS sequence %s pending image save %d\n", fitseq->filename, index);
-
-	struct _pending_write *newtask = malloc(sizeof(struct _pending_write));
-	newtask->image = image;
-	newtask->index = index;
-	g_async_queue_push(fitseq->writes_queue, newtask);
-	return 0;
-}
-
-typedef enum {
-	FITSEQ_OK = 0,
-	FITSEQ_WRITE_ERROR,
-	FITSEQ_INCOMPLETE
-} fitseq_error;
-
-static void *write_worker(void *a) {
-	fitseq *fitseq = (struct fits_sequence *)a;
-	fitseq_error retval = FITSEQ_OK;
-	int nb_frames_written = 0, current_index = 0, status;
-	GList *next_images = NULL;
-
-	do {
-		struct _pending_write *task = NULL;
-		GList *stored;
-		for (stored = next_images; stored != NULL; stored = stored->next) {
-			struct _pending_write *stored_task = (struct _pending_write *)stored->data;
-			if (stored_task->index == current_index) {
-				task = stored_task;
-				next_images = g_list_delete_link(next_images, stored);
-				siril_debug_print("fitseq write: image %d obtained from waiting list\n", task->index);
-				break;
-			}
-		}
-
-		if (!task) {	// if not in the waiting list, try to get it from processing threads
-			do {
-				siril_debug_print("fitseq write: waiting for message %d\n", current_index);
-				task = g_async_queue_pop(fitseq->writes_queue);	// blocking
-				if (task == ABORT_TASK) {
-					siril_debug_print("fitseq write: abort message\n");
-					retval = FITSEQ_INCOMPLETE;
-					break;
-				}
-
-				if (fitseq->bitpix && task->image &&
-						(memcmp(task->image->naxes, fitseq->naxes, sizeof fitseq->naxes) ||
-						 task->image->bitpix != fitseq->bitpix)) {
-					siril_log_color_message(_("Cannot add an image with different properties to an existing sequence.\n"), "red");
-					retval = FITSEQ_WRITE_ERROR;
-					break;
-				}
-
-				if (task->index >= 0 && task->index != current_index) {
-					siril_debug_print("fitseq write: image %d put stored for later use\n", task->index);
-					next_images = g_list_append(next_images, task);
-					task = NULL;
-				}
-				else siril_debug_print("fitseq write: image %d received\n", task->index);
-			} while (!task);
-		}
-		if (!task)
-			continue;
-		if (retval == FITSEQ_INCOMPLETE)
-			break;
-		if (!task->image) {
-			// failed image, hole in sequence, skip it
-			siril_debug_print("fitseq write: skipping image %d\n", task->index);
-			notify_data_freed(fitseq, task->index);
-			current_index++;
-			fitseq->frame_count--;
-			continue;
-		}
-
-		// from here on, we have a valid task and we will write an image
-		if (!fitseq->bitpix)
-			init_images(fitseq, task->image);
-
-		status = 0;
-		if (fits_create_img(fitseq->fptr, task->image->bitpix,
-					task->image->naxis, task->image->naxes, &status)) {
-			report_fits_error(status);
-			retval = FITSEQ_WRITE_ERROR;
-			break;
-		}
-
-		siril_log_message(_("fitseq write: Saving FITS image %d, %ld layer(s), %ux%u pixels, %d bits\n"),
-				task->index, task->image->naxes[2],
-				task->image->rx, task->image->ry,
-				task->image->type == DATA_FLOAT ? 32 : 16);
-		task->image->fptr = fitseq->fptr;
-
-		if (com.pref.comp.fits_enabled) {
-			status = siril_fits_compress(task->image);
-			if (status) {
-				report_fits_error(status);
-				retval = FITSEQ_WRITE_ERROR;
-				break;
-			}
-		}
-
-		if (save_opened_fits(task->image)) // warning: will change HDU
-			retval = FITSEQ_WRITE_ERROR;
-		clearfits(task->image);
-
-		if (retval != FITSEQ_WRITE_ERROR) {
-			notify_data_freed(fitseq, task->index);
-			nb_frames_written++;
-			current_index++;
-		}
-		free(task->image);
-		free(task);
-	} while (retval == FITSEQ_OK &&
-			(fitseq->frame_count <= 0 || nb_frames_written < fitseq->frame_count));
-
-	if (retval == FITSEQ_OK) {
-		int nb_hdu;
-		status = 0;
-		fits_get_num_hdus(fitseq->fptr, &nb_hdu, &status);
-		// this should never happen
-		if (nb_hdu != nb_frames_written) {
-			siril_log_color_message(_("Frame number mismatch at the end of sequence saving (%d saved for %d written)\n"), "red", nb_hdu, nb_frames_written);
-			retval = 1;
-		}
-	}
-	else if (retval == FITSEQ_INCOMPLETE) {
-		if (fitseq->frame_count < 0) {
-			fitseq->frame_count = nb_frames_written;
-			retval = FITSEQ_OK;
-			siril_log_message(_("Successfully saved FITS sequence with %d images\n"), nb_frames_written);
-		} else {
-			siril_debug_print("fitseq write: write aborted, quitting thread\n");
-		}
-	}
-
-	siril_debug_print("fitseq writer exits with retval %d (0: ok, 1: error, 2: incomplete)\n", retval);
-	return GINT_TO_POINTER(retval);
+	return seqwriter_append_write(fitseq->writer, image, index);
 }
 
 static int fitseq_destroy(fitseq *fitseq) {
 	int retval = 0;
-	if (fitseq->write_thread) {
-		g_async_queue_push(fitseq->writes_queue, ABORT_TASK);
-		siril_debug_print("fitseq writing thread notified, waiting for exit...\n");
-		gpointer ret = g_thread_join(fitseq->write_thread);
-		fitseq->write_thread = NULL;
-		g_async_queue_unref(fitseq->writes_queue);
-		retval = GPOINTER_TO_INT(ret);
-		siril_debug_print("fitseq writing thread joined (retval: %d)\n", retval);
-		fitseq_set_max_active_blocks(0); // wake-up the callers
+	if (fitseq->writer) {
+		retval = stop_writer(fitseq->writer);
+		free(fitseq->writer);
+		fitseq->writer = NULL;
 	}
 	int status = 0;
 	fits_close_file(fitseq->fptr, &status);
@@ -507,8 +377,8 @@ void fitseq_close_and_delete_file(fitseq *fitseq) {
 	g_unlink(filename);
 }
 
-void fitseq_close_file(fitseq *fitseq) {
-	fitseq_destroy(fitseq);
+int fitseq_close_file(fitseq *fitseq) {
+	return fitseq_destroy(fitseq);
 }
 
 // to call after open to read with several threads in the file
@@ -548,111 +418,4 @@ int fitseq_multiple_close(fitseq *fitseq) {
 	return retval;
 }
 
-/* TO BE GENERALIZED TO ALL PROCESSING FUNCTIONS
- * FITS cannot be written by several threads at the same time. We still want to
- * read and process files in parallel and save the results into a FITS
- * sequence, so instead of writing in the file from each processing thread, we
- * queue the writes and a single thread, launched manually with the
- * write_worker function, writes to the file.
- * The problem with that is memory management. In most algorithms, we limit the
- * number of threads to match memory requirements, because each thread needs
- * memory to handle the image data. With the writes queued, memory is not freed
- * when the processing ends, but the thread is ready to process more, hence
- * allocate more. We have to pause the processing until the writing thread has
- * saved a result and freed the data, otherwise siril will go out of the memory
- * limits. In case the memory is larger than what the number of thread can
- * support, the threads won't be blocked until too many images are pending
- * write.
- * The code below counts the number of active memory blocks and provides a
- * waiting function.
- */
 
-static int nb_blocks_active, configured_max_active_blocks;
-static int nb_outputs = 1;
-static GCond pool_cond;
-static GMutex pool_mutex;
-
-/* here we keep the latest frame index written for each output sequence, to
- * synchronize in case of several output sequences for a single processing */
-struct _outputs_struct {
-	void *seq;
-	int index;
-};
-static struct _outputs_struct *outputs;
-
-void fitseq_set_max_active_blocks(int max) {
-	siril_log_message(_("Number of images allowed in the FITS write queue: %d\n"), max);
-	configured_max_active_blocks = max;
-	nb_blocks_active = 0;
-}
-
-void fitseq_wait_for_memory() {
-	if (configured_max_active_blocks <= 0)
-		return;
-	siril_debug_print("entering the wait function\n");
-	g_mutex_lock(&pool_mutex);
-	while (nb_blocks_active >= configured_max_active_blocks) {
-		siril_debug_print("  waiting for free memory slot (%d active)\n", nb_blocks_active);
-		g_cond_wait(&pool_cond, &pool_mutex);
-	}
-	nb_blocks_active++;
-	siril_debug_print("got the slot!\n");
-	g_mutex_unlock(&pool_mutex);
-}
-
-static int get_output_for_seq(void *seq) {
-	for (int i = 0; i < nb_outputs; i++) {
-		if (!outputs[i].seq) {
-			outputs[i].seq = seq;
-			outputs[i].index = -1;
-			return i;
-		}
-		if (outputs[i].seq == seq)
-			return i;
-	}
-	siril_debug_print("### fitseq get_output_for_seq: not found! should never happen ###\n");
-	return -1;
-}
-
-static gboolean all_outputs_to_index(int index) {
-	for (int i = 0; i < nb_outputs; i++) {
-		if (!outputs[i].seq)
-			return FALSE;
-		if (outputs[i].index < index)
-			return FALSE;
-	}
-	siril_debug_print("\tgot all outputs notified for index %d, signaling\n", index);
-	return TRUE;
-}
-
-static void notify_data_freed(fitseq *fitseq, int index) {
-	g_mutex_lock(&pool_mutex);
-	if (nb_outputs > 1) {
-		int output_num = get_output_for_seq(fitseq);
-		if (outputs[output_num].index + 1 != index) {
-			fprintf(stderr, "inconsistent index in memory management (%d for expected %d)\n",
-					outputs[output_num].index + 1, index);
-		}
-		outputs[output_num].index = index;
-		if (!all_outputs_to_index(index)) {
-			g_mutex_unlock(&pool_mutex);
-			return;
-		}
-	}
-
-	nb_blocks_active--;
-	g_cond_signal(&pool_cond);
-	g_mutex_unlock(&pool_mutex);
-}
-
-void fitseq_set_number_of_outputs(int number_of_outputs) {
-	siril_debug_print("fitseq number of outputs: %d\n", number_of_outputs);
-	nb_outputs = number_of_outputs;
-	if (number_of_outputs > 1) {
-		outputs = calloc(number_of_outputs, sizeof(struct _outputs_struct));
-	} else {
-		if (outputs)
-			free(outputs);
-		outputs = NULL;
-	}
-}

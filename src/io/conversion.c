@@ -42,6 +42,7 @@
 #include "io/fits_sequence.h"
 #include "io/image_format_fits.h"
 #include "io/sequence.h"
+#include "io/seqwriter.h"
 #include "io/ser.h"
 #include "io/FITS_symlink.h"
 #include "gui/callbacks.h"
@@ -472,19 +473,20 @@ gpointer convert_thread_worker(gpointer p) {
 		/* we don't know the image size here, max * 2 + 1 may be ok for most users */
 		limit = com.max_thread * 2 + 1;
 #endif
-		fitseq_set_max_active_blocks(limit);
+		seqwriter_set_max_active_blocks(limit);
 	}
 	else g_assert(args->output_type == SEQ_REGULAR);
 
 	if (args->multiple_output && args->output_type != SEQ_SER)
 		args->multiple_output = FALSE;
 
+	gboolean have_seqwriter = args->output_type == SEQ_FITSEQ || args->output_type == SEQ_SER;
 #ifdef _OPENMP
-	if (args->output_type == SEQ_FITSEQ)
+	if (have_seqwriter)
 		omp_set_schedule(omp_sched_dynamic, 1);
 	else omp_set_schedule(omp_sched_static, 0);
 #pragma omp parallel for num_threads(com.max_thread) schedule(runtime) \
-	if(!args->input_has_a_seq && (args->output_type == SEQ_SER || fits_is_reentrant()))
+	if(!args->input_has_a_seq && (have_seqwriter || fits_is_reentrant()))
 	// we should run in parallel only when images are converted, not sequences
 #endif
 	for (int i = 0; i < args->total; i++) {
@@ -529,25 +531,23 @@ gpointer convert_thread_worker(gpointer p) {
 				symlink_uniq_file(src_filename, dest_filename, allow_symlink);
 				g_free(dest_filename);
 			} else {
-				if (args->output_type == SEQ_FITSEQ) {
-					fitseq_wait_for_memory();
+				if (have_seqwriter) {
+					seqwriter_wait_for_memory();
 				}
 
 				fits *fit = any_to_new_fits(imagetype, src_filename, args->debayer);
-				if (fit) {
-					if (args->output_type == SEQ_SER) {
-						if (ser_write_frame_from_fit(&ser_file, fit, i)) {
-							siril_log_message(_("Error while converting to SER (no space left?)\n"));
-							args->retval = 1;
-						}
-						clearfits(fit);
-						free(fit);
-					} else if (args->output_type == SEQ_FITSEQ) {
-						if (fitseq_write_image(&fitseq_file, fit, i)) {
-							siril_log_message(_("Error while converting to SER (no space left?)\n"));
-							args->retval = 1;
-						}
-					} else {
+				if (args->output_type == SEQ_SER) {
+					if (ser_write_frame_from_fit(&ser_file, fit, i)) {
+						siril_log_message(_("Error while converting to SER (no space left?)\n"));
+						args->retval = 1;
+					}
+				} else if (args->output_type == SEQ_FITSEQ) {
+					if (fitseq_write_image(&fitseq_file, fit, i)) {
+						siril_log_message(_("Error while converting to SER (no space left?)\n"));
+						args->retval = 1;
+					}
+				} else {
+					if (fit) {
 						gchar *dest_filename = g_strdup_printf("%s%05d", args->destroot, index);
 						if (savefits(dest_filename, fit)) {
 							siril_log_message(_("Error while converting to FITS (no space left?)\n"));
@@ -557,10 +557,6 @@ gpointer convert_thread_worker(gpointer p) {
 						free(fit);
 						g_free(dest_filename);
 					}
-				}
-				else if (args->output_type == SEQ_SER || args->output_type == SEQ_FITSEQ) {
-					siril_log_color_message(_("For SER or FITS sequence output, a failure in conversion cannot be ignored, aborting.\n"), "red");
-					args->retval = 1;
 				}
 			}
 			frame_index++;
@@ -581,13 +577,13 @@ gpointer convert_thread_worker(gpointer p) {
 clean_exit:
 	if (args->output_type == SEQ_SER) {
 		if (!args->multiple_output) {
-			if (args->retval || args->nb_converted_files != args->total)
+			if (args->retval)
 				ser_close_and_delete_file(&ser_file);
 			else ser_write_and_close(&ser_file);
 		}
 	}
 	else if (args->output_type == SEQ_FITSEQ) {
-		if (args->retval || args->nb_converted_files != args->total)
+		if (args->retval)
 			fitseq_close_and_delete_file(&fitseq_file);
 		else fitseq_close_file(&fitseq_file);
 	}

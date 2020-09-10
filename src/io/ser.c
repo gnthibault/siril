@@ -49,6 +49,8 @@ static const uint64_t epochTicks = 621355968000000000UL;
 static const uint64_t ticksPerSecond = 10000000;
 
 static int ser_write_header(struct ser_struct *ser_file);
+static int ser_write_image_for_writer(struct seqwriter_data *writer, fits *image, int index);
+static int ser_write_frame_from_fit_internal(struct ser_struct *ser_file, fits *fit, int frame_no);
 
 /* Given a SER timestamp, return a char string representation
  * MUST be freed
@@ -622,11 +624,23 @@ void ser_display_info(struct ser_struct *ser_file) {
 	fprintf(stdout, "========================================\n");
 }
 
+static int ser_end_write(struct ser_struct *ser_file) {
+	int retval = 0;
+	if (ser_file->writer) {
+		retval = stop_writer(ser_file->writer);
+		ser_file->frame_count = ser_file->writer->frame_count;
+		free(ser_file->writer);
+		ser_file->writer = NULL;
+	}
+	return retval;
+}
+
 int ser_close_and_delete_file(struct ser_struct *ser_file) {
-	int retval;
+	if (ser_file == NULL) return -1;
+	int retval = ser_end_write(ser_file);
 	char *filename = ser_file->filename;
 	ser_file->filename = NULL;
-	retval = ser_close_file(ser_file); // closes, frees and zeroes
+	ser_close_file(ser_file); // closes, frees and zeroes
 	siril_log_message(_("Removing failed SER file: %s\n"), filename);
 	g_unlink(filename);
 	free(filename);
@@ -635,6 +649,7 @@ int ser_close_and_delete_file(struct ser_struct *ser_file) {
 
 int ser_write_and_close(struct ser_struct *ser_file) {
 	if (ser_file == NULL) return -1;
+	int retval = ser_end_write(ser_file);
 	if (!ser_file->frame_count) {
 		siril_log_color_message(_("The SER sequence is being created with no image in it.\n"), "red");
 		ser_close_and_delete_file(ser_file);
@@ -642,70 +657,8 @@ int ser_write_and_close(struct ser_struct *ser_file) {
 	}
 	ser_write_header(ser_file);	// writes the header
 	ser_write_timestamps(ser_file);	// writes the trailer
-	return ser_close_file(ser_file);// closes, frees and zeroes
-}
-
-/* calling ser_write_frame_from_fit() with image indices that do not cover a
- * contiguous range will pose some problems since there will be holes in images
- * data and the indices of frames in the file will be incorrect. To solve this
- * and still allow a parallel processing that can safely fail to be done with
- * SER output, we compact the frames that have been identified as failed in the
- * processing. The provided array contains booleans that inform about the
- * success of the processing and the presence of the frame with a given index
- * in the file. nb_frames is the size of this array and the last index + 1 of
- * the frames added to the file.
- * This function is not thread-safe. */
-int ser_compact_file(struct ser_struct *ser_file, unsigned char *successful_frames, int nb_frames) {
-	int64_t offseti, offsetj, frame_size;
-	int i, j;
-	unsigned char *buffer = NULL;
-	frame_size = ser_file->image_width * ser_file->image_height *
-		ser_file->number_of_planes * ser_file->byte_pixel_depth;
-
-	// frame_count should be fine because it's incremented only when adding
-	// one, but the real number of images for the file size if nb_frames
-	for (i = 0, j = 0; i < ser_file->frame_count; i++, j++) {
-		while (!successful_frames[j] && j < nb_frames) j++;
-		if (i != j) {
-			// move image j to i
-			if (!buffer) {
-				buffer = malloc(frame_size);
-				if (!buffer) {
-					PRINT_ALLOC_ERR;
-					return 1;
-				}
-				siril_log_message(_("Compacting SER file after parallel output to it...\n"));
-			}
-			offseti = SER_HEADER_LEN + frame_size * (int64_t)i;
-			offsetj = SER_HEADER_LEN + frame_size * (int64_t)j;
-
-			if ((int64_t)-1 == fseek64(ser_file->file, offsetj, SEEK_SET)) {
-				perror("seek");
-				free(buffer);
-				return 1;
-			}
-			if (fread(buffer, 1, frame_size, ser_file->file) != frame_size) {
-				perror("fread");
-				free(buffer);
-				return 1;
-			}
-			if ((int64_t)-1 == fseek64(ser_file->file, offseti, SEEK_SET)) {
-				perror("seek");
-				free(buffer);
-				return 1;
-			}
-			if (fwrite(buffer, 1, frame_size, ser_file->file) != frame_size) {
-				perror("fwrite");
-				free(buffer);
-				return 1;
-			}
-
-			ser_file->ts[i] = ser_file->ts[j];
-		}
-	}
-
-	free(buffer);
-	return 0;
+	ser_close_file(ser_file);// closes, frees and zeroes
+	return retval;
 }
 
 /* ser_file must be allocated and initialised with ser_init_struct()
@@ -764,8 +717,19 @@ int ser_create_file(const char *filename, struct ser_struct *ser_file,
 	omp_init_lock(&ser_file->fd_lock);
 	omp_init_lock(&ser_file->ts_lock);
 #endif
+	ser_file->writer = malloc(sizeof(struct seqwriter_data));
+	ser_file->writer->write_image_hook = ser_write_image_for_writer;
+	ser_file->writer->sequence = ser_file;
+	
 	siril_log_message(_("Created SER file %s\n"), filename);
+	start_writer(ser_file->writer, ser_file->frame_count);
 	return 0;
+}
+
+static int ser_write_image_for_writer(struct seqwriter_data *writer, fits *image, int index) {
+	struct ser_struct *ser_file = (struct ser_struct *)writer->sequence;
+
+	return ser_write_frame_from_fit_internal(ser_file, image, index);
 }
 
 int ser_open_file(const char *filename, struct ser_struct *ser_file) {
@@ -1209,7 +1173,14 @@ int ser_read_opened_partial_fits(struct ser_struct *ser_file, int layer,
 	return ser_read_opened_partial(ser_file, layer, frame_no, fit->pdata[0], area);
 }
 
+// public function for writing an image to the file, calls the writer
 int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame_no) {
+	return seqwriter_append_write(ser_file->writer, fit, frame_no);
+}
+
+// internal function, called by the writer hook ser_write_image_for_writer()
+// frame_no should always be the next image, or frame_count
+static int ser_write_frame_from_fit_internal(struct ser_struct *ser_file, fits *fit, int frame_no) {
 	int pixel, plane, dest;
 	int ret, retval = 0;
 	int64_t offset, frame_size;

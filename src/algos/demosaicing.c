@@ -33,6 +33,7 @@
 #include "gui/dialogs.h"
 #include "io/sequence.h"
 #include "io/fits_sequence.h"
+#include "io/seqwriter.h"
 #include "io/image_format_fits.h"
 #include "io/conversion.h"
 #include "algos/demosaicing.h"
@@ -1502,7 +1503,7 @@ static int dual_prepare(struct generic_seq_args *args) {
 	args->new_ser = NULL;
 	args->new_fitseq = NULL;
 
-	fitseq_set_number_of_outputs(2);
+	seqwriter_set_number_of_outputs(2);
 	return 0;
 }
 
@@ -1519,7 +1520,7 @@ static int dual_finalize(struct generic_seq_args *args) {
 	retval = seq_finalize_hook(args) || retval;
 	cfa_args->new_ser_oiii = NULL;
 	cfa_args->new_fitseq_oiii = NULL;
-	fitseq_set_number_of_outputs(1);
+	seqwriter_set_number_of_outputs(1);
 	return retval;
 }
 
