@@ -7,6 +7,7 @@
 #include <omp.h>
 #endif
 #include "core/siril.h"
+#include "io/seqwriter.h"
 
 struct fits_sequence {
 	char *filename;
@@ -20,10 +21,9 @@ struct fits_sequence {
 
 	gboolean is_mt_capable;	// cfitsio has the option to use multi-threading
 #ifdef _OPENMP
-	fitsfile **thread_fptr;		// cfitsio file descriptor for each thread read only
+	fitsfile **thread_fptr;	// cfitsio file descriptor for each thread read only
 #endif
-	GThread *write_thread;		// reads a script and executes its commands
-	GAsyncQueue *writes_queue;	// the write tasks queue
+	struct seqwriter_data *writer;
 };
 
 typedef struct fits_sequence fitseq;
@@ -39,14 +39,10 @@ int fitseq_read_partial(fitseq *fitseq, int layer, int index, void *buffer, cons
 int fitseq_create_file(const char *filename, fitseq *fitseq, int frame_count);
 int fitseq_write_image(fitseq *fitseq, fits *image, int index);
 void fitseq_close_and_delete_file(fitseq *fitseq);
-void fitseq_close_file(fitseq *fitseq);
+int fitseq_close_file(fitseq *fitseq);
 
 int fitseq_prepare_for_multiple_read(fitseq *fitseq);
 int fitseq_multiple_close(fitseq *fitseq);
-
-void fitseq_set_max_active_blocks(int max);
-void fitseq_wait_for_memory();
-void fitseq_set_number_of_outputs(int number_of_outputs);
 
 #endif
 

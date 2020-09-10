@@ -594,7 +594,7 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 		args->output_seqtype = gtk_combo_box_get_active(output_type);
 		if (args->output_seqtype < 0 || args->output_seqtype > SEQ_FITSEQ)
 			args->output_seqtype = SEQ_REGULAR;
-		args->allow_32bit_output = !com.pref.force_to_16bit || args->output_seqtype != SEQ_SER;
+		args->allow_32bit_output = !com.pref.force_to_16bit && args->output_seqtype != SEQ_SER;
 		set_cursor_waiting(TRUE);
 		control_window_switch_to_tab(OUTPUT_LOGS);
 		start_sequence_preprocessing(args);

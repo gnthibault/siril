@@ -11,6 +11,7 @@
 #include <omp.h>
 #endif
 #include "core/siril.h"
+#include "io/seqwriter.h"
 
 /* This file is part of Siril, https://free-astro.org/
  *
@@ -117,6 +118,8 @@ struct ser_struct {
 #ifdef _OPENMP
 	omp_lock_t fd_lock, ts_lock;
 #endif
+
+	struct seqwriter_data *writer;
 };
 
 gboolean ser_is_cfa(struct ser_struct *ser_file);
@@ -126,7 +129,6 @@ void ser_display_info(struct ser_struct *ser_file);
 int ser_open_file(const char *filename, struct ser_struct *ser_file);
 int ser_close_and_delete_file(struct ser_struct *ser_file);
 int ser_write_and_close(struct ser_struct *ser_file);
-int ser_compact_file(struct ser_struct *ser_file, unsigned char *successful_frames, int nb_frames);
 int ser_create_file(const char *filename, struct ser_struct *ser_file, gboolean overwrite, struct ser_struct *copy_from);
 int ser_close_file(struct ser_struct *ser_file);
 int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit);

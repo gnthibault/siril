@@ -100,6 +100,8 @@ src_files = [
   'io/seqfile.c',
   'io/sequence.c',
   'io/sequence_export.c',
+  'io/seqwriter.c',
+
   'io/ser.c',
   'io/single_image.c',
   

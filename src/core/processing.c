@@ -31,6 +31,7 @@
 #include "gui/progress_and_log.h"
 #include "io/sequence.h"
 #include "io/ser.h"
+#include "io/seqwriter.h"
 #include "io/fits_sequence.h"
 #include "io/image_format_fits.h"
 #include "algos/statistics.h"
@@ -125,9 +126,12 @@ gpointer generic_sequence_worker(gpointer p) {
 		g_string_free(desc, TRUE);
 	}
 
+	gboolean have_seqwriter = args->has_output &&
+		((args->force_fitseq_output || args->seq->type == SEQ_FITSEQ) ||
+		 (args->force_ser_output || args->seq->type == SEQ_SER));
 #ifdef _OPENMP
 	omp_init_lock(&args->lock);
-	if (args->has_output && (args->force_fitseq_output || args->seq->type == SEQ_FITSEQ))
+	if (have_seqwriter)
 		omp_set_schedule(omp_sched_dynamic, 1);
 	else omp_set_schedule(omp_sched_static, 0);
 #ifdef HAVE_FFMS2
@@ -163,9 +167,8 @@ gpointer generic_sequence_worker(gpointer p) {
 		int thread_id = -1;
 #ifdef _OPENMP
 		thread_id = omp_get_thread_num();
-		if (args->has_output &&
-				(args->force_fitseq_output || args->seq->type == SEQ_FITSEQ)) {
-			fitseq_wait_for_memory();
+		if (have_seqwriter) {
+			seqwriter_wait_for_memory();
 		}
 #endif
 
@@ -221,9 +224,8 @@ gpointer generic_sequence_worker(gpointer p) {
 			}
 			clearfits(fit);
 			free(fit);
-			// for fitseq, we need to notify the failed frame
-			if (args->has_output &&
-					(args->force_fitseq_output || args->seq->type == SEQ_FITSEQ)) {
+			// for seqwriter, we need to notify the failed frame
+			if (have_seqwriter) {
 				int retval;
 				if (args->save_hook)
 					retval = args->save_hook(args, frame, input_idx, NULL);
@@ -253,8 +255,7 @@ gpointer generic_sequence_worker(gpointer p) {
 			save_stats_from_fit(fit, args->seq, input_idx);
 		}
 
-		if (!args->has_output ||
-				!(args->force_fitseq_output || args->seq->type == SEQ_FITSEQ)) {
+		if (!have_seqwriter) {
 			clearfits(fit);
 			free(fit);
 		}
@@ -362,27 +363,35 @@ int seq_prepare_hook(struct generic_seq_args *args) {
 			retval = 1;
 		}
 		g_free(dest);
+	}
+	else return 0;
 
-		int limit = 0;
+	int limit = 0;
 #ifdef _OPENMP
-		limit = compute_nb_images_fit_memory(args->seq, args->upscale_ratio, args->force_float, NULL, NULL);
-		if (limit < 0)
-			limit = com.max_thread * 3; // we still don't want an impossible build-up of images to write
-		else if (limit == 0) {
-			siril_log_color_message(_("Configured memory limits do not seem to allow these images to be processed, aborting\n"), "red");
+	limit = compute_nb_images_fit_memory(args->seq, args->upscale_ratio, args->force_float, NULL, NULL);
+	if (limit < 0)
+		limit = com.max_thread * 3; // we still don't want an impossible build-up of images to write
+	else if (limit == 0) {
+		siril_log_color_message(_("Configured memory limits do not seem to allow these images to be processed, aborting\n"), "red");
+		if (args->force_ser_output || args->seq->type == SEQ_SER) {
+			ser_close_file(args->new_ser);
+			free(args->new_ser);
+			args->new_ser = NULL;
+		}
+		else if (args->force_fitseq_output || args->seq->type == SEQ_FITSEQ) {
 			fitseq_close_file(args->new_fitseq);
 			free(args->new_fitseq);
 			args->new_fitseq = NULL;
-			return 1;
-		} else {
-			// there doesn't seem to be any interest in having a larger queue
-			int max_queue_size = com.max_thread * 3;
-			if (limit > max_queue_size)
-				limit = max_queue_size;
 		}
-#endif
-		fitseq_set_max_active_blocks(limit);
+		return 1;
+	} else {
+		// there doesn't seem to be any interest in having a larger queue
+		int max_queue_size = com.max_thread * 3;
+		if (limit > max_queue_size)
+			limit = max_queue_size;
 	}
+#endif
+	seqwriter_set_max_active_blocks(limit);
 	return retval;
 }
 
@@ -394,7 +403,7 @@ int seq_finalize_hook(struct generic_seq_args *args) {
 		free(args->new_ser);
 	}
 	else if ((args->force_fitseq_output || args->seq->type == SEQ_FITSEQ) && args->new_fitseq) {
-		fitseq_close_file(args->new_fitseq);
+		retval = fitseq_close_file(args->new_fitseq);
 		free(args->new_fitseq);
 	}
 	return retval;

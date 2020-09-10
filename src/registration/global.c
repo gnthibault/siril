@@ -370,31 +370,21 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 					regargs->regparam[i] = regargs->regparam[j];
 				}
 			}
-			// compact the sequence: there will be holes for images
-			// that failed to be registered if we don't do that
-			if (args->seq->type == SEQ_SER)
-				ser_compact_file(args->new_ser, sadata->success, args->nb_filtered_images);
 		}
 
-		// same as ser_finalize_hook()
-		if (args->seq->type == SEQ_SER) {
-			ser_write_and_close(args->new_ser);
-			free(args->new_ser);
-		}
-		else if (args->seq->type == SEQ_FITSEQ) {
-			seq_finalize_hook(args);
-		}
+		seq_finalize_hook(args);
 	} else {
 		regargs->new_total = 0;
 		free(args->seq->regparam[regargs->layer]);
 		args->seq->regparam[regargs->layer] = NULL;
 
 		// args->new_ser can be null if stars were not detected in the reference image
-		if (args->seq->type == SEQ_SER && args->new_ser) {
+		// same as seq_finalize_hook but with file deletion
+		if ((args->force_ser_output || args->seq->type == SEQ_SER) && args->new_ser) {
 			ser_close_and_delete_file(args->new_ser);
 			free(args->new_ser);
 		}
-		else if (args->seq->type == SEQ_FITSEQ && args->new_fitseq) {
+		else if ((args->force_fitseq_output || args->seq->type == SEQ_FITSEQ) && args->new_fitseq) {
 			fitseq_close_and_delete_file(args->new_fitseq);
 			free(args->new_fitseq);
 		}
