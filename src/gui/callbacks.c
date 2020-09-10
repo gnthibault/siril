@@ -1111,8 +1111,8 @@ void set_GUI_misc() {
 
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskQuit"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.save.quit);
-	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskUpdateStartup"));
 #ifdef HAVE_LIBCURL
+	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskUpdateStartup"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.check_update);
 #else
 	gtk_widget_set_visible(lookup_widget("frame24"), FALSE);
@@ -1584,6 +1584,12 @@ void save_main_window_state() {
 
 void load_main_window_state() {
 	GtkWidget *win = lookup_widget("control_window");
+	GdkRectangle workarea = {0};
+	gdk_monitor_get_workarea(
+	    gdk_display_get_primary_monitor(gdk_display_get_default()),
+	    &workarea);
+
+	printf ("W: %u x H:%u\n", workarea.width, workarea.height);
 
 	int x = com.pref.main_w_pos.x;
 	int y = com.pref.main_w_pos.y;
