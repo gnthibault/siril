@@ -188,6 +188,7 @@ layer *create_layer(int index) {
 	g_object_ref(G_OBJECT(ret->chooser));	// don't destroy it on removal from grid
 
 	ret->label = GTK_LABEL(gtk_label_new(_("not loaded")));
+	gtk_widget_set_tooltip_text(GTK_WIDGET(ret->label), _("not loaded"));
 	g_object_ref(G_OBJECT(ret->label));	// don't destroy it on removal from grid
 
 	ret->spinbutton_x = GTK_SPIN_BUTTON(gtk_spin_button_new_with_range(-1000.0, 1000.0, 1.0));
@@ -462,40 +463,50 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 	}
 	if ((retval = read_single_image(filename, &layers[layer]->the_fit,
 					NULL, FALSE, NULL, FALSE, TRUE))) {
-		gtk_label_set_text(layers[layer]->label, _("ERROR"));
+		gtk_label_set_markup(layers[layer]->label, _("<span foreground=\"red\">ERROR</span>"));
+		gtk_widget_set_tooltip_text(GTK_WIDGET(layers[layer]->label), _("Cannot load the file"));
 	} else {
+		/* first we want test that we load a single-channel image */
+		if (layers[layer]->the_fit.naxes[2] > 1) {
+			gtk_label_set_markup(layers[layer]->label, _("<span foreground=\"red\">ERROR</span>"));
+			gtk_widget_set_tooltip_text(GTK_WIDGET(layers[layer]->label), _("Only single channel images can be load"));
+		} else {
 		/* Force first tab to be Red and not B&W if an image was already loaded */
-		GtkNotebook* Color_Layers = GTK_NOTEBOOK(gtk_builder_get_object(builder, "notebook1"));
-		GtkWidget *page = gtk_notebook_get_nth_page(Color_Layers, RED_VPORT);
-		gtk_notebook_set_tab_label_text(GTK_NOTEBOOK(Color_Layers), page, _("Red"));
-		close_tab();
+			GtkNotebook* Color_Layers = GTK_NOTEBOOK(gtk_builder_get_object(builder, "notebook1"));
+			GtkWidget *page = gtk_notebook_get_nth_page(Color_Layers, RED_VPORT);
+			gtk_notebook_set_tab_label_text(GTK_NOTEBOOK(Color_Layers), page, _("Red"));
+			close_tab();
 
-		if (number_of_images_loaded() > 1 &&
-				(gfit.rx != layers[layer]->the_fit.rx ||
-				 gfit.ry != layers[layer]->the_fit.ry)) {
-			/* TODO: handle the binning cases. Values should be stored
-			 * in, or even taken from fit->binning_x and binning_y */
-			//if (layers[layer]->the_fit.binning_x > 1 ||
-			//layers[layer]->the_fit.binning_y > 1)
-			if (gfit.rx < layers[layer]->the_fit.rx ||
-					gfit.ry < layers[layer]->the_fit.ry) {
-				siril_log_message(_("The first loaded image should have the greatest sizes for now\n"));
-				sprintf(buf, _("NOT OK %ux%u"), layers[layer]->the_fit.rx, layers[layer]->the_fit.ry);
-				gtk_label_set_text(layers[layer]->label, buf);
-				retval = 1;
-			} else {
-				siril_log_message(_("Resizing the loaded image from %dx%d to %dx%d\n"),
-						layers[layer]->the_fit.rx,
-						layers[layer]->the_fit.ry, gfit.rx, gfit.ry);
-				sprintf(buf, _("OK upscaled from %ux%u"),
-						layers[layer]->the_fit.rx, layers[layer]->the_fit.ry);
-				cvResizeGaussian(&layers[layer]->the_fit, gfit.rx, gfit.ry, OPENCV_LINEAR); // BILINEAR
-				gtk_label_set_text(layers[layer]->label, buf);
+			if (number_of_images_loaded() > 1 &&
+					(gfit.rx != layers[layer]->the_fit.rx ||
+							gfit.ry != layers[layer]->the_fit.ry)) {
+				/* TODO: handle the binning cases. Values should be stored
+				 * in, or even taken from fit->binning_x and binning_y */
+				//if (layers[layer]->the_fit.binning_x > 1 ||
+				//layers[layer]->the_fit.binning_y > 1)
+				if (gfit.rx < layers[layer]->the_fit.rx ||
+						gfit.ry < layers[layer]->the_fit.ry) {
+					siril_log_message(_("The first loaded image should have the greatest sizes for now\n"));
+					sprintf(buf, _("NOT OK %ux%u"), layers[layer]->the_fit.rx, layers[layer]->the_fit.ry);
+					gtk_label_set_text(layers[layer]->label, buf);
+					gtk_widget_set_tooltip_text(GTK_WIDGET(layers[layer]->label), _("The first loaded image should have the greatest sizes for now"));
+					retval = 1;
+				} else {
+					siril_log_message(_("Resizing the loaded image from %dx%d to %dx%d\n"),
+							layers[layer]->the_fit.rx,
+							layers[layer]->the_fit.ry, gfit.rx, gfit.ry);
+						sprintf(buf, _("OK upscaled from %ux%u"),
+								layers[layer]->the_fit.rx, layers[layer]->the_fit.ry);
+						cvResizeGaussian(&layers[layer]->the_fit, gfit.rx, gfit.ry, OPENCV_LINEAR); // BILINEAR
+						gtk_label_set_text(layers[layer]->label, buf);
+						gtk_widget_set_tooltip_text(GTK_WIDGET(layers[layer]->label), _("Image loaded, and upscaled"));
+				}
 			}
-		}
-		else if (!retval) {
-			sprintf(buf, _("OK %ux%u"), layers[layer]->the_fit.rx, layers[layer]->the_fit.ry);
-			gtk_label_set_text(layers[layer]->label, buf);
+			else if (!retval) {
+				sprintf(buf, _("OK %ux%u"), layers[layer]->the_fit.rx, layers[layer]->the_fit.ry);
+				gtk_label_set_text(layers[layer]->label, buf);
+				gtk_widget_set_tooltip_text(GTK_WIDGET(layers[layer]->label), _("Image loaded"));
+			}
 		}
 	}
 	g_free(filename);
@@ -1092,12 +1103,10 @@ void on_compositing_reset_clicked(GtkButton *button, gpointer user_data){
 	GtkToggleButton *lum_button = GTK_TOGGLE_BUTTON(gtk_builder_get_object(builder, "composition_use_lum"));
 	gtk_toggle_button_set_active(lum_button, 0);
 	gtk_label_set_text(layers[0]->label, _("not loaded"));
-
+	gtk_widget_set_tooltip_text(GTK_WIDGET(layers[0]->label), _("not loaded"));
 
 	update_compositing_interface();
 	open_compositing_window();	// update the CWD just in case
-
-	
 }
 
 /* Reduce brightness of colours associated to layers so that they never overflow on composition.

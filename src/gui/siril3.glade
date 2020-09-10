@@ -10528,68 +10528,19 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="box15">
+          <object class="GtkBox" id="box41">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="orientation">vertical</property>
+            <property name="margin_top">2</property>
+            <property name="spacing">10</property>
             <child>
-              <object class="GtkBox" id="box41">
+              <object class="GtkButton" id="composition_layers_autoadjust">
+                <property name="label" translatable="yes">Adjust layers brightness</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="margin_top">2</property>
-                <property name="spacing">10</property>
-                <child>
-                  <object class="GtkButton" id="composition_layers_autoadjust">
-                    <property name="label" translatable="yes">Adjust layers brightness</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="tooltip_text" translatable="yes">Automatically adjust the brightness of the colours picked for layers so that they don't overflow when compositing (based on max value for each image). Colour hues are unchanged.</property>
-                    <signal name="clicked" handler="on_compositing_autoadjust_clicked" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkButton" id="composition_rgbcolor">
-                    <property name="label" translatable="yes">Finalize colour balance</property>
-                    <property name="visible">True</property>
-                    <property name="sensitive">False</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <property name="tooltip_text" translatable="yes">Open the RGB calibration tool on the resulting image. This will modify the result in a destructive way to align the three channels of the result.
-Modifying parameters in this windows afterward will void the colour balance, and it will have to be remade.</property>
-                    <signal name="clicked" handler="on_composition_rgbcolor_clicked" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkComboBoxText" id="composition_combo_coloringtype">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="tooltip_text" translatable="yes">Type of luminance-based colour composition. They represent the way of adding colour information to luminance data.</property>
-                    <property name="active">0</property>
-                    <items>
-                      <item translatable="yes">HSL composition</item>
-                      <item translatable="yes">HSV composition</item>
-                      <item translatable="yes">CIE L*a*b* composition</item>
-                    </items>
-                    <signal name="changed" handler="on_composition_combo_coloringtype_changed" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="pack_type">end</property>
-                    <property name="position">3</property>
-                  </packing>
-                </child>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Automatically adjust the brightness of the colours picked for layers so that they don't overflow when compositing (based on max value for each image). Colour hues are unchanged.</property>
+                <signal name="clicked" handler="on_compositing_autoadjust_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -10598,20 +10549,40 @@ Modifying parameters in this windows afterward will void the colour balance, and
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="label170">
+              <object class="GtkButton" id="composition_rgbcolor">
+                <property name="label" translatable="yes">Finalize colour balance</property>
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="halign">start</property>
-                <property name="label" translatable="yes">WARNING: You should not perform a LRGB combination with linear images. Process images before.</property>
-                <property name="single_line_mode">True</property>
-                <style>
-                  <class name="label-info"/>
-                </style>
+                <property name="sensitive">False</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Open the RGB calibration tool on the resulting image. This will modify the result in a destructive way to align the three channels of the result.
+Modifying parameters in this windows afterward will void the colour balance, and it will have to be remade.</property>
+                <signal name="clicked" handler="on_composition_rgbcolor_clicked" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkComboBoxText" id="composition_combo_coloringtype">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="tooltip_text" translatable="yes">Type of luminance-based colour composition. They represent the way of adding colour information to luminance data.</property>
+                <property name="active">0</property>
+                <items>
+                  <item translatable="yes">HSL composition</item>
+                  <item translatable="yes">HSV composition</item>
+                  <item translatable="yes">CIE L*a*b* composition</item>
+                </items>
+                <signal name="changed" handler="on_composition_combo_coloringtype_changed" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="pack_type">end</property>
+                <property name="position">3</property>
               </packing>
             </child>
           </object>
@@ -20061,6 +20032,48 @@ The technique gives very good compression for astronomical images and is relativ
                       </packing>
                     </child>
                     <child>
+                      <object class="GtkFrame" id="frame23">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label_xalign">0</property>
+                        <property name="shadow_type">none</property>
+                        <child>
+                          <object class="GtkAlignment" id="alignment24">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="left_padding">12</property>
+                            <child>
+                              <object class="GtkEntry" id="miscCopyright">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Copyright when saving image as TIFF</property>
+                                <property name="width_chars">50</property>
+                                <signal name="changed" handler="on_miscCopyright_changed" swapped="no"/>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel" id="label120">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_top">10</property>
+                            <property name="margin_bottom">10</property>
+                            <property name="label" translatable="yes">Copyright TIFF</property>
+                            <property name="single_line_mode">True</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                            </attributes>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkFrame" id="frame16">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -20091,48 +20104,6 @@ The technique gives very good compression for astronomical images and is relativ
                             <property name="margin_top">10</property>
                             <property name="margin_bottom">10</property>
                             <property name="label" translatable="yes">Warning Dialog</property>
-                            <property name="single_line_mode">True</property>
-                            <attributes>
-                              <attribute name="weight" value="bold"/>
-                            </attributes>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">3</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkFrame" id="frame23">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label_xalign">0</property>
-                        <property name="shadow_type">none</property>
-                        <child>
-                          <object class="GtkAlignment" id="alignment24">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="left_padding">12</property>
-                            <child>
-                              <object class="GtkEntry" id="miscCopyright">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="tooltip_text" translatable="yes">Copyright when saving image as TIFF</property>
-                                <property name="width_chars">50</property>
-                                <signal name="changed" handler="on_miscCopyright_changed" swapped="no"/>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child type="label">
-                          <object class="GtkLabel" id="label120">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_top">10</property>
-                            <property name="margin_bottom">10</property>
-                            <property name="label" translatable="yes">Copyright TIFF</property>
                             <property name="single_line_mode">True</property>
                             <attributes>
                               <attribute name="weight" value="bold"/>
