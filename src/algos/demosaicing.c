@@ -803,6 +803,8 @@ int retrieve_Bayer_pattern(fits *fit, sensor_pattern *pattern) {
 		}
 	}
 
+	siril_debug_print("Debayer will be done %s\n", top_down ? "top-down" : "bottom-up");
+
 	if (!com.pref.debayer.use_bayer_header) {
 		xbayeroff = com.pref.debayer.xbayeroff;
 		ybayeroff = com.pref.debayer.ybayeroff;
