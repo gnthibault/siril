@@ -516,10 +516,14 @@ static void draw_vport(const draw_data_t* dd) {
 	cairo_paint(dd->cr);
 }
 
+/* This method setup the viewport coordinates and draw the main image
+ */
 static void draw_main_image(const draw_data_t* dd) {
 	if ((dd->vport == RGB_VPORT && com.rgbbuf) || com.graybuf[dd->vport]) {
+		cairo_transform(dd->cr, &com.display_matrix);
 		draw_vport(dd);
 	} else {
+		// For empty image, coordinates are untouched
 		draw_empty_image(dd);
 	}
 }
@@ -808,9 +812,6 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	adjust_vport_size_to_image();
 
 	cairo_save(cr);
-
-	/* change to image coordinates */
-	cairo_transform(cr, &com.display_matrix);
 
 	/* RGB or gray images */
 	draw_main_image(&dd);
