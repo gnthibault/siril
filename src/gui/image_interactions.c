@@ -25,6 +25,7 @@
 #include "algos/background_extraction.h"
 #include "io/single_image.h"
 #include "io/sequence.h"
+#include "gui/open_dialog.h"
 #include "image_interactions.h"
 #include "image_display.h"
 #include "callbacks.h"
@@ -406,6 +407,18 @@ gboolean rgb_area_popup_menu_handler(GtkWidget *widget) {
 
 gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
+
+	/* when double clicking on drawing area  (if no images loaded)
+	 * you can load an image This feature is in GIMP and I really
+	 * love it: lazy world :).
+	 */
+	if (!single_image_is_loaded() && !sequence_is_loaded()) {
+		if (event->button == GDK_BUTTON_PRIMARY
+				&& event->type == GDK_DOUBLE_BUTTON_PRESS) {
+			header_open_button_clicked();
+		}
+	}
+
 	double zoom = get_zoom_val();
 
 	// evpos.x/evpos.y = cursor position in image coordinate
