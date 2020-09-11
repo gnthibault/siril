@@ -587,6 +587,8 @@ struct pref_struct {
 
 	gboolean force_to_16bit;
 
+	gint selection_guides;	// number of elements of the grid guides (2 for a simple cross, 3 for the 3 thirds rule, etc.)
+
 	gchar *copyright;		// User copyright when saving image as TIFF
 };
 

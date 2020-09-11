@@ -191,6 +191,7 @@ static int readinitfile() {
 		com.pref.ext = g_strdup(extension);
 		config_setting_lookup_int(misc_setting, "FITS_type", &type);
 		com.pref.force_to_16bit = (type == 0);
+		config_setting_lookup_int(misc_setting, "selection_guides", &com.pref.selection_guides);
 		config_setting_lookup_string(misc_setting, "copyright", &copyright);
 		com.pref.copyright = g_strdup(copyright);
 		config_setting_lookup_bool(misc_setting, "check_update", &com.pref.check_update);
@@ -428,6 +429,9 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 
 	misc_setting = config_setting_add(misc_group, "FITS_type", CONFIG_TYPE_INT);
 	config_setting_set_int(misc_setting, com.pref.force_to_16bit ? 0 : 1);
+
+	misc_setting = config_setting_add(misc_group, "selection_guides", CONFIG_TYPE_INT);
+	config_setting_set_int(misc_setting, com.pref.selection_guides);
 
 	misc_setting = config_setting_add(misc_group, "copyright", CONFIG_TYPE_STRING);
 	config_setting_set_string(misc_setting, com.pref.copyright);

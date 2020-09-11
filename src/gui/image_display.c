@@ -526,13 +526,41 @@ static void draw_main_image(const draw_data_t* dd) {
 
 static void draw_selection(const draw_data_t* dd) {
 	if (com.selection.w > 0 && com.selection.h > 0) {
+		cairo_t *cr = dd->cr;
 		static double dash_format[] = { 4.0, 2.0 };
-		cairo_set_line_width(dd->cr, 0.8 / dd->zoom);
-		cairo_set_dash(dd->cr, dash_format, 2, 0);
-		cairo_set_source_rgb(dd->cr, 0.8, 1.0, 0.8);
-		cairo_rectangle(dd->cr, (double) com.selection.x, (double) com.selection.y,
+		cairo_set_line_width(cr, 1.5 / dd->zoom);
+		cairo_set_dash(cr, dash_format, 2, 0);
+		cairo_set_source_rgb(cr, 0.8, 1.0, 0.8);
+		cairo_rectangle(cr, (double) com.selection.x, (double) com.selection.y,
 						(double) com.selection.w, (double) com.selection.h);
-		cairo_stroke(dd->cr);
+		cairo_stroke(cr);
+
+		// display a grid when the selection is being made / modified, when it is big enough
+		if (com.pref.selection_guides > 1 && com.drawing && com.selection.w > 40 / dd->zoom && com.selection.h > 40 / dd->zoom) {
+			cairo_set_line_width(cr, 0.4 / dd->zoom);
+			cairo_set_dash(cr, NULL, 0, 0);
+			for (int i = 1; i < com.pref.selection_guides; i++) {
+				int x = com.selection.x + com.selection.w * i / com.pref.selection_guides;
+				int y = com.selection.y + com.selection.h * i / com.pref.selection_guides;
+				cairo_move_to(cr, x, com.selection.y);
+				cairo_line_to(cr, x, com.selection.y + com.selection.h);
+				cairo_move_to(cr, com.selection.x, y);
+				cairo_line_to(cr, com.selection.x + com.selection.w, y);
+			}
+			cairo_stroke(cr);
+		}
+
+		// display a mini cross when the selection is being dragged
+		if (com.freezeX && com.freezeY) {
+			cairo_set_line_width(cr, 1.0 / dd->zoom);
+			point selection_center = { com.selection.x + com.selection.w / 2,
+				com.selection.y + com.selection.h / 2 };
+			cairo_move_to(cr, selection_center.x, selection_center.y - 2 / dd->zoom);
+			cairo_line_to(cr, selection_center.x, selection_center.y + 2 / dd->zoom);
+			cairo_move_to(cr, selection_center.x - 2 / dd->zoom, selection_center.y);
+			cairo_line_to(cr, selection_center.x + 2 / dd->zoom, selection_center.y);
+			cairo_stroke(cr);
+		}
 	}
 }
 

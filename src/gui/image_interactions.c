@@ -242,6 +242,10 @@ static void do_popup_graymenu(GtkWidget *my_widget, GdkEventButton *event) {
 	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(lookup_widget("menuitem_selection_9_16")), com.ratio == 9.0 / 16.0);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_selection_preserve"), is_a_single_image_loaded || sequence_is_loaded());
 	gtk_widget_set_sensitive(lookup_widget("menuitem_selection_all"), is_a_single_image_loaded || sequence_is_loaded());
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(lookup_widget("menuitem_selection_guides_0")), com.pref.selection_guides == 0);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(lookup_widget("menuitem_selection_guides_2")), com.pref.selection_guides == 2);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(lookup_widget("menuitem_selection_guides_3")), com.pref.selection_guides == 3);
+	gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(lookup_widget("menuitem_selection_guides_5")), com.pref.selection_guides == 5);
 
 #if GTK_CHECK_VERSION(3, 22, 0)
 	gtk_menu_popup_at_pointer(GTK_MENU(menu), NULL);
@@ -368,6 +372,30 @@ void on_menuitem_selection_all_activate(GtkMenuItem *menuitem, gpointer user_dat
 		set_selection_ratio(0.0);
 	} else {
 		set_selection_ratio((double)gfit.rx / (double)gfit.ry); // triggers the new_selection() callbacks etc.
+	}
+}
+
+void menuitem_selection_guides_0_toggled(GtkCheckMenuItem *menuitem, gpointer user_data) {
+	if (gtk_check_menu_item_get_active(menuitem)) {
+		com.pref.selection_guides = 0;
+	}
+}
+
+void menuitem_selection_guides_2_toggled(GtkCheckMenuItem *menuitem, gpointer user_data) {
+	if (gtk_check_menu_item_get_active(menuitem)) {
+		com.pref.selection_guides = 2;
+	}
+}
+
+void menuitem_selection_guides_3_toggled(GtkCheckMenuItem *menuitem, gpointer user_data) {
+	if (gtk_check_menu_item_get_active(menuitem)) {
+		com.pref.selection_guides = 3;
+	}
+}
+
+void menuitem_selection_guides_5_toggled(GtkCheckMenuItem *menuitem, gpointer user_data) {
+	if (gtk_check_menu_item_get_active(menuitem)) {
+		com.pref.selection_guides = 5;
 	}
 }
 
