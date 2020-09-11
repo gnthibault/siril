@@ -417,6 +417,7 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 				&& event->type == GDK_DOUBLE_BUTTON_PRESS) {
 			header_open_button_clicked();
 		}
+		return FALSE;
 	}
 
 	double zoom = get_zoom_val();
