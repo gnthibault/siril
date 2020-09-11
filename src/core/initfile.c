@@ -175,7 +175,7 @@ static int readinitfile() {
 		int type;
 		const char *swap_dir = NULL, *extension = NULL, *lang = NULL, *copyright = NULL;
 
-		config_setting_lookup_bool(misc_setting, "first_use_1_0_0", &com.pref.first_use);
+		config_setting_lookup_bool(misc_setting, "first_start_1_0_0", &com.pref.first_start);
 		config_setting_lookup_bool(misc_setting, "confirm_quit", &com.pref.save.quit);
 		config_setting_lookup_bool(misc_setting, "confirm_script", &com.pref.save.script);
 		config_setting_lookup_bool(misc_setting, "show_thumbnails", &com.pref.show_thumbnails);
@@ -421,8 +421,8 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 	misc_setting = config_setting_add(misc_group, "swap_directory", CONFIG_TYPE_STRING);
 	config_setting_set_string(misc_setting, com.pref.swap_dir);
 
-	misc_setting = config_setting_add(misc_group, "first_use_1_0_0", CONFIG_TYPE_BOOL);
-	config_setting_set_bool(misc_setting, com.pref.first_use);
+	misc_setting = config_setting_add(misc_group, "first_start_1_0_0", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(misc_setting, com.pref.first_start);
 
 	misc_setting = config_setting_add(misc_group, "extension", CONFIG_TYPE_STRING);
 	config_setting_set_string(misc_setting, com.pref.ext);

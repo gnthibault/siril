@@ -1348,8 +1348,8 @@ void initialize_all_GUI(gchar *supported_files) {
 #endif
 	update_spinCPU(com.max_thread);
 
-	if (com.pref.first_use) {
-		com.pref.first_use = FALSE;
+	if (com.pref.first_start) {
+		com.pref.first_start = FALSE;
 		writeinitfile();
 
 		gchar *ver = g_strdup_printf(_("Welcome to %s"), PACKAGE_STRING);
