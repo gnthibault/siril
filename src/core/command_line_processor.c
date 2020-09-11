@@ -28,6 +28,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/initfile.h"
 #include "core/OS_utils.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
@@ -178,6 +179,10 @@ gpointer execute_script(gpointer p) {
 
 	com.script = TRUE;
 	com.stop_script = FALSE;
+	/* Now we want to save the cwd in order to come back after
+	 * script execution
+	 */
+	gchar *saved_cwd = g_strdup(com.wd);
 	gettimeofday(&t_start, NULL);
 	startmem = get_available_memory_in_MB();
 #if (_POSIX_C_SOURCE < 200809L)
@@ -225,6 +230,9 @@ gpointer execute_script(gpointer p) {
 	free(linef);
 	fclose(fp);
 	com.script = FALSE;
+	/* Now we want to restore the saved cwd */
+	changedir(saved_cwd, NULL);
+	writeinitfile();
 	siril_add_idle(end_script, NULL);
 	if (!retval) {
 		siril_log_message(_("Script execution finished successfully.\n"));
@@ -235,6 +243,7 @@ gpointer execute_script(gpointer p) {
 		msg[strlen(msg)-1] = '\0';
 		set_progress_bar_data(msg, PROGRESS_DONE);
 	}
+	g_free(saved_cwd);
 	fprintf(stderr, "Script thread exiting\n");
 	return GINT_TO_POINTER(retval);
 }
