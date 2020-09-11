@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-09-11 08:16+0200\n"
+"POT-Creation-Date: 2020-09-11 16:55+0200\n"
 "PO-Revision-Date: 2018-12-21 14:06+0100\n"
 "Last-Translator: \n"
 "Language-Team: \n"
@@ -6034,7 +6034,7 @@ msgstr "Skalowanie w górę dla stackowania"
 msgid "Could not save the stacking result %s\n"
 msgstr ""
 
-#: src/core/command.c:3160 src/core/command_line_processor.c:352 src/main.c:368
+#: src/core/command.c:3160 src/core/command_line_processor.c:361 src/main.c:368
 #, fuzzy, c-format
 msgid "No sequence `%s' found.\n"
 msgstr "Nie wybrano sekwencji"
@@ -6891,95 +6891,95 @@ msgid ""
 "according to the number of planes used for wavelet transform"
 msgstr ""
 
-#: src/core/command_line_processor.c:82
+#: src/core/command_line_processor.c:83
 #, c-format
 msgid "Unknown command: '%s' or not implemented yet\n"
 msgstr "Nieznane polecenie: '%s' lub jeszcze nie zaimplementowane\n"
 
-#: src/core/command_line_processor.c:89
+#: src/core/command_line_processor.c:90
 #, c-format
 msgid "Usage: %s\n"
 msgstr "Wykorzystanie: %s\n"
 
-#: src/core/command_line_processor.c:96
+#: src/core/command_line_processor.c:97
 #, fuzzy, c-format
 msgid "This command cannot be used in a script: %s\n"
 msgstr "Tego polecenia można użyć tylko po załadowaniu sekwencji\n"
 
 #. process the command
-#: src/core/command_line_processor.c:102
+#: src/core/command_line_processor.c:103
 #, c-format
 msgid "Running command: %s\n"
 msgstr ""
 
-#: src/core/command_line_processor.c:131
+#: src/core/command_line_processor.c:132
 #, fuzzy, c-format
 msgid "Processing line %d: %s"
 msgstr "%s. Przetwarzanie obrazu %d (% s)"
 
-#: src/core/command_line_processor.c:209
+#: src/core/command_line_processor.c:214
 #, fuzzy, c-format
 msgid "Error in line %d: '%s'.\n"
 msgstr "Błąd w libraw %s\n"
 
-#: src/core/command_line_processor.c:210
+#: src/core/command_line_processor.c:215
 #, fuzzy
 msgid "Exiting batch processing.\n"
 msgstr "Błąd w linii: %d.Przerywanie przetwarzania\n"
 
-#: src/core/command_line_processor.c:230
+#: src/core/command_line_processor.c:238
 msgid "Script execution finished successfully.\n"
 msgstr ""
 
-#: src/core/command_line_processor.c:232
+#: src/core/command_line_processor.c:240
 #, fuzzy
 msgid "Total execution time"
 msgstr "Lokalne odrzucenie"
 
-#: src/core/command_line_processor.c:234
+#: src/core/command_line_processor.c:242
 #, fuzzy
 msgid "Script execution failed.\n"
 msgstr "Normalizacja nie powiodła się."
 
-#: src/core/command_line_processor.c:247
+#: src/core/command_line_processor.c:256
 msgid "Please enter an existing command before hitting this button"
 msgstr ""
 
-#: src/core/command_line_processor.c:266
+#: src/core/command_line_processor.c:275
 msgid "Can be used in a script: "
 msgstr ""
 
-#: src/core/command_line_processor.c:269
+#: src/core/command_line_processor.c:278
 msgid "YES"
 msgstr ""
 
-#: src/core/command_line_processor.c:271
+#: src/core/command_line_processor.c:280
 msgid "NO"
 msgstr ""
 
-#: src/core/command_line_processor.c:283
+#: src/core/command_line_processor.c:292
 #, fuzzy
 msgid "No help for this command"
 msgstr "Wpisz 'pomoc' dla listy obsługiwanych poleceń"
 
-#: src/core/command_line_processor.c:313 src/gui/script_menu.c:179
+#: src/core/command_line_processor.c:322 src/gui/script_menu.c:179
 #: src/main.c:295
 #, c-format
 msgid "File [%s] does not exist\n"
 msgstr "Plik [%s] nie istnieje\n"
 
 #. Then, run script
-#: src/core/command_line_processor.c:321 src/gui/script_menu.c:188
+#: src/core/command_line_processor.c:330 src/gui/script_menu.c:188
 #, fuzzy, c-format
 msgid "Starting script %s\n"
 msgstr "Rozpoczęcie stackowania…\n"
 
-#: src/core/command_line_processor.c:328
+#: src/core/command_line_processor.c:337
 #, fuzzy
 msgid "Command execution failed.\n"
 msgstr "Normalizacja nie powiodła się."
 
-#: src/core/command_line_processor.c:373
+#: src/core/command_line_processor.c:382
 #, fuzzy, c-format
 msgid "Loading sequence `%s' failed.\n"
 msgstr "Nie wybrano sekwencji"
@@ -8076,12 +8076,12 @@ msgstr ""
 "%d).\n"
 
 #. left click
-#: src/gui/image_interactions.c:433
+#: src/gui/image_interactions.c:447
 #, fuzzy
 msgid "Only for visualization"
 msgstr "normalizacja"
 
-#: src/gui/image_interactions.c:434 src/gui/siril_intro.c:35
+#: src/gui/image_interactions.c:448 src/gui/siril_intro.c:35
 msgid ""
 "The RGB tab is only for visualization. Operations must be done on R, G, and "
 "B channels"
@@ -8673,10 +8673,14 @@ msgstr ""
 #: src/gui/siril_intro.c:50
 msgid ""
 "Basic viewing operations are available in the main toolbar. Zooming is now "
-"available with Control-Scroll up and down"
+"available with Ctrl-Scroll up and down"
 msgstr ""
 
 #: src/gui/siril_intro.c:51
+msgid "To pan your image you can now use Ctrl-Click (and drag)"
+msgstr ""
+
+#: src/gui/siril_intro.c:52
 msgid "Enjoy using the new Siril"
 msgstr ""
 
