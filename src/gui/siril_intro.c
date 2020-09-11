@@ -47,7 +47,8 @@ const SirilTipIntro intro_tips[] = {
 		{"header_save_as_button", N_("Save your work as many times as needed by choosing a new name ..."), 6},
 		{"header_save_button", N_("... or save the current FITS image with the same name"), 6},
 		{"command", N_("As usual you can enter Siril commands. To have an overview of all commands, type \"help\""), 7},
-		{"GtkToolMainBar", N_("Basic viewing operations are available in the main toolbar. Zooming is now available with Control-Scroll up and down"), 8},
+		{"GtkToolMainBar", N_("Basic viewing operations are available in the main toolbar. Zooming is now available with Ctrl-Scroll up and down"), 8},
+		{"GtkToolMainBar", N_("To pan your image you can now use Ctrl-Click (and drag)"), 6},
 		{"drawingarear", N_("Enjoy using the new Siril"), 6}
 };
 
