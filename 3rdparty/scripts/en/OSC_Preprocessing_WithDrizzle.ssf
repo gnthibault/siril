@@ -1,53 +1,68 @@
 ############################################
+#
 # Script for Siril 1.0
 # July 2020
 # (C) Cyril Richard
 # OSC_Preprocessing_WithDrizzle v1.0
 #
 ########### PREPROCESSING SCRIPT ###########
+#
 # Script for color camera preprocessing
-# needs 4 sets of RAW images in the working
+# aligning using Drizzle 2x
+#
+# Needs 4 sets of RAW images in the working
 # directory, within 4 directories:
-# biases, flats, darks and lights 
+#   biases/
+#   flats/
+#   darks/
+#   lights/
 #
 ############################################
 
 requires 0.99.4
 
-#build master-bias
+# Convert Bias Frames to .fit files
 cd biases
 convert bias -out=../process
 cd ../process
+
+# Stack Bias Frames to bias_stacked.fit
 stack bias rej 3 3 -nonorm
 cd ..
 
-#preprocess flats
+# Convert Flat Frames to .fit files
 cd flats
 convert flat -out=../process
 cd ../process
+
+# Pre-process Flat Frames
 preprocess flat -bias=bias_stacked
 
-#build master-flat
+# Stack Flat Frames to pp_flat_stacked.fit
 stack pp_flat rej 3 3 -norm=mul
 cd ..
 
-#build master-dark
+# Convert Dark Frames to .fit files
 cd darks
 convert dark -out=../process
 cd ../process
+
+# Stack Dark Frames to dark_stacked.fit
 stack dark rej 3 3 -nonorm
 cd ..
 
-#preprocess lights
+# Convert Light Frames to .fit files
 cd lights
 convert light -out=../process
 cd ../process
+
+# Pre-process Light Frames
 preprocess light -dark=dark_stacked -flat=pp_flat_stacked -cfa -equalize_cfa -debayer
 
-#align lights with Drizzle 2x
+# Align lights with Drizzle 2x
 register pp_light -drizzle
 
-#stack calibrated lights
+# Stack calibrated lights to result.fit
 stack r_pp_light rej 3 3 -norm=addscale -output_norm -out=../result
 
 cd ..
