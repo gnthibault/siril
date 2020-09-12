@@ -95,13 +95,11 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
   <object class="GtkAdjustment" id="adjCosmeAmount">
     <property name="upper">1</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjGain">
     <property name="upper">100</property>
-    <property name="value">2,29999999999999982236</property>
-    <property name="step_increment">0,10000000000000000555</property>
+    <property name="value">2</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjInner">
@@ -119,32 +117,24 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
   <object class="GtkAdjustment" id="adjSigCosmeCold">
     <property name="upper">50</property>
     <property name="value">3</property>
-    <property name="step_increment">0,10000000000000000555</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjSigCosmeHot">
     <property name="upper">50</property>
     <property name="value">3</property>
-    <property name="step_increment">0,10000000000000000555</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_background_nb_samples">
-    <property name="lower">0,01000000000000000021</property>
     <property name="upper">4</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_black_point_asinh">
-    <property name="upper">0,20000000000000001110</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_clahe_clip">
-    <property name="lower">0,01000000000000000021</property>
     <property name="upper">50</property>
     <property name="value">2</property>
-    <property name="step_increment">0,10000000000000000555</property>
     <property name="page_increment">1</property>
   </object>
   <object class="GtkAdjustment" id="adj_clahe_size">
@@ -178,9 +168,6 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="page_increment">100</property>
   </object>
   <object class="GtkAdjustment" id="adj_deconv_corner">
-    <property name="lower">-0,50000000000000000000</property>
-    <property name="upper">0,50000000000000000000</property>
-    <property name="step_increment">0,10000000000000000555</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_deconv_iterations">
@@ -190,10 +177,8 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_deconv_radius">
-    <property name="lower">0,40000000000000002220</property>
     <property name="upper">2</property>
     <property name="value">1</property>
-    <property name="step_increment">0,10000000000000000555</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_deconv_threshold">
@@ -216,7 +201,6 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_fixbanding_invsigma">
-    <property name="lower">0,01000000000000000021</property>
     <property name="upper">5</property>
     <property name="value">1</property>
     <property name="step_increment">1</property>
@@ -225,7 +209,6 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
   <object class="GtkAdjustment" id="adj_highlights">
     <property name="upper">1</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_iter_deconvolution">
@@ -237,19 +220,15 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
   </object>
   <object class="GtkAdjustment" id="adj_linearmatch_high">
     <property name="upper">1</property>
-    <property name="value">0,92000000000000003997</property>
-    <property name="step_increment">0,10000000000000000555</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_linearmatch_low">
     <property name="upper">1</property>
-    <property name="step_increment">0,10000000000000000555</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_median_amount">
     <property name="upper">1</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_median_iterations">
@@ -260,23 +239,16 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_mem_amount">
-    <property name="lower">0,10000000000000000555</property>
     <property name="upper">256</property>
     <property name="value">4</property>
-    <property name="step_increment">0,50000000000000000000</property>
     <property name="page_increment">2</property>
   </object>
   <object class="GtkAdjustment" id="adj_mem_ratio">
-    <property name="lower">0,05000000000000000278</property>
     <property name="upper">5</property>
-    <property name="value">0,90000000000000002220</property>
-    <property name="step_increment">0,05000000000000000278</property>
     <property name="page_increment">1</property>
   </object>
   <object class="GtkAdjustment" id="adj_midtones">
     <property name="upper">1</property>
-    <property name="value">0,50000000000000000000</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">1</property>
   </object>
   <object class="GtkAdjustment" id="adj_plans_w">
@@ -298,43 +270,36 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
   </object>
   <object class="GtkAdjustment" id="adj_shadows">
     <property name="upper">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_w0">
     <property name="upper">99</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_w1">
     <property name="upper">99</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_w2">
     <property name="upper">99</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_w3">
     <property name="upper">99</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_w4">
     <property name="upper">99</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_w5">
     <property name="upper">99</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjmaxpxval">
@@ -356,16 +321,11 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjstarfinder_roundness">
-    <property name="upper">0,90000000000000002220</property>
-    <property name="value">0,50000000000000000000</property>
-    <property name="step_increment">0,10000000000000000555</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjstarfinder_threshold">
-    <property name="lower">0,01000000000000000021</property>
     <property name="upper">15</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment1">
@@ -438,13 +398,11 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
   <object class="GtkAdjustment" id="adjustment_blue">
     <property name="upper">10</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_brightness">
     <property name="upper">10</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_cc_bkg_h">
@@ -498,37 +456,31 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
   <object class="GtkAdjustment" id="adjustment_red">
     <property name="upper">10</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_satu">
     <property name="lower">-1</property>
     <property name="upper">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_scale_b">
     <property name="upper">1</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_scale_g">
     <property name="upper">1</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_scale_r">
     <property name="upper">1</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_scnr">
     <property name="upper">1</property>
     <property name="value">1</property>
-    <property name="step_increment">0,93999999999999994671</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_shiftx">
@@ -552,20 +504,16 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
   </object>
   <object class="GtkAdjustment" id="adjustment_treshold">
     <property name="upper">1</property>
-    <property name="value">0,80000000000000004441</property>
-    <property name="step_increment">0,10000000000000000555</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_unsharp_coeff">
     <property name="upper">15</property>
     <property name="value">5</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_unsharp_sigma">
     <property name="upper">15</property>
     <property name="value">1</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adjustment_white_h">
@@ -889,7 +837,6 @@ enter a visible wavelength in nm</property>
   </object>
   <object class="GtkAdjustment" id="lowWhiteColorCalibAdj">
     <property name="upper">1</property>
-    <property name="step_increment">0,10000000000000000555</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkPopoverMenu" id="main_menu">
@@ -2001,17 +1948,13 @@ enter a visible wavelength in nm</property>
     <property name="stock">gtk-remove</property>
   </object>
   <object class="GtkAdjustment" id="resample_X">
-    <property name="lower">0,01000000000000000021</property>
     <property name="upper">999</property>
     <property name="value">100</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="resample_Y">
-    <property name="lower">0,01000000000000000021</property>
-    <property name="upper">999,89999999999997726263</property>
+    <property name="upper">999</property>
     <property name="value">100</property>
-    <property name="step_increment">0,01000000000000000021</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkImage" id="rotate90-acw">
@@ -2031,15 +1974,13 @@ enter a visible wavelength in nm</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="stack_sighigh_adjustment">
-    <property name="upper">9,99000000000000021316</property>
+    <property name="upper">9</property>
     <property name="value">3</property>
-    <property name="step_increment">0,10000000000000000555</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkAdjustment" id="stack_siglow_adjustment">
-    <property name="upper">9,99000000000000021316</property>
+    <property name="upper">9</property>
     <property name="value">4</property>
-    <property name="step_increment">0,10000000000000000555</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkWindow" id="control_window">
@@ -5585,7 +5526,6 @@ However, multiplicative normalisation must be used with flat-field frames.&lt;/b
                                                     <property name="max_width_chars">6</property>
                                                     <property name="text">4,000</property>
                                                     <property name="adjustment">stack_siglow_adjustment</property>
-                                                    <property name="climb_rate">0,10000000000000000555</property>
                                                     <property name="digits">3</property>
                                                     <property name="numeric">True</property>
                                                     <property name="value">4</property>
@@ -5620,7 +5560,6 @@ However, multiplicative normalisation must be used with flat-field frames.&lt;/b
                                                     <property name="max_width_chars">6</property>
                                                     <property name="text">3,000</property>
                                                     <property name="adjustment">stack_sighigh_adjustment</property>
-                                                    <property name="climb_rate">0,10000000000000000555</property>
                                                     <property name="digits">3</property>
                                                     <property name="numeric">True</property>
                                                     <property name="value">3</property>
@@ -6581,7 +6520,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                       <object class="GtkProgressBar" id="progressbar1">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="pulse_step">0,05000000000000000278</property>
+                        <property name="pulse_step">0</property>
                         <property name="text" translatable="yes">Ready.</property>
                         <property name="show_text">True</property>
                         <property name="ellipsize">middle</property>
@@ -9513,8 +9452,7 @@ If the parameters is null, so no filter is apply at all.</property>
               <object class="GtkSpinButton" id="spin_asinh">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
-                <property name="progress_fraction">0,01000000000000000021</property>
-                <property name="progress_pulse_step">0,01000000000000000021</property>
+                <property name="progress_pulse_step">0</property>
                 <property name="adjustment">adjustment_asinh</property>
                 <property name="digits">1</property>
                 <property name="numeric">True</property>
@@ -10882,7 +10820,6 @@ Modifying parameters in this windows afterward will void the colour balance, and
                     <property name="text">3,00</property>
                     <property name="input_purpose">number</property>
                     <property name="adjustment">adjSigCosmeCold</property>
-                    <property name="climb_rate">0,10000000000000000555</property>
                     <property name="digits">2</property>
                     <property name="numeric">True</property>
                     <property name="value">3</property>
@@ -10946,7 +10883,6 @@ Modifying parameters in this windows afterward will void the colour balance, and
                     <property name="text">3,00</property>
                     <property name="input_purpose">number</property>
                     <property name="adjustment">adjSigCosmeHot</property>
-                    <property name="climb_rate">0,10000000000000000555</property>
                     <property name="digits">2</property>
                     <property name="numeric">True</property>
                     <property name="value">3</property>
@@ -12572,7 +12508,7 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="button_histo_close">
-                <property name="label">gtk-cancel</property>
+                <property name="label">gtk-close</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
@@ -13247,7 +13183,6 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="text">20</property>
                     <property name="adjustment">adj_linearmatch_high</property>
                     <property name="digits">4</property>
-                    <property name="value">0,92000000000000003997</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -13451,7 +13386,6 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="text">100,00</property>
                     <property name="input_purpose">number</property>
                     <property name="adjustment">resample_Y</property>
-                    <property name="climb_rate">0,01000000000000000021</property>
                     <property name="digits">2</property>
                     <property name="numeric">True</property>
                     <property name="value">100</property>
@@ -13472,7 +13406,6 @@ Uncheck if images come from a monochrome sensor.</property>
                     <property name="text">100,00</property>
                     <property name="input_purpose">number</property>
                     <property name="adjustment">resample_X</property>
-                    <property name="climb_rate">0,01000000000000000021</property>
                     <property name="digits">2</property>
                     <property name="numeric">True</property>
                     <property name="value">100</property>
@@ -13867,7 +13800,6 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="text">0,00</property>
                 <property name="input_purpose">number</property>
                 <property name="adjustment">rotation_angle</property>
-                <property name="climb_rate">0,01000000000000000021</property>
                 <property name="digits">2</property>
                 <property name="numeric">True</property>
               </object>
@@ -15448,7 +15380,6 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                   <object class="GtkTreeViewColumn" id="treeviewcolumn13">
                     <property name="sizing">fixed</property>
                     <property name="title" translatable="yes">Ch.</property>
-                    <property name="alignment">0,50000000000000000000</property>
                     <child>
                       <object class="GtkCellRendererText" id="cell_ch"/>
                       <attributes>
@@ -15463,7 +15394,6 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                     <property name="title" translatable="yes">B</property>
                     <property name="expand">True</property>
                     <property name="clickable">True</property>
-                    <property name="alignment">0,50000000000000000000</property>
                     <property name="reorderable">True</property>
                     <property name="sort_column_id">1</property>
                     <child>
@@ -15482,7 +15412,6 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                     <property name="title" translatable="yes">A</property>
                     <property name="expand">True</property>
                     <property name="clickable">True</property>
-                    <property name="alignment">0,50000000000000000000</property>
                     <property name="reorderable">True</property>
                     <property name="sort_column_id">2</property>
                     <child>
@@ -15501,7 +15430,6 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                     <property name="title" translatable="yes">x0</property>
                     <property name="expand">True</property>
                     <property name="clickable">True</property>
-                    <property name="alignment">0,50000000000000000000</property>
                     <property name="reorderable">True</property>
                     <property name="sort_column_id">3</property>
                     <child>
@@ -15520,7 +15448,6 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                     <property name="title" translatable="yes">y0</property>
                     <property name="expand">True</property>
                     <property name="clickable">True</property>
-                    <property name="alignment">0,50000000000000000000</property>
                     <property name="reorderable">True</property>
                     <property name="sort_column_id">4</property>
                     <child>
@@ -15539,7 +15466,6 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                     <property name="title" translatable="yes">FWHMx</property>
                     <property name="expand">True</property>
                     <property name="clickable">True</property>
-                    <property name="alignment">0,50000000000000000000</property>
                     <property name="reorderable">True</property>
                     <property name="sort_column_id">5</property>
                     <child>
@@ -15558,7 +15484,6 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                     <property name="title" translatable="yes">FWHMy</property>
                     <property name="expand">True</property>
                     <property name="clickable">True</property>
-                    <property name="alignment">0,50000000000000000000</property>
                     <property name="reorderable">True</property>
                     <property name="sort_column_id">6</property>
                     <child>
@@ -15576,7 +15501,6 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                     <property name="sizing">autosize</property>
                     <property name="title" translatable="yes">Mag</property>
                     <property name="clickable">True</property>
-                    <property name="alignment">0,50000000000000000000</property>
                     <property name="reorderable">True</property>
                     <property name="sort_column_id">7</property>
                     <child>
@@ -15595,7 +15519,6 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                     <property name="title" translatable="yes">r</property>
                     <property name="expand">True</property>
                     <property name="clickable">True</property>
-                    <property name="alignment">0,50000000000000000000</property>
                     <property name="reorderable">True</property>
                     <property name="sort_column_id">8</property>
                     <child>
@@ -15614,7 +15537,6 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                     <property name="title" translatable="yes">Angle</property>
                     <property name="expand">True</property>
                     <property name="clickable">True</property>
-                    <property name="alignment">0,50000000000000000000</property>
                     <property name="reorderable">True</property>
                     <property name="sort_column_id">9</property>
                     <child>
@@ -15633,7 +15555,6 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                     <property name="title" translatable="yes">RMSE</property>
                     <property name="expand">True</property>
                     <property name="clickable">True</property>
-                    <property name="alignment">0,50000000000000000000</property>
                     <property name="reorderable">True</property>
                     <property name="sort_column_id">10</property>
                     <child>
@@ -15756,10 +15677,8 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                         <property name="width_chars">5</property>
                         <property name="input_purpose">number</property>
                         <property name="adjustment">adjstarfinder_roundness</property>
-                        <property name="climb_rate">0,10000000000000000555</property>
                         <property name="digits">1</property>
                         <property name="numeric">True</property>
-                        <property name="value">0,50000000000000000000</property>
                         <signal name="value-changed" handler="on_spin_sf_roundness_changed" swapped="no"/>
                       </object>
                       <packing>
@@ -16190,7 +16109,6 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                                 <property name="text">0,99</property>
                                 <property name="adjustment">adj_w0</property>
                                 <property name="digits">2</property>
-                                <property name="value">0,98999999999999999112</property>
                                 <signal name="value-changed" handler="on_spin_w0_value_changed" swapped="no"/>
                               </object>
                               <packing>
@@ -16623,8 +16541,6 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
   </object>
   <object class="GtkAdjustment" id="upWhiteColorCalibAdj">
     <property name="upper">1</property>
-    <property name="value">0,90000000000000002220</property>
-    <property name="step_increment">0,10000000000000000555</property>
     <property name="page_increment">10</property>
   </object>
   <object class="GtkDialog" id="color_calibration">
@@ -17490,10 +17406,9 @@ If the selection is empty, the whole image will be used as reference.</property>
                                         <property name="invisible_char">●</property>
                                         <property name="width_chars">5</property>
                                         <property name="text">1,00</property>
-                                        <property name="progress_pulse_step">0,00999999977648258209</property>
+                                        <property name="progress_pulse_step">0</property>
                                         <property name="input_purpose">number</property>
                                         <property name="adjustment">adjustment_red</property>
-                                        <property name="climb_rate">0,00100000000000000002</property>
                                         <property name="digits">2</property>
                                         <property name="numeric">True</property>
                                         <property name="value">1</property>
@@ -17542,10 +17457,9 @@ If the selection is empty, the whole image will be used as reference.</property>
                                         <property name="invisible_char">●</property>
                                         <property name="width_chars">5</property>
                                         <property name="text">1,00</property>
-                                        <property name="progress_pulse_step">0,00999999977648258209</property>
+                                        <property name="progress_pulse_step">0</property>
                                         <property name="input_purpose">number</property>
                                         <property name="adjustment">adjustment_blue</property>
-                                        <property name="climb_rate">0,01000000000000000021</property>
                                         <property name="digits">2</property>
                                         <property name="numeric">True</property>
                                         <property name="value">1</property>
@@ -17593,10 +17507,9 @@ If the selection is empty, the whole image will be used as reference.</property>
                                         <property name="invisible_char">●</property>
                                         <property name="width_chars">5</property>
                                         <property name="text">1,00</property>
-                                        <property name="progress_pulse_step">0,00999999977648258209</property>
+                                        <property name="progress_pulse_step">0</property>
                                         <property name="input_purpose">number</property>
                                         <property name="adjustment">adjustment_brightness</property>
-                                        <property name="climb_rate">0,01000000000000000021</property>
                                         <property name="digits">2</property>
                                         <property name="numeric">True</property>
                                         <property name="value">1</property>
@@ -18964,7 +18877,7 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                     <property name="adjustment">adjGain</property>
                                     <property name="digits">4</property>
                                     <property name="numeric">True</property>
-                                    <property name="value">2,29999999999999982236</property>
+                                    <property name="value">2</property>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -19544,7 +19457,6 @@ Configuring a memory amount larger than what is available on your system may res
                                     <property name="adjustment">adj_mem_ratio</property>
                                     <property name="digits">2</property>
                                     <property name="numeric">True</property>
-                                    <property name="value">0,90000000000000002220</property>
                                     <signal name="value-changed" handler="on_spinbutton_mem_ratio_value_changed" swapped="no"/>
                                   </object>
                                   <packing>
