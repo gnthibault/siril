@@ -178,39 +178,39 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 			PRINT_ALLOC_ERR;
 			return 1;
 		}
-	}
 
-	if (args->seq->type == SEQ_SER) {
-		/* copied from seq_prepare_hook with one variation */
-		args->new_ser = malloc(sizeof(struct ser_struct));
-		if (!args->new_ser) {
-			PRINT_ALLOC_ERR;
-			return 1;
+		if (args->seq->type == SEQ_SER) {
+			/* copied from seq_prepare_hook with one variation */
+			args->new_ser = malloc(sizeof(struct ser_struct));
+			if (!args->new_ser) {
+				PRINT_ALLOC_ERR;
+				return 1;
+			}
+
+			char dest[256];
+			const char *ptr = strrchr(args->seq->seqname, G_DIR_SEPARATOR);
+			if (ptr)
+				snprintf(dest, 255, "%s%s.ser", regargs->prefix, ptr + 1);
+			else
+				snprintf(dest, 255, "%s%s.ser", regargs->prefix, args->seq->seqname);
+
+			/* Here the last argument is NULL because we do not want copy SER file
+			 * from the original. Indeed in the demosaicing case this would lead to
+			 * a wrong file (B&W and not in RAW data). Moreover, header informations
+			 * (like fps, local and UTC time, ...) have no sense now since some frames
+			 * could be removed from the sequence.
+			 */
+			if (ser_create_file(dest, args->new_ser, TRUE, NULL)) {
+				free(args->new_ser);
+				args->new_ser = NULL;
+				return 1;
+			}
 		}
-
-		char dest[256];
-		const char *ptr = strrchr(args->seq->seqname, G_DIR_SEPARATOR);
-		if (ptr)
-			snprintf(dest, 255, "%s%s.ser", regargs->prefix, ptr + 1);
-		else
-			snprintf(dest, 255, "%s%s.ser", regargs->prefix, args->seq->seqname);
-
-		/* Here the last argument is NULL because we do not want copy SER file
-		 * from the original. Indeed in the demosaicing case this would lead to
-		 * a wrong file (B&W and not in RAW data). Moreover, header informations
-		 * (like fps, local and UTC time, ...) have no sense now since some frames
-		 * could be removed from the sequence.
-		 */
-		if (ser_create_file(dest, args->new_ser, TRUE, NULL)) {
-			free(args->new_ser);
-			args->new_ser = NULL;
-			return 1;
+		else if (args->seq->type == SEQ_FITSEQ) {
+			if (seq_prepare_hook(args))
+				return 1;
 		}
-	}
-	else if (args->seq->type == SEQ_FITSEQ) {
-		if (seq_prepare_hook(args))
-			return 1;
-	}
+}
 
 	sadata->success = calloc(args->nb_filtered_images, sizeof(BYTE));
 	if (!sadata->success) {
@@ -358,21 +358,23 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 				failed++;
 		regargs->new_total = args->nb_filtered_images - failed;
 
-		// regargs->imgparam and regargs->regparam may have holes caused by images
-		// that failed to be registered
-		if (failed && !regargs->translation_only) {
-			int j;
-			for (i = 0, j = 0; i < regargs->new_total; i++, j++) {
-				while (!sadata->success[j] && j < args->nb_filtered_images) j++;
-				g_assert(sadata->success[j]);
-				if (i != j) {
-					regargs->imgparam[i] = regargs->imgparam[j];
-					regargs->regparam[i] = regargs->regparam[j];
+		if (!regargs->translation_only) {
+			if (failed) {
+				// regargs->imgparam and regargs->regparam may have holes caused by images
+				// that failed to be registered - compact them
+				int j;
+				for (i = 0, j = 0; i < regargs->new_total; i++, j++) {
+					while (!sadata->success[j] && j < args->nb_filtered_images) j++;
+					g_assert(sadata->success[j]);
+					if (i != j) {
+						regargs->imgparam[i] = regargs->imgparam[j];
+						regargs->regparam[i] = regargs->regparam[j];
+					}
 				}
 			}
-		}
 
-		seq_finalize_hook(args);
+			seq_finalize_hook(args);
+		}
 	} else {
 		regargs->new_total = 0;
 		free(args->seq->regparam[regargs->layer]);
