@@ -238,6 +238,13 @@ static gpointer export_sequence(gpointer ptr) {
 			goto free_and_reset_progress_bar;
 		}
 
+		if (fit.type == DATA_USHORT && !com.pref.force_to_16bit) {
+			const long n = fit.naxes[0] * fit.naxes[1] * fit.naxes[2];
+			float *newbuf = ushort_buffer_to_float(fit.data, n);
+			if (!newbuf) { retval = 1; goto free_and_reset_progress_bar; }
+			fit_replace_buffer(&fit, newbuf, DATA_FLOAT);
+		}
+
 		if (!nbdata) {
 			/* destfit is allocated to the real size because of the possible
 			 * shifts and of the inplace cropping. FITS data is copied from
@@ -246,7 +253,7 @@ static gpointer export_sequence(gpointer ptr) {
 			destfit.header = NULL;
 			destfit.fptr = NULL;
 			nbdata = fit.rx * fit.ry;
-			if ((args->convflags == TYPEFITS) && ((fit.type == DATA_FLOAT) || !com.pref.force_to_16bit)) {
+			if ((args->convflags == TYPEFITS) && (fit.type == DATA_FLOAT)) {
 				destfit.fdata = calloc(nbdata * fit.naxes[2], sizeof(float));
 				destfit.type = DATA_FLOAT;
 				destfit.stats = NULL;
