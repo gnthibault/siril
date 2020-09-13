@@ -38,6 +38,7 @@ struct plate_solver_data {
 	int ret; // return value
 	double pixel_size; // pixel size in µm
 	gboolean manual; // Manual platesolving
+	gboolean flip_image;
 };
 
 struct RA_struct {

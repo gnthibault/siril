@@ -40,6 +40,7 @@
 #include "gui/photometric_cc.h"
 #include "gui/dialogs.h"
 #include "gui/message_dialog.h"
+#include "gui/image_display.h"
 
 #ifdef HAVE_LIBCURL
 
@@ -47,6 +48,7 @@
 #include "algos/PSF.h"
 #include "algos/star_finder.h"
 #include "algos/plateSolver.h"
+#include "io/image_format_fits.h"
 #include "registration/matching/match.h"
 #include "registration/matching/apply_match.h"
 #include "registration/matching/misc.h"
@@ -227,8 +229,7 @@ static int parse_curl_buffer(char *buffer, struct object *obj) {
 }
 
 static void free_Platedobject() {
-	int i;
-	for (i = 0; i < RESOLVER_NUMBER; i++) {
+	for (int i = 0; i < RESOLVER_NUMBER; i++) {
 		if (platedObject[i].name) {
 			free(platedObject[i].name);
 			platedObject[i].name = NULL;
@@ -320,6 +321,13 @@ static gboolean is_detection_manual() {
 	GtkToggleButton *button;
 
 	button = GTK_TOGGLE_BUTTON(lookup_widget("checkButton_IPS_manual"));
+	return gtk_toggle_button_get_active(button);
+}
+
+static gboolean flip_image_after_ps() {
+	GtkToggleButton *button;
+
+	button = GTK_TOGGLE_BUTTON(lookup_widget("checkButton_IPS_flip"));
 	return gtk_toggle_button_get_active(button);
 }
 
@@ -756,7 +764,14 @@ static void update_gfit(image_solved image) {
 	cd_x(&gfit.wcs);
 }
 
-static void print_platesolving_results(Homography H, image_solved image) {
+static void flip_astrometry_data(fits *fit) {
+	fit->wcs.cd1_1 = -fit->wcs.cd1_1;
+	fit->wcs.cd2_2 = -fit->wcs.cd2_2;
+	fit->wcs.crota1 = -fit->wcs.crota1 - 180.0;
+	fit->wcs.crota2 = fit->wcs.crota1;
+}
+
+static void print_platesolving_results(Homography H, image_solved image, gboolean *flip_image) {
 	double rotation, det, scaleX, scaleY;
 	double inliers;
 	char RA[256] = { 0 };
@@ -812,6 +827,9 @@ static void print_platesolving_results(Homography H, image_solved image) {
 	deg_to_HMS(image.ra, "ra", RA);
 	deg_to_HMS(image.dec, "dec", DEC);
 	siril_log_message(_("Image center: RA: %s, DEC: %s\n"), RA, DEC);
+
+	*flip_image = *flip_image && det < 0;
+
 
    	update_gfit(image);
 }
@@ -1064,6 +1082,14 @@ static gboolean check_affine_TRANS_sanity(TRANS trans) {
 static gboolean end_plate_solver(gpointer p) {
 	struct plate_solver_data *args = (struct plate_solver_data *) p;
 	stop_processing_thread();
+
+	if (args->flip_image) {
+		siril_log_message(_("Flipping image and updating astrometry data.\n"));
+		fits_flip_top_to_bottom(args->fit);
+		flip_astrometry_data(args->fit);
+		redraw(com.cvport, REMAP_ALL);
+	}
+
 	if (!args->manual)
 		clear_stars_list();
 	set_cursor_waiting(FALSE);
@@ -1176,7 +1202,7 @@ gpointer match_catalog(gpointer p) {
 
 			apply_match(&is_result, trans);
 
-			print_platesolving_results(H, is_result);
+			print_platesolving_results(H, is_result, &(args->flip_image));
 		} else {
 			args->ret = 1;
 		}
@@ -1405,6 +1431,7 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 	args->scale = scale;
 	args->pixel_size = px_size;
 	args->manual = is_detection_manual();
+	args->flip_image = flip_image_after_ps();
 	args->fit = &gfit;
 	return 0;
 }
