@@ -80,15 +80,10 @@ static void initialize_convert() {
 	GDir *dir;
 	GError *error = NULL;
 	gchar *file_data, *file_date;
-	const gchar *index;
-	static GtkEntry *startEntry = NULL;
 	GtkTreeIter iter;
 	GList *list = NULL;
 	
 	init_widgets();
-	if (!startEntry) {
-		startEntry = GTK_ENTRY(lookup_widget("startIndiceEntry"));
-	}
 	
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
@@ -196,8 +191,6 @@ static void initialize_convert() {
 		return;
 	}
 
-	index = gtk_entry_get_text(startEntry);
-
 	siril_log_color_message(_("Conversion: processing %d files...\n"), "green", count);
 	
 	set_cursor_waiting(TRUE);
@@ -235,7 +228,12 @@ static void initialize_convert() {
 		PRINT_ALLOC_ERR;
 		return;
 	}
-	args->start = (atoi(index) <= 0 || atoi(index) >= INDEX_MAX) ? 1 : atoi(index);
+	if (args->output_type == SEQ_REGULAR) {
+		GtkEntry *startEntry = GTK_ENTRY(lookup_widget("startIndiceEntry"));
+		const gchar *index = gtk_entry_get_text(startEntry);
+		args->start = (atoi(index) <= 0 || atoi(index) >= INDEX_MAX) ? 1 : atoi(index);
+	}
+	else args->start = 0;
 	args->dir = dir;
 	args->list = files_to_convert;
 	args->total = count;
