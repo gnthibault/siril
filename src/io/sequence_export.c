@@ -68,7 +68,7 @@ static uint8_t *fits_to_uint8(fits *fit) {
 }
 
 static gpointer export_sequence(gpointer ptr) {
-	int nb_layers;
+	int nb_layers = -1;
 	int retval = 0, cur_nb = 0;
 	unsigned int out_width, out_height, in_width, in_height;
 	size_t nbdata = 0;
