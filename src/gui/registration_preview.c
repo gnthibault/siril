@@ -133,7 +133,7 @@ void test_and_allocate_reference_image(int vport) {
 		vport = gtk_combo_box_get_active(cbbt_layers);
 
 	if (sequence_is_loaded() && com.seq.current == com.seq.reference_image
-			&& gtk_combo_box_get_active(cbbt_layers) == vport) {
+			&& gtk_combo_box_get_active(cbbt_layers) == vport && vport < gfit.naxes[2]) {
 		/* this is the registration layer and the reference frame,
 		 * save the buffer for alignment preview */
 		if (!com.refimage_regbuffer || !com.refimage_surface) {
