@@ -442,9 +442,11 @@ char *copy_header(fits *fit) {
 	do {
 		status = 0;
 		fits_movrel_hdu(fit->fptr, 1, &type, &status);
-		if (status || type == IMAGE_HDU)
+		if (status)
 			break;
 		hdu_changed = TRUE;
+		if (type == IMAGE_HDU)
+			break;
 		siril_debug_print("header read from another HDU (CHDU changed)\n");
 		if (copy_header_from_hdu(fit->fptr, &header, &strsize, &strlength))
 			break;
