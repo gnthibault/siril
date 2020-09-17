@@ -1123,7 +1123,7 @@ int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		 * to be BAYER_BILINEAR
 		 */
 		demosaiced_buf = debayer_buffer(rawbuf, &debayer_area.w,
-				&debayer_area.h, BAYER_BILINEAR, com.pref.debayer.bayer_pattern);
+				&debayer_area.h, BAYER_BILINEAR, com.pref.debayer.bayer_pattern, ser_file->bit_pixel_depth);
 		free(rawbuf);
 		if (!demosaiced_buf)
 			return -1;

@@ -72,7 +72,7 @@ static bool progress(double p) {
 }
 
 WORD *debayer_buffer_new_ushort(WORD *buf, int *width, int *height,
-		interpolation_method interpolation, sensor_pattern pattern, unsigned int xtrans[6][6]) {
+		interpolation_method interpolation, sensor_pattern pattern, unsigned int xtrans[6][6], int bit_depth) {
 
 	// super-pixel is handled by siril code, not librtprocess
 	if (interpolation == BAYER_SUPER_PIXEL)
@@ -189,9 +189,16 @@ WORD *debayer_buffer_new_ushort(WORD *buf, int *width, int *height,
 	}
 	else {
 		for (j = 0; j < n; j++) {
-			newfitdata[j] = roundf_to_WORD(newdata[j]);
-			// this rounding ^ is required because librtprocess
-			// often returns data out of expected range
+			/* here bit_depth can really be bit_depth (with SER files
+			 * OR bitpix (with FITS file) so we need to pay attention!!!!
+			 * But BYTE_IMG has the value of 8. So it should be fine. */
+			if (bit_depth == BYTE_IMG) {
+				newfitdata[j] = roundf_to_BYTE(newdata[j]);
+			} else {
+				newfitdata[j] = roundf_to_WORD(newdata[j]);
+			}
+			/* these rounding are required because librtprocess
+			 * often returns data out of expected range */
 		}
 	}
 

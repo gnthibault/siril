@@ -741,7 +741,7 @@ static int fast_xtrans_interpolate(const WORD *bayer, WORD *dst, int sx, int sy,
 #undef fcol
 
 static WORD *debayer_buffer_siril(WORD *buf, int *width, int *height,
-		interpolation_method interpolation, sensor_pattern pattern, unsigned int xtrans[6][6]) {
+		interpolation_method interpolation, sensor_pattern pattern, unsigned int xtrans[6][6], int bit_depth) {
 	WORD *newbuf;
 	size_t npixels;
 	int retval;
@@ -931,10 +931,10 @@ WORD *debayer_buffer_superpixel_ushort(WORD *buf, int *width, int *height, senso
  * @return a new buffer of demosaiced data
  */
 WORD *debayer_buffer(WORD *buf, int *width, int *height,
-		interpolation_method interpolation, sensor_pattern pattern) {
+		interpolation_method interpolation, sensor_pattern pattern, int bit_depth) {
 	if (USE_SIRIL_DEBAYER)
-		return debayer_buffer_siril(buf, width, height, interpolation, pattern, NULL);
-	return debayer_buffer_new_ushort(buf, width, height, interpolation, pattern, NULL);
+		return debayer_buffer_siril(buf, width, height, interpolation, pattern, NULL, bit_depth);
+	return debayer_buffer_new_ushort(buf, width, height, interpolation, pattern, NULL, bit_depth);
 }
 
 float *debayer_buffer_superpixel_float(float *buf, int *width, int *height, sensor_pattern pattern) {
@@ -1050,7 +1050,7 @@ static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_
 	}
 
 	if (USE_SIRIL_DEBAYER) {
-		WORD *newbuf = debayer_buffer_siril(buf, &width, &height, interpolation, pattern, xtrans);
+		WORD *newbuf = debayer_buffer_siril(buf, &width, &height, interpolation, pattern, xtrans, fit->bitpix);
 		if (!newbuf)
 			return 1;
 
@@ -1075,7 +1075,7 @@ static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_
 		}
 	} else {
 		// use librtprocess debayer
-		WORD *newbuf = debayer_buffer_new_ushort(buf, &width, &height, interpolation, pattern, xtrans);
+		WORD *newbuf = debayer_buffer_new_ushort(buf, &width, &height, interpolation, pattern, xtrans, fit->bitpix);
 		if (!newbuf)
 			return 1;
 

@@ -20,7 +20,7 @@ struct split_cfa_data {
 };
 
 WORD *debayer_buffer(WORD *buf, int *width, int *height,
-		interpolation_method interpolation, sensor_pattern pattern);
+		interpolation_method interpolation, sensor_pattern pattern, int bit_depth);
 int debayer(fits*, interpolation_method, sensor_pattern pattern);
 
 #ifdef __cplusplus
@@ -51,7 +51,7 @@ extern "C" {
 #endif
 /* from demosaicing_rtp.cpp */
 WORD *debayer_buffer_new_ushort(WORD *buf, int *width, int *height,
-		interpolation_method interpolation, sensor_pattern pattern, unsigned int xtrans[6][6]);
+		interpolation_method interpolation, sensor_pattern pattern, unsigned int xtrans[6][6], int bit_depth);
 
 float *debayer_buffer_new_float(float *buf, int *width, int *height,
 		interpolation_method interpolation, sensor_pattern pattern, unsigned int xtrans[6][6]);
