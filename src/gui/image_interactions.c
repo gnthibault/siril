@@ -427,7 +427,7 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 	cairo_matrix_transform_point(&com.image_matrix, &evpos.x, &evpos.y);
 
 	// same as evpos but rounded to integer and clamped to image bounds
-	pointi zoomed = { round_to_int(evpos.x), round_to_int(evpos.y) };
+	pointi zoomed = { (int)(evpos.x), (int)(evpos.y) };
 	gboolean inside = clamp2image(&zoomed);
 
 	if (inside) {
@@ -435,8 +435,8 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 			if (event->button == GDK_BUTTON_PRIMARY) {
 				// viewport translation
 				com.translating = TRUE;
-				com.start.x = round_to_int(event->x);
-				com.start.y = round_to_int(event->y);
+				com.start.x = (int)(event->x);
+				com.start.y = (int)(event->y);
 				return TRUE;
 			}
 		}
@@ -546,7 +546,7 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 	cairo_matrix_transform_point(&com.image_matrix, &evpos.x, &evpos.y);
 
 	// same as evpos but rounded to integer and clamped to image bounds
-	pointi zoomed = { round_to_int(evpos.x), round_to_int(evpos.y) };
+	pointi zoomed = { (int)(evpos.x), (int)(evpos.y) };
 	gboolean inside = clamp2image(&zoomed);
 
 	if (event->button == GDK_BUTTON_PRIMARY) {	// left click
@@ -645,7 +645,7 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 	cairo_matrix_transform_point(&com.image_matrix, &evpos.x, &evpos.y);
 
 	// same as evpos but rounded to integer and clamped to image bounds
-	pointi zoomed = { round_to_int(evpos.x), round_to_int(evpos.y) };
+	pointi zoomed = { (int)(evpos.x), (int)(evpos.y) };
 	gboolean inside = clamp2image(&zoomed);
 
 	const char *suffix = untranslated_vport_number_to_name(com.cvport);
@@ -695,7 +695,7 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 		if (gtk_toggle_tool_button_get_active(button))
 			gtk_toggle_tool_button_set_active(button, FALSE);
 
-		pointi ev = { round_to_int(event->x), round_to_int(event->y) };
+		pointi ev = { (int)(event->x), (int)(event->y) };
 		point delta = { ev.x - com.start.x , ev.y - com.start.y };
 		com.start = ev;
 		com.display_offset.x += delta.x;
