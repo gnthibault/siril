@@ -46,7 +46,7 @@ static command commands[] = {
 	{"exit", 0, "exit", process_exit, STR_EXIT, TRUE},
 	{"extract", 1, "extract NbPlans", process_extract, STR_EXTRACT, TRUE},
 	{"extract_Ha", 0, "extract_Ha", process_extractHa, STR_EXTRACTHA, TRUE},
-	{"extract_HaOIII", 0, "extract_HaIII", process_extractHaOIII, STR_EXTRACTHAOIII, TRUE},
+	{"extract_HaOIII", 0, "extract_HaOIII", process_extractHaOIII, STR_EXTRACTHAOIII, TRUE},
 
 	{"fdiv", 2, "fdiv filename scalar", process_fdiv, STR_FDIV, TRUE},
 	{"fftd", 2, "fftd modulus phase", process_fft, STR_FFTD, TRUE},
