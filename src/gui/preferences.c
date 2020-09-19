@@ -505,6 +505,13 @@ void on_miscAskScript_toggled(GtkToggleButton *togglebutton, gpointer user_data)
 	writeinitfile();
 }
 
+void on_script_check_version_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+
+	com.pref.check_script_version = gtk_toggle_button_get_active(togglebutton);
+	set_GUI_misc();
+	writeinitfile();
+}
+
 void on_miscAskUpdateStartup_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 
 	com.pref.check_update = gtk_toggle_button_get_active(togglebutton);

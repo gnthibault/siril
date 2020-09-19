@@ -214,7 +214,7 @@ gpointer execute_script(gpointer p) {
 		if (!g_ascii_strcasecmp(word[0], "requires")) {
 			check_required = TRUE;
 		} else {
-			if (check_required == FALSE) {
+			if (com.pref.check_script_version && check_required == FALSE) {
 				siril_log_color_message(_("The \"requires\" command is needed at the top the script file."
 						" This command is needed to check script compatibility.\n"), "red");
 				retval = 1;

@@ -178,6 +178,7 @@ static int readinitfile() {
 		config_setting_lookup_bool(misc_setting, "first_start_1_0_0", &com.pref.first_start);
 		config_setting_lookup_bool(misc_setting, "confirm_quit", &com.pref.save.quit);
 		config_setting_lookup_bool(misc_setting, "confirm_script", &com.pref.save.script);
+		config_setting_lookup_bool(misc_setting, "check_script_version", &com.pref.check_script_version);
 		config_setting_lookup_bool(misc_setting, "show_thumbnails", &com.pref.show_thumbnails);
 		config_setting_lookup_int(misc_setting, "thumbnail_size", &com.pref.thumbnail_size);
 		config_setting_lookup_int(misc_setting, "theme", &com.pref.combo_theme);
@@ -441,6 +442,9 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 
 	misc_setting = config_setting_add(misc_group, "confirm_script", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.pref.save.script);
+
+	misc_setting = config_setting_add(misc_group, "check_script_version", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(misc_setting, com.pref.check_script_version);
 
 	misc_setting = config_setting_add(misc_group, "show_thumbnails", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.pref.show_thumbnails);
