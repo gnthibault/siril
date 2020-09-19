@@ -2526,41 +2526,16 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkBox" id="hbox1">
+                          <object class="GtkBox" id="hboxr">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="halign">start</property>
+                            <property name="valign">center</property>
                             <property name="spacing">2</property>
-                            <child>
-                              <object class="GtkLabel" id="labelred">
-                                <property name="width_request">60</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Red</property>
-                                <property name="justify">center</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkSeparator" id="vseparatorr1">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="orientation">vertical</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
                             <child>
                               <object class="GtkLabel" id="labeldensity_red">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="valign">center</property>
                                 <property name="ellipsize">end</property>
                                 <property name="width_chars">22</property>
                               </object>
@@ -2638,19 +2613,21 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                               <object class="GtkLabel" id="labelfwhmred">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="halign">end</property>
                                 <property name="label" translatable="yes">fwhm: no selection</property>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
                                 <property name="fill">True</property>
                                 <property name="padding">3</property>
+                                <property name="pack_type">end</property>
                                 <property name="position">8</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
-                            <property name="fill">False</property>
+                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
@@ -2707,34 +2684,8 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                           <object class="GtkBox" id="hboxg">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="halign">start</property>
+                            <property name="valign">center</property>
                             <property name="spacing">2</property>
-                            <child>
-                              <object class="GtkLabel" id="labelgreen">
-                                <property name="width_request">60</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Green</property>
-                                <property name="justify">center</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkSeparator" id="vseparatorg1">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="orientation">vertical</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
                             <child>
                               <object class="GtkLabel" id="labeldensity_green">
                                 <property name="visible">True</property>
@@ -2816,18 +2767,20 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                               <object class="GtkLabel" id="labelfwhmgreen">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="halign">end</property>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
                                 <property name="fill">True</property>
                                 <property name="padding">3</property>
+                                <property name="pack_type">end</property>
                                 <property name="position">8</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
-                            <property name="fill">False</property>
+                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
@@ -2885,37 +2838,11 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkBox" id="hboxr">
+                          <object class="GtkBox" id="hboxb">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="halign">start</property>
+                            <property name="valign">center</property>
                             <property name="spacing">2</property>
-                            <child>
-                              <object class="GtkLabel" id="labelblue">
-                                <property name="width_request">60</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Blue</property>
-                                <property name="justify">center</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
-                            <child>
-                              <object class="GtkSeparator" id="vseparatorb1">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="orientation">vertical</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">1</property>
-                              </packing>
-                            </child>
                             <child>
                               <object class="GtkLabel" id="labeldensity_blue">
                                 <property name="visible">True</property>
@@ -2997,18 +2924,20 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                               <object class="GtkLabel" id="labelfwhmblue">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="halign">end</property>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
                                 <property name="fill">True</property>
                                 <property name="padding">3</property>
+                                <property name="pack_type">end</property>
                                 <property name="position">8</property>
                               </packing>
                             </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
-                            <property name="fill">False</property>
+                            <property name="fill">True</property>
                             <property name="position">1</property>
                           </packing>
                         </child>
@@ -3070,20 +2999,6 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="spacing">2</property>
-                            <child>
-                              <object class="GtkLabel" id="labelblue1">
-                                <property name="width_request">60</property>
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">RGB</property>
-                                <property name="justify">center</property>
-                              </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">0</property>
-                              </packing>
-                            </child>
                             <child>
                               <object class="GtkLabel" id="labeldensityrgb">
                                 <property name="visible">True</property>
