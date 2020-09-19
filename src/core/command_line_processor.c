@@ -170,6 +170,7 @@ static gboolean end_script(gpointer p) {
 
 gpointer execute_script(gpointer p) {
 	FILE *fp = (FILE *)p;
+	gboolean check_required = FALSE;
 	ssize_t read;
 	char *linef, *myline;
 	int line = 0, retval = 0;
@@ -206,9 +207,20 @@ gpointer execute_script(gpointer p) {
 		}
 		if (linef[0] == '\0' || linef[0] == '\n')
 			continue;
+
 		myline = strdup(linef);
 		display_command_on_status_bar(line, myline);
 		parseLine(myline, read, &wordnb);
+		if (!g_ascii_strcasecmp(word[0], "requires")) {
+			check_required = TRUE;
+		} else {
+			if (check_required == FALSE) {
+				siril_log_color_message(_("The \"requires\" command is needed at the top the script file."
+						" This command is needed to check script compatibility.\n"), "red");
+				retval = 1;
+				break;
+			}
+		}
 		if ((retval = executeCommand(wordnb))) {
 			removeEOL(linef);
 			siril_log_message(_("Error in line %d: '%s'.\n"), line, linef);

@@ -214,7 +214,7 @@ static float Qn0(const float sorted_data[], const size_t stride, const size_t n)
 			work[idx++] = fabsf(sorted_data[i] - sorted_data[j]);
 	}
 
-	quickmedian_float(work, idx);
+	quicksort_f(work, idx);
 	float Qn = work[k - 1];
 
 	free(work);
@@ -358,9 +358,9 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 	}
 	/* sort in ascending order before using siril_stats_mean_from_linearFit
 	 Hence, DBL_MAX are at the end of the tab */
-	quickmedian_float(data[RED], nb_stars);
-	quickmedian_float(data[GREEN], nb_stars);
-	quickmedian_float(data[BLUE], nb_stars);
+	quicksort_f(data[RED], nb_stars);
+	quicksort_f(data[GREEN], nb_stars);
+	quicksort_f(data[BLUE], nb_stars);
 
 	/* we do not take into account DBL_MAX values */
 	kw[RED] = siril_stats_robust_mean(data[RED], 1, ngood);
