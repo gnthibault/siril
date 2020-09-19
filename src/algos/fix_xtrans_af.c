@@ -32,7 +32,8 @@ supported_xtrans_list supported_xtrans[] =
 		// Camera Name      AF Pixels x,y,w,h        Sample x,y,w,h
 		{ "Fujifilm X-T2",   { 1510, 504, 3009, 3019 }, { 1992, 990, 2048, 2048 } },
 		{ "Fujifilm X-T20",  { 1510, 504, 3009, 3019 }, { 1992, 990, 2048, 2048 } },
-		{ "Fujifilm X-Pro2", { 1510, 504, 3009, 3019 }, { 1992, 990, 2048, 2048 } }
+		{ "Fujifilm X-Pro2", { 1510, 504, 3009, 3019 }, { 1992, 990, 2048, 2048 } },
+		{ "Fujifilm X-E3", { 1510, 504, 3009, 3019 }, { 1992, 990, 2048, 2048 } }
 };
 
 static int get_nb_xtrans_supported() {
