@@ -126,6 +126,8 @@ static GActionEntry app_entries[] = {
 	{ "plot", tab_plot_activate },
 	{ "stacking", tab_stacking_activate },
 	{ "logs", tab_logs_activate },
+	{ "zoom_out", zoom_out_activate },
+	{ "zoom_in", zoom_in_activate },
 	{ "hide_show_toolbar", toolbar_activate }
 };
 

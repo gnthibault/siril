@@ -2,6 +2,7 @@
 #define _IMAGE_INTERACTIONS_H_
 
 typedef void (*selection_update_callback)();
+gboolean update_zoom(gdouble x, gdouble y, double scale);
 void register_selection_update_callback(selection_update_callback f);
 void unregister_selection_update_callback(selection_update_callback f);
 void delete_selected_area();

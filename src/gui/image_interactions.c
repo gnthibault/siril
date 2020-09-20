@@ -175,6 +175,12 @@ void reset_zoom_default() {
 	}
 }
 
+static void update_zoom_fit_button() {
+	GtkToggleToolButton *button = GTK_TOGGLE_TOOL_BUTTON(lookup_widget("zoom_to_fit_check_button"));
+	if (gtk_toggle_tool_button_get_active(button))
+		gtk_toggle_tool_button_set_active(button, FALSE);
+}
+
 /*
  * Button events
  */
@@ -691,9 +697,7 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 	g_free(label);
 
 	if (com.translating) {
-		GtkToggleToolButton *button = (GtkToggleToolButton *)user_data;
-		if (gtk_toggle_tool_button_get_active(button))
-			gtk_toggle_tool_button_set_active(button, FALSE);
+		update_zoom_fit_button();
 
 		pointi ev = { (int)(event->x), (int)(event->y) };
 		point delta = { ev.x - com.start.x , ev.y - com.start.y };
@@ -794,6 +798,32 @@ void on_drawingarea_leave_notify_event(GtkWidget *widget, GdkEvent *event,
 	}
 }
 
+gboolean update_zoom(gdouble x, gdouble y, double scale) {
+	// event position in image coordinates before changing the zoom value
+	point evpos = { x, y };
+	cairo_matrix_transform_point(&com.image_matrix, &evpos.x, &evpos.y);
+	gdouble factor;
+	gboolean zoomed = FALSE;
+
+	update_zoom_fit_button();
+
+	com.zoom_value = get_zoom_val();
+
+	factor = com.zoom_value * scale;
+
+	if (factor >= ZOOM_MIN && factor <= ZOOM_MAX) {
+		zoomed = TRUE;
+		com.zoom_value = factor;
+		adjust_vport_size_to_image();
+		cairo_matrix_transform_point(&com.display_matrix, &evpos.x, &evpos.y);
+		com.display_offset.x += x - evpos.x;
+		com.display_offset.y += y - evpos.y;
+		adjust_vport_size_to_image();
+		redraw(com.cvport, REMAP_NONE);
+	}
+	return zoomed;
+}
+
 gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, gpointer user_data) {
 	gboolean handled = FALSE;
 
@@ -801,60 +831,24 @@ gboolean on_drawingarea_scroll_event(GtkWidget *widget, GdkEventScroll *event, g
 		return FALSE;
 
 	if (event->state & get_primary()) {
-		GtkToggleToolButton *button = (GtkToggleToolButton *)user_data;
-		if (gtk_toggle_tool_button_get_active(button))
-			gtk_toggle_tool_button_set_active(button, FALSE);
-
-		// event position in image coordinates before changing the zoom value
-		point evpos = { event->x, event->y };
-		cairo_matrix_transform_point(&com.image_matrix, &evpos.x, &evpos.y);
-
 		point delta;
-		gdouble factor;
 
 		switch (event->direction) {
 		case GDK_SCROLL_SMOOTH:	// what's that?
-			handled = TRUE;
 			gdk_event_get_scroll_deltas((GdkEvent*) event, &delta.x, &delta.y);
 			if (delta.y < 0) {
-				if (com.zoom_value * 1.5 > ZOOM_MAX) {
-					return handled;
-				}
-				factor = 1.5;
+				return update_zoom(event->x, event->y, ZOOM_IN);
 			}
 			if (delta.y > 0) {
-				if (com.zoom_value / 1.5 < ZOOM_MIN) {
-					return handled;
-				}
-				factor = 1. / 1.5;
+				return update_zoom(event->x, event->y, ZOOM_OUT);
 			}
 			break;
 		case GDK_SCROLL_DOWN:
-			handled = TRUE;
-			if (com.zoom_value / 1.5 < ZOOM_MIN) {
-				return handled;
-			}
-			factor = 1. / 1.5;
-			break;
+			return update_zoom(event->x, event->y, ZOOM_OUT);
 		case GDK_SCROLL_UP:
-			handled = TRUE;
-			if (com.zoom_value * 1.5 > ZOOM_MAX) {
-				return handled;
-			}
-			factor = 1.5;
-			break;
+			return update_zoom(event->x, event->y, ZOOM_IN);
 		default:
 			handled = FALSE;
-		}
-
-		if (handled) {
-			com.zoom_value *= factor;
-			adjust_vport_size_to_image();
-			cairo_matrix_transform_point(&com.display_matrix, &evpos.x, &evpos.y);
-			com.display_offset.x += event->x - evpos.x;
-			com.display_offset.y += event->y - evpos.y;
-			adjust_vport_size_to_image();
-			redraw(com.cvport, REMAP_NONE);
 		}
 	}
 	return handled;
@@ -871,9 +865,7 @@ void on_zoom_to_fit_check_button_toggled(GtkToggleToolButton *button, gpointer d
 }
 
 void on_zoom_to_one_button_clicked(GtkToolButton *button, gpointer user_data) {
-	GtkToggleToolButton *tbutton = (GtkToggleToolButton*) user_data;
-	if (gtk_toggle_tool_button_get_active(tbutton))
-		gtk_toggle_tool_button_set_active(tbutton, FALSE);
+	update_zoom_fit_button();
 	com.zoom_value = ZOOM_NONE;
 	reset_display_offset();
 	redraw(com.cvport, REMAP_NONE);

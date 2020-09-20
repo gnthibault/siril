@@ -1048,7 +1048,12 @@ static void load_accels() {
 	add_accelerator(GTK_APPLICATION(application), "app.stacking", "F6");
 	add_accelerator(GTK_APPLICATION(application), "app.logs", "F7");
 
+
+	add_accelerator(GTK_APPLICATION(application), "app.zoom_out", "minus");
+	add_accelerator(GTK_APPLICATION(application), "app.zoom_in", "plus");
+
 	add_accelerator(GTK_APPLICATION(application), "app.hide_show_toolbar", "<Primary>T");
+
 }
 
 /* Initialize the combobox when loading new single_image */
