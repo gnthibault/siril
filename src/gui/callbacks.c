@@ -1591,12 +1591,12 @@ void load_main_window_state() {
 	    gdk_display_get_primary_monitor(gdk_display_get_default()),
 	    &workarea);
 
-	printf ("W: %u x H:%u\n", workarea.width, workarea.height);
-
-	int x = com.pref.main_w_pos.x;
-	int y = com.pref.main_w_pos.y;
 	int w = com.pref.main_w_pos.w;
 	int h = com.pref.main_w_pos.h;
+
+	int x = CLAMP(com.pref.main_w_pos.x, 0, workarea.width - w);
+	int y = CLAMP(com.pref.main_w_pos.y, 0, workarea.height - h);
+
 	if (com.pref.remember_windows && w > 0 && h > 0) {
 		if (com.pref.is_maximized) {
 			gtk_window_maximize(GTK_WINDOW(win));
