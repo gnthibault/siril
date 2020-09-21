@@ -3304,8 +3304,8 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                                     <property name="hexpand">True</property>
                                     <signal name="activate" handler="on_convroot_entry_activate" swapped="no"/>
                                     <signal name="changed" handler="on_convtoroot_changed" swapped="no"/>
-                                    <signal name="focus-in-event" handler="on_convroot_entry_focus_in_event" swapped="no"/>
-                                    <signal name="focus-out-event" handler="on_convroot_entry_focus_out_event" swapped="no"/>
+                                    <signal name="focus-in-event" handler="on_entry_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_entry_focus_out_event" swapped="no"/>
                                     <signal name="insert-text" handler="insert_text_handler" swapped="no"/>
                                   </object>
                                   <packing>
@@ -3703,8 +3703,8 @@ WARNING: it will erase all registration and statistics data.</property>
                                     <property name="tooltip_text" translatable="yes">Base name for the exported sequence</property>
                                     <property name="width_chars">50</property>
                                     <signal name="changed" handler="on_entryExportSeq_changed" swapped="no"/>
-                                    <signal name="focus-in-event" handler="on_entryExportSeq_focus_in_event" swapped="no"/>
-                                    <signal name="focus-out-event" handler="on_entryExportSeq_focus_out_event" swapped="no"/>
+                                    <signal name="focus-in-event" handler="on_entry_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_entry_focus_out_event" swapped="no"/>
                                     <signal name="insert-text" handler="insert_text_handler" swapped="no"/>
                                   </object>
                                   <packing>
@@ -4058,8 +4058,8 @@ A first computation pass will be done on all images before exporting, it may tak
 All images in the sequence will be divided by the master flat image (each pixel value).</property>
                                     <property name="width_chars">40</property>
                                     <property name="text">master-flat.fit</property>
-                                    <signal name="focus-in-event" handler="on_prepro_entry_focus_in_event" swapped="no"/>
-                                    <signal name="focus-out-event" handler="on_prepro_entry_focus_out_event" swapped="no"/>
+                                    <signal name="focus-in-event" handler="on_entry_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_entry_focus_out_event" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -4135,8 +4135,8 @@ All images in the sequence will be divided by the master flat image (each pixel 
 The dark master image will be removed from all images in the sequence.</property>
                                     <property name="width_chars">40</property>
                                     <property name="text">master-dark.fit</property>
-                                    <signal name="focus-in-event" handler="on_prepro_entry_focus_in_event" swapped="no"/>
-                                    <signal name="focus-out-event" handler="on_prepro_entry_focus_out_event" swapped="no"/>
+                                    <signal name="focus-in-event" handler="on_entry_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_entry_focus_out_event" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -4168,8 +4168,8 @@ The dark master image will be removed from all images in the sequence.</property
 The bias/offset master image will be removed from all images in the sequence.</property>
                                     <property name="width_chars">40</property>
                                     <property name="text">master-bias.fit</property>
-                                    <signal name="focus-in-event" handler="on_prepro_entry_focus_in_event" swapped="no"/>
-                                    <signal name="focus-out-event" handler="on_prepro_entry_focus_out_event" swapped="no"/>
+                                    <signal name="focus-in-event" handler="on_entry_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_entry_focus_out_event" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -4554,8 +4554,8 @@ Hot pixels are located on the master-dark.</property>
                                     <property name="tooltip_text" translatable="yes">Prefix of the image names resulting from the pre-processing.</property>
                                     <property name="halign">start</property>
                                     <property name="text">pp_</property>
-                                    <signal name="focus-in-event" handler="on_preproseqname_entry_focus_in_event" swapped="no"/>
-                                    <signal name="focus-out-event" handler="on_preproseqname_entry_focus_out_event" swapped="no"/>
+                                    <signal name="focus-in-event" handler="on_entry_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_entry_focus_out_event" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -4825,8 +4825,8 @@ When processing images, registration data is taken from the default layer if ava
                                             <property name="width_chars">10</property>
                                             <property name="text">r_</property>
                                             <property name="caps_lock_warning">False</property>
-                                            <signal name="focus-in-event" handler="on_regseqname_entry_focus_in_event" swapped="no"/>
-                                            <signal name="focus-out-event" handler="on_regseqname_entry_focus_out_event" swapped="no"/>
+                                            <signal name="focus-in-event" handler="on_entry_focus_in_event" swapped="no"/>
+                                            <signal name="focus-out-event" handler="on_entry_focus_out_event" swapped="no"/>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -5629,8 +5629,8 @@ To be enabled, the reference image must have been explicitly set and already dis
                                     <property name="width_chars">10</property>
                                     <property name="text">Plot</property>
                                     <signal name="changed" handler="on_GtkEntryCSV_changed" swapped="no"/>
-                                    <signal name="focus-in-event" handler="on_GtkEntryCSV_focus_in_event" swapped="no"/>
-                                    <signal name="focus-out-event" handler="on_GtkEntryCSV_focus_out_event" swapped="no"/>
+                                    <signal name="focus-in-event" handler="on_entry_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_entry_focus_out_event" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6610,8 +6610,8 @@ WARNING: This option should not be checked for master stacking.</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="invisible_char">●</property>
-                                    <signal name="focus-in-event" handler="on_entryresultfile_focus_in_event" swapped="no"/>
-                                    <signal name="focus-out-event" handler="on_entryresultfile_focus_out_event" swapped="no"/>
+                                    <signal name="focus-in-event" handler="on_entry_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_entry_focus_out_event" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="expand">True</property>
@@ -6870,8 +6870,8 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                                     <property name="truncate_multiline">True</property>
                                     <property name="placeholder_text" translatable="yes">Type "help" for the list of supported commands</property>
                                     <property name="input_hints">GTK_INPUT_HINT_WORD_COMPLETION | GTK_INPUT_HINT_NONE</property>
-                                    <signal name="focus-in-event" handler="on_command_focus_in_event" swapped="no"/>
-                                    <signal name="focus-out-event" handler="on_command_focus_out_event" swapped="no"/>
+                                    <signal name="focus-in-event" handler="on_entry_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_entry_focus_out_event" swapped="no"/>
                                     <signal name="key-press-event" handler="on_command_key_press_event" swapped="no"/>
                                   </object>
                                   <packing>
@@ -7400,7 +7400,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                 <child>
                   <object class="GtkToolButton" id="zoom_out">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can_focus">True</property>
                     <property name="tooltip_text" translatable="yes">Shrink the image</property>
                     <property name="action_name">app.zoom_out</property>
                     <property name="use_underline">True</property>
@@ -7414,7 +7414,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                 <child>
                   <object class="GtkToolButton" id="zoom_in">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can_focus">True</property>
                     <property name="tooltip_text" translatable="yes">Enlarge the image</property>
                     <property name="action_name">app.zoom_in</property>
                     <property name="use_underline">True</property>

@@ -508,18 +508,6 @@ void on_GtkEntryCSV_changed(GtkEditable *editable, gpointer user_data) {
 	gtk_widget_set_sensitive(buttonExport, txt[0] != '\0' && plot_data);
 }
 
-gboolean on_GtkEntryCSV_focus_in_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
-	init_zoom_accels(NULL, NULL);
-
-	return FALSE;
-}
-
-gboolean on_GtkEntryCSV_focus_out_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
-	init_zoom_accels("plus", "minus");
-
-	return FALSE;
-}
-
 void reset_plot() {
 	free_plot_data();
 	if (sourceCombo) {
