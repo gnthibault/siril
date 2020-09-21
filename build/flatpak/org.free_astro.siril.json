@@ -17,6 +17,9 @@
     "modules": [
         {
             "name": "cfitsio",
+            "config-opts": [
+                "--enable-reentrant"
+            ],
             "make-args": ["shared"],
             "cleanup": [
                 "/include",
@@ -27,8 +30,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "http://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfitsio-3.48.tar.gz",
-                    "sha256": "91b48ffef544eb8ea3908543052331072c99bf09ceb139cb3c6977fc3e47aac1"
+                    "url": "http://heasarc.gsfc.nasa.gov/FTP/software/fitsio/c/cfitsio-3.49.tar.gz",
+                    "sha256": "5b65a20d5c53494ec8f638267fca4a629836b7ac8dd0ef0266834eab270ed4b3"
                 }
             ]
         },
