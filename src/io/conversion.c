@@ -449,7 +449,7 @@ gpointer convert_thread_worker(gpointer p) {
 	args->nb_converted_files = 0;
 	args->retval = 0;
 
-	gboolean allow_symlink = test_if_symlink_is_ok() && args->output_type == SEQ_REGULAR;
+	gboolean allow_symlink = args->output_type == SEQ_REGULAR && test_if_symlink_is_ok();
 
 	if (args->output_type == SEQ_SER) {
 		if (!args->multiple_output) {
