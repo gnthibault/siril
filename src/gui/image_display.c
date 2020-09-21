@@ -857,3 +857,14 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
 	return FALSE;
 }
+
+point get_center_of_vport() {
+	GtkWidget *widget = lookup_widget("drawingarear");
+
+	guint window_width = gtk_widget_get_allocated_width(widget);
+	guint window_height = gtk_widget_get_allocated_height(widget);
+
+	point center = { window_width / 2, window_height / 2 };
+
+	return center;
+}

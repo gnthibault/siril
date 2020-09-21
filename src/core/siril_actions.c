@@ -32,6 +32,7 @@
 #include "gui/dialogs.h"
 #include "gui/script_menu.h"
 #include "gui/image_interactions.h"
+#include "gui/image_display.h"
 
 #include "siril_actions.h"
 
@@ -188,10 +189,12 @@ void toolbar_activate(GSimpleAction *action,
 
 void zoom_in_activate(GSimpleAction *action,
 		GVariant *parameter, gpointer user_data) {
-	update_zoom(0.0, 0.0, ZOOM_IN);
+	point center = get_center_of_vport();
+	update_zoom(center.x, center.y, ZOOM_IN);
 }
 
 void zoom_out_activate(GSimpleAction *action,
 		GVariant *parameter, gpointer user_data) {
-	update_zoom(0.0, 0.0, ZOOM_OUT);
+	point center = get_center_of_vport();
+	update_zoom(center.x, center.y, ZOOM_OUT);
 }
