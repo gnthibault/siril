@@ -678,3 +678,27 @@ void on_GtkButtonEvaluateCC_clicked(GtkButton *button, gpointer user_data) {
 	g_free(str[1]);
 	set_cursor_waiting(FALSE);
 }
+
+gboolean on_prepro_entry_focus_in_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	init_zoom_accels(NULL, NULL);
+
+	return FALSE;
+}
+
+gboolean on_prepro_entry_focus_out_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	init_zoom_accels("plus", "minus");
+
+	return FALSE;
+}
+
+gboolean on_preproseqname_entry_focus_in_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	init_zoom_accels(NULL, NULL);
+
+	return FALSE;
+}
+
+gboolean on_preproseqname_entry_focus_out_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	init_zoom_accels("plus", "minus");
+
+	return FALSE;
+}

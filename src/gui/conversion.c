@@ -580,3 +580,14 @@ void on_prepro_output_type_combo1_changed(GtkComboBox *combo, gpointer user_data
 	check_for_conversion_form_completeness();
 }
 
+gboolean on_convroot_entry_focus_in_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	init_zoom_accels(NULL, NULL);
+
+	return FALSE;
+}
+
+gboolean on_convroot_entry_focus_out_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	init_zoom_accels("plus", "minus");
+
+	return FALSE;
+}

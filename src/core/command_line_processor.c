@@ -597,3 +597,15 @@ gboolean on_command_key_press_event(GtkWidget *widget, GdkEventKey *event,
 	}
 	return (handled == 1);
 }
+
+gboolean on_command_focus_in_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	init_zoom_accels(NULL, NULL);
+
+	return FALSE;
+}
+
+gboolean on_command_focus_out_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	init_zoom_accels("plus", "minus");
+
+	return FALSE;
+}

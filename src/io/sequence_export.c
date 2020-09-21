@@ -628,3 +628,16 @@ void on_entryAviHeight_changed(GtkEditable *editable, gpointer user_data) {
 	g_signal_handlers_unblock_by_func(widthEntry, on_entryAviWidth_changed, NULL);
 	g_free(c_width);
 }
+
+gboolean on_entryExportSeq_focus_in_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	init_zoom_accels(NULL, NULL);
+
+	return FALSE;
+}
+
+
+gboolean on_entryExportSeq_focus_out_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	init_zoom_accels("plus", "minus");
+
+	return FALSE;
+}

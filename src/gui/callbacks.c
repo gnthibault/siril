@@ -966,6 +966,18 @@ void set_output_filename_to_sequence_name() {
 	g_free(msg);
 }
 
+gboolean on_entryresultfile_focus_in_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	init_zoom_accels(NULL, NULL);
+
+	return FALSE;
+}
+
+gboolean on_entryresultfile_focus_out_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	init_zoom_accels("plus", "minus");
+
+	return FALSE;
+}
+
 void close_tab() {
 	GtkNotebook* Color_Layers = GTK_NOTEBOOK(lookup_widget("notebook1"));
 	GtkWidget* page;
@@ -1048,12 +1060,16 @@ static void load_accels() {
 	add_accelerator(GTK_APPLICATION(application), "app.stacking", "F6");
 	add_accelerator(GTK_APPLICATION(application), "app.logs", "F7");
 
-
-	add_accelerator(GTK_APPLICATION(application), "app.zoom_out", "minus");
-	add_accelerator(GTK_APPLICATION(application), "app.zoom_in", "plus");
-
 	add_accelerator(GTK_APPLICATION(application), "app.hide_show_toolbar", "<Primary>T");
 
+	init_zoom_accels("plus", "minus");
+}
+
+void init_zoom_accels(gchar* in, gchar *out) {
+	GApplication *application = g_application_get_default();
+
+	add_accelerator(GTK_APPLICATION(application), "app.zoom_out", out);
+	add_accelerator(GTK_APPLICATION(application), "app.zoom_in", in);
 }
 
 /* Initialize the combobox when loading new single_image */
@@ -1783,6 +1799,19 @@ void on_regTranslationOnly_toggled(GtkToggleButton *togglebutton, gpointer user_
 	gtk_widget_set_sensitive(Algo, !gtk_toggle_button_get_active(togglebutton));
 	gtk_widget_set_sensitive(Prefix, !gtk_toggle_button_get_active(togglebutton));
 }
+
+gboolean on_regseqname_entry_focus_in_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	init_zoom_accels(NULL, NULL);
+
+	return FALSE;
+}
+
+gboolean on_regseqname_entry_focus_out_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
+	init_zoom_accels("plus", "minus");
+
+	return FALSE;
+}
+
 
 void on_seqproc_entry_changed(GtkComboBox *widget, gpointer user_data) {
 	gchar *name = gtk_combo_box_text_get_active_text(GTK_COMBO_BOX_TEXT(widget));

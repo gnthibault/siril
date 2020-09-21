@@ -3304,6 +3304,8 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                                     <property name="hexpand">True</property>
                                     <signal name="activate" handler="on_convroot_entry_activate" swapped="no"/>
                                     <signal name="changed" handler="on_convtoroot_changed" swapped="no"/>
+                                    <signal name="focus-in-event" handler="on_convroot_entry_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_convroot_entry_focus_out_event" swapped="no"/>
                                     <signal name="insert-text" handler="insert_text_handler" swapped="no"/>
                                   </object>
                                   <packing>
@@ -3701,6 +3703,8 @@ WARNING: it will erase all registration and statistics data.</property>
                                     <property name="tooltip_text" translatable="yes">Base name for the exported sequence</property>
                                     <property name="width_chars">50</property>
                                     <signal name="changed" handler="on_entryExportSeq_changed" swapped="no"/>
+                                    <signal name="focus-in-event" handler="on_entryExportSeq_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_entryExportSeq_focus_out_event" swapped="no"/>
                                     <signal name="insert-text" handler="insert_text_handler" swapped="no"/>
                                   </object>
                                   <packing>
@@ -4054,6 +4058,8 @@ A first computation pass will be done on all images before exporting, it may tak
 All images in the sequence will be divided by the master flat image (each pixel value).</property>
                                     <property name="width_chars">40</property>
                                     <property name="text">master-flat.fit</property>
+                                    <signal name="focus-in-event" handler="on_prepro_entry_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_prepro_entry_focus_out_event" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -4129,6 +4135,8 @@ All images in the sequence will be divided by the master flat image (each pixel 
 The dark master image will be removed from all images in the sequence.</property>
                                     <property name="width_chars">40</property>
                                     <property name="text">master-dark.fit</property>
+                                    <signal name="focus-in-event" handler="on_prepro_entry_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_prepro_entry_focus_out_event" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -4160,6 +4168,8 @@ The dark master image will be removed from all images in the sequence.</property
 The bias/offset master image will be removed from all images in the sequence.</property>
                                     <property name="width_chars">40</property>
                                     <property name="text">master-bias.fit</property>
+                                    <signal name="focus-in-event" handler="on_prepro_entry_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_prepro_entry_focus_out_event" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -4544,6 +4554,8 @@ Hot pixels are located on the master-dark.</property>
                                     <property name="tooltip_text" translatable="yes">Prefix of the image names resulting from the pre-processing.</property>
                                     <property name="halign">start</property>
                                     <property name="text">pp_</property>
+                                    <signal name="focus-in-event" handler="on_preproseqname_entry_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_preproseqname_entry_focus_out_event" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -4813,6 +4825,8 @@ When processing images, registration data is taken from the default layer if ava
                                             <property name="width_chars">10</property>
                                             <property name="text">r_</property>
                                             <property name="caps_lock_warning">False</property>
+                                            <signal name="focus-in-event" handler="on_regseqname_entry_focus_in_event" swapped="no"/>
+                                            <signal name="focus-out-event" handler="on_regseqname_entry_focus_out_event" swapped="no"/>
                                           </object>
                                           <packing>
                                             <property name="expand">False</property>
@@ -5615,6 +5629,8 @@ To be enabled, the reference image must have been explicitly set and already dis
                                     <property name="width_chars">10</property>
                                     <property name="text">Plot</property>
                                     <signal name="changed" handler="on_GtkEntryCSV_changed" swapped="no"/>
+                                    <signal name="focus-in-event" handler="on_GtkEntryCSV_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_GtkEntryCSV_focus_out_event" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -6594,6 +6610,8 @@ WARNING: This option should not be checked for master stacking.</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="invisible_char">●</property>
+                                    <signal name="focus-in-event" handler="on_entryresultfile_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_entryresultfile_focus_out_event" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="expand">True</property>
@@ -6852,6 +6870,8 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                                     <property name="truncate_multiline">True</property>
                                     <property name="placeholder_text" translatable="yes">Type "help" for the list of supported commands</property>
                                     <property name="input_hints">GTK_INPUT_HINT_WORD_COMPLETION | GTK_INPUT_HINT_NONE</property>
+                                    <signal name="focus-in-event" handler="on_command_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_command_focus_out_event" swapped="no"/>
                                     <signal name="key-press-event" handler="on_command_key_press_event" swapped="no"/>
                                   </object>
                                   <packing>
@@ -20084,6 +20104,48 @@ The technique gives very good compression for astronomical images and is relativ
                       </packing>
                     </child>
                     <child>
+                      <object class="GtkFrame" id="frame23">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label_xalign">0</property>
+                        <property name="shadow_type">none</property>
+                        <child>
+                          <object class="GtkAlignment" id="alignment24">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="left_padding">12</property>
+                            <child>
+                              <object class="GtkEntry" id="miscCopyright">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="tooltip_text" translatable="yes">Copyright when saving image as TIFF</property>
+                                <property name="width_chars">50</property>
+                                <signal name="changed" handler="on_miscCopyright_changed" swapped="no"/>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel" id="label120">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_top">10</property>
+                            <property name="margin_bottom">10</property>
+                            <property name="label" translatable="yes">Copyright TIFF</property>
+                            <property name="single_line_mode">True</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                            </attributes>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkFrame" id="frame16">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -20114,48 +20176,6 @@ The technique gives very good compression for astronomical images and is relativ
                             <property name="margin_top">10</property>
                             <property name="margin_bottom">10</property>
                             <property name="label" translatable="yes">Warning Dialog</property>
-                            <property name="single_line_mode">True</property>
-                            <attributes>
-                              <attribute name="weight" value="bold"/>
-                            </attributes>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">3</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkFrame" id="frame23">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label_xalign">0</property>
-                        <property name="shadow_type">none</property>
-                        <child>
-                          <object class="GtkAlignment" id="alignment24">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="left_padding">12</property>
-                            <child>
-                              <object class="GtkEntry" id="miscCopyright">
-                                <property name="visible">True</property>
-                                <property name="can_focus">True</property>
-                                <property name="tooltip_text" translatable="yes">Copyright when saving image as TIFF</property>
-                                <property name="width_chars">50</property>
-                                <signal name="changed" handler="on_miscCopyright_changed" swapped="no"/>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child type="label">
-                          <object class="GtkLabel" id="label120">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_top">10</property>
-                            <property name="margin_bottom">10</property>
-                            <property name="label" translatable="yes">Copyright TIFF</property>
                             <property name="single_line_mode">True</property>
                             <attributes>
                               <attribute name="weight" value="bold"/>
