@@ -175,16 +175,31 @@ static int readinitfile() {
 		int type;
 		const char *swap_dir = NULL, *extension = NULL, *lang = NULL, *copyright = NULL;
 
-		config_setting_lookup_bool(misc_setting, "first_start_1_0_0", &com.pref.first_start);
-		config_setting_lookup_bool(misc_setting, "confirm_quit", &com.pref.save.quit);
-		config_setting_lookup_bool(misc_setting, "confirm_script", &com.pref.save.script);
-		config_setting_lookup_bool(misc_setting, "check_script_version", &com.pref.check_script_version);
-		config_setting_lookup_bool(misc_setting, "show_thumbnails", &com.pref.show_thumbnails);
+		if (config_setting_lookup_bool(misc_setting, "first_start_1_0_0", &com.pref.first_start) == CONFIG_FALSE) {
+			com.pref.first_start = TRUE;
+		}
+		if (config_setting_lookup_bool(misc_setting, "confirm_quit", &com.pref.save.quit) == CONFIG_FALSE) {
+			com.pref.save.quit = FALSE;
+		}
+		if (config_setting_lookup_bool(misc_setting, "scripts_warning", &com.pref.save.script) == CONFIG_FALSE) {
+			com.pref.save.script = TRUE;
+		}
+		if (config_setting_lookup_bool(misc_setting, "check_requires", &com.pref.check_script_version) == CONFIG_FALSE) {
+			com.pref.check_script_version = TRUE;
+		}
+		if (config_setting_lookup_bool(misc_setting, "show_thumbnails", &com.pref.show_thumbnails) == CONFIG_FALSE) {
+			com.pref.show_thumbnails = TRUE;
+		}
+		if (config_setting_lookup_bool(misc_setting, "remember_winpos", &com.pref.remember_windows) == CONFIG_FALSE) {
+			com.pref.remember_windows = TRUE;
+		}
+		if (config_setting_lookup_bool(misc_setting, "check_update_at_startup", &com.pref.check_update) == CONFIG_FALSE) {
+			com.pref.check_update = TRUE;
+		}
 		config_setting_lookup_int(misc_setting, "thumbnail_size", &com.pref.thumbnail_size);
 		config_setting_lookup_int(misc_setting, "theme", &com.pref.combo_theme);
 		config_setting_lookup_string(misc_setting, "lang", &lang);
 		com.pref.combo_lang = g_strdup(lang);
-		config_setting_lookup_bool(misc_setting, "remember_winpos", &com.pref.remember_windows);
 		config_setting_lookup_bool(misc_setting, "is_maximized", &com.pref.is_maximized);
 		config_setting_lookup_string(misc_setting, "swap_directory", &swap_dir);
 		com.pref.swap_dir = g_strdup(swap_dir);
@@ -195,7 +210,6 @@ static int readinitfile() {
 		config_setting_lookup_int(misc_setting, "selection_guides", &com.pref.selection_guides);
 		config_setting_lookup_string(misc_setting, "copyright", &copyright);
 		com.pref.copyright = g_strdup(copyright);
-		config_setting_lookup_bool(misc_setting, "check_update", &com.pref.check_update);
 
 		misc_setting = config_lookup(&config, "misc-settings.scripts_paths");
 		if (misc_setting != NULL) {
@@ -440,10 +454,10 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 	misc_setting = config_setting_add(misc_group, "confirm_quit", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.pref.save.quit);
 
-	misc_setting = config_setting_add(misc_group, "confirm_script", CONFIG_TYPE_BOOL);
+	misc_setting = config_setting_add(misc_group, "scripts_warning", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.pref.save.script);
 
-	misc_setting = config_setting_add(misc_group, "check_script_version", CONFIG_TYPE_BOOL);
+	misc_setting = config_setting_add(misc_group, "check_requires", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.pref.check_script_version);
 
 	misc_setting = config_setting_add(misc_group, "show_thumbnails", CONFIG_TYPE_BOOL);
@@ -475,7 +489,7 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 	misc_setting = config_setting_add(misc_group, "is_maximized", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.pref.is_maximized);
 
-	misc_setting = config_setting_add(misc_group, "check_update", CONFIG_TYPE_BOOL);
+	misc_setting = config_setting_add(misc_group, "check_update_at_startup", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.pref.check_update);
 }
 
