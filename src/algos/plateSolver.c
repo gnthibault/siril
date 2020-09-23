@@ -1083,7 +1083,7 @@ static gboolean end_plate_solver(gpointer p) {
 	struct plate_solver_data *args = (struct plate_solver_data *) p;
 	stop_processing_thread();
 
-	if (args->flip_image) {
+	if (!args->ret && args->flip_image) {
 		siril_log_message(_("Flipping image and updating astrometry data.\n"));
 		fits_flip_top_to_bottom(args->fit);
 		flip_astrometry_data(args->fit);
@@ -1205,11 +1205,8 @@ gpointer match_catalog(gpointer p) {
 			print_platesolving_results(H, is_result, &(args->flip_image));
 		} else {
 			args->ret = 1;
-			args->flip_image = FALSE;
 		}
 
-	} else {
-		args->flip_image = FALSE;
 	}
 	/* free data */
 	if (n_cat > 0) free_fitted_stars(cstars);
