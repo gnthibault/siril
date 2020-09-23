@@ -1205,8 +1205,11 @@ gpointer match_catalog(gpointer p) {
 			print_platesolving_results(H, is_result, &(args->flip_image));
 		} else {
 			args->ret = 1;
+			args->flip_image = FALSE;
 		}
 
+	} else {
+		args->flip_image = FALSE;
 	}
 	/* free data */
 	if (n_cat > 0) free_fitted_stars(cstars);
