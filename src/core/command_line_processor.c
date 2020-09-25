@@ -215,7 +215,7 @@ gpointer execute_script(gpointer p) {
 			check_required = TRUE;
 		} else {
 			if (com.pref.check_script_version && check_required == FALSE) {
-				siril_log_color_message(_("The \"requires\" command is needed at the top the script file."
+				siril_log_color_message(_("The \"requires\" command is missing at the top of the script file."
 						" This command is needed to check script compatibility.\n"), "red");
 				retval = 1;
 				break;
