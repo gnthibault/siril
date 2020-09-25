@@ -763,7 +763,10 @@ static void update_ylabel() {
 		ylabel = _("Star roundness (1 is round)");
 		break;
 	case FWHM:
-		ylabel = _("FWHM");
+		if (is_arcsec)
+			ylabel = _("FWHM ('')");
+		else
+			ylabel = _("FWHM (px)");
 		break;
 	case AMPLITUDE:
 		ylabel = _("Amplitude");
