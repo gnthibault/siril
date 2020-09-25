@@ -255,14 +255,15 @@ int fitseq_read_partial_fits(fitseq *fitseq, int layer, int index, fits *dest, c
 	dest->fptr = fptr;
 	dest->bitpix = fitseq->bitpix;
 	dest->orig_bitpix = fitseq->orig_bitpix;
-	if (do_photometry)
-		fit_get_photometry_data(dest);
 
 	int status = 0;
 	if (fits_movabs_hdu(fptr, fitseq->hdu_index[index], NULL, &status)) {
 		report_fits_error(status);
 		return -1;
 	}
+
+	if (do_photometry)
+		fit_get_photometry_data(dest);
 
 	status = internal_read_partial_fits(fptr, fitseq->naxes[1], fitseq->bitpix,
 			dest->type == DATA_USHORT ? (void *)dest->data : (void *)dest->fdata,
