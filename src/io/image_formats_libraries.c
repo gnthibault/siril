@@ -402,6 +402,7 @@ static void get_tif_data_from_ui(gchar **description, gchar **copyright) {
 		*description = gtk_text_buffer_get_text(desbuf, &itDebut, &itFin, TRUE);
 		gtk_text_buffer_get_bounds(desbuf, &itDebut, &itFin);
 		gtk_text_buffer_delete(desbuf, &itDebut, &itFin);
+
 		gtk_text_buffer_get_start_iter(copybuf, &itDebut);
 		gtk_text_buffer_get_end_iter(copybuf, &itFin);
 		*copyright = gtk_text_buffer_get_text(copybuf, &itDebut, &itFin, TRUE);
@@ -493,11 +494,11 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 				for (uint16_t n = 0; n < nsamples; n++) {
 					buf8[col * nsamples + n] =
 							(fit->type == DATA_USHORT) ?
-									*gbuf[n]++ * norm :
-									float_to_uchar_range(*gbuff[n]++);
+									gbuf[n][col + row * width] * norm :
+									float_to_uchar_range(gbuff[n][col + row * width]);
 				}
 			}
-			if (TIFFWriteScanline(tif, buf8, row, 0) < 0) {
+			if (TIFFWriteScanline(tif, buf8, height - 1 - row, 0) < 0) {
 				siril_debug_print("Error while writing in TIFF File.\n");
 				retval = OPEN_IMAGE_ERROR;
 				break;
@@ -521,11 +522,11 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 				for (uint16_t n = 0; n < nsamples; n++) {
 					buf16[col * nsamples + n] =
 							(fit->type == DATA_USHORT) ?
-									*gbuf[n]++ * norm :
-									float_to_ushort_range(*gbuff[n]++);
+									gbuf[n][(col + row * width)] * norm :
+									float_to_ushort_range(gbuff[n][col + row * width]);
 				}
 			}
-			if (TIFFWriteScanline(tif, buf16, row, 0) < 0) {
+			if (TIFFWriteScanline(tif, buf16, height - 1 - row, 0) < 0) {
 				siril_debug_print("Error while writing in TIFF File.\n");
 				retval = OPEN_IMAGE_ERROR;
 				break;
@@ -547,11 +548,12 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 				for (uint16_t n = 0; n < nsamples; n++) {
 					buf32[col * nsamples + n] =
 							(fit->type == DATA_USHORT) ?
-									(fit->orig_bitpix == BYTE_IMG ? *gbuf[n]++ / UCHAR_MAX_SINGLE :
-											*gbuf[n]++ / USHRT_MAX_SINGLE) : *gbuff[n]++;
+									(fit->orig_bitpix == BYTE_IMG ?
+											gbuf[n][col + row * width] / UCHAR_MAX_SINGLE :
+											gbuf[n][col + row * width] / USHRT_MAX_SINGLE) : gbuff[n][col + row * width];
 				}
 			}
-			if (TIFFWriteScanline(tif, buf32, row, 0) < 0) {
+			if (TIFFWriteScanline(tif, buf32, height - 1 - row, 0) < 0) {
 				siril_debug_print("Error while writing in TIFF File.\n");
 				retval = OPEN_IMAGE_ERROR;
 				break;
@@ -560,12 +562,18 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 		_TIFFfree(buf32);
 		break;
 	default:		// Should not happen
-		retval = 1;
+		retval = OPEN_IMAGE_ERROR;
 	}
+	if (TIFFFlush(tif) != 1) {
+		siril_log_color_message(_("Saving TIFF: Cannot write TIFF file.\n"), "red");
+		retval = OPEN_IMAGE_ERROR;
+	} else {
+		siril_log_message(_("Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
+				bitspersample, filename, nsamples, width, height);
+	}
+
 	TIFFClose(tif);
 
-	siril_log_message(_("Saving TIFF: %d-bit file %s, %ld layer(s), %ux%u pixels\n"),
-			bitspersample, filename, nsamples, width, height);
 	g_free(filename);
 	return retval;
 }
