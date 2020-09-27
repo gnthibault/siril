@@ -574,6 +574,7 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 		break;
 	default:		// Should not happen
 		retval = OPEN_IMAGE_ERROR;
+		write_ok = FALSE;
 	}
 
 	if (TIFFFlush(tif) != 1) {
