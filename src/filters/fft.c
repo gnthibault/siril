@@ -468,7 +468,7 @@ gpointer fourier_transform(gpointer p) {
 		}
 
 		/* We display the modulus on screen */
-		if (copyfits(tmp1, &gfit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0)) {
+		if (copyfits(tmp1, &gfit, CP_ALLOC | CP_FORMAT | CP_COPYA, -1)) {
 			args->retval = 1;
 			goto end;
 		}
@@ -503,7 +503,7 @@ gpointer fourier_transform(gpointer p) {
 		for (chan = 0; chan < args->fit->naxes[2]; chan++)
 			FFTI(tmp2, tmp, tmp1, args->type_order, chan);
 		/* We display the result on screen */
-		if (copyfits(tmp2, &gfit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0)) {
+		if (copyfits(tmp2, &gfit, CP_ALLOC | CP_FORMAT | CP_COPYA, -1)) {
 			args->retval = 1;
 			goto end;
 		}

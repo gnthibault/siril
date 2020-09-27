@@ -470,6 +470,7 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 		if (layers[layer]->the_fit.naxes[2] > 1) {
 			gtk_label_set_markup(layers[layer]->label, _("<span foreground=\"red\">ERROR</span>"));
 			gtk_widget_set_tooltip_text(GTK_WIDGET(layers[layer]->label), _("Only single channel images can be load"));
+			retval = 1;
 		} else {
 		/* Force first tab to be Red and not B&W if an image was already loaded */
 			GtkNotebook* Color_Layers = GTK_NOTEBOOK(gtk_builder_get_object(builder, "notebook1"));
@@ -527,7 +528,11 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 	/* create the new result image if it's the first opened image */
 	if (number_of_images_loaded() == 1) {
 		close_single_image();
-		copyfits(&layers[layer]->the_fit, &gfit, CP_ALLOC | CP_FORMAT | CP_EXPAND, -1);
+		if (copyfits(&layers[layer]->the_fit, &gfit, CP_ALLOC | CP_FORMAT | CP_EXPAND, -1)) {
+			clearfits(&layers[layer]->the_fit);
+			siril_log_color_message(_("Could not display image, unloading it\n"), "red");
+			return;
+		}
 	}
 
 	update_result(0);

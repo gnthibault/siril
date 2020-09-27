@@ -1001,7 +1001,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 
 	/* copy result to gfit if success */
 	clearfits(&gfit);
-	copyfits(&fit, &gfit, CP_FORMAT, 0);
+	copyfits(&fit, &gfit, CP_FORMAT, -1);
 	if (args->use_32bit_output) {
 		gfit.fdata = fit.fdata;
 		for (i = 0; i < fit.naxes[2]; i++)

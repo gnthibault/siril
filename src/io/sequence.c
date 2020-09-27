@@ -709,6 +709,7 @@ int seq_read_frame(sequence *seq, int index, fits *dest, gboolean force_float, i
 				dest->pdata[1] = seq->internal_fits[index]->pdata[1];
 				dest->pdata[2] = seq->internal_fits[index]->pdata[2];
 			}
+			else return 1;
 			break;
 	}
 	full_stats_invalidation_from_fit(dest);

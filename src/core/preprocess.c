@@ -58,10 +58,10 @@ static float evaluateNoiseOfCalibratedImage(fits *fit, fits *dark,
 	area.w = size;
 	area.h = size;
 
-	copyfits(dark, &dark_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
-	copyfits(fit, &fit_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	ret = copyfits(dark, &dark_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+	if (!ret) ret = copyfits(fit, &fit_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 
-	ret = soper(&dark_tmp, k, OPER_MUL, allow_32bit_output);
+	if (!ret) ret = soper(&dark_tmp, k, OPER_MUL, allow_32bit_output);
 	if (!ret) ret = imoper(&fit_tmp, &dark_tmp, OPER_SUB, allow_32bit_output);
 	if (ret) {
 		clearfits(&dark_tmp);

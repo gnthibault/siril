@@ -213,7 +213,7 @@ int ddp(fits *a, int level, float coeff, float sigma) {
 	}
 	float l = ushort_to_float_range(level);
 
-	int ret = copyfits(a, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
+	int ret = copyfits(a, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
 	if (!ret) ret = unsharp(&fit, sigma, 0, FALSE);
 	if (!ret) ret = soper(&fit, l, OPER_ADD, TRUE);
 	if (!ret) ret = nozero(&fit, 1);

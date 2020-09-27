@@ -1262,14 +1262,20 @@ int extractHa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 		if (!(ret = extractHa_ushort(fit, &f_Ha, tmp_pattern))) {
 			clearfits(fit);
 			new_fit_image(&fit, f_Ha.rx, f_Ha.ry, 1, DATA_USHORT);
-			copyfits(&f_Ha, fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
+			if (copyfits(&f_Ha, fit, CP_ALLOC | CP_COPYA | CP_FORMAT, -1)) {
+				siril_log_color_message(_("Could not copy the result\n"), "red");
+				ret = 1;
+			}
 		}
 	}
 	else if (fit->type == DATA_FLOAT) {
 		if (!(ret = extractHa_float(fit, &f_Ha, tmp_pattern))) {
 			clearfits(fit);
 			new_fit_image(&fit, f_Ha.rx, f_Ha.ry, 1, DATA_FLOAT);
-			copyfits(&f_Ha, fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
+			if (copyfits(&f_Ha, fit, CP_ALLOC | CP_COPYA | CP_FORMAT, -1)) {
+				siril_log_color_message(_("Could not copy the result\n"), "red");
+				ret = 1;
+			}
 		}
 	} else {
 		return 1;

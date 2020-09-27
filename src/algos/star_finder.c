@@ -198,9 +198,13 @@ static fitted_PSF **peaker_ushort(fits *fit, int layer, star_finder_params *sf, 
 		free(results);
 		return NULL;
 	}
-
 	siril_debug_print("Threshold: %d\n", threshold);
-	copyfits(fit, &wave_fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
+
+	if (copyfits(fit, &wave_fit, CP_ALLOC | CP_FORMAT | CP_COPYA, -1)) {
+		siril_log_message(_("Failed to copy the image for processing\n"));
+		free(results);
+		return NULL;
+	}
 	get_wavelet_layers(&wave_fit, WAVELET_SCALE, 2, TO_PAVE_BSPLINE, layer);
 
 	/* FILL wavelet image upside-down */
@@ -343,7 +347,11 @@ static fitted_PSF **peaker_float(fits *fit, int layer, star_finder_params *sf, i
 	}
 	siril_debug_print("Threshold: %f\n", threshold);
 
-	copyfits(fit, &wave_fit, CP_ALLOC | CP_FORMAT | CP_COPYA, 0);
+	if (copyfits(fit, &wave_fit, CP_ALLOC | CP_FORMAT | CP_COPYA, -1)) {
+		siril_log_message(_("Failed to copy the image for processing\n"));
+		free(results);
+		return NULL;
+	}
 	get_wavelet_layers(&wave_fit, WAVELET_SCALE, 2, TO_PAVE_BSPLINE, layer);
 
 	/* FILL wavelet image upside-down */

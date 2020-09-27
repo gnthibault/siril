@@ -167,8 +167,11 @@ gpointer extract_plans(gpointer p) {
 
 	for (i = 0; i < args->Nbr_Plan; i++) {
 		gchar *filename, *msg;
-
-		copyfits(args->fit, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
+		if (copyfits(args->fit, &fit, CP_ALLOC | CP_COPYA | CP_FORMAT, -1)) {
+			siril_log_message(_("Could not copy image, aborting\n"));
+			siril_add_idle(end_wavelets_filter, args);
+			return GINT_TO_POINTER(1);
+		}
 		filename = g_strdup_printf("layer%02d", i);
 		msg = g_strdup_printf(_("Extracting %s..."), filename);
 		set_progress_bar_data(msg, (float)i / args->Nbr_Plan);

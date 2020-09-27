@@ -1171,7 +1171,7 @@ void on_extract_channel_button_ok_clicked(GtkButton *button, gpointer user_data)
 	}
 
 	struct extract_channels_data *args = malloc(sizeof(struct extract_channels_data));
-	if (args == NULL) {
+	if (!args) {
 		PRINT_ALLOC_ERR;
 		return;
 	}
@@ -1198,8 +1198,16 @@ void on_extract_channel_button_ok_clicked(GtkButton *button, gpointer user_data)
 			&& (args->channel[2][0] != '\0')) {
 		args->fit = calloc(1, sizeof(fits));
 		set_cursor_waiting(TRUE);
-		copyfits(&gfit, args->fit, CP_ALLOC | CP_COPYA | CP_FORMAT, 0);
-		start_in_new_thread(extract_channels, args);
+		if (copyfits(&gfit, args->fit, CP_ALLOC | CP_COPYA | CP_FORMAT, -1)) {
+			siril_log_message(_("Could not copy the input image, aborting.\n"));
+			free(args->fit);
+			free(args->channel[0]);
+			free(args->channel[1]);
+			free(args->channel[2]);
+			free(args);
+		} else {
+			start_in_new_thread(extract_channels, args);
+		}
 	}
 	else {
 		free(args->channel[0]);
