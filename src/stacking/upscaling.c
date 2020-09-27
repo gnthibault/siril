@@ -143,14 +143,11 @@ int upscale_sequence(struct stacking_args *stackargs) {
 	int backup_max_thread = com.max_thread;
 	com.max_thread = nb_threads;
 
-	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
+	struct generic_seq_args *args = create_default_seqargs(stackargs->seq);
 	struct upscale_args *upargs = malloc(sizeof(struct upscale_args));
 
 	upargs->factor = stackargs->seq->upscale_at_stacking;
 
-	args->seq = stackargs->seq;
-	args->force_float = FALSE;
-	args->partial_image = FALSE;
 	if (com.cache_upscaled) {
 		// This won't work if stackargs->filtering_criterion is already a multiple filter
 		args->filtering_criterion = create_multiple_filter(
@@ -164,26 +161,16 @@ int upscale_sequence(struct stacking_args *stackargs) {
 		args->filtering_parameter = stackargs->filtering_parameter;
 		args->nb_filtered_images = stackargs->nb_images_to_stack;
 	}
-	args->compute_size_hook = NULL;
 	args->prepare_hook = seq_prepare_hook;
 	args->finalize_hook = seq_finalize_hook;
 	args->image_hook = upscale_image_hook;
-	args->save_hook = NULL;
-	args->idle_function = NULL;
-	args->stop_on_error = TRUE;
 	args->description = _("Up-scaling sequence for stacking");
 	args->has_output = TRUE;
 	args->output_type = get_data_type(args->seq->bitpix);
 	args->upscale_ratio = upargs->factor;
 	args->new_seq_prefix = TMP_UPSCALED_PREFIX;
-	args->load_new_sequence = FALSE;
-	args->force_ser_output = FALSE;
-	args->new_ser = NULL;
-	args->force_fitseq_output = FALSE;
-	args->new_fitseq = NULL;
 	args->user = upargs;
 	args->already_in_a_thread = TRUE;
-	args->parallel = TRUE;
 
 	remove_tmp_drizzle_files(stackargs);
 

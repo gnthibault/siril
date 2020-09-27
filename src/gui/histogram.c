@@ -1115,30 +1115,18 @@ void on_histoHighEntry_activate(GtkEntry *entry, gpointer user_data) {
 }
 
 void apply_mtf_to_sequence(struct mtf_data *mtf_args) {
-	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
-	args->seq = mtf_args->seq;
-	args->force_float = FALSE;
-	args->partial_image = FALSE;
+	struct generic_seq_args *args = create_default_seqargs(mtf_args->seq);
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = mtf_args->seq->selnum;
-	args->compute_size_hook = NULL;
 	args->prepare_hook = seq_prepare_hook;
 	args->finalize_hook = seq_finalize_hook;
-	args->save_hook = NULL;
 	args->image_hook = mtf_image_hook;
-	args->idle_function = NULL;
 	args->stop_on_error = FALSE;
 	args->description = _("Midtone Transfer Function");
 	args->has_output = TRUE;
 	args->new_seq_prefix = mtf_args->seqEntry;
 	args->load_new_sequence = TRUE;
-	args->force_ser_output = FALSE;
-	args->new_ser = NULL;
-	args->force_fitseq_output = FALSE;
-	args->new_fitseq = NULL;
 	args->user = mtf_args;
-	args->already_in_a_thread = FALSE;
-	args->parallel = TRUE;
 
 	mtf_args->fit = NULL;	// not used here
 

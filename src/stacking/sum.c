@@ -215,23 +215,15 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 }
 
 int stack_summing_generic(struct stacking_args *stackargs) {
-	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
-	args->seq = stackargs->seq;
-	args->force_float = FALSE;
-	args->partial_image = FALSE;
+	struct generic_seq_args *args = create_default_seqargs(stackargs->seq);
 	args->filtering_criterion = stackargs->filtering_criterion;
 	args->filtering_parameter = stackargs->filtering_parameter;
 	args->nb_filtered_images = stackargs->nb_images_to_stack;
 	args->prepare_hook = sum_stacking_prepare_hook;
 	args->image_hook = sum_stacking_image_hook;
-	args->save_hook = NULL;
 	args->finalize_hook = sum_stacking_finalize_hook;
-	args->idle_function = NULL;
-	args->stop_on_error = TRUE;
 	args->description = _("Sum stacking");
-	args->has_output = FALSE;
 	args->already_in_a_thread = TRUE;
-	args->parallel = TRUE;
 
 	struct sum_stacking_data *ssdata = malloc(sizeof(struct sum_stacking_data));
 	ssdata->reglayer = stackargs->reglayer;

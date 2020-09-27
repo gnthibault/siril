@@ -422,23 +422,14 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 }
 
 int register_star_alignment(struct registration_args *regargs) {
-	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
-	args->seq = regargs->seq;
-	args->force_float = FALSE;
-	args->partial_image = FALSE;
-	if (regargs->process_all_frames) {
-		args->filtering_criterion = seq_filter_all;
-		args->nb_filtered_images = regargs->seq->number;
-	} else {
+	struct generic_seq_args *args = create_default_seqargs(regargs->seq);
+	if (!regargs->process_all_frames) {
 		args->filtering_criterion = seq_filter_included;
 		args->nb_filtered_images = regargs->seq->selnum;
 	}
-	args->compute_size_hook = NULL;
 	args->prepare_hook = star_align_prepare_hook;
 	args->image_hook = star_align_image_hook;
-	args->save_hook = NULL;
 	args->finalize_hook = star_align_finalize_hook;
-	args->idle_function = NULL;
 	args->stop_on_error = FALSE;
 	args->description = _("Global star registration");
 	args->has_output = !regargs->translation_only;
@@ -446,12 +437,17 @@ int register_star_alignment(struct registration_args *regargs) {
 	args->upscale_ratio = regargs->x2upscale ? 2.0 : 1.0;
 	args->new_seq_prefix = regargs->prefix;
 	args->load_new_sequence = TRUE;
-	args->force_ser_output = FALSE;
-	args->new_ser = NULL;
-	args->force_fitseq_output = FALSE;
-	args->new_fitseq = NULL;
 	args->already_in_a_thread = TRUE;
-	args->parallel = TRUE;
+	unsigned int MB_per_image; int MB_avail;
+	args->max_thread = compute_nb_images_fit_memory(regargs->seq, args->upscale_ratio, FALSE, &MB_per_image, &MB_avail);
+	if (args->max_thread > com.max_thread)
+		args->max_thread = com.max_thread;
+	if (args->max_thread == 0) {
+		siril_log_color_message(_("Not enough memory to do this operation (%u required per image, %d considered available)\n"), "red", MB_per_image, MB_avail);
+		free(args);
+		return -1;
+	}
+	siril_log_message(_("With the current memory and thread limits, up to %d thread(s) can be used for registration\n"), args->max_thread);
 
 	struct star_align_data *sadata = calloc(1, sizeof(struct star_align_data));
 	if (!sadata) {

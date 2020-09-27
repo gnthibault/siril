@@ -658,32 +658,20 @@ int crop_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 
 /* TODO: should we use the partial image? */
 gpointer crop_sequence(struct crop_sequence_data *crop_sequence_data) {
-	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
-	args->seq = crop_sequence_data->seq;
-	args->force_float = FALSE;
-	args->partial_image = FALSE;
+	struct generic_seq_args *args = create_default_seqargs(crop_sequence_data->seq);
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = crop_sequence_data->seq->selnum;
 	args->compute_size_hook = crop_compute_size_hook;
 	args->prepare_hook = seq_prepare_hook;
 	args->finalize_hook = seq_finalize_hook;
-	args->save_hook = NULL;
 	args->image_hook = crop_image_hook;
-	args->idle_function = NULL;
 	args->stop_on_error = FALSE;
 	args->description = _("Crop Sequence");
 	args->has_output = TRUE;
 	args->output_type = get_data_type(args->seq->bitpix);
-	args->upscale_ratio = 1.0;
 	args->new_seq_prefix = crop_sequence_data->prefix;
 	args->load_new_sequence = TRUE;
-	args->force_ser_output = FALSE;
-	args->new_ser = NULL;
-	args->force_fitseq_output = FALSE;
-	args->new_fitseq = NULL;
 	args->user = crop_sequence_data;
-	args->already_in_a_thread = FALSE;
-	args->parallel = TRUE;
 
 	start_in_new_thread(generic_sequence_worker, args);
 

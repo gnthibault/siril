@@ -288,35 +288,24 @@ static int comet_align_finalize_hook(struct generic_seq_args *args) {
 }
 
 int register_comet(struct registration_args *regargs) {
-	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
-	args->seq = regargs->seq;
-	args->force_float = FALSE;
+	struct generic_seq_args *args = create_default_seqargs(regargs->seq);
 	/* we don't need to read image data, for simplicity we just read one
 	 * pixel from it, making sure the header is read */
 	args->partial_image = TRUE;
 	args->area.x = 0; args->area.y = 0;
 	args->area.w = 1; args->area.h = 1;
 	args->layer_for_partial = 0;
-	args->regdata_for_partial = FALSE;
 	args->get_photometry_data_for_partial = TRUE;
 
-	if (regargs->process_all_frames) {
-		args->filtering_criterion = seq_filter_all;
-		args->nb_filtered_images = regargs->seq->number;
-	} else {
+	if (!regargs->process_all_frames) {
 		args->filtering_criterion = seq_filter_included;
 		args->nb_filtered_images = regargs->seq->selnum;
 	}
 	args->prepare_hook = comet_align_prepare_hook;
 	args->image_hook = comet_align_image_hook;
-	args->save_hook = NULL;
 	args->finalize_hook = comet_align_finalize_hook;
-	args->idle_function = NULL;
-	args->stop_on_error = TRUE;
 	args->description = _("Moving object registration");
-	args->has_output = FALSE;
 	args->already_in_a_thread = TRUE;
-	args->parallel = TRUE;
 
 	struct comet_align_data *cadata = calloc(1, sizeof(struct comet_align_data));
 	if (!cadata) {

@@ -1561,29 +1561,26 @@ int seqpsf(sequence *seq, int layer, gboolean for_registration, gboolean regall,
 	else if (framing == REGISTERED_FRAME)
 		siril_log_color_message(_("The sequence analysis of the PSF will use registration data to move the selection area for each image; this is compatible with parallel processing.\n"), "salmon");
 
-	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
+	struct generic_seq_args *args = create_default_seqargs(seq);
 	struct seqpsf_args *spsfargs = malloc(sizeof(struct seqpsf_args));
 
 	spsfargs->for_registration = for_registration;
 	spsfargs->framing = framing;
 	spsfargs->list = NULL;	// GSList init is NULL
 
-	args->seq = seq;
-	args->force_float = FALSE;
 	args->partial_image = TRUE;
 	memcpy(&args->area, &com.selection, sizeof(rectangle));
 	args->layer_for_partial = layer;
 	args->regdata_for_partial = framing == REGISTERED_FRAME;
 	args->get_photometry_data_for_partial = !for_registration;
-	args->filtering_criterion = (regall == TRUE) ? seq_filter_all : seq_filter_included;
-	args->nb_filtered_images = (regall == TRUE) ? seq->number : seq->selnum;
-	args->prepare_hook = NULL;
-	args->finalize_hook = NULL;
+	if (!regall) {
+		args->filtering_criterion = seq_filter_included;
+		args->nb_filtered_images = seq->selnum;
+	}
 	args->image_hook = seqpsf_image_hook;
 	args->idle_function = end_seqpsf;
 	args->stop_on_error = FALSE;
 	args->description = _("PSF on area");
-	args->has_output = FALSE;
 	args->user = spsfargs;
 	args->already_in_a_thread = !run_in_thread;
 	args->parallel = framing != FOLLOW_STAR_FRAME;

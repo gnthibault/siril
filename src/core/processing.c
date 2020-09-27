@@ -134,12 +134,14 @@ gpointer generic_sequence_worker(gpointer p) {
 	if (have_seqwriter)
 		omp_set_schedule(omp_sched_dynamic, 1);
 	else omp_set_schedule(omp_sched_static, 0);
+	if (args->max_thread <= 0)
+		args->max_thread = com.max_thread;
 #ifdef HAVE_FFMS2
 	// we don't want to enable parallel processing for films, as ffms2 is not thread-safe
-#pragma omp parallel for num_threads(com.max_thread) private(input_idx) schedule(runtime) \
+#pragma omp parallel for num_threads(args->max_thread) private(input_idx) schedule(runtime) \
 	if(args->seq->type != SEQ_AVI && args->parallel && (args->seq->type == SEQ_SER || fits_is_reentrant()))
 #else
-#pragma omp parallel for num_threads(com.max_thread) private(input_idx) schedule(runtime) \
+#pragma omp parallel for num_threads(args->max_thread) private(input_idx) schedule(runtime) \
 	if(args->parallel && (args->seq->type == SEQ_SER || fits_is_reentrant()))
 #endif // HAVE_FFMS2
 #endif // _OPENMP
@@ -546,4 +548,15 @@ void on_processes_button_cancel_clicked(GtkButton *button, gpointer user_data) {
 	com.stop_script = TRUE;
 	stop_processing_thread();
 	wait_for_script_thread();
+}
+
+struct generic_seq_args *create_default_seqargs(sequence *seq) {
+	struct generic_seq_args *args = calloc(1, sizeof(struct generic_seq_args));
+	args->seq = seq;
+	args->filtering_criterion = seq_filter_all;
+	args->nb_filtered_images = seq->number;
+	args->stop_on_error = TRUE;
+	args->upscale_ratio = 1.0;
+	args->parallel = TRUE;
+	return args;
 }

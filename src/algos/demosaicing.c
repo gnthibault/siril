@@ -1286,27 +1286,19 @@ int extractHa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 }
 
 void apply_extractHa_to_sequence(struct split_cfa_data *split_cfa_args) {
-	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
+	struct generic_seq_args *args = create_default_seqargs(split_cfa_args->seq);
 	args->seq = split_cfa_args->seq;
-	args->force_float = FALSE;
-	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = split_cfa_args->seq->selnum;
-	args->compute_size_hook = NULL;
 	args->prepare_hook = seq_prepare_hook;
 	args->finalize_hook = seq_finalize_hook;
-	args->save_hook = NULL;
 	args->image_hook = extractHa_image_hook;
-	args->idle_function = NULL;
-	args->stop_on_error = TRUE;
 	args->description = _("Extract Ha");
 	args->has_output = TRUE;
 	args->new_seq_prefix = split_cfa_args->seqEntry;
 	args->load_new_sequence = TRUE;
 	args->force_ser_output = FALSE;
 	args->user = split_cfa_args;
-	args->already_in_a_thread = FALSE;
-	args->parallel = TRUE;
 
 	split_cfa_args->fit = NULL;	// not used here
 
@@ -1600,32 +1592,20 @@ static int dual_save(struct generic_seq_args *args, int out_index, int in_index,
 }
 
 void apply_extractHaOIII_to_sequence(struct split_cfa_data *split_cfa_args) {
-	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
+	struct generic_seq_args *args = create_default_seqargs(split_cfa_args->seq);
 	args->seq = split_cfa_args->seq;
-	args->force_float = FALSE;
-	args->partial_image = FALSE;
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = split_cfa_args->seq->selnum;
-	args->compute_size_hook = NULL;
 	args->prepare_hook = dual_prepare;
 	args->finalize_hook = dual_finalize;
 	args->save_hook = dual_save;
 	args->image_hook = extractHaOIII_image_hook;
-	args->idle_function = NULL;
-	args->stop_on_error = TRUE;
 	args->description = _("Extract Ha and OIII");
 	args->has_output = TRUE;
 	args->output_type = get_data_type(args->seq->bitpix);
 	args->upscale_ratio = 1.23;	// sqrt(1.5), for memory management
 	args->new_seq_prefix = NULL;
-	args->load_new_sequence = FALSE;
-	args->force_ser_output = FALSE;
-	args->new_ser = NULL;
-	args->force_fitseq_output = FALSE;
-	args->new_fitseq = NULL;
 	args->user = split_cfa_args;
-	args->already_in_a_thread = FALSE;
-	args->parallel = TRUE;
 
 	split_cfa_args->fit = NULL;	// not used here
 
@@ -1748,26 +1728,15 @@ int split_cfa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 }
 
 void apply_split_cfa_to_sequence(struct split_cfa_data *split_cfa_args) {
-	struct generic_seq_args *args = malloc(sizeof(struct generic_seq_args));
-	args->seq = split_cfa_args->seq;
-	args->force_float = FALSE;
-	args->partial_image = FALSE;
+	struct generic_seq_args *args = create_default_seqargs(split_cfa_args->seq);
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = split_cfa_args->seq->selnum;
 	args->prepare_hook = seq_prepare_hook;
 	args->finalize_hook = seq_finalize_hook;
-	args->save_hook = NULL;
 	args->image_hook = split_cfa_image_hook;
-	args->idle_function = NULL;
-	args->stop_on_error = TRUE;
 	args->description = _("Split CFA");
-	args->has_output = FALSE;
 	args->new_seq_prefix = split_cfa_args->seqEntry;
-	args->load_new_sequence = FALSE;
-	args->force_ser_output = FALSE;
 	args->user = split_cfa_args;
-	args->already_in_a_thread = FALSE;
-	args->parallel = TRUE;
 
 	split_cfa_args->fit = NULL;	// not used here
 

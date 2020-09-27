@@ -94,6 +94,8 @@ struct generic_seq_args {
 	gboolean already_in_a_thread;
 	/** activate parallel execution */
 	gboolean parallel;
+	/** number of threads to run in parallel - defaults to com.max_thread */
+	int max_thread;
 #ifdef _OPENMP
 	/** for in-hook synchronization (internal init, public use) */
 	omp_lock_t lock;
@@ -119,5 +121,7 @@ void unreserve_thread();
 
 gboolean end_generic(gpointer arg);
 guint siril_add_idle(GSourceFunc idle_function, gpointer data);
+
+struct generic_seq_args *create_default_seqargs();
 
 #endif
