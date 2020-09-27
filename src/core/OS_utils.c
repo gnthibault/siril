@@ -421,17 +421,24 @@ int get_available_memory_in_MB() {
  * @return return the max memory, and -1 for unlimited
  */
 int get_max_memory_in_MB() {
+	int retval;
 	switch (com.pref.stack.mem_mode) {
 		default:
 		case RATIO:
-			return round_to_int(com.pref.stack.memory_ratio *
+			retval = round_to_int(com.pref.stack.memory_ratio *
 					(double)get_available_memory_in_MB());
-
+			break;
 		case AMOUNT:
-			return round_to_int(com.pref.stack.memory_amount * 1024.0);
+			retval = round_to_int(com.pref.stack.memory_amount * 1024.0);
+			break;
 		case UNLIMITED:
 			return -1;
 	}
+	if (sizeof(void *) == 4 && retval > 1900) {
+		siril_log_message(_("limiting processing to 1900 MB allocations (32-bit system)\n"));
+		retval = 1900;
+	}
+	return retval;
 }
 
 /**
