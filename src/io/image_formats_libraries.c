@@ -384,12 +384,13 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 	return retval;
 }
 
-static void get_tif_data_from_ui(gchar **description, gchar **copyright) {
+static void get_tif_data_from_ui(gchar **description, gchar **copyright, gboolean *embeded_icc) {
 	if (!com.script && !com.headless) {
 		/*******************************************************************
 		 * If the user saves a tif from the graphical menu, he can set
 		 * the Description and the Copyright of the Image
 		 ******************************************************************/
+		GtkToggleButton *icc_toggle = GTK_TOGGLE_BUTTON(lookup_widget("check_button_icc_profile"));
 		GtkTextView *description_txt_view = GTK_TEXT_VIEW(lookup_widget("Description_txt"));
 		GtkTextView *copyright_txt_view = GTK_TEXT_VIEW(lookup_widget("Copyright_txt"));
 		GtkTextBuffer *desbuf = gtk_text_view_get_buffer(description_txt_view);
@@ -408,6 +409,8 @@ static void get_tif_data_from_ui(gchar **description, gchar **copyright) {
 		*copyright = gtk_text_buffer_get_text(copybuf, &itDebut, &itFin, TRUE);
 		gtk_text_buffer_get_bounds(copybuf, &itDebut, &itFin);
 		gtk_text_buffer_delete(copybuf, &itDebut, &itFin);
+
+		*embeded_icc = gtk_toggle_button_get_active(icc_toggle);
 	}
 }
 
@@ -421,6 +424,7 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 	uint32_t profile_len = 0;
 	const unsigned char *profile;
 	gboolean write_ok = TRUE;
+	gboolean embeded_icc;
 
 	if (!ends_with(filename, ".tif") && (!ends_with(filename, ".tiff"))) {
 		filename = str_append(&filename, ".tif");
@@ -436,7 +440,7 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 	const uint32_t width = (uint32_t) fit->rx;
 	const uint32_t height = (uint32_t) fit->ry;
 	
-	get_tif_data_from_ui(&description, &copyright);
+	get_tif_data_from_ui(&description, &copyright, &embeded_icc);
 
 	/*******************************************************************/
 
@@ -475,7 +479,7 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 		return 1;
 	}
 
-	if (profile_len > 0) {
+	if (embeded_icc && profile_len > 0) {
 		TIFFSetField(tif, TIFFTAG_ICCPROFILE, profile_len, profile);
 	}
 
