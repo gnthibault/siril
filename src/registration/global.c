@@ -439,7 +439,18 @@ int register_star_alignment(struct registration_args *regargs) {
 	args->load_new_sequence = TRUE;
 	args->already_in_a_thread = TRUE;
 	unsigned int MB_per_image; int MB_avail;
-	args->max_thread = compute_nb_images_fit_memory(regargs->seq, args->upscale_ratio, FALSE, &MB_per_image, &MB_avail);
+	int nb_images = compute_nb_images_fit_memory(regargs->seq, args->upscale_ratio, FALSE, &MB_per_image, &MB_avail);
+	// cvTransformImage is O(n) in mem for monochrome and O(2n) for color, so we need to account for in + out images
+	if (args->has_output) {
+		if (regargs->seq->nb_layers == -1) {
+			fprintf(stderr, "init sequence first\n");
+			return -1;
+		}
+		if (regargs->seq->nb_layers == 3)
+			args->max_thread = nb_images / 3;
+		else args->max_thread = nb_images / 2;
+	}
+	else args->max_thread = nb_images;
 	if (args->max_thread > com.max_thread)
 		args->max_thread = com.max_thread;
 	if (args->max_thread == 0) {
