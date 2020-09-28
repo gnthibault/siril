@@ -424,7 +424,7 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 	uint32_t profile_len = 0;
 	const unsigned char *profile;
 	gboolean write_ok = TRUE;
-	gboolean embeded_icc;
+	gboolean embeded_icc = TRUE;
 
 	if (!ends_with(filename, ".tif") && (!ends_with(filename, ".tiff"))) {
 		filename = str_append(&filename, ".tif");
