@@ -53,6 +53,12 @@ static void search_for_data_dir() {
 		}
 		g_free(path);
 	}
+#elif defined(ENABLE_RELOCATABLE_RESOURCES) && defined(__linux__) // appimage
+	/* For AppImage */
+	const gchar *relocated_path = g_getenv("APPDIR");
+	if (relocated_path != NULL) {
+		siril_share_dir = g_strdup(g_build_filename(relocated_path, "usr", "share", PACKAGE, NULL));
+	}
 #else
 	path = g_build_filename(PACKAGE_DATA_DIR, NULL);
 	if (g_file_test(path, G_FILE_TEST_IS_DIR)) {
@@ -140,6 +146,11 @@ static void search_for_locale_dir() {
 			siril_locale_dir = g_strdup(path);
 		}
 		g_free(path);
+	}
+#elif defined(ENABLE_RELOCATABLE_RESOURCES) && defined(__linux__) // appimage
+	const gchar *relocated_path = g_getenv("APPDIR");
+	if (relocated_path != NULL) {
+		siril_locale_dir = g_build_filename(relocated_path, "usr", "share", "locale", NULL);
 	}
 #else
 	gchar *path = g_build_filename(LOCALEDIR, NULL);
