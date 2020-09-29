@@ -545,6 +545,12 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 	return FALSE;
 }
 
+static GdkModifierType get_primary() {
+	return gdk_keymap_get_modifier_mask(
+			gdk_keymap_get_for_display(gdk_display_get_default()),
+			GDK_MODIFIER_INTENT_PRIMARY_ACCELERATOR);
+}
+
 gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
 	// evpos.x/evpos.y = cursor position in image coordinate
@@ -555,7 +561,7 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 	pointi zoomed = { (int)(evpos.x), (int)(evpos.y) };
 	gboolean inside = clamp2image(&zoomed);
 
-	if (event->button == GDK_BUTTON_PRIMARY) {	// left click
+	if (event->state & get_primary()) {	// left click
 		if (com.translating) {
 			com.translating = FALSE;
 		} else if (com.drawing && mouse_status == MOUSE_ACTION_SELECT_REG_AREA) {
@@ -632,12 +638,6 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 		}
 	}
 	return FALSE;
-}
-
-static GdkModifierType get_primary() {
-	return gdk_keymap_get_modifier_mask(
-			gdk_keymap_get_for_display(gdk_display_get_default()),
-			GDK_MODIFIER_INTENT_PRIMARY_ACCELERATOR);
 }
 
 gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
