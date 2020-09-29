@@ -53,7 +53,35 @@ build-image:
     - echo " && rm -rf Criterion" >> Dockerfile
 
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-debian-latest --cache=true --cache-ttl=120h
-
+    
+# Image for GNU/Linux build
+build-image-stable:
+  except:
+    - schedules
+  stage: prepare
+  variables:
+    GIT_STRATEGY: none
+  cache: {}
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - mkdir -p /kaniko/.docker
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - echo "FROM debian:stable" > Dockerfile
+    - echo "RUN apt-get update" >> Dockerfile
+    - echo "RUN apt-get install -y --no-install-recommends \\" >> Dockerfile
+    - echo "at-spi2-core build-essential desktop-file-utils cmake hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev libopencv-dev librsvg2-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev libcurl4-gnutls-dev wget libtool" >> Dockerfile
+    - echo "RUN wget https://www.libraw.org/data/LibRaw-0.20.0.tar.gz \\" >> Dockerfile
+    - echo " && tar xfv LibRaw-0.20.0.tar.gz \\" >> Dockerfile
+    - echo " && cd LibRaw-0.20.0 \\" >> Dockerfile
+    - echo " && autoreconf -fi \\" >> Dockerfile
+    - echo " && ./configure --prefix /usr \\" >> Dockerfile
+    - echo " && make install \\" >> Dockerfile
+    - echo " && cd .. \\" >> Dockerfile
+    - echo " && rm -rf LibRaw-0.20.0" >> Dockerfile
+    
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-debian-stable --cache=true --cache-ttl=120h
 
 # Image for Windows64 build
 build-image-win64:
@@ -355,13 +383,34 @@ flatpak:
       - ".flatpak-builder/git"
   needs: []
 
+
+siril-linux/AppImage:
+  except:
+    - schedules
+  stage: "packaging"
+  image: $CI_REGISTRY_IMAGE:build-debian-stable
+  variables:
+    GIT_SUBMODULE_STRATEGY: recursive
+  cache:
+    paths:
+      - apt-cache
+  before_script:
+    - apt-get install -y wget
+  script:
+    - bash -ex build/appimage/generate.sh
+  artifacts:
+    expire_in: 1 week
+    paths:
+      - build/appimage/Siril*.AppImage*
+  needs: ["build-image-stable"]
+
 ################################################################################
 # Analysis
 
 cppcheck:
   except:
     - schedules
-  stage: analysis
+  stage: "analysis"
   before_script:
     - apt-get update
     - apt-get install -y cppcheck
