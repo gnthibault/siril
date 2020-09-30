@@ -175,8 +175,8 @@ int fix_xtrans_ac(fits *fit) {
 			} else {
 				sam.x = 0;
 				sam.y = 0;
-				sam.w = fit->rx;
-				sam.h = fit->ry;
+				sam.w = fit->rx - 1;
+				sam.h = fit->ry - 1;
 			}
 		} else {
 			siril_log_color_message(_("No information available in preferences.\n"), "red");
