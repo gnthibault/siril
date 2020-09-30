@@ -50,21 +50,27 @@ siril_version_micro = version_array[2].to_int()
 stable = (siril_version_minor % 2 == 0)
 
 ## Get version from git
-find_program('git', required: true)
-r = run_command('git', 'show', '-s', '--format="%ci %h"','-n1')
+git = find_program('git', required: false)
 
-if r.returncode() != 0
+if not git.found()
   message('Git not installed or git directory not found!')
-  message(r.stderr().strip())
   git_version = 'Unknown'
   git_last_commit_year = 'Unknown'
 else
-  git_info = r.stdout().strip().split('"')[1]
-  git_info_array = git_info.split(' ')
-  git_version = git_info_array[3]
-  git_last_commit_year = git_info_array[0].split('-')[0]
-  message('Siril version:' + git_version)
-  errortxt = r.stderr().strip()
+  r = run_command('git', 'show', '-s', '--format="%ci %h"','-n1')
+  if r.returncode() != 0
+    git_info = r.stdout().strip().split('"')[1]
+    git_info_array = git_info.split(' ')
+    git_version = git_info_array[3]
+    git_last_commit_year = git_info_array[0].split('-')[0]
+    message('Siril version:' + git_version)
+    errortxt = r.stderr().strip()
+  else
+    message('Cannot retrive git version')
+    message(r.stderr().strip())
+    git_version = 'Unknown'
+    git_last_commit_year = 'Unknown'
+  endif
 endif
 
 ################################################################################
