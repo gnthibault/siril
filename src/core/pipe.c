@@ -439,13 +439,15 @@ void *process_commands(void *p) {
 		g_mutex_unlock(&read_mutex);
 
 		pipe_send_message(PIPE_STATUS, PIPE_STARTING, command);
-		if (processcommand(command))
+		int retval = processcommand(command);
+		if (waiting_for_thread()) {
+			empty_command_queue();
+			retval = 1;
+		}
+		if (retval)
 			pipe_send_message(PIPE_STATUS, PIPE_ERROR, command);
 		else pipe_send_message(PIPE_STATUS, PIPE_SUCCESS, command);
-
 		free(command);
-		if (waiting_for_thread())
-			empty_command_queue();
 	}
 	return NULL;
 }
