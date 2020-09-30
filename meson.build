@@ -50,6 +50,7 @@ siril_version_micro = version_array[2].to_int()
 stable = (siril_version_minor % 2 == 0)
 
 ## Get version from git
+find_program('git', required: true)
 r = run_command('git', 'show', '-s', '--format="%ci %h"','-n1')
 
 if r.returncode() != 0
