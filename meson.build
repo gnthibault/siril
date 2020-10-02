@@ -182,7 +182,7 @@ no_dep = dependency('', required: false)
 ## Core dependencies
 dbghelp = platform_windows ? cc.find_library('dbghelp') : no_dep
 glib_dep = dependency('glib-2.0', required : true, version: '>= 2.56.0')
-gtk_dep = dependency('gtk+-3.0', required : true, version: '>= 3.17.10')
+gtk_dep = dependency('gtk+-3.0', required : true, version: '>= 3.20.0')
 gsl_dep = dependency('gsl', required : true)
 libconfig_dep = dependency('libconfig', required : true)
 m_dep = cc.find_library('m', required : true)

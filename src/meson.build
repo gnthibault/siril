@@ -139,6 +139,7 @@ src_files = [
   'gui/save_dialog.c',
   'gui/script_menu.c',
   'gui/sequence_list.c',
+  'gui/siril_css.c',
   'gui/siril_intro.c',
   'gui/siril_preview.c',
   'gui/statistics_list.c',
@@ -206,7 +207,7 @@ siril_cli = executable('siril-cli', 'main-cli.c', win_res,
 ################################################################################
 # Install GUI files
 
-install_data(['gui/siril.css', 'gui/siril_old.css', 'gui/siril3.glade', 'gui/siril-shortcuts.ui'],
+install_data(['gui/siril.css', 'gui/siril3.glade', 'gui/siril-shortcuts.ui'],
              install_dir : siril_datadir)
 
 

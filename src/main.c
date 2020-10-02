@@ -59,6 +59,7 @@
 #include "io/single_image.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
+#include "gui/siril_css.h"
 #include "registration/registration.h"
 #include "stacking/stacking.h"
 

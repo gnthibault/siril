@@ -25,7 +25,7 @@ For compilation, these tools are needed:
  * **cmake**
  
 Then, mandatory build dependencies:
- * **GTK+ 3**, (>= 3.17) as GUI toolkit
+ * **GTK+ 3**, (>= 3.20) as GUI toolkit
  * **cfitsio** for FITS image read and write
  * **fftw3** for Fourier transforms
  * **GSL** (The GNU Scientific Library) for PSF implementation, histograms and background extraction

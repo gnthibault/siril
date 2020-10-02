@@ -123,7 +123,6 @@ char* remove_ext_from_filename(const char *basename);
 gchar* str_append(char **data, const char *newdata);
 char* format_basename(char *root);
 float compute_slope(WORD *lo, WORD *hi);
-void load_css_style_sheet();
 double encodeJD(dateTime dt);
 gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf);
 gchar *siril_truncate_str(gchar *str, gint size);
