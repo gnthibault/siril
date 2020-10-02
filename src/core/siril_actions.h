@@ -48,8 +48,9 @@ void tab_registration_activate(GSimpleAction *action, GVariant *parameter, gpoin
 void tab_plot_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void tab_stacking_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) ;
 void tab_logs_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
-void zoom_in_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) ;
-void zoom_out_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) ;
-void toolbar_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) ;
+void zoom_in_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void zoom_out_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void zoom_fit_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void toolbar_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 
 #endif /* SRC_CORE_SIRIL_ACTIONS_H_ */

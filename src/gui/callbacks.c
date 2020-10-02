@@ -1050,26 +1050,10 @@ static void load_accels() {
 
 	add_accelerator(GTK_APPLICATION(application), "app.hide_show_toolbar", "<Primary>T");
 
-	add_accelerator(GTK_APPLICATION(application), "app.zoom_out", "minus");
-	add_accelerator(GTK_APPLICATION(application), "app.zoom_in", "plus");
+	add_accelerator(GTK_APPLICATION(application), "app.zoom_out", "<Primary>minus");
+	add_accelerator(GTK_APPLICATION(application), "app.zoom_in", "<Primary>plus");
+	add_accelerator(GTK_APPLICATION(application), "app.zoom_fit", "<Primary>0");
 }
-
-gboolean on_entry_focus_in_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
-	GApplication *application = g_application_get_default();
-
-	add_accelerator(GTK_APPLICATION(application), "app.zoom_out", NULL);
-	add_accelerator(GTK_APPLICATION(application), "app.zoom_in", NULL);
-	return FALSE;
-}
-
-gboolean on_entry_focus_out_event(GtkWidget *widget, GdkEvent *event, gpointer user_data) {
-	GApplication *application = g_application_get_default();
-
-	add_accelerator(GTK_APPLICATION(application), "app.zoom_out", "minus");
-	add_accelerator(GTK_APPLICATION(application), "app.zoom_in", "plus");
-	return FALSE;
-}
-
 
 /* Initialize the combobox when loading new single_image */
 void initialize_display_mode() {

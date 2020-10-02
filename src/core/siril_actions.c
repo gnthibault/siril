@@ -187,6 +187,17 @@ void toolbar_activate(GSimpleAction *action,
 	gtk_widget_set_visible(w, !gtk_widget_get_visible(w));
 }
 
+void zoom_fit_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	if (com.zoom_value != ZOOM_FIT) {
+		com.zoom_value = ZOOM_FIT;
+		reset_display_offset();
+		redraw(com.cvport, REMAP_NONE);
+	} else {
+		com.zoom_value = get_zoom_val();
+	}
+}
+
 void zoom_in_activate(GSimpleAction *action,
 		GVariant *parameter, gpointer user_data) {
 	point center = get_center_of_vport();
