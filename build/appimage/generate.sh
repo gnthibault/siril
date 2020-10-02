@@ -18,7 +18,6 @@ make -j$(nproc)
 make -j$(nproc) DESTDIR=$PWD/appdir install; find appdir/
 echo $PWD
 cp ../AppRun appdir/AppRun ; chmod +x appdir/AppRun
-cp ./appdir/usr/share/icons/hicolor/256x256/apps/siril.png ./appdir/usr/share/icons/hicolor/256x256/apps/org.free_astro.siril.png
 cp ./appdir/usr/share/icons/hicolor/256x256/apps/siril.png ./appdir/org.free_astro.siril.png
 
 sed -i -e 's|^Icon=.*|Icon=org.free_astro.siril|g' ./appdir/usr/share/applications/org.free_astro.siril.desktop # FIXME
