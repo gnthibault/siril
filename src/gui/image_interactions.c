@@ -561,7 +561,7 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 	pointi zoomed = { (int)(evpos.x), (int)(evpos.y) };
 	gboolean inside = clamp2image(&zoomed);
 
-	if (event->state & get_primary()) {	// left click
+	if (event->button == GDK_BUTTON_PRIMARY) {	// left click
 		if (com.translating) {
 			com.translating = FALSE;
 		} else if (com.drawing && mouse_status == MOUSE_ACTION_SELECT_REG_AREA) {
