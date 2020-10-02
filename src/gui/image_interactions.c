@@ -411,6 +411,12 @@ gboolean rgb_area_popup_menu_handler(GtkWidget *widget) {
 	return TRUE;
 }
 
+static GdkModifierType get_primary() {
+	return gdk_keymap_get_modifier_mask(
+			gdk_keymap_get_for_display(gdk_display_get_default()),
+			GDK_MODIFIER_INTENT_PRIMARY_ACCELERATOR);
+}
+
 gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 		GdkEventButton *event, gpointer user_data) {
 
@@ -437,7 +443,7 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 	gboolean inside = clamp2image(&zoomed);
 
 	if (inside) {
-		if ((event->state & GDK_CONTROL_MASK) == GDK_CONTROL_MASK) {
+		if (event->state & get_primary()) {
 			if (event->button == GDK_BUTTON_PRIMARY) {
 				// viewport translation
 				com.translating = TRUE;
@@ -543,12 +549,6 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 		}
 	}
 	return FALSE;
-}
-
-static GdkModifierType get_primary() {
-	return gdk_keymap_get_modifier_mask(
-			gdk_keymap_get_for_display(gdk_display_get_default()),
-			GDK_MODIFIER_INTENT_PRIMARY_ACCELERATOR);
 }
 
 gboolean on_drawingarea_button_release_event(GtkWidget *widget,
