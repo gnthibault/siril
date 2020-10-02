@@ -128,7 +128,7 @@ static GActionEntry app_entries[] = {
 	{ "logs", tab_logs_activate },
 	{ "zoom_out", zoom_out_activate },
 	{ "zoom_in", zoom_in_activate },
-	{ "zoom_fit", zoom_fit_activate },
+	{ "zoom_fit", zoom_fit_activate, NULL, "true", change_zoom_fit_state },
 	{ "hide_show_toolbar", toolbar_activate }
 };
 

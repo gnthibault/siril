@@ -187,15 +187,25 @@ void toolbar_activate(GSimpleAction *action,
 	gtk_widget_set_visible(w, !gtk_widget_get_visible(w));
 }
 
-void zoom_fit_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
-	if (com.zoom_value != ZOOM_FIT) {
+void change_zoom_fit_state(GSimpleAction *action, GVariant *state,
+		gpointer user_data) {
+	if (g_variant_get_boolean(state)) {
 		com.zoom_value = ZOOM_FIT;
 		reset_display_offset();
 		redraw(com.cvport, REMAP_NONE);
 	} else {
 		com.zoom_value = get_zoom_val();
 	}
+	g_simple_action_set_state(action, state);
+}
+
+void zoom_fit_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	GVariant *state;
+
+	state = g_action_get_state(G_ACTION(action));
+	g_action_change_state(G_ACTION(action),	g_variant_new_boolean(!g_variant_get_boolean(state)));
+	g_variant_unref(state);
 }
 
 void zoom_in_activate(GSimpleAction *action,
