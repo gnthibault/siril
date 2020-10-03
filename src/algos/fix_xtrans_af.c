@@ -33,7 +33,8 @@ supported_xtrans_list supported_xtrans[] =
 		{ "Fujifilm X-T2",   { 1510, 504, 3009, 3019 }, { 1992, 990, 2048, 2048 } },
 		{ "Fujifilm X-T20",  { 1510, 504, 3009, 3019 }, { 1992, 990, 2048, 2048 } },
 		{ "Fujifilm X-Pro2", { 1510, 504, 3009, 3019 }, { 1992, 990, 2048, 2048 } },
-		{ "Fujifilm X-E3",   { 1510, 504, 3009, 3019 }, { 1992, 990, 2048, 2048 } }
+		{ "Fujifilm X-E3",   { 1510, 504, 3009, 3019 }, { 1992, 990, 2048, 2048 } },
+		{ "Fujifilm X-H1",   { 1510, 504, 3009, 3019 }, { 1992, 990, 2048, 2048 } }
 };
 
 static int get_nb_xtrans_supported() {
@@ -133,7 +134,8 @@ static int subtract_fudge(fits *fit, rectangle af, float fudge, af_pixel_matrix 
 			for (unsigned int x = 0; x < width; x++) {
 				if (get_pixel_type(af, x, y, af_matrix) == af_type) {
 					// This is an auto focus pixel.  Subtract the fudge.
-					buf[x + y * width] -= roundf_to_WORD(fudge);
+					buf[x + y * width] = roundf_to_WORD(
+							(float) buf[x + y * width] - fudge);
 				}
 			}
 		}
