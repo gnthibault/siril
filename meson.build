@@ -58,7 +58,7 @@ if not git.found()
   git_last_commit_year = 'Unknown'
 else
   r = run_command('git', 'show', '-s', '--format="%ci %h"','-n1')
-  if r.returncode() != 0
+  if r.returncode() == 0
     git_info = r.stdout().strip().split('"')[1]
     git_info_array = git_info.split(' ')
     git_version = git_info_array[3]
