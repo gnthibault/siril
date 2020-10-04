@@ -129,16 +129,36 @@ static int subtract_fudge(fits *fit, rectangle af, float fudge, af_pixel_matrix 
 
 	if (fit->type == DATA_USHORT) {
 		WORD *buf = fit->pdata[RLAYER];
+		WORD fudgew = (WORD)fudge; // truncated on purpose
+
+		unsigned long total_fudgew = 0, total_pixels = 0;
 
 		for (unsigned int y = 0; y < height; y++) {
 			for (unsigned int x = 0; x < width; x++) {
 				if (get_pixel_type(af, x, y, af_matrix) == af_type) {
 					// This is an auto focus pixel.  Subtract the fudge.
-					buf[x + y * width] = roundf_to_WORD(
-							(float) buf[x + y * width] - fudge);
+
+					// Randomly add a 1 to some pixels to bring the average correction close to the computed value.
+					WORD fudgew_rand = rand() / (float) RAND_MAX >= fudge - (float) fudgew ? fudgew : fudgew + 1;
+
+					// Save for debugging.
+					total_fudgew += fudgew_rand;
+					total_pixels += 1;
+
+					// Prevent driving the unsigned pixel negative.  Not a worry for normal use cases.
+					if (fudgew_rand >= buf[x + y * width]) {
+						buf[x + y * width] = 0;
+					} else {
+						buf[x + y * width] -= fudgew_rand;
+					}
 				}
 			}
 		}
+
+		// Show the average integer adjustment.  Should be close to the calculated fudge by a few decimal places.
+		siril_debug_print("XTRANS Integer Mean.... %.10lf\n", (double)total_fudgew/(double)total_pixels);
+
+
 	} else if (fit->type == DATA_FLOAT) {
 		float *buf = fit->fpdata[RLAYER];
 
@@ -239,9 +259,9 @@ int fix_xtrans_ac(fits *fit) {
 	// Loop through sample rectangle and count/sum AF and non-AF pixels.
 	for (unsigned int y = sam.y; y <= (sam.y + sam.h); y++) {
 		for (unsigned int x = sam.x; x <= (sam.x + sam.w); x++) {
-			float pixel = fit->type == DATA_FLOAT ?
-							fbuf[x + y * fit->rx] :
-							(float) buf[x + y * fit->rx];
+			double pixel = fit->type == DATA_FLOAT ?
+							(double) fbuf[x + y * fit->rx] :
+							(double) buf[x + y * fit->rx];
 
 			switch (get_pixel_type(af, x, y, &af_matrix)) {
 			case 'G': // This is a Green (non-AF) pixel.
@@ -249,60 +269,60 @@ int fix_xtrans_ac(fits *fit) {
 				af_types[1].nfcount++;
 				af_types[2].nfcount++;
 				af_types[3].nfcount++;
-				af_types[0].nfsum += (double) pixel;
-				af_types[1].nfsum += (double) pixel;
-				af_types[2].nfsum += (double) pixel;
-				af_types[3].nfsum += (double) pixel;
+				af_types[0].nfsum += pixel;
+				af_types[1].nfsum += pixel;
+				af_types[2].nfsum += pixel;
+				af_types[3].nfsum += pixel;
 				break;
 			case '0':
 				af_types[0].afcount++;
 				af_types[1].nfcount++;
 				af_types[2].nfcount++;
 				af_types[3].nfcount++;
-				af_types[0].afsum += (double) pixel;
-				af_types[1].nfsum += (double) pixel;
-				af_types[2].nfsum += (double) pixel;
-				af_types[3].nfsum += (double) pixel;
+				af_types[0].afsum += pixel;
+				af_types[1].nfsum += pixel;
+				af_types[2].nfsum += pixel;
+				af_types[3].nfsum += pixel;
 				break;
 			case '1':
 				af_types[0].nfcount++;
 				af_types[1].afcount++;
 				af_types[2].nfcount++;
 				af_types[3].nfcount++;
-				af_types[0].nfsum += (double) pixel;
-				af_types[1].afsum += (double) pixel;
-				af_types[2].nfsum += (double) pixel;
-				af_types[3].nfsum += (double) pixel;
+				af_types[0].nfsum += pixel;
+				af_types[1].afsum += pixel;
+				af_types[2].nfsum += pixel;
+				af_types[3].nfsum += pixel;
 				break;
 			case '2':
 				af_types[0].nfcount++;
 				af_types[1].nfcount++;
 				af_types[2].afcount++;
 				af_types[3].nfcount++;
-				af_types[0].nfsum += (double) pixel;
-				af_types[1].nfsum += (double) pixel;
-				af_types[2].afsum += (double) pixel;
-				af_types[3].nfsum += (double) pixel;
+				af_types[0].nfsum += pixel;
+				af_types[1].nfsum += pixel;
+				af_types[2].afsum += pixel;
+				af_types[3].nfsum += pixel;
 				break;
 			case '3':
 				af_types[0].nfcount++;
 				af_types[1].nfcount++;
 				af_types[2].nfcount++;
 				af_types[3].afcount++;
-				af_types[0].nfsum += (double) pixel;
-				af_types[1].nfsum += (double) pixel;
-				af_types[2].nfsum += (double) pixel;
-				af_types[3].afsum += (double) pixel;
+				af_types[0].nfsum += pixel;
+				af_types[1].nfsum += pixel;
+				af_types[2].nfsum += pixel;
+				af_types[3].afsum += pixel;
 				break;
 			// case '-': // If we want to include R and B.
 		 	// 	af_types[0].nfcount++;
 		 	// 	af_types[1].nfcount++;
 		 	// 	af_types[2].nfcount++;
 		 	// 	af_types[3].nfcount++;
-		 	// 	af_types[0].nfsum += (double) pixel;
-		 	// 	af_types[1].nfsum += (double) pixel;
-		 	// 	af_types[2].nfsum += (double) pixel;
-		 	// 	af_types[3].nfsum += (double) pixel;
+		 	// 	af_types[0].nfsum += pixel;
+		 	// 	af_types[1].nfsum += pixel;
+		 	// 	af_types[2].nfsum += pixel;
+		 	// 	af_types[3].nfsum += pixel;
 		 	// 	break;
 			default:
 				break;
