@@ -1670,8 +1670,8 @@ int process_fmedian(int nb){
 	args->amount = atof(word[2]);
 	args->iterations = 1;
 	
-	if (!(args->ksize & 1) || args->ksize < 2) {
-		siril_log_message(_("The size of the kernel MUST be odd and greater than 1.\n"));
+	if (!(args->ksize & 1) || args->ksize < 2 || args->ksize > 15) {
+		siril_log_message(_("The size of the kernel MUST be odd and in the range [3, 15].\n"));
 		free(args);
 		return 1;
 	}

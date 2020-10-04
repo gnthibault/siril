@@ -48,7 +48,7 @@ static void parseLine(char *myline, int len, int *nb) {
 			i++;
 		if (myline[i] == '"' || myline[i] == '\'')
 			string_starter = myline[i++];
-		if (myline[i] == '\0' || myline[i] == '\n')
+		if (myline[i] == '\0' || myline[i] == '\n' || myline[i] == '\r')
 			break;
 		word[wordnb++] = myline + i;	// the beginning of the word
 		word[wordnb] = NULL;		// put next word to NULL
@@ -67,18 +67,21 @@ static void parseLine(char *myline, int len, int *nb) {
 	*nb = wordnb;
 }
 
-static void removeEOL(char *text) {
-	int i = strlen(text) - 1;
-	while (i >= 0 && (text[i] == '\n' || text[i] == '\r'))
-		text[i] = '\0';
+static void remove_CR_and_LF(char *str) {
+	char *src, *dst;
+	for (src = dst = str; *src != '\0'; src++) {
+		*dst = *src;
+		if (*dst != '\r' && *dst != '\n')
+			dst++;
+	}
+	*dst = '\0';
 }
 
 static int executeCommand(int wordnb) {
-	int i;
 	// search for the command in the list
 	if (word[0] == NULL) return 1;
-	i = G_N_ELEMENTS(commands);
-	while (strcasecmp (commands[--i].name, word[0])) {
+	int i = G_N_ELEMENTS(commands);
+	while (strcasecmp(commands[--i].name, word[0])) {
 		if (i == 0) {
 			siril_log_message(_("Unknown command: '%s' or not implemented yet\n"), word[0]);
 			return 1 ;
@@ -128,7 +131,7 @@ static gboolean log_status_bar_idle_callback(gpointer p) {
 	update_log_icon(TRUE);
 
 	newline = g_strdup(data->myline);
-	removeEOL(newline);
+	remove_CR_and_LF(newline);
 	status = g_strdup_printf(_("Processing line %d: %s"), data->line, newline);
 
 	gtk_statusbar_push(statusbar_script, 0, status);
@@ -205,7 +208,7 @@ gpointer execute_script(gpointer p) {
 			siril_log_color_message(linef, "blue");
 			continue;
 		}
-		if (linef[0] == '\0' || linef[0] == '\n')
+		if (linef[0] == '\0' || linef[0] == '\n' || linef[0] == '\r')
 			continue;
 
 		myline = strdup(linef);
@@ -222,7 +225,7 @@ gpointer execute_script(gpointer p) {
 			}
 		}
 		if ((retval = executeCommand(wordnb))) {
-			removeEOL(linef);
+			remove_CR_and_LF(linef);
 			siril_log_message(_("Error in line %d: '%s'.\n"), line, linef);
 			siril_log_message(_("Exiting batch processing.\n"));
 			free(myline);
