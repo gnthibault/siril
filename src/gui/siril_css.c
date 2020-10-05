@@ -26,13 +26,29 @@
 
 #define CSS_FILENAME "siril.css"
 
+static gchar *get_buffer_from_css_file(gchar *css) {
+	FILE *css_file = g_fopen(css, "r");
+	if (css_file == NULL) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
+	fseek(css_file, 0, SEEK_END);
+	long fsize = ftell(css_file);
+	fseek(css_file, 0, SEEK_SET);  /* same as rewind(f); */
+
+	char *string = malloc(fsize + 1);
+	fread(string, 1, fsize, css_file);
+	fclose(css_file);
+
+	string[fsize] = 0;
+
+	return string;
+}
+
 /**
  * Loads the css sheet
  */
 void load_css_style_sheet () {
-	GtkCssProvider *css_provider;
-	GdkDisplay *display;
-	GdkScreen *screen;
 	gchar *CSSFile;
 
 	CSSFile = g_build_filename(siril_get_system_data_dir(), CSS_FILENAME, NULL);
@@ -40,15 +56,26 @@ void load_css_style_sheet () {
 		g_error (_("Unable to load CSS style sheet file: %s. Please reinstall Siril\n"), CSSFile);
 	}
 	else {
-		css_provider = gtk_css_provider_new();
-		display = gdk_display_get_default();
-		screen = gdk_display_get_default_screen(display);
-		gtk_style_context_add_provider_for_screen(screen,
-				GTK_STYLE_PROVIDER(css_provider),
-				GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-		gtk_css_provider_load_from_path(css_provider, CSSFile, NULL);
-		g_fprintf(stdout, _("Successfully loaded '%s'\n"), CSSFile);
-		g_object_unref(css_provider);
+		gchar *css_buffer = get_buffer_from_css_file(CSSFile);
+		if (css_buffer) {
+			/* update font scale */
+			gchar *updated_css = g_strdup_printf(css_buffer, 1.0 + (com.pref.font_scale - 100.0) / 1000.0);
+
+			GtkCssProvider *css_provider = gtk_css_provider_new();
+			GdkDisplay *display = gdk_display_get_default();
+			GdkScreen *screen = gdk_display_get_default_screen(display);
+			gtk_style_context_add_provider_for_screen(screen,
+					GTK_STYLE_PROVIDER(css_provider),
+					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+			gtk_css_provider_load_from_data(css_provider, updated_css, -1,
+					NULL);
+
+			g_fprintf(stdout, _("Successfully loaded '%s'\n"), CSSFile);
+			g_free(css_buffer);
+			g_free(updated_css);
+			g_object_unref(css_provider);
+		}
 	}
 	g_free(CSSFile);
 }
+

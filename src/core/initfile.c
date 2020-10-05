@@ -195,6 +195,9 @@ static int readinitfile() {
 		if (config_setting_lookup_bool(misc_setting, "check_update_at_startup", &com.pref.check_update) == CONFIG_FALSE) {
 			com.pref.check_update = TRUE;
 		}
+		if (config_setting_lookup_float(misc_setting, "font_scale", &com.pref.font_scale) == CONFIG_FALSE) {
+			com.pref.font_scale = 90.0;
+		}
 		config_setting_lookup_int(misc_setting, "thumbnail_size", &com.pref.thumbnail_size);
 		config_setting_lookup_int(misc_setting, "theme", &com.pref.combo_theme);
 		config_setting_lookup_string(misc_setting, "lang", &lang);
@@ -467,6 +470,9 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 
 	misc_setting = config_setting_add(misc_group, "theme", CONFIG_TYPE_INT);
 	config_setting_set_int(misc_setting, com.pref.combo_theme);
+
+	misc_setting = config_setting_add(misc_group, "font_scale", CONFIG_TYPE_FLOAT);
+	config_setting_set_float(misc_setting, com.pref.font_scale);
 
 	misc_setting = config_setting_add(misc_group, "lang", CONFIG_TYPE_STRING);
 	config_setting_set_string(misc_setting, com.pref.combo_lang);
