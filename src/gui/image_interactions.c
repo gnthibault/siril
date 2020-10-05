@@ -536,8 +536,8 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 				point pt;
 				int radius = (int) (25 / 2);
 
-				pt.x = zoomed.x - radius;
-				pt.y = zoomed.y - radius;
+				pt.x = (gdouble) zoomed.x;
+				pt.y = (gdouble) zoomed.y;
 
 				if (pt.x + radius <= gfit.rx && pt.y + radius <= gfit.ry
 						&& pt.x - radius >= 0 && pt.y - radius >= 0) {

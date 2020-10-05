@@ -555,24 +555,29 @@ GSList *add_background_sample(GSList *orig, fits *fit, point pt) {
 GSList *remove_background_sample(GSList *orig, fits *fit, point pt) {
 	GSList *list;
 	float *image;
+	double min_radius = DBL_MAX;
 
 	image = convert_fits_to_luminance(fit);
 
+	/* search for the min radius vale */
 	for (list = orig; list; list = list->next) {
-		background_sample *sample;
-		double radius;
-		double dx;
-		double dy;
+		background_sample *sample = (background_sample *)list->data;
+		double dx = pt.x - sample->position.x;
+		double dy = pt.y - sample->position.y;
+		double radius = sqrt(dx * dx + dy * dy);
 
-		sample = (background_sample *)list->data;
-		dx = pt.x - sample->position.x;
-		dy = pt.y - sample->position.y;
-		radius = sqrt(dx * dx + dy * dy);
+		min_radius = min(min_radius, radius);
+	}
+	/* remove this value */
+	for (list = orig; list; list = list->next) {
+		background_sample *sample = (background_sample *)list->data;
+		double dx = pt.x - sample->position.x;
+		double dy = pt.y - sample->position.y;
+		double radius = sqrt(dx * dx + dy * dy);
 
-		if (radius <= sample->size * 2) {
+		if (radius == min_radius) {
 			orig = g_slist_remove(orig, sample);
 			g_free((background_sample *) sample);
-			break;
 		}
 	}
 	free(image);
@@ -586,8 +591,7 @@ void generate_background_samples(int nb_of_samples, double tolerance) {
 	free_background_sample_list(com.grad_samples);
 	com.grad_samples = generate_samples(&gfit, nb_of_samples, tolerance, SAMPLE_SIZE);
 	if (gfit.naxes[2] > 1) {
-		com.grad_samples = update_median_for_rgb_samples(com.grad_samples,
-				&gfit);
+		com.grad_samples = update_median_for_rgb_samples(com.grad_samples, &gfit);
 	}
 
 	redraw(com.cvport, REMAP_ALL);
