@@ -62,7 +62,7 @@
 
 #define STR_MIRRORX N_("Rotates the image around a vertical axis")
 #define STR_MIRRORY N_("Rotates the image around an horizontal axis")
-#define STR_MTF N_("Applies midtone transfer function to the current loaded image")
+#define STR_MTF N_("Applies midtones transfer function to the current loaded image. Three parameters are needed, \"low\", \"midtones\" and \"high\" where midtones balance parameter defines a nonlinear histogram stretch in the [0,1] range")
 
 #define STR_NEG N_("Shows the negative view of the current image")
 #define STR_NEW N_("Creates a new image filled with zeros with a size of \"width\" x \"height\". The image is in 16-bit format, and it contains \"nb_channel\" channels, \"nb_channel\" being 1 or 3. It is not saved, but displayed and can be saved afterwards")
