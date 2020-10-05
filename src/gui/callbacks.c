@@ -1111,7 +1111,7 @@ void set_GUI_CWD() {
 
 void set_GUI_misc() {
 	GtkToggleButton *ToggleButton;
-	GtkSpinButton *memory_percent, *memory_amount;
+	GtkSpinButton *memory_percent, *memory_amount, *font_size;
 
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskQuit"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.save.quit);
@@ -1131,6 +1131,8 @@ void set_GUI_misc() {
 	gtk_combo_box_set_active(thumb_box, com.pref.thumbnail_size == 256 ? 1: 0);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("rememberWindowsCheck"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.remember_windows);
+	font_size = GTK_SPIN_BUTTON(lookup_widget("pref_fontsize"));
+	gtk_spin_button_set_value(font_size, com.pref.font_scale);
 
 	memory_percent = GTK_SPIN_BUTTON(lookup_widget("spinbutton_mem_ratio"));
 	gtk_spin_button_set_value(memory_percent, com.pref.stack.memory_ratio);

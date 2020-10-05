@@ -58,8 +58,8 @@ static void reset_swapdir() {
 
 void update_libraw_and_debayer_interface() {
 	/**********COLOR ADJUSTEMENT**************/
-	com.pref.raw_set.bright = gtk_spin_button_get_value(	GTK_SPIN_BUTTON(lookup_widget("Brightness_spinbutton")));
-	com.pref.raw_set.mul[0] = gtk_spin_button_get_value(	GTK_SPIN_BUTTON(lookup_widget("Red_spinbutton")));
+	com.pref.raw_set.bright = gtk_spin_button_get_value(GTK_SPIN_BUTTON(lookup_widget("Brightness_spinbutton")));
+	com.pref.raw_set.mul[0] = gtk_spin_button_get_value(GTK_SPIN_BUTTON(lookup_widget("Red_spinbutton")));
 	com.pref.raw_set.mul[2] = gtk_spin_button_get_value(GTK_SPIN_BUTTON(lookup_widget("Blue_spinbutton")));
 
 	com.pref.raw_set.auto_mul = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_multipliers")));
@@ -157,11 +157,6 @@ void set_GUI_LIBRAW() {
 	gtk_toggle_button_set_active(demosaicingButton,	com.pref.debayer.open_debayer);
 	gtk_spin_button_set_value(xbayer_spin, com.pref.debayer.xbayeroff);
 	gtk_spin_button_set_value(ybayer_spin, com.pref.debayer.ybayeroff);
-}
-
-void on_checkbutton_debayer_guess_orientation_toggled(GtkToggleButton *button, gpointer user_data) {
-
-	gtk_widget_set_sensitive((GtkWidget *)user_data, !gtk_toggle_button_get_active(button));
 }
 
 void on_checkbutton_cam_toggled(GtkButton *button, gpointer user_data) {
@@ -282,11 +277,14 @@ void on_spinbutton_comp_fits_quantization_value_changed(GtkSpinButton *button, g
 }
 
 void on_spinbutton_comp_fits_hcompress_scale_value_changed(GtkSpinButton *button, gpointer user_data) {
-	gdouble hcompress_scale = gtk_spin_button_get_value(button);
-	com.pref.comp.fits_hcompress_scale = hcompress_scale;
+	com.pref.comp.fits_hcompress_scale = gtk_spin_button_get_value(button);
 	writeinitfile();
 }
 
+void on_pref_fontsize_value_changed(GtkSpinButton *button, gpointer user_data) {
+	com.pref.font_scale = gtk_spin_button_get_value(button);
+	writeinitfile();
+}
 
 void on_combobox_comp_fits_method_changed(GtkComboBox *box, gpointer user_data) {
 	GtkWidget *hcompress_scale_spin = lookup_widget("spinbutton_comp_fits_hcompress_scale");
@@ -412,6 +410,7 @@ void on_filechooser_swap_file_set(GtkFileChooserButton *fileChooser, gpointer us
 	com.pref.swap_dir = dir;
 	writeinitfile();
 }
+
 
 void on_rememberWindowsCheck_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	com.pref.remember_windows = gtk_toggle_button_get_active(togglebutton);

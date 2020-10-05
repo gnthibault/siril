@@ -574,6 +574,7 @@ struct pref_struct {
 	gboolean check_script_version; // check the requires command in scripts
 
 	gint combo_theme;           // value of the combobox theme
+	gdouble font_scale;           // font scale
 	gchar *combo_lang;           // string value of the combobox lang
 
 	char *ext;		// FITS extension used in SIRIL
