@@ -285,7 +285,7 @@ siril-win64/testing-autotools:
 ################################################################################
 # Packaging
 
-siril-win64/packaging-meson:
+win64-nightly:
   except:
     - schedules
   stage: packaging
@@ -334,7 +334,7 @@ siril-win64/packaging-meson:
     paths:
       - ${INSTALL_DIR}
 
-flatpak:
+flatpak-nightly:
   # Update the image URL whenever the runtime version in the flatpak manifest is changed
   only: 
    - schedules
@@ -384,7 +384,7 @@ flatpak:
   needs: []
 
 
-siril-linux/AppImage:
+appimage-nightly:
   except:
     - schedules
   stage: "packaging"
