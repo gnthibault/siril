@@ -46,5 +46,6 @@ fitted_PSF *psf_global_minimisation(gsl_matrix *, double, int, gboolean, gboolea
 void psf_display_result(fitted_PSF *, rectangle *);
 void fwhm_to_arcsec_if_needed(fits*, fitted_PSF*);
 void fwhm_to_pixels(fitted_PSF *result);
+double convert_single_fwhm_to_pixels(double fwhm, double s);
 
 #endif

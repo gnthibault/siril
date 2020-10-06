@@ -580,6 +580,9 @@ static void draw_stars(const draw_data_t* dd) {
 
 		while (com.stars[i]) {
 			double size = com.stars[i]->sx;
+			if (com.stars[i]->units[0] == '\"') {
+				size = convert_single_fwhm_to_pixels(com.stars[i]->fwhmx, com.stars[i]->sx);
+			}
 
 			if (i == com.selected_star) {
 				// We draw horizontal and vertical lines to show the star

@@ -744,3 +744,7 @@ void fwhm_to_pixels(fitted_PSF *result) {
 	result->units = "px";
 }
 
+double convert_single_fwhm_to_pixels(double fwhm, double s) {
+	return sqrt(s * 0.5) * _2_SQRT_2_LOG2;
+}
+
