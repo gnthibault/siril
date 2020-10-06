@@ -14,6 +14,15 @@ Siril is Free Software and a part of the GNU Project and you are welcome to cont
  * translate the documentation,
  * donate
  
+### Getting last version
+
+In order to try the last development version we recommend to compile the sources (see README). Nevertheless it is possible to get nightly builds for Linux and Windows by following these direct links:
+
+ * GNU/Linux (x86_64): <https://gitlab.com/free-astro/siril/-/jobs/artifacts/master/download?job=appimage-nightly>
+ * Windows (64bits): <https://gitlab.com/free-astro/siril/-/jobs/artifacts/master/download?job=win64-nightly>
+ 
+ **Test builds are for testing purpose only. They have not been human-tested, it relies on regularly modified development code. So please do not use it for production!**
+ 
 ### Reporting Bugs
 
 Reporting the bugs that you will encounter is very important to the development, it helps the developers to make Siril more stable and more bug free. If you have some programming skills you can attach a patch to your bug report, we will be happy to apply it.
