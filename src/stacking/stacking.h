@@ -92,6 +92,7 @@ struct stacking_configuration {
 	gchar *seqfile;
 	gchar *result_file;
 	stack_method method;
+	rejection type_of_rejection;	/* type of rejection */
 	double sig[2];
 	gboolean force_no_norm;
 	gboolean output_norm;

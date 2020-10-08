@@ -349,7 +349,7 @@ int processcommand(const char *line) {
 		len = strlen(line);
 		parseLine(myline, len, &wordnb);
 		if (executeCommand(wordnb)) {
-			siril_log_message(_("Command execution failed.\n"));
+			siril_log_color_message(_("Command execution failed.\n"), "red");
 			if (!com.script && !com.headless) {
 				show_command_help_popup(GTK_ENTRY(lookup_widget("command")));
 			}
