@@ -58,6 +58,7 @@ int	process_log(int nb);
 int	process_ls(int nb);
 #endif
 
+int	process_merge(int nb);
 int	process_mirrorx(int nb);
 int	process_mirrory(int nb);
 int	process_mtf(int nb);

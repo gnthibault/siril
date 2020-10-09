@@ -322,7 +322,7 @@ static void opendial(int whichdial) {
 			break;
 
 		case OD_CWD:
-			if (!changedir(filename, &err)) {
+			if (!siril_change_dir(filename, &err)) {
 				writeinitfile();
 				set_GUI_CWD();
 			} else {

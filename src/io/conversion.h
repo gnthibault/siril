@@ -14,12 +14,10 @@ typedef struct {
 
 struct _convert_data {
 	struct timeval t_start;
-	GDir *dir;
 	gchar **list;
 	int start;
 	int total;
 	int nb_converted_files;
-	gboolean command_line;
 	gboolean input_has_a_seq;
 	gboolean make_link;
 	gchar *destroot;

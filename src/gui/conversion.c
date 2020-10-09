@@ -213,15 +213,7 @@ static void initialize_convert() {
 	 * list with g_list_reverse() when all elements have been added. */
 	list = g_list_reverse(list);
 	/* convert the list to an array for parallel processing */
-	char **files_to_convert = malloc(count * sizeof(char *));
-	if (!files_to_convert) {
-		PRINT_ALLOC_ERR;
-		return;
-	}
-	GList *orig_list = list;
-	for (int i = 0; i < count && list; list = list->next, i++)
-		files_to_convert[i] = g_strdup(list->data);
-	g_list_free_full(orig_list, g_free);
+	char **files_to_convert = glist_to_array(list, &count);
 
 	struct _convert_data *args = malloc(sizeof(struct _convert_data));
 	if (!args) {
@@ -234,11 +226,9 @@ static void initialize_convert() {
 		args->start = (atoi(index) <= 0 || atoi(index) >= INDEX_MAX) ? 1 : atoi(index);
 	}
 	else args->start = 0;
-	args->dir = dir;
 	args->list = files_to_convert;
 	args->total = count;
 	args->nb_converted_files = 0;
-	args->command_line = FALSE;
 	args->input_has_a_seq = !no_sequence_to_convert;
 	args->destroot = g_strdup(destroot);
 	args->debayer = debayer;
@@ -529,7 +519,7 @@ void process_destroot(sequence_type output_type) {
 		seq_exists = check_if_seq_exist(destroot, FALSE);
 	}
 	else {
-		destroot = format_basename(destroot);
+		destroot = format_basename(destroot, TRUE);
 		seq_exists = check_if_seq_exist(destroot, TRUE);
 	}
 

@@ -668,7 +668,7 @@ int stat_file(const char *filename, image_type *type, char **realname) {
  *  @param[out] err error message when return value is different of 1. Can be NULL if message is not needed.
  *  @return 0 if success, any other values for error
  */
-int changedir(const char *dir, gchar **err) {
+int siril_change_dir(const char *dir, gchar **err) {
 	gchar *error = NULL;
 	int retval = 0;
 
@@ -944,9 +944,10 @@ gchar* str_append(gchar** data, const gchar* newdata) {
  * Cut a base name to 120 characters and add a trailing underscore if needed.
  * WARNING: may return a newly allocated string and free the argument
  * @param root the original base name
+ * @param can_free allow root to be freed in case a new string is allocated
  * @return a string ending with trailing underscore
  */
-char *format_basename(char *root) {
+char *format_basename(char *root, gboolean can_free) {
 	int len = strlen(root);
 	if (len > 120) {
 		root[120] = '\0';
@@ -958,7 +959,8 @@ char *format_basename(char *root) {
 
 	char *appended = malloc(len + 2);
 	sprintf(appended, "%s_", root);
-	free(root);
+	if (can_free)
+		free(root);
 	return appended;
 }
 
@@ -1113,4 +1115,25 @@ GtkWidget* popover_new(GtkWidget *widget, const gchar *text) {
 	gtk_widget_show_all(box);
 
 	return popover;
+}
+
+char **glist_to_array(GList *list, int *arg_count) {
+	int count;
+	if (arg_count && *arg_count > 0)
+		count = *arg_count;
+	else {
+		count = g_list_length(list);
+		if (arg_count)
+			*arg_count = count;
+	}
+	char **array = malloc(count * sizeof(char *));
+	if (!array) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
+	GList *orig_list = list;
+	for (int i = 0; i < count && list; list = list->next, i++)
+		array[i] = g_strdup(list->data);
+	g_list_free_full(orig_list, g_free);
+	return array;
 }

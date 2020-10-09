@@ -113,7 +113,7 @@ gboolean file_name_has_invalid_chars(const char *name);
 int stat_file(const char *filename2, image_type *type, char **realname);
 const char* get_filename_ext(const char *filename);
 
-int changedir(const char *dir, gchar **err);
+int siril_change_dir(const char *dir, gchar **err);
 gchar* get_locale_filename(const gchar *path);
 int update_sequences_list(const char *sequence_name_to_select);
 void expand_home_in_filename(char *filename, int size);
@@ -121,12 +121,13 @@ double get_normalized_value(fits*);
 void swap_param(double*, double*);
 char* remove_ext_from_filename(const char *basename);
 gchar* str_append(char **data, const char *newdata);
-char* format_basename(char *root);
+char *format_basename(char *root, gboolean can_free);
 float compute_slope(WORD *lo, WORD *hi);
 double encodeJD(dateTime dt);
 gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf);
 gchar *siril_truncate_str(gchar *str, gint size);
 GtkWidget* popover_new(GtkWidget *widget, const gchar *text);
+char **glist_to_array(GList *list, int *arg_count);
 
 /****************** quantize.h ***************/
 int siril_fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,
