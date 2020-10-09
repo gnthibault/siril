@@ -71,7 +71,7 @@ build-image-stable:
     - echo "FROM debian:stable" > Dockerfile
     - echo "RUN apt-get update" >> Dockerfile
     - echo "RUN apt-get install -y --no-install-recommends \\" >> Dockerfile
-    - echo "at-spi2-core build-essential desktop-file-utils cmake hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev libopencv-dev librsvg2-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev libcurl4-gnutls-dev wget libtool" >> Dockerfile
+    - echo "at-spi2-core build-essential desktop-file-utils cmake hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev libopencv-dev librsvg2-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev libcurl4-gnutls-dev liblcms2-dev wget libtool python3 python3-pip" >> Dockerfile
     - echo "RUN wget https://www.libraw.org/data/LibRaw-0.20.0.tar.gz \\" >> Dockerfile
     - echo " && tar xfv LibRaw-0.20.0.tar.gz \\" >> Dockerfile
     - echo " && cd LibRaw-0.20.0 \\" >> Dockerfile
@@ -79,8 +79,9 @@ build-image-stable:
     - echo " && ./configure --prefix /usr \\" >> Dockerfile
     - echo " && make install \\" >> Dockerfile
     - echo " && cd .. \\" >> Dockerfile
-    - echo " && rm -rf LibRaw-0.20.0" >> Dockerfile
-    
+    - echo " && rm -rf LibRaw-0.20.0 \\" >> Dockerfile
+    - echo " && python3 -m pip install meson \\" >> Dockerfile
+    - echo " && python3 -m pip install ninja" >> Dockerfile
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-debian-stable --cache=true --cache-ttl=120h
 
 # Image for Windows64 build
