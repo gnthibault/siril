@@ -60,6 +60,7 @@
 #define STR_LMATCH N_("Computes a linear function between a reference image and a target. The function is then applied to the target image to match it to the reference one. The algorithm will ignore all reference pixels whose values are outside of the [\"low\", \"high\"] range")
 #define STR_LS N_("Lists files and directories in the working directory")
 
+#define STR_MERGE N_("Merges several sequences into one")
 #define STR_MIRRORX N_("Rotates the image around a vertical axis")
 #define STR_MIRRORY N_("Rotates the image around an horizontal axis")
 #define STR_MTF N_("Applies midtones transfer function to the current loaded image. Three parameters are needed, \"low\", \"midtones\" and \"high\" where midtones balance parameter defines a nonlinear histogram stretch in the [0,1] range")

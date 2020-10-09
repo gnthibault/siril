@@ -587,9 +587,9 @@ clean_exit:
 			fitseq_close_and_delete_file(&fitseq_file);
 		else fitseq_close_file(&fitseq_file);
 	}
-	g_dir_close(args->dir);
 	for (int i = 0; i < args->total; i++)
 		g_free(args->list[i]);
+	free(args->list);
 	if (args->retval)
 		siril_log_message(_("Conversion ended with error, %d/%d input files converted\n"), args->nb_converted_files, args->total);
 	else {

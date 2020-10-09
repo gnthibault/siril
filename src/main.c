@@ -278,7 +278,7 @@ static void siril_app_activate(GApplication *application) {
 	}
 
 	if (forcecwd && cwd_forced) {
-		changedir(cwd_forced, NULL);
+		siril_change_dir(cwd_forced, NULL);
 		g_free(cwd_forced);
 	}
 
@@ -343,7 +343,7 @@ static void siril_app_activate(GApplication *application) {
 #endif
 	}
 
-	if (changedir(com.wd, NULL))
+	if (siril_change_dir(com.wd, NULL))
 		com.wd = g_strdup(siril_get_startup_dir());
 
 	if (!com.headless) {
@@ -364,7 +364,7 @@ static void siril_app_open(GApplication *application, GFile **files, gint n_file
 		const char *ext = get_filename_ext(path);
 		if (ext && !strncmp(ext, "seq", 4)) {
 			gchar *sequence_dir = g_path_get_dirname(path);
-			if (!changedir(sequence_dir, NULL)) {
+			if (!siril_change_dir(sequence_dir, NULL)) {
 				if (check_seq(FALSE)) {
 					siril_log_message(_("No sequence `%s' found.\n"), path);
 				} else {
@@ -378,10 +378,10 @@ static void siril_app_open(GApplication *application, GFile **files, gint n_file
 			image_type type = get_type_from_filename(path);
 			if (!forcecwd && type != TYPEAVI && type != TYPESER && type != TYPEUNDEF) {
 				gchar *image_dir = g_path_get_dirname(path);
-				changedir(image_dir, NULL);
+				siril_change_dir(image_dir, NULL);
 				g_free(image_dir);
 			} else if (startup_cwd) {
-				changedir(startup_cwd, NULL);
+				siril_change_dir(startup_cwd, NULL);
 			}
 			if (!com.script)
 				set_GUI_CWD();

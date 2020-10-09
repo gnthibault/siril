@@ -29,6 +29,7 @@
 #include <sys/stat.h>
 #include <opencv2/core/version.hpp>
 #include <glib.h>
+#include <libgen.h>
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -514,7 +515,7 @@ int process_cd(int nb) {
 	g_strlcpy(filename, word[1], 250);
 
 	expand_home_in_filename(filename, 256);
-	retval = changedir(filename, NULL);
+	retval = siril_change_dir(filename, NULL);
 	if (!retval) {
 		writeinitfile();
 		if (!com.script) {
@@ -829,6 +830,177 @@ int process_ls(int nb){
 }
 #endif
 
+int process_merge(int nb) {
+	int retval = 0, nb_seq = nb-2;
+	if (!com.wd) {
+		siril_log_message(_("Merge: no working directory set.\n"));
+		set_cursor_waiting(FALSE);
+		return 1;
+	}
+	char *dest_dir = strdup(com.wd);
+	sequence **seqs = calloc(nb_seq, sizeof(sequence *));
+	GList *list = NULL;
+	for (int i = 0; i < nb_seq; i++) {
+		char *seqpath1 = strdup(word[i + 1]), *seqpath2 = strdup(word[i + 1]);
+		char *dir = g_path_get_dirname(seqpath1);
+		char *seqname = g_path_get_basename(seqpath2);
+#ifdef _WIN32
+		gchar **token = g_strsplit(dir, "/", -1);
+		g_free(dir);
+		dir = g_strjoinv(G_DIR_SEPARATOR_S, token);
+		g_strfreev(token);
+#endif
+		if (dir[0] != '\0' && !(dir[0] == '.' && dir[1] == '\0'))
+			siril_change_dir(dir, NULL);
+		if (!(seqs[i] = load_sequence(seqname, NULL))) {
+			siril_log_message(_("Could not open sequence `%s' for merging\n"), word[i + 1]);
+			retval = 1;
+			free(seqpath1); free(seqpath2);	g_free(seqname); g_free(dir);
+			goto merge_clean_up;
+		}
+		g_free(seqname);
+		if (seq_check_basic_data(seqs[i], FALSE) < 0) {
+			siril_log_message(_("Sequence `%s' is invalid, could not merge\n"), word[i + 1]);
+			retval = 1;
+			free(seqpath1); free(seqpath2); g_free(dir);
+			goto merge_clean_up;
+		}
+
+		if (i != 0 && (seqs[i]->rx != seqs[0]->rx ||
+					seqs[i]->ry != seqs[0]->ry ||
+					seqs[i]->nb_layers != seqs[0]->nb_layers ||
+					seqs[i]->bitpix != seqs[0]->bitpix ||
+					seqs[i]->type != seqs[0]->type)) {
+			siril_log_message(_("All sequences must be the same format for merging. Sequence `%s' is different\n"), word[i + 1]);
+			retval = 1;
+			free(seqpath1); free(seqpath2); g_free(dir);
+			goto merge_clean_up;
+		}
+
+		if (seqs[i]->type == SEQ_REGULAR) {
+			// we need to build the list of files
+			char filename[256];
+			for (int image = 0; image < seqs[i]->number; image++) {
+				fit_sequence_get_image_filename(seqs[i], image, filename, TRUE);
+				list = g_list_append(list, g_build_filename(dir, filename, NULL));
+			}
+		}
+		free(seqpath1); free(seqpath2); g_free(dir);
+		siril_change_dir(dest_dir, NULL);	// they're all relative to this one
+	}
+
+	char *outseq_name;
+	struct ser_struct out_ser;
+	struct _convert_data *args;
+	fitseq out_fitseq;
+	switch (seqs[0]->type) {
+		case SEQ_REGULAR:
+			// use the conversion, it makes symbolic links or copies as a fallback
+			args = malloc(sizeof(struct _convert_data));
+			args->start = 0;
+			args->total = 0; // init to get it from glist_to_array()
+			args->list = glist_to_array(list, &args->total);
+			args->destroot = format_basename(word[nb - 1], FALSE);
+			args->input_has_a_seq = FALSE;
+			args->debayer = FALSE;
+			args->multiple_output = FALSE;
+			args->output_type = SEQ_REGULAR; // fallback if symlink does not work
+			args->make_link = TRUE;
+			gettimeofday(&(args->t_start), NULL);
+			start_in_new_thread(convert_thread_worker, args);
+			break;
+
+		case SEQ_SER:
+			if (ends_with(word[nb - 1], ".ser"))
+				outseq_name = g_strdup(word[nb - 1]);
+			else outseq_name = g_strdup_printf("%s.ser", word[nb - 1]);
+			if (ser_create_file(outseq_name, &out_ser, TRUE, seqs[0]->ser_file)) {
+				siril_log_message(_("Failed to create the output SER file `%s'\n"), word[nb - 1]);
+				retval = 1;
+				goto merge_clean_up;
+			}
+			free(outseq_name);
+			seqwriter_set_max_active_blocks(2);
+			int written_frames = 0;
+			for (int i = 0; i < nb_seq; i++) {
+				for (unsigned int frame = 0; frame < seqs[i]->number; frame++) {
+					seqwriter_wait_for_memory();
+					fits *fit = calloc(1, sizeof(fits));
+					if (ser_read_frame(seqs[i]->ser_file, frame, fit)) {
+						siril_log_message(_("Failed to read frame %d from input sequence `%s'\n"), frame, word[i + 1]);
+						retval = 1;
+						ser_close_and_delete_file(&out_ser);
+						goto merge_clean_up;
+					}
+
+					if (ser_write_frame_from_fit(&out_ser, fit, written_frames)) {
+						siril_log_message(_("Failed to write frame %d in merged sequence\n"), written_frames);
+						retval = 1;
+						ser_close_and_delete_file(&out_ser);
+						goto merge_clean_up;
+					}
+					written_frames++;
+				}
+			}
+			if (ser_write_and_close(&out_ser)) {
+				siril_log_message(_("Error while finalizing the merged sequence\n"));
+				retval = 1;
+			}
+			break;
+
+		case SEQ_FITSEQ:
+			if (ends_with(word[nb - 1], com.pref.ext))
+				outseq_name = g_strdup(word[nb - 1]);
+			else outseq_name = g_strdup_printf("%s%s", word[nb - 1], com.pref.ext);
+			if (fitseq_create_file(outseq_name, &out_fitseq, -1)) {
+				siril_log_message(_("Failed to create the output SER file `%s'\n"), word[nb - 1]);
+				retval = 1;
+				goto merge_clean_up;
+			}
+			free(outseq_name);
+			seqwriter_set_max_active_blocks(2);
+			written_frames = 0;
+			for (int i = 0; i < nb_seq; i++) {
+				for (unsigned int frame = 0; frame < seqs[i]->number; frame++) {
+					seqwriter_wait_for_memory();
+					fits *fit = calloc(1, sizeof(fits));
+					if (fitseq_read_frame(seqs[i]->fitseq_file, frame, fit, FALSE, -1)) {
+						siril_log_message(_("Failed to read frame %d from input sequence `%s'\n"), frame, word[i + 1]);
+						retval = 1;
+						fitseq_close_and_delete_file(&out_fitseq);
+						goto merge_clean_up;
+					}
+
+					if (fitseq_write_image(&out_fitseq, fit, written_frames)) {
+						siril_log_message(_("Failed to write frame %d in merged sequence\n"), written_frames);
+						retval = 1;
+						fitseq_close_and_delete_file(&out_fitseq);
+						goto merge_clean_up;
+					}
+					written_frames++;
+				}
+			}
+			if (fitseq_close_file(&out_fitseq)) {
+				siril_log_message(_("Error while finalizing the merged sequence\n"));
+				retval = 1;
+			}
+			break;
+		default:
+			siril_log_message(_("This type of sequence cannot be created by Siril, aborting the merge\n"));
+			retval = 1;
+	}
+
+merge_clean_up:
+	for (int i = 0; i < nb_seq; i++) {
+		if (seqs[i])
+			free_sequence(seqs[i], TRUE);
+	}
+	free(seqs);
+	siril_change_dir(dest_dir, NULL);
+	free(dest_dir);
+	return retval;
+}
+
 int	process_mirrorx(int nb){
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
@@ -1022,13 +1194,13 @@ int process_set_mag_seq(int nb) {
 	double mag = atof(word[1]);
 	int i;
 	for (i = 0; i < MAX_SEQPSF && com.seq.photometry[i]; i++);
-	com.seq.reference_star = i-1;
+	com.seq.reference_star = i - 1;
 	if (i == 0) {
 		siril_log_message(_("Run a PSF for the sequence first (see seqpsf)\n"));
 		return 1;
 	}
 	com.seq.reference_mag = mag;
-	siril_log_message(_("Reference magnitude has been set for star %d to %f and will be computed for each image\n"), i-1, mag);
+	siril_log_message(_("Reference magnitude has been set for star %d to %f and will be computed for each image\n"), i - 1, mag);
 	drawPlot();
 	return 0;
 }
@@ -2585,6 +2757,7 @@ int process_convertraw(int nb) {
 			count++;
 		}
 	}
+	g_dir_close(dir);
 	if (!count) {
 		siril_log_message(_("No RAW files were found for conversion\n"));
 		return 1;
@@ -2592,15 +2765,7 @@ int process_convertraw(int nb) {
 	/* sort list */
 	list = g_list_sort(list, (GCompareFunc) strcompare);
 	/* convert the list to an array for parallel processing */
-	char **files_to_convert = malloc(count * sizeof(char *));
-	if (!files_to_convert) {
-		PRINT_ALLOC_ERR;
-		return 1;
-	}
-	GList *orig_list = list;
-	for (int i = 0; i < count && list; list = list->next, i++)
-		files_to_convert[i] = g_strdup(list->data);
-	g_list_free_full(orig_list, g_free);
+	char **files_to_convert = glist_to_array(list, &count);
 
 	siril_log_color_message(_("Conversion: processing %d RAW files...\n"), "green", count);
 
@@ -2616,13 +2781,10 @@ int process_convertraw(int nb) {
 
 	struct _convert_data *args = malloc(sizeof(struct _convert_data));
 	args->start = idx;
-	args->dir = dir;
 	args->list = files_to_convert;
 	args->total = count;
-	args->nb_converted_files = 0;
-	args->command_line = TRUE;
 	if (output == SEQ_REGULAR)
-		args->destroot = format_basename(destroot);
+		args->destroot = format_basename(destroot, TRUE);
 	else
 		args->destroot = destroot;
 	args->input_has_a_seq = FALSE;
@@ -2693,6 +2855,7 @@ int process_link(int nb) {
 			count++;
 		}
 	}
+	g_dir_close(dir);
 	if (!count) {
 		siril_log_message(_("No FITS files were found for link\n"));
 		return 1;
@@ -2700,15 +2863,7 @@ int process_link(int nb) {
 	/* sort list */
 	list = g_list_sort(list, (GCompareFunc) strcompare);
 	/* convert the list to an array for parallel processing */
-	char **files_to_link = malloc(count * sizeof(char *));
-	if (!files_to_link) {
-		PRINT_ALLOC_ERR;
-		return 1;
-	}
-	GList *orig_list = list;
-	for (int i = 0; i < count && list; list = list->next, i++)
-		files_to_link[i] = g_strdup(list->data);
-	g_list_free_full(orig_list, g_free);
+	char **files_to_link = glist_to_array(list, &count);
 
 	siril_log_color_message(_("Link: processing %d FITS files...\n"), "green", count);
 
@@ -2724,12 +2879,9 @@ int process_link(int nb) {
 
 	struct _convert_data *args = malloc(sizeof(struct _convert_data));
 	args->start = idx;
-	args->dir = dir;
 	args->list = files_to_link;
 	args->total = count;
-	args->nb_converted_files = 0;
-	args->command_line = TRUE;
-	args->destroot = format_basename(destroot);
+	args->destroot = format_basename(destroot, TRUE);
 	args->input_has_a_seq = FALSE;
 	args->debayer = FALSE;
 	args->multiple_output = FALSE;
@@ -2810,6 +2962,7 @@ int process_convert(int nb) {
 			count++;
 		}
 	}
+	g_dir_close(dir);
 	if (!count) {
 		siril_log_message(_("No files were found for convert\n"));
 		return 1;
@@ -2817,15 +2970,7 @@ int process_convert(int nb) {
 	/* sort list */
 	list = g_list_sort(list, (GCompareFunc) strcompare);
 	/* convert the list to an array for parallel processing */
-	char **files_to_link = malloc(count * sizeof(char *));
-	if (!files_to_link) {
-		PRINT_ALLOC_ERR;
-		return 1;
-	}
-	GList *orig_list = list;
-	for (int i = 0; i < count && list; list = list->next, i++)
-		files_to_link[i] = g_strdup(list->data);
-	g_list_free_full(orig_list, g_free);
+	char **files_to_link = glist_to_array(list, &count);
 
 	siril_log_color_message(_("Convert: processing %d files...\n"), "green", count);
 
@@ -2841,13 +2986,10 @@ int process_convert(int nb) {
 
 	struct _convert_data *args = malloc(sizeof(struct _convert_data));
 	args->start = idx;
-	args->dir = dir;
 	args->list = files_to_link;
 	args->total = count;
-	args->nb_converted_files = 0;
-	args->command_line = TRUE;
 	if (output == SEQ_REGULAR)
-		args->destroot = format_basename(destroot);
+		args->destroot = format_basename(destroot, TRUE);
 	else
 		args->destroot = destroot;
 	args->input_has_a_seq = FALSE;

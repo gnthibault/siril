@@ -508,11 +508,11 @@ void on_buttonExportSeq_clicked(GtkButton *button, gpointer user_data) {
 	switch (selected) {
 	case EXPORT_FITS:
 		args->convflags = TYPEFITS;
-		args->basename = format_basename(args->basename);
+		args->basename = format_basename(args->basename, TRUE);
 		break;
 	case EXPORT_TIFF:
 		args->convflags = TYPETIFF;
-		args->basename = format_basename(args->basename);
+		args->basename = format_basename(args->basename, TRUE);
 		break;
 	case EXPORT_SER:
 		args->convflags = TYPESER;

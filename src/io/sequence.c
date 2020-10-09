@@ -114,7 +114,7 @@ static sequence *check_seq_one_file(const char* name);
 int read_single_sequence(char *realname, image_type imagetype) {
 	int retval = 0, len;
 	gchar *dirname = g_path_get_dirname(realname);
-	if (!changedir(dirname, NULL)) {
+	if (!siril_change_dir(dirname, NULL)) {
 		writeinitfile();
 		if (!com.script) {
 			set_GUI_CWD();
