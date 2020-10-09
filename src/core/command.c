@@ -3380,23 +3380,17 @@ int process_stackall(int nb) {
 			allow_norm = TRUE;
 		} else if (!strcmp(word[1], "rej") || !strcmp(word[1], "mean")) {
 			int shift = 1;
-			switch (word[3][0]) {
-			case 'p':
+			if (!strcmp(word[3], "p") || !strcmp(word[3], "percentile")) {
 				arg->type_of_rejection = PERCENTILE;
-				break;
-			case 's':
+			} else if (!strcmp(word[3], "s") || !strcmp(word[3], "sigma")) {
 				arg->type_of_rejection = SIGMA;
-				break;
-			case 'm':
+			} else if (!strcmp(word[3], "m") || !strcmp(word[3], "median")) {
 				arg->type_of_rejection = SIGMEDIAN;
-				break;
-			case 'l':
+			} else if (!strcmp(word[3], "l") || !strcmp(word[3], "linear")) {
 				arg->type_of_rejection = LINEARFIT;
-				break;
-			case 'w':
+			} else if (!strcmp(word[3], "w") || !strcmp(word[3], "winsorized")) {
 				arg->type_of_rejection = WINSORIZED;
-				break;
-			default:
+			} else {
 				arg->type_of_rejection = WINSORIZED;
 				shift = 0;
 			}
@@ -3490,23 +3484,17 @@ int process_stackone(int nb) {
 			allow_norm = TRUE;
 		} else if (!strcmp(word[2], "rej") || !strcmp(word[2], "mean")) {
 			int shift = 1;
-			switch (word[3][0]) {
-			case 'p':
+			if (!strcmp(word[3], "p") || !strcmp(word[3], "percentile")) {
 				arg->type_of_rejection = PERCENTILE;
-				break;
-			case 's':
+			} else if (!strcmp(word[3], "s") || !strcmp(word[3], "sigma")) {
 				arg->type_of_rejection = SIGMA;
-				break;
-			case 'm':
+			} else if (!strcmp(word[3], "m") || !strcmp(word[3], "median")) {
 				arg->type_of_rejection = SIGMEDIAN;
-				break;
-			case 'l':
+			} else if (!strcmp(word[3], "l") || !strcmp(word[3], "linear")) {
 				arg->type_of_rejection = LINEARFIT;
-				break;
-			case 'w':
+			} else if (!strcmp(word[3], "w") || !strcmp(word[3], "winsorized")) {
 				arg->type_of_rejection = WINSORIZED;
-				break;
-			default:
+			} else {
 				arg->type_of_rejection = WINSORIZED;
 				shift = 0;
 			}
