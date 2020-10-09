@@ -150,7 +150,7 @@ static void apply_linear_to_fits_ushort(fits *fit, double *a, double *b) {
 }
 
 static void apply_linear_to_fits_float(fits *fit, double *a, double *b) {
-	size_t size = fit->rx * fit->ry * fit->naxes[2];
+	size_t size = fit->rx * fit->ry;
 
 	invalidate_stats_from_fit(&gfit);
 	for (int channel = 0; channel < fit->naxes[2]; channel++) {
