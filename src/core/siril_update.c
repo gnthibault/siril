@@ -308,7 +308,7 @@ static gboolean end_update_idle(gpointer p) {
 static gpointer fetch_url(gpointer p) {
 	struct ucontent *content;
 	gchar *result;
-	long code;
+	long code = -1L;
 	int retries;
 	unsigned int s;
 	struct _update_data *args = (struct _update_data *) p;
@@ -339,7 +339,8 @@ static gpointer fetch_url(gpointer p) {
 	curl_easy_setopt(curl, CURLOPT_USERAGENT, "siril/0.0");
 	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
 
-	if (curl_easy_perform(curl) == CURLE_OK) {
+	CURLcode retval = curl_easy_perform(curl);
+	if (retval == CURLE_OK) {
 		if (retries == DEFAULT_FETCH_RETRIES) set_progress_bar_data(NULL, 0.4);
 		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
 		if (retries == DEFAULT_FETCH_RETRIES) set_progress_bar_data(NULL, 0.6);
@@ -375,7 +376,16 @@ static gpointer fetch_url(gpointer p) {
 			g_fprintf(stderr, "Fetch failed with code %ld for URL %s\n", code,
 					args->url);
 		}
+		g_fprintf(stderr, "Fetch succeeded with code %ld for URL %s\n", code,
+				args->url);
 		args->code = code;
+	} else {
+		siril_log_color_message(_("Cannot retrieve information from the update URL. Error: [%ld]\n"), "red", retval);
+		set_progress_bar_data(NULL, PROGRESS_DONE);
+		g_free(content);
+		free(args);
+		set_cursor_waiting(FALSE);
+		return NULL;
 	}
 	set_progress_bar_data(NULL, PROGRESS_DONE);
 
