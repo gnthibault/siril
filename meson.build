@@ -29,7 +29,7 @@ project('siril',
   ['c','cpp'],
   version : '0.99.7',
   license : ['GPL3'],
-  meson_version: '>=0.51.0',
+  meson_version: '>=0.53.0',
   default_options : [
     'c_std=gnu11',
     'cpp_std=c++11',
@@ -149,6 +149,14 @@ elif platform_osx
   add_project_link_arguments(siril_link_arg, language: [ 'c', 'cpp' ])
 else
   error('Unsupported OS.')
+endif
+
+# sse2 assembly
+have_sse2 = false
+if cc.has_argument('-msse2') and cpp.has_argument('-msse2')
+  if cc.compiles('asm ("punpckhwd %xmm0,%xmm1");')
+    have_sse2 = true
+  endif
 endif
 
 ################################################################################
@@ -427,13 +435,36 @@ install_data(['AUTHORS', 'LICENSE.md'],
 
 
 ################################################################################
-# Post build
+# Build summary
 
-warning('''
-        MESON BUILD IS STILL EXPERIMENTAL!
+summary(
+  {
+    'Building Siril with prefix': get_option('prefix'),
+  }, section: 'Directories'
+)
 
-        we encourage usage of meson if you want to test and
-        report bugs. Yet if you are a packager, DO NOT USE
-        meson until we fix all known issues and bugs.
-        ''')
+summary(
+  {
+    'sse2'      : have_sse2,
+  }, section: 'Processor extensions'
+)
 
+summary(
+  {
+    'openmp'    : get_option('openmp'),
+  }, section: 'Optional features'
+)
+
+summary(
+  {
+    'libraw'    : libraw_dep.found(),
+    'TIFF'      : libtiff_dep.found(),
+    'JPEG'      : libjpeg_dep.found(),
+    'PNG'       : libpng_dep.found(),
+    'HEIF'      : libheif_dep.found(),
+    'FFMS2'     : ffms2_dep.found(),
+    'FFMPEG'    : ffmpeg_found,
+    'libcurl'   : libcurl_dep.found(),
+    'criterion' : libraw_dep.found(),
+  }, section: 'Optional dependencies'
+)
