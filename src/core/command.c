@@ -128,7 +128,7 @@ int process_satu(int nb){
 	args->output = &gfit;
 	args->h_min = 0.0;
 	args->h_max = 360.0;
-	args->preserve = FALSE;
+	args->background_factor = 1.0;
 
 	enhance_saturation(args);
 

@@ -4,8 +4,7 @@
 /* color saturation data from GUI */
 struct enhance_saturation_data {
 	fits *input, *output;
-	double coeff, h_min, h_max;
-	gboolean preserve;
+	double coeff, h_min, h_max, background_factor;
 };
 
 void apply_satu_cancel();

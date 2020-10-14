@@ -37,8 +37,7 @@
 
 #include "saturation.h"
 
-static gboolean satu_preserve_bkg;
-static double satu_amount;
+static double satu_amount, background_factor;
 static int satu_hue_type;
 static gboolean satu_show_preview;
 
@@ -110,7 +109,7 @@ static int satu_update_preview() {
 	args->input = satu_show_preview ? get_preview_gfit_backup() : &gfit;
 	args->output = &gfit;
 	args->coeff = satu_amount;
-	args->preserve = satu_preserve_bkg;
+	args->background_factor = background_factor;
 	start_in_new_thread(enhance_saturation, args);
 
 	return 0;
@@ -148,7 +147,7 @@ gpointer enhance_saturation_ushort(gpointer p) {
 
 	args->h_min /= 360.0;
 	args->h_max /= 360.0;
-	if (args->preserve) {
+	if (args->background_factor > 0.00) {
 		imstats *stat = statistics(NULL, -1, args->input, GLAYER, NULL, STATS_BASIC, TRUE);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
@@ -158,6 +157,7 @@ gpointer enhance_saturation_ushort(gpointer p) {
 		}
 		bg = stat->median + stat->sigma;
 		bg /= stat->normValue;
+		bg *= args->background_factor;
 		free_stats(stat);
 	}
 
@@ -210,7 +210,7 @@ static gpointer enhance_saturation_float(gpointer p) {
 
 	args->h_min /= 60.0;
 	args->h_max /= 60.0;
-	if (args->preserve) {
+	if (args->background_factor > 0.00) {
 		imstats *stat = statistics(NULL, -1, args->input, GLAYER, NULL, STATS_BASIC, TRUE);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
@@ -220,6 +220,7 @@ static gpointer enhance_saturation_float(gpointer p) {
 		}
 		bg = stat->median + stat->sigma;
 		bg /= stat->normValue;
+		bg *= args->background_factor;
 		free_stats(stat);
 	}
 
@@ -287,24 +288,14 @@ void on_satu_dialog_show(GtkWidget *widget, gpointer user_data) {
 	satu_startup();
 	satu_amount = 0.0;
 	satu_hue_type = 6;
-	satu_preserve_bkg = TRUE;
+	background_factor = 1.0;
 
 	set_notify_block(TRUE);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget("combo_saturation")), satu_hue_type);
 	gtk_range_set_value(GTK_RANGE(lookup_widget("scale_satu")), satu_amount);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("preserve_bg")), satu_preserve_bkg);
 	set_notify_block(FALSE);
 
 	satu_show_preview = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("satu_preview")));
-}
-
-void on_preserve_bg_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	satu_preserve_bkg = gtk_toggle_button_get_active(togglebutton);
-
-	update_image *param = malloc(sizeof(update_image));
-	param->update_preview_fn = 	satu_update_preview;
-	param->show_preview = satu_show_preview;
-	notify_update((gpointer) param);
 }
 
 void on_combo_saturation_changed(GtkComboBox* box, gpointer user_data) {
@@ -318,12 +309,10 @@ void on_combo_saturation_changed(GtkComboBox* box, gpointer user_data) {
 
 void on_satu_undo_clicked(GtkButton *button, gpointer user_data) {
 	set_cursor_waiting(TRUE);
-	satu_preserve_bkg = TRUE;
 	satu_amount = 0.0;
-	GtkToggleButton *check_button = GTK_TOGGLE_BUTTON(lookup_widget("preserve_bg"));
+	background_factor = 1.0;
 
 	set_notify_block(TRUE);
-	gtk_toggle_button_set_active(check_button, satu_preserve_bkg);
 	gtk_range_set_value(GTK_RANGE(lookup_widget("scale_satu")), satu_amount);
 	set_notify_block(FALSE);
 
@@ -341,6 +330,15 @@ void apply_satu_cancel() {
 /*** adjusters **/
 void on_spin_satu_value_changed(GtkSpinButton *button, gpointer user_data) {
 	satu_amount = gtk_spin_button_get_value(button);
+
+	update_image *param = malloc(sizeof(update_image));
+	param->update_preview_fn = 	satu_update_preview;
+	param->show_preview = satu_show_preview;
+	notify_update((gpointer) param);
+}
+
+void on_spin_satu_bkg_value_changed(GtkSpinButton *button, gpointer user_data) {
+	background_factor = gtk_spin_button_get_value(button);
 
 	update_image *param = malloc(sizeof(update_image));
 	param->update_preview_fn = 	satu_update_preview;
