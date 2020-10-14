@@ -1083,13 +1083,6 @@ static gboolean end_plate_solver(gpointer p) {
 	struct plate_solver_data *args = (struct plate_solver_data *) p;
 	stop_processing_thread();
 
-	if (!args->ret && args->flip_image) {
-		siril_log_message(_("Flipping image and updating astrometry data.\n"));
-		fits_flip_top_to_bottom(args->fit);
-		flip_astrometry_data(args->fit);
-		redraw(com.cvport, REMAP_ALL);
-	}
-
 	if (!args->manual)
 		clear_stars_list();
 	set_cursor_waiting(FALSE);
@@ -1117,6 +1110,12 @@ static gboolean end_plate_solver(gpointer p) {
 		control_window_switch_to_tab(OUTPUT_LOGS);
 		if (args->for_photometry_cc) {
 			apply_photometric_cc();
+		}
+		if (args->flip_image) {
+			siril_log_message(_("Flipping image and updating astrometry data.\n"));
+			fits_flip_top_to_bottom(args->fit);
+			flip_astrometry_data(args->fit);
+			redraw(com.cvport, REMAP_ALL);
 		}
 	}
 	g_free(args->catalogStars);
