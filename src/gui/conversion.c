@@ -220,7 +220,7 @@ static void initialize_convert() {
 		PRINT_ALLOC_ERR;
 		return;
 	}
-	if (args->output_type == SEQ_REGULAR) {
+	if (output_type == SEQ_REGULAR) {
 		GtkEntry *startEntry = GTK_ENTRY(lookup_widget("startIndiceEntry"));
 		const gchar *index = gtk_entry_get_text(startEntry);
 		args->start = (atoi(index) <= 0 || atoi(index) >= INDEX_MAX) ? 1 : atoi(index);
