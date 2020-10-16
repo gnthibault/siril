@@ -154,8 +154,18 @@ endif
 # sse2 assembly
 have_sse2 = false
 if cc.has_argument('-msse2') and cpp.has_argument('-msse2')
+  message('sse2 assembly available')
   if cc.compiles('asm ("punpckhwd %xmm0,%xmm1");')
     have_sse2 = true
+  endif
+endif
+
+# sse4.1 assembly
+have_sse4_1 = false
+if cc.has_argument('-msse4.1') and cpp.has_argument('-msse4.1')
+  message('sse4.1 assembly available')
+  if cc.compiles('asm ("pmovzxbd %xmm0,%xmm1");')
+    have_sse4_1 = true
   endif
 endif
 
@@ -446,6 +456,7 @@ summary(
 summary(
   {
     'sse2'      : have_sse2,
+    'sse4.1'    : have_sse4_1,
   }, section: 'Processor extensions'
 )
 
