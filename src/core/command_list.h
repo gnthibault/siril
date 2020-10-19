@@ -57,10 +57,10 @@ static command commands[] = {
 	{"find_cosme_cfa", 2, "find_cosme_cfa cold_sigma hot_sigma", process_findcosme, STR_FIND_COSME_CFA, TRUE},
 	{"find_hot", 3, "find_hot filename cold_sigma hot_sigma", process_findhot, STR_FIND_HOT, TRUE},
 	{"findstar", 0, "findstar", process_findstar, STR_FINDSTAR, FALSE},
-	{"fmedian", 2, "fmedian ksize modulation", process_fmedian, STR_FMEDIAN, TRUE},
-	{"fmul", 1, "fmul scalar", process_fmul, STR_FMUL, TRUE},
 	{"fix_xtrans", 0, "fix_xtrans", process_fix_xtrans, STR_FIXXTRANS, TRUE},
 	{"fixbanding", 2, "fixbanding amount sigma", process_fixbanding, STR_FIXBANDING, TRUE},
+	{"fmedian", 2, "fmedian ksize modulation", process_fmedian, STR_FMEDIAN, TRUE},
+	{"fmul", 1, "fmul scalar", process_fmul, STR_FMUL, TRUE},
 
 	{"gauss", 1, "gauss sigma", process_gauss, STR_GAUSS, TRUE},
 	{"grey_flat", 0, "grey_flat", process_grey_flat, STR_GREY_FLAT, TRUE},
@@ -74,8 +74,8 @@ static command commands[] = {
 	{"imul", 1, "imul filename", process_imoper, STR_IMUL, TRUE},
 	{"isub", 1, "isub filename", process_imoper, STR_ISUB, TRUE},
 
-	{"link", 1, "link basename [-start=index] [-out=]", process_link, STR_LINK, TRUE},
 	{"linear_match", 2, "linear_match reference low high", process_linear_match, STR_LMATCH, TRUE}, /* logarifies current image */
+	{"link", 1, "link basename [-start=index] [-out=]", process_link, STR_LINK, TRUE},
 	{"load", 1, "load filename.[ext]", process_load, STR_LOAD, TRUE},
 	// specific loads are not required, but could be used to force the
 	// extension to a higher priority in case two files with same basename
@@ -100,9 +100,9 @@ static command commands[] = {
 	{"psf", 0, "psf", process_psf, STR_PSF, FALSE},
 
 	{"register", 1, "register sequence [-norot] [-drizzle] [-prefix=] [-minpairs=]", process_register, STR_REGISTER, TRUE},
-	{"resample", 1, "resample factor", process_resample, STR_RESAMPLE, TRUE},
 	{"reloadscripts", 0, "reloadscripts", process_reloadscripts, STR_RELOADSCRIPTS, FALSE},
 	{"requires", 1, "requires", process_requires, STR_REQUIRES, TRUE},
+	{"resample", 1, "resample factor", process_resample, STR_RESAMPLE, TRUE},
 	{"rgradient", 4, "rgradient xc yc dR dalpha", process_rgradient, STR_RGRADIENT, TRUE},
 	{"rl", 3, "rl sigma corner_radius_boost iterations", process_rl, STR_RL, TRUE},
 	{"rmgreen", 1, "rmgreen type", process_scnr, STR_RMGREEN, TRUE},

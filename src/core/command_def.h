@@ -38,10 +38,10 @@
 #define STR_FIND_COSME_CFA N_("Same command as FIND_COSME but for monochromatic CFA images")
 #define STR_FIND_HOT N_("Provides a list file \"filename\" (format text) in the working directory which contains the coordinates of the pixels which have an intensity \"hot_sigma\" times higher and \"cold_sigma\" lower than standard deviation. We generally use this command on a master-dark file")
 #define STR_FINDSTAR N_("Detects stars having a level greater than a threshold computed by Siril. The algorithm is based on the publication of Mighell, K. J. 1999, in ASP Conf. Ser., Vol. 172, Astronomical Data Analysis Software and Systems VIII, eds. D. M. Mehringer, R. L. Plante, and D. A. Roberts (San Francisco: ASP), 317. After that, a PSF is applied and Siril rejects all detected structures that don't fulfill a set of prescribed detection criteria. Finally, a circle is drawn around detected stars. See also the command CLEARSTAR")
-#define STR_FMEDIAN N_("Performs a median filter of size \"ksize\" x \"ksize\" (\"ksize\" MUST be odd) to the original image with a modulation parameter \"modulation\". The output pixel is computed as : out=mod x m + (1 − mod) x in, where m is the median-filtered pixel value. A modulation's value of 1 will apply no modulation")
-#define STR_FMUL N_("Multiplies the loaded image by the \"scalar\" given in argument")
 #define STR_FIXBANDING N_("Tries to remove the canon banding. Argument \"amount\" define the amount of correction. \"Sigma\" defines a protection level of the algorithm, higher sigma gives higher protection")
 #define STR_FIXXTRANS N_("Fixes the Fujifilm X-Trans Auto Focus pixels. Indeed, because of the phase detection auto focus system, the photosites used for auto focus get a little less light than the surrounding photosites. The camera compensates for this and increases the values from these specific photosites giving a visible square in the middle of the dark/bias frames")
+#define STR_FMEDIAN N_("Performs a median filter of size \"ksize\" x \"ksize\" (\"ksize\" MUST be odd) to the original image with a modulation parameter \"modulation\". The output pixel is computed as : out=mod x m + (1 − mod) x in, where m is the median-filtered pixel value. A modulation's value of 1 will apply no modulation")
+#define STR_FMUL N_("Multiplies the loaded image by the \"scalar\" given in argument")
 
 #define STR_GAUSS N_("Performs a Gaussian filter with the given \"sigma\"")
 #define STR_GREY_FLAT N_("The function equalizes the mean intensity of RGB layers in a CFA images")
@@ -55,9 +55,9 @@
 #define STR_ISUB N_("Subtracts the image in memory by the image given in argument")
 
 #define STR_LINK N_("Link all FITS images in the working directory with the basename given in argument. If no symbolic link could be created, files are copied. It is possible to convert files in another directory with the \"-out=\" option")
+#define STR_LMATCH N_("Computes a linear function between a reference image and a target. The function is then applied to the target image to match it to the reference one. The algorithm will ignore all reference pixels whose values are outside of the [\"low\", \"high\"] range")
 #define STR_LOAD N_("Loads the image \"filename\"; it first attempts to load \"filename\", then \"filename\".fit and finally \"filename\".fits and after, all supported format, aborting if none of these are found. These scheme is applicable to every Siril command implying reading files. Fits headers MIPS-HI and MIPS-LO are read and their values given to the current viewing levels. Writing a known extension at the end of \"filename\" will load the image \"filename\".ext: this is used when numerous files have the same name but not the same extension")
 #define STR_LOG N_("Computes and applies a logarithmic scale to the current image")
-#define STR_LMATCH N_("Computes a linear function between a reference image and a target. The function is then applied to the target image to match it to the reference one. The algorithm will ignore all reference pixels whose values are outside of the [\"low\", \"high\"] range")
 #define STR_LS N_("Lists files and directories in the working directory")
 
 #define STR_MERGE N_("Merges several sequences into one")
@@ -75,9 +75,9 @@
 #define STR_PSF N_("Performs a PSF (Point Spread Function) on the selected star")
 
 #define STR_REGISTER N_("Performs geometric transforms on images of the sequence given in argument so that they may be superimposed on the reference image. The output sequence name starts with the prefix \"r_\" unless otherwise specified with \"-prefix=\" option. Using stars for registration, this algorithm only works with deepsky images. The registration is done on the green layer for RGB images. The option \"-drizzle\" activates the sub-pixel stacking, either by up-scaling by 2 the images created in the rotated sequence or by setting a flag that will proceed to the up-scaling during stacking if \"-norot\" is passed. The option \"-minpairs=\" will specify the minimum number of star pairs a frame must have with the reference frame, otherwise the frame will be dropped")
-#define STR_RESAMPLE N_("Resamples image with a factor \"factor\"")
 #define STR_RELOADSCRIPTS N_("Rescans the scripts folders and updates scripts menu")
 #define STR_REQUIRES N_("This function returns an error if the version of Siril is older than the one passed in argument")
+#define STR_RESAMPLE N_("Resamples image with a factor \"factor\"")
 #define STR_RGRADIENT N_("Creates two images, with a radial shift (\"dR\" in pixels) and a rotational shift (\"dalpha\" in degrees) with respect to the point (\"xc\", \"yc\"). Between these two images, the shifts have the same amplitude, but an opposite sign. The two images are then added to create the final image. This process is also called Larson Sekanina filter")
 #define STR_RL N_("Restores an image using the Richardson-Lucy method. \"Sigma\" is the size of the kernel to be applied, while \"corner_radius_boost\" is a value which is added to Gaussian sigma for the tiles in the corners of an image. \"Iterations\" is the number of iterations to be performed")
 #define STR_RMGREEN N_("Chromatic noise reduction filter. It removes green noise in the current image. This filter is based on PixInsight's SCNR Average Neutral algorithm and it is the same filter used by HLVG plugin in Photoshop. \"Type\"=1 stands for Average Neutral Protection, while \"type\"=2 stands for Maximum Neutral Protection")
