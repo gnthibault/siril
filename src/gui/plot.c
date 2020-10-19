@@ -45,7 +45,7 @@
 
 static GtkWidget *drawingPlot = NULL, *sourceCombo = NULL, *combo = NULL,
 		*varCurve = NULL, *buttonExport = NULL, *buttonClearAll = NULL,
-		*buttonClearLatest = NULL, *arcsec = NULL;
+		*buttonClearLatest = NULL, *arcsec = NULL, *julianw = NULL;
 static pldata *plot_data;
 static struct kpair ref;
 static gboolean is_fwhm = FALSE, use_photometry = FALSE, requires_color_update =
@@ -56,6 +56,7 @@ static enum photmetry_source selected_source = ROUNDNESS;
 static int julian0 = 0;
 static gnuplot_ctrl *gplot = NULL;
 static gboolean is_arcsec = FALSE;
+static gboolean force_Julian = FALSE;
 
 static void update_ylabel();
 static void set_colors(struct kplotcfg *cfg);
@@ -185,7 +186,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 				char *ts0 = seq->imgparam[i].date_obs;
 				julian0 = (int) dateTimestamp_toJulian(ts0, seq->exposure);
 			}
-			if (julian0) {
+			if (julian0 && force_Julian) {
 				xlabel = calloc(XLABELSIZE, sizeof(char));
 				g_snprintf(xlabel, XLABELSIZE, "(JD) %d +", julian0);
 			} else {
@@ -193,11 +194,11 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 			}
 		}
 
-		if (julian0 && seq->type == SEQ_SER && seq->ser_file->ts
+		if (julian0 && force_Julian && seq->type == SEQ_SER && seq->ser_file->ts
 				&& seq->ser_file->ts_max > seq->ser_file->ts_min) {
 			double julian = serTimestamp_toJulian(seq->ser_file->ts[i]);
 			plot->data[j].x = julian - (double)julian0;
-		} else if (julian0 && (seq->type == SEQ_REGULAR || seq->type == SEQ_FITSEQ) &&
+		} else if (julian0 && force_Julian && (seq->type == SEQ_REGULAR || seq->type == SEQ_FITSEQ) &&
 					seq->imgparam[i].date_obs) {
 			char *tsi = seq->imgparam[i].date_obs;
 			double julian = dateTimestamp_toJulian(tsi, seq->exposure);
@@ -543,6 +544,7 @@ void drawPlot() {
 		combo = lookup_widget("plotCombo");
 		varCurve = lookup_widget("varCurvePhotometry");
 		arcsec = lookup_widget("arcsecPhotometry");
+		julianw = lookup_widget("JulianPhotometry");
 		sourceCombo = lookup_widget("plotSourceCombo");
 		buttonExport = lookup_widget("ButtonSaveCSV");
 		buttonClearAll = lookup_widget("clearAllPhotometry");
@@ -603,6 +605,7 @@ void drawPlot() {
 
 		build_registration_dataset(seq, layer, ref_image, plot_data);
 	}
+	gtk_widget_set_sensitive(julianw, julian0);
 	on_GtkEntryCSV_changed(GTK_EDITABLE(lookup_widget("GtkEntryCSV")), NULL);
 	gtk_widget_queue_draw(drawingPlot);
 }
@@ -748,6 +751,11 @@ void on_plotCombo_changed(GtkComboBox *box, gpointer user_data) {
 
 void on_arcsecPhotometry_toggled(GtkToggleButton *button, gpointer user_data) {
 	is_arcsec = gtk_toggle_button_get_active(button);
+	drawPlot();
+}
+
+void on_JulianPhotometry_toggled(GtkToggleButton *button, gpointer user_data) {
+	force_Julian = gtk_toggle_button_get_active(button);
 	drawPlot();
 }
 
