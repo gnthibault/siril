@@ -283,7 +283,7 @@ void fill_script_paths_list() {
 void siril_get_on_script_pages() {
 	gboolean ret;
 	const char *locale;
-	const char *supported_languages[] = { "el", "fr", "it", NULL }; // en is NULL: default language
+	const char *supported_languages[] = { "fr", NULL }; // en is NULL: default language
 	gchar *lang = NULL;
 	int i = 0;
 
