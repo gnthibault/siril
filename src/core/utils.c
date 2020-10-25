@@ -671,6 +671,7 @@ int stat_file(const char *filename, image_type *type, char **realname) {
 int siril_change_dir(const char *dir, gchar **err) {
 	gchar *error = NULL;
 	int retval = 0;
+	char *new_dir = NULL;
 
 	if (dir == NULL || dir[0] == '\0') {
 		error = siril_log_message(_("Unknown error\n"));
@@ -692,11 +693,20 @@ int siril_change_dir(const char *dir, gchar **err) {
 			/* do we need to search for sequences in the directory now? We still need to
 			 * press the check seq button to display the list, and this is also done there. */
 			/* check_seq();
-			 update_sequence_list();*/
-			g_free(com.wd);
-			com.wd = g_get_current_dir();
-			siril_log_message(_("Setting CWD (Current Working Directory) to '%s'\n"), com.wd);
-			retval = 0;
+			   update_sequence_list();*/
+			// Don't follow symbolic links
+			if (g_path_is_absolute(dir)) {
+				new_dir = g_memdup(dir, strlen(dir) + 1);
+				g_free(com.wd);
+				com.wd = new_dir;
+			} else {
+				new_dir = g_canonicalize_filename(dir, com.wd);
+				g_free(com.wd);
+				com.wd = new_dir;
+			}
+
+		  siril_log_message(_("Setting CWD (Current Working Directory) to '%s'\n"), com.wd);
+		  retval = 0;
 		} else {
 			error = siril_log_message(_("Could not change directory to '%s'.\n"), dir);
 			retval = 1;
