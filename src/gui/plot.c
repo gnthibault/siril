@@ -31,6 +31,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/processing.h"
 #include "gui/callbacks.h"
 #include "gui/image_display.h"
 #include "gui/message_dialog.h"
@@ -94,14 +95,14 @@ static void build_registration_dataset(sequence *seq, int layer, int ref_image,
 	for (i = 0, j = 0; i < plot->nb; i++) {
 		if (!seq->imgparam[i].incl)
 			continue;
-		plot->data[j].x = (double) i;
+		plot->data[j].x = (double) i + 1;
 		plot->data[j].y = is_fwhm ?	seq->regparam[layer][i].fwhm :
 						seq->regparam[layer][i].quality;
 		j++;
 	}
 	plot->nb = j;
 
-	ref.x = (double) ref_image;
+	ref.x = (double) ref_image + 1;
 	ref.y = is_fwhm ?
 			seq->regparam[layer][ref_image].fwhm :
 			seq->regparam[layer][ref_image].quality;
@@ -204,7 +205,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 			double julian = dateTimestamp_toJulian(tsi, seq->exposure);
 			plot->data[j].x = julian - (double)julian0;
 		} else {
-			plot->data[j].x = (double) i;
+			plot->data[j].x = (double) i + 1;
 		}
 		plot->err[j].x = plot->data[j].x;
 
@@ -667,10 +668,20 @@ gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		pldata *plot = plot_data;
 		d1 = ref_d = mean_d = NULL;
 
+		color = (com.pref.combo_theme == 0) ? 0.0 : 1.0;
+
 		kplotcfg_defaults(&cfgplot);
 		kdatacfg_defaults(&cfgdata);
 		set_colors(&cfgplot);
+		cfgplot.ticlabel = TICLABEL_LEFT | TICLABEL_BOTTOM;
+		cfgplot.border = BORDER_ALL;
+		cfgplot.borderline.clr.type = KPLOTCTYPE_RGBA;
+		cfgplot.borderline.clr.rgba[0] = 0.5;
+		cfgplot.borderline.clr.rgba[1] = 0.5;
+		cfgplot.borderline.clr.rgba[2] = 0.5;
+		cfgplot.borderline.clr.rgba[3] = 1.0;
 		cfgplot.xaxislabel = xlabel == NULL ? _("Frames") : xlabel;
+		cfgplot.xtics = 3;
 		cfgplot.yaxislabel = ylabel;
 		cfgplot.yaxislabelrot = M_PI_2 * 3.0;
 		cfgplot.xticlabelpad = cfgplot.yticlabelpad = 10.0;
@@ -691,21 +702,19 @@ gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		/* mean and min/max */
 		mean = kdata_ymean(d1);
 		//sigma = kdata_ystddev(d1);
-		min = plot_data->data[0].x;
-		/* if reference is ploted, we take it as maximum if it is */
-		max = (plot_data->data[plot_data->nb - 1].x > ref.x) ?
-				plot_data->data[plot_data->nb - 1].x + 1 : ref.x + 1;
+		min = kdata_xmin(d1, NULL);
+		max = kdata_xmax(d1, NULL);
 
 		if (nb_graphs == 1) {
-			avg = calloc(max - min, sizeof(struct kpair));
+			avg = calloc((max - min) + 1, sizeof(struct kpair));
 			j = min;
-			for (i = 0; i < max - min; i++) {
+			for (i = 0; i < (max - min) + 1; i++) {
 				avg[i].x = plot_data->data[j].x;
 				avg[i].y = mean;
 				++j;
 			}
 
-			mean_d = kdata_array_alloc(avg, max - min);
+			mean_d = kdata_array_alloc(avg, (max - min) + 1);
 			kplot_attach_data(p, mean_d, KPLOT_LINES, NULL);	// mean plot
 			free(avg);
 
@@ -717,8 +726,6 @@ gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
 		width = gtk_widget_get_allocated_width(widget);
 		height = gtk_widget_get_allocated_height(widget);
-
-		color = (com.pref.combo_theme == 0) ? 0.0 : 1.0;
 
 		cairo_set_source_rgb(cr, color, color, color);
 		cairo_rectangle(cr, 0.0, 0.0, width, height);
@@ -735,6 +742,7 @@ gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 			redraw(com.cvport, REMAP_ONLY);
 			requires_color_update = FALSE;
 		}
+
 		free_colors(&cfgplot);
 		kplot_free(p);
 		kdata_destroy(d1);
@@ -839,4 +847,43 @@ static void set_colors(struct kplotcfg *cfg) {
 
 static void free_colors(struct kplotcfg *cfg) {
 	free(cfg->clrs);
+}
+
+gboolean on_DrawingPlot_motion_notify_event(GtkWidget *widget,
+		GdkEventMotion *event, gpointer user_data) {
+
+	if (!plot_data) return FALSE;
+
+	gdouble int_x = (gdouble) get_dimx() / (gdouble) (com.seq.number - 1);
+	gdouble xpos = event->x - get_offsx();
+	gtk_widget_set_has_tooltip(widget, FALSE);
+
+	gint frame = (int)round(xpos / int_x);
+	if (frame > -1 && frame < com.seq.number) {
+		gchar *tooltip_text = g_strdup_printf("Frame: %d", frame + 1);
+		gtk_widget_set_tooltip_text(widget, tooltip_text);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+gboolean on_DrawingPlot_enter_notify_event(GtkWidget *widget,
+               GdkEvent  *event,
+               gpointer   user_data) {
+	if (plot_data) {
+		set_cursor("tcross");
+	}
+	return TRUE;
+}
+
+gboolean on_DrawingPlot_leave_notify_event(GtkWidget *widget,
+               GdkEvent  *event,
+               gpointer   user_data) {
+	if (get_thread_run()) {
+		set_cursor_waiting(TRUE);
+	} else {
+		/* trick to get default cursor */
+		set_cursor_waiting(FALSE);
+	}
+	return TRUE;
 }

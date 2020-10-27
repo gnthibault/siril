@@ -27,6 +27,10 @@
 #include "kplot.h"
 #include "extern.h"
 
+static double dimx = 0.0;
+static double offsx = 0.0;
+
+
 /*
  * Simple function to check that the double-precision values in the
  * kpair are valid: normal (or 0.0) values.
@@ -766,7 +770,8 @@ kplot_draw(struct kplot *p, double w, double h, cairo_t *cr)
 	kplotctx_tic_init(&ctx);
 	
 	ctx.h = ctx.dims.y;
-	ctx.w = ctx.dims.x;
+	dimx = ctx.w = ctx.dims.x;
+	offsx = ctx.offs.x;
 
 	for (i = 0; i < p->datasz; i++) {
 		d = &p->datas[i];
@@ -907,4 +912,16 @@ kplotcfg_default_palette(struct kplotccfg **pp, size_t *szp)
 	(*pp)[6].rgba[2] = 0x10 / 255.0;
 
 	return(1);
+}
+
+double
+get_dimx()
+{
+	return dimx;
+}
+
+double
+get_offsx()
+{
+	return offsx;
 }

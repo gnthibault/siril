@@ -218,7 +218,7 @@ kplotctx_label_init(struct kplotctx *ctx)
 			i / (double)(ctx->cfg.xtics - 1);
 
 		if (NULL == ctx->cfg.xticlabelfmt)
-			snprintf(buf, sizeof(buf), "%g", 
+			snprintf(buf, sizeof(buf), "%g",
 				ctx->minv.x + offs *
 				(ctx->maxv.x - ctx->minv.x));
 		else
