@@ -990,12 +990,11 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 
 	set_progress_bar_data(_("Finalizing stacking..."), (double)cur_nb/total);
 	if (is_mean) {
-		double nb_tot = (double)(naxes[0] * naxes[1] * nb_frames);
-		long channel;
-		for (channel = 0; channel < naxes[2]; channel++) {
+		double nb_tot = (double) naxes[0] * (double) naxes[1] * (double) nb_frames;
+		for (long channel = 0; channel < naxes[2]; channel++) {
 			siril_log_message(_("Pixel rejection in channel #%d: %.3lf%% - %.3lf%%\n"),
-					channel, irej[channel][0] / nb_tot * 100.0,
-					irej[channel][1] / nb_tot * 100.0);
+					channel, (double) irej[channel][0] / nb_tot * 100.0,
+					(double) irej[channel][1] / nb_tot * 100.0);
 		}
 	}
 
