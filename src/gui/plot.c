@@ -499,6 +499,7 @@ void on_plotSourceCombo_changed(GtkComboBox *box, gpointer user_data) {
 	gtk_widget_set_visible(combo, use_photometry);
 	gtk_widget_set_visible(varCurve, use_photometry);
 	gtk_widget_set_visible(arcsec, use_photometry);
+	gtk_widget_set_visible(julianw, use_photometry);
 	drawPlot();
 }
 
@@ -518,6 +519,7 @@ void reset_plot() {
 		gtk_widget_set_visible(combo, FALSE);
 		gtk_widget_set_visible(varCurve, FALSE);
 		gtk_widget_set_visible(arcsec, FALSE);
+		gtk_widget_set_visible(julianw, FALSE);
 		gtk_widget_set_sensitive(buttonExport, FALSE);
 		gtk_widget_set_sensitive(buttonClearLatest, FALSE);
 		gtk_widget_set_sensitive(buttonClearAll, FALSE);
@@ -773,7 +775,7 @@ static void update_ylabel() {
 	gboolean arcsec_is_ok = (gfit.focal_length > 0.0 && gfit.pixel_size_x > 0.f
 			&& gfit.pixel_size_y > 0.f && gfit.binning_x > 0
 			&& gfit.binning_y > 0);
-	gtk_widget_set_sensitive(arcsec, selected_source == FWHM && arcsec_is_ok);
+	gtk_widget_set_visible(arcsec, selected_source == FWHM && arcsec_is_ok);
 	switch (selected_source) {
 	case ROUNDNESS:
 		ylabel = _("Star roundness (1 is round)");

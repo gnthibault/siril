@@ -5756,9 +5756,23 @@ To be enabled, the reference image must have been explicitly set and already dis
                                   </packing>
                                 </child>
                                 <child>
+                                  <object class="GtkCheckButton" id="JulianPhotometry">
+                                    <property name="label" translatable="yes">Julian Date</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="on_JulianPhotometry_toggled" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">True</property>
+                                    <property name="pack_type">end</property>
+                                    <property name="position">2</property>
+                                  </packing>
+                                </child>
+                                <child>
                                   <object class="GtkCheckButton" id="arcsecPhotometry">
                                     <property name="label" translatable="yes">arcsec</property>
-                                    <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
                                     <property name="draw_indicator">True</property>
@@ -5768,7 +5782,7 @@ To be enabled, the reference image must have been explicitly set and already dis
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
                                     <property name="pack_type">end</property>
-                                    <property name="position">2</property>
+                                    <property name="position">3</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -5785,22 +5799,6 @@ WARNING: gnuplot must be installed.</property>
                                   <packing>
                                     <property name="expand">False</property>
                                     <property name="fill">True</property>
-                                    <property name="position">3</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkCheckButton" id="JulianPhotometry">
-                                    <property name="label" translatable="yes">Julian Date</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_JulianPhotometry_toggled" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="pack_type">end</property>
                                     <property name="position">4</property>
                                   </packing>
                                 </child>
