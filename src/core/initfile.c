@@ -196,7 +196,7 @@ static int readinitfile() {
 			com.pref.check_update = TRUE;
 		}
 		if (config_setting_lookup_float(misc_setting, "font_scale", &com.pref.font_scale) == CONFIG_FALSE) {
-			com.pref.font_scale = 90.0;
+			com.pref.font_scale = 100.0;
 		}
 		config_setting_lookup_int(misc_setting, "thumbnail_size", &com.pref.thumbnail_size);
 		config_setting_lookup_int(misc_setting, "theme", &com.pref.combo_theme);
