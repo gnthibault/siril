@@ -853,24 +853,20 @@ static void free_colors(struct kplotcfg *cfg) {
 
 gboolean on_DrawingPlot_motion_notify_event(GtkWidget *widget,
 		GdkEventMotion *event, gpointer user_data) {
-
 	if (!plot_data) return FALSE;
 	if (!com.seq.imgparam) return FALSE;
 
 	pldata *plot = plot_data;
 
-	int min = (int) plot->data[0].x;
-	int max = (int) plot->data[com.seq.selnum - 1].x;
-
-	gdouble int_x = get_dimx() / (gdouble) (max - min);
-	gdouble xpos = event->x - get_offsx();
+	point min = { plot->data[0].x, plot->data[0].y };
+	point max = { plot->data[com.seq.selnum - 1].x, plot->data[com.seq.selnum - 1].y };
+	point intervale = { get_dimx() / (max.x - min.x), get_dimy() / (max.y - min.y)};
+	point pos = { event->x - get_offsx(), get_dimy() - event->y + get_offsy() };
 
 	gtk_widget_set_has_tooltip(widget, FALSE);
 
-	gint frame = (int)round(xpos / int_x);
-
-	int index = frame + min - 1;
-	if (index >= 0 && index <= max && com.seq.imgparam[index].incl) {
+	int index = (int) round(pos.x / intervale.x) + (int) min.x - 1;
+	if (index >= 0 && index <= max.x && com.seq.imgparam[index].incl) {
 		gchar *tooltip_text = g_strdup_printf("Frame: %d", (index + 1));
 		gtk_widget_set_tooltip_text(widget, tooltip_text);
 		return TRUE;
@@ -879,18 +875,16 @@ gboolean on_DrawingPlot_motion_notify_event(GtkWidget *widget,
 	return FALSE;
 }
 
-gboolean on_DrawingPlot_enter_notify_event(GtkWidget *widget,
-               GdkEvent  *event,
-               gpointer   user_data) {
+gboolean on_DrawingPlot_enter_notify_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
 	if (plot_data) {
 		set_cursor("tcross");
 	}
 	return TRUE;
 }
 
-gboolean on_DrawingPlot_leave_notify_event(GtkWidget *widget,
-               GdkEvent  *event,
-               gpointer   user_data) {
+gboolean on_DrawingPlot_leave_notify_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
 	if (get_thread_run()) {
 		set_cursor_waiting(TRUE);
 	} else {
