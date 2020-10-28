@@ -77,8 +77,6 @@ int count_selected_files() {
 }
 
 static void initialize_convert() {
-	GDir *dir;
-	GError *error = NULL;
 	gchar *file_data, *file_date;
 	GtkTreeIter iter;
 	GList *list = NULL;
@@ -195,17 +193,6 @@ static void initialize_convert() {
 	
 	set_cursor_waiting(TRUE);
 	control_window_switch_to_tab(OUTPUT_LOGS);
-	
-	/* then, convert files to Siril's FITS format */
-	if((dir = g_dir_open(com.wd, 0, &error)) == NULL){
-		char *tmpmsg = siril_log_message(_("Conversion: error opening working directory %s.\n"), com.wd);
-		siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), tmpmsg);
-		fprintf(stderr, "Conversion: %s\n", error->message);
-		g_error_free(error);
-		g_list_free_full(list, g_free);
-		set_cursor_waiting(FALSE);
-		return;
-	}
 
 	/* g_list_append() has to traverse the entire list to find the end,
 	 * which is inefficient when adding multiple elements. A common idiom
