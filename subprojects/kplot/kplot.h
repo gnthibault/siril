@@ -242,7 +242,9 @@ struct kplotcfg	*kplot_get_plotcfg(struct kplot *);
 
 /* getter added by C. Richard - 2020 */
 double get_dimx();
+double get_dimy();
 double get_offsx();
+double get_offsy();
 
 
 __END_DECLS

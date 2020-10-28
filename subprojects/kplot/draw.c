@@ -28,7 +28,9 @@
 #include "extern.h"
 
 static double dimx = 0.0;
+static double dimy = 0.0;
 static double offsx = 0.0;
+static double offsy = 0.0;
 
 
 /*
@@ -769,9 +771,10 @@ kplot_draw(struct kplot *p, double w, double h, cairo_t *cr)
 	kplotctx_border_init(&ctx);
 	kplotctx_tic_init(&ctx);
 	
-	ctx.h = ctx.dims.y;
+	dimy = ctx.h = ctx.dims.y;
 	dimx = ctx.w = ctx.dims.x;
 	offsx = ctx.offs.x;
+	offsy = ctx.offs.y;
 
 	for (i = 0; i < p->datasz; i++) {
 		d = &p->datas[i];
@@ -921,7 +924,19 @@ get_dimx()
 }
 
 double
+get_dimy()
+{
+	return dimy;
+}
+
+double
 get_offsx()
 {
 	return offsx;
+}
+
+double
+get_offsy()
+{
+	return offsy;
 }

@@ -659,7 +659,7 @@ void on_clearAllPhotometry_clicked(GtkButton *button, gpointer user_data) {
 gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	guint width, height, i, j;
 	double mean, color;
-	int min, max, nb_graphs = 0;
+	int nb_graphs = 0;
 	struct kpair *avg;
 	struct kplotcfg cfgplot;
 	struct kdatacfg cfgdata;
@@ -704,19 +704,19 @@ gboolean on_DrawingPlot_draw(GtkWidget *widget, cairo_t *cr, gpointer data) {
 		/* mean and min/max */
 		mean = kdata_ymean(d1);
 		//sigma = kdata_ystddev(d1);
-		min = kdata_xmin(d1, NULL);
-		max = kdata_xmax(d1, NULL);
+		int min_data = kdata_xmin(d1, NULL);
+		int max_data = kdata_xmax(d1, NULL);
 
 		if (nb_graphs == 1) {
-			avg = calloc((max - min) + 1, sizeof(struct kpair));
-			j = min;
-			for (i = 0; i < (max - min) + 1; i++) {
+			avg = calloc((max_data - min_data) + 1, sizeof(struct kpair));
+			j = min_data;
+			for (i = 0; i < (max_data - min_data) + 1; i++) {
 				avg[i].x = plot_data->data[j].x;
 				avg[i].y = mean;
 				++j;
 			}
 
-			mean_d = kdata_array_alloc(avg, (max - min) + 1);
+			mean_d = kdata_array_alloc(avg, (max_data - min_data) + 1);
 			kplot_attach_data(p, mean_d, KPLOT_LINES, NULL);	// mean plot
 			free(avg);
 
@@ -856,13 +856,16 @@ gboolean on_DrawingPlot_motion_notify_event(GtkWidget *widget,
 
 	if (!plot_data) return FALSE;
 
-	gdouble int_x = (gdouble) get_dimx() / (gdouble) (com.seq.number - 1);
+	pldata *plot = plot_data;
+	gdouble int_x = get_dimx() / (gdouble) (com.seq.selnum - 1);
 	gdouble xpos = event->x - get_offsx();
+
 	gtk_widget_set_has_tooltip(widget, FALSE);
 
 	gint frame = (int)round(xpos / int_x);
+
 	if (frame > -1 && frame < com.seq.number) {
-		gchar *tooltip_text = g_strdup_printf("Frame: %d", frame + 1);
+		gchar *tooltip_text = g_strdup_printf("Frame: %d", (int) plot->data[frame].x);
 		gtk_widget_set_tooltip_text(widget, tooltip_text);
 		return TRUE;
 	}
