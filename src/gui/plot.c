@@ -855,20 +855,27 @@ gboolean on_DrawingPlot_motion_notify_event(GtkWidget *widget,
 		GdkEventMotion *event, gpointer user_data) {
 
 	if (!plot_data) return FALSE;
+	if (!com.seq.imgparam) return FALSE;
 
 	pldata *plot = plot_data;
-	gdouble int_x = get_dimx() / (gdouble) (com.seq.selnum - 1);
+
+	int min = (int) plot->data[0].x;
+	int max = (int) plot->data[com.seq.selnum - 1].x;
+
+	gdouble int_x = get_dimx() / (gdouble) (max - min);
 	gdouble xpos = event->x - get_offsx();
 
 	gtk_widget_set_has_tooltip(widget, FALSE);
 
 	gint frame = (int)round(xpos / int_x);
 
-	if (frame > -1 && frame < com.seq.number) {
-		gchar *tooltip_text = g_strdup_printf("Frame: %d", (int) plot->data[frame].x);
+	int index = frame + min - 1;
+	if (index >= 0 && index <= max && com.seq.imgparam[index].incl) {
+		gchar *tooltip_text = g_strdup_printf("Frame: %d", (index + 1));
 		gtk_widget_set_tooltip_text(widget, tooltip_text);
 		return TRUE;
 	}
+
 	return FALSE;
 }
 
