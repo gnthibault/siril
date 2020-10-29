@@ -36,6 +36,7 @@
 #include "gui/image_display.h"
 #include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
+#include "gui/sequence_list.h"
 #include "kplot.h"
 #include "algos/PSF.h"
 #include "io/ser.h"
@@ -851,27 +852,35 @@ static void free_colors(struct kplotcfg *cfg) {
 	free(cfg->clrs);
 }
 
-gboolean on_DrawingPlot_motion_notify_event(GtkWidget *widget,
-		GdkEventMotion *event, gpointer user_data) {
-	if (!plot_data) return FALSE;
-	if (!com.seq.imgparam) return FALSE;
+static int get_index_of_frame(gdouble x, gdouble y) {
+	if (!plot_data) return -1;
+	if (!com.seq.imgparam) return -1;
 
 	pldata *plot = plot_data;
 
 	point min = { plot->data[0].x, plot->data[0].y };
 	point max = { plot->data[com.seq.selnum - 1].x, plot->data[com.seq.selnum - 1].y };
 	point intervale = { get_dimx() / (max.x - min.x), get_dimy() / (max.y - min.y)};
-	point pos = { event->x - get_offsx(), get_dimy() - event->y + get_offsy() };
-
-	gtk_widget_set_has_tooltip(widget, FALSE);
+	point pos = { x - get_offsx(), get_dimy() - y + get_offsy() };
 
 	int index = (int) round(pos.x / intervale.x) + (int) min.x - 1;
 	if (index >= 0 && index <= max.x && com.seq.imgparam[index].incl) {
+		return index;
+	}
+	return -1;
+}
+
+gboolean on_DrawingPlot_motion_notify_event(GtkWidget *widget,
+		GdkEventMotion *event, gpointer user_data) {
+
+	gtk_widget_set_has_tooltip(widget, FALSE);
+
+	int index = get_index_of_frame(event->x, event->y);
+	if (index >= 0) {
 		gchar *tooltip_text = g_strdup_printf("Frame: %d", (index + 1));
 		gtk_widget_set_tooltip_text(widget, tooltip_text);
 		return TRUE;
 	}
-
 	return FALSE;
 }
 
@@ -892,4 +901,73 @@ gboolean on_DrawingPlot_leave_notify_event(GtkWidget *widget, GdkEvent *event,
 		set_cursor_waiting(FALSE);
 	}
 	return TRUE;
+}
+
+static void do_popup_plotmenu(GtkWidget *my_widget, GdkEventButton *event) {
+	static GtkMenu *menu = NULL;
+	static GtkMenuItem *menu_item = NULL;
+
+	int index = get_index_of_frame(event->x, event->y);
+	if (index < 0) return;
+
+	if (!menu) {
+		menu = GTK_MENU(lookup_widget("menu_plot"));
+		gtk_menu_attach_to_widget(GTK_MENU(menu), my_widget, NULL);
+		menu_item = GTK_MENU_ITEM(lookup_widget("menu_plot_exclude"));
+	}
+
+#if GTK_CHECK_VERSION(3, 22, 0)
+	gtk_menu_popup_at_pointer(GTK_MENU(menu), NULL);
+#else
+	int button, event_time;
+
+	if (event) {
+		button = event->button;
+		event_time = event->time;
+	} else {
+		button = 0;
+		event_time = gtk_get_current_event_time();
+	}
+
+	gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, button,
+			event_time);
+#endif
+	gchar *str = g_strdup_printf(_("Exclude Frame %d"), index + 1);
+	gtk_menu_item_set_label(menu_item, str);
+
+	g_free(str);
+}
+
+gboolean on_DrawingPlot_button_press_event(GtkWidget *widget,
+		GdkEventButton *event, gpointer user_data) {
+	if (event->button == GDK_BUTTON_SECONDARY) {
+		do_popup_plotmenu(widget, event);
+		return TRUE;
+	}
+	return FALSE;
+}
+
+static signed long extract_int(const gchar *str) {
+	gchar *p = (gchar *)str;
+	while (*p) {
+		if (g_ascii_isdigit(*p) || ((*p == '-' || *p == '+') && g_ascii_isdigit(*(p + 1)))) {
+	        // Found a number
+	        return g_ascii_strtoll(p, &p, 10); // return number
+	    } else {
+	        // Otherwise, move on to the next character.
+	        p++;
+	    }
+	}
+	return -1;
+}
+
+void on_menu_plot_exclude_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	const gchar *label = gtk_menu_item_get_label(menuitem);
+	gint index;
+
+	index = extract_int(label);
+	index--;
+
+	exclude_single_frame(index);
+	update_seqlist();
 }

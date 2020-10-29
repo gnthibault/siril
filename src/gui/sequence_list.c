@@ -379,15 +379,7 @@ void on_seqlist_button_clicked(GtkToolButton *button, gpointer user_data) {
 	}
 }
 
-void on_seqlist_image_selection_toggled(GtkCellRendererToggle *cell_renderer,
-		gchar *char_path, gpointer user_data) {
-	GtkTreePath *path = gtk_tree_path_new_from_string(char_path);
-	gint index = get_image_index_from_path(path);
-	gtk_tree_path_free(path);
-	if (index < 0 || index >= com.seq.number) return;
-	fprintf(stdout, "toggle selection index = %d\n", index);
-
-	sequence_list_change_selection(char_path, !com.seq.imgparam[index].incl);
+void exclude_single_frame(int index) {
 	siril_log_message(_("%s image %d in sequence %s\n"),
 			com.seq.imgparam[index].incl ? _("Excluding") : _("Including"),
 			index + 1, com.seq.seqname);
@@ -402,6 +394,18 @@ void on_seqlist_image_selection_toggled(GtkCellRendererToggle *cell_renderer,
 	drawPlot();
 	adjust_sellabel();
 	writeseqfile(&com.seq);
+}
+
+void on_seqlist_image_selection_toggled(GtkCellRendererToggle *cell_renderer,
+		gchar *char_path, gpointer user_data) {
+	GtkTreePath *path = gtk_tree_path_new_from_string(char_path);
+	gint index = get_image_index_from_path(path);
+	gtk_tree_path_free(path);
+	if (index < 0 || index >= com.seq.number) return;
+	fprintf(stdout, "toggle selection index = %d\n", index);
+
+	sequence_list_change_selection(char_path, !com.seq.imgparam[index].incl);
+	exclude_single_frame(index);
 }
 
 void toggle_image_selection(int index_in_list, int real_index) {

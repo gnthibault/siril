@@ -29,6 +29,7 @@ void sequence_list_change_reference();
 void fill_sequence_list(sequence *seq, int layer, gboolean as_idle);
 void clear_sequence_list();
 void update_seqlist();
+void exclude_single_frame(int index);
 void toggle_image_selection(int index_in_list, int real_index);
 void adjust_refimage(int n);
 
