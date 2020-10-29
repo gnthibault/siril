@@ -349,7 +349,7 @@ int adjust_sellabel() {
 	if (sequence_is_loaded()) {
 		gchar *seq_basename = g_path_get_basename(com.seq.seqname);
 
-		bufferglobal = g_strdup_printf(_("%s, %d images selected"), seq_basename, com.seq.selnum);
+		bufferglobal = g_strdup_printf(_("%s, %d/%d images selected"), seq_basename, com.seq.selnum, com.seq.number);
 		g_free(seq_basename);
 	} else {
 		bufferglobal = g_strdup(_("- none -"));
