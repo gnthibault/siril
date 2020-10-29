@@ -5637,38 +5637,9 @@ To be enabled, the reference image must have been explicitly set and already dis
                                 <property name="can_focus">False</property>
                                 <property name="spacing">5</property>
                                 <child>
-                                  <object class="GtkLabel" id="GtkLabelPng">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Filename:</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="padding">5</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkEntry" id="GtkEntryCSV">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip_text" translatable="yes">Enter the filename of the exported CSV file.</property>
-                                    <property name="width_chars">10</property>
-                                    <property name="text">Plot</property>
-                                    <signal name="changed" handler="on_GtkEntryCSV_changed" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">True</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                                <child>
                                   <object class="GtkButton" id="ButtonSaveCSV">
                                     <property name="label" translatable="yes">Export to CSV</property>
                                     <property name="visible">True</property>
-                                    <property name="sensitive">False</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">True</property>
                                     <property name="tooltip_text" translatable="yes">Export displayed plot to a CSV file.</property>

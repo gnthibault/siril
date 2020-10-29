@@ -31,6 +31,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/OS_utils.h"
 #include "core/processing.h"
 #include "gui/callbacks.h"
 #include "gui/image_display.h"
@@ -46,7 +47,7 @@
 #define XLABELSIZE 15
 
 static GtkWidget *drawingPlot = NULL, *sourceCombo = NULL, *combo = NULL,
-		*varCurve = NULL, *buttonExport = NULL, *buttonClearAll = NULL,
+		*varCurve = NULL, *buttonClearAll = NULL,
 		*buttonClearLatest = NULL, *arcsec = NULL, *julianw = NULL;
 static pldata *plot_data;
 static struct kpair ref;
@@ -63,7 +64,6 @@ static gboolean force_Julian = FALSE;
 static void update_ylabel();
 static void set_colors(struct kplotcfg *cfg);
 static void free_colors(struct kplotcfg *cfg);
-void on_GtkEntryCSV_changed(GtkEditable *editable, gpointer user_data);
 
 static pldata *alloc_plot_data(int size) {
 	pldata *plot = calloc(1, sizeof(pldata));
@@ -287,7 +287,7 @@ static gboolean gnuplot_is_available() {
 }
 #endif
 
-static int lightCurve(pldata *plot, sequence *seq) {
+static int lightCurve(pldata *plot, sequence *seq, gchar *filename) {
 	int i, j, k, nbImages = 0, ret = 0;
 	pldata *tmp_plot = plot;
 	double *vmag, *err, *x, *real_x;
@@ -389,23 +389,11 @@ static int lightCurve(pldata *plot, sequence *seq) {
 	gnuplot_plot_xyyerr(gplot, x, vmag, err, nbImages, "");
 
 	/* Exporting data in a dat file */
-	GtkEntry *EntryCSV = GTK_ENTRY(lookup_widget("GtkEntryCSV"));
-	const gchar *file = gtk_entry_get_text(EntryCSV);
-	if (file && file[0] != '\0') {
-		gchar *filename = g_strndup(file, strlen(file) + 5);
-		g_strlcat(filename, ".dat", strlen(file) + 5);
-		ret = gnuplot_write_xyyerr_dat(filename, real_x, vmag, err, nbImages,
-				"JD_UT V-C err");
-		if (!ret) {
-			char *msg = siril_log_message(_("%s has been saved.\n"), filename);
-			siril_message_dialog( GTK_MESSAGE_INFO, _("Information"), msg);
-
-		} else {
-			siril_message_dialog( GTK_MESSAGE_ERROR, _("Error"),
-					_("Something went wrong while saving plot"));
-
-		}
-		g_free(filename);
+	ret = gnuplot_write_xyyerr_dat(filename, real_x, vmag, err, nbImages, "JD_UT V-C err");
+	if (!ret) {
+		siril_log_message(_("%s has been saved.\n"), filename);
+	} else {
+		siril_message_dialog( GTK_MESSAGE_ERROR, _("Error"), _("Something went wrong while saving plot"));
 	}
 
 	free(vmag);
@@ -414,65 +402,55 @@ static int lightCurve(pldata *plot, sequence *seq) {
 	return 0;
 }
 
-static int exportCSV(pldata *plot, sequence *seq) {
+static int exportCSV(pldata *plot, sequence *seq, gchar *filename) {
 	int i, j, ret = 0;
-	const gchar *file;
-	gchar *filename, *msg;
-	GtkEntry *EntryCSV;
 
-	EntryCSV = GTK_ENTRY(lookup_widget("GtkEntryCSV"));
-	file = gtk_entry_get_text(EntryCSV);
-	if (file && file[0] != '\0') {
-		filename = g_strndup(file, strlen(file) + 5);
-		g_strlcat(filename, ".csv", strlen(file) + 5);
-		FILE *csv = g_fopen(filename, "w");
-		if (csv == NULL) {
-			ret = 1;
-		} else {
-			if (use_photometry) {
-				pldata *tmp_plot = plot;
-				for (i = 0, j = 0; i < plot->nb; i++) {
-					if (!seq->imgparam[i].incl)
-						continue;
-					int x = 0;
-					double date = tmp_plot->data[j].x;
-					if (julian0) {
-						date += julian0;
-					}
-					fprintf(csv, "%.10lf", date);
-					while (x < MAX_SEQPSF && seq->photometry[x]) {
-						fprintf(csv, ", %g", tmp_plot->data[j].y);
-						tmp_plot = tmp_plot->next;
-						++x;
-					}
-					fprintf(csv, "\n");
-					tmp_plot = plot;
-					j++;
+	FILE *csv = g_fopen(filename, "w");
+	if (csv == NULL) {
+		ret = 1;
+	} else {
+		if (use_photometry) {
+			pldata *tmp_plot = plot;
+			for (i = 0, j = 0; i < plot->nb; i++) {
+				if (!seq->imgparam[i].incl)
+					continue;
+				int x = 0;
+				double date = tmp_plot->data[j].x;
+				if (julian0) {
+					date += julian0;
 				}
-			} else {
-				for (i = 0, j = 0; i < plot->nb; i++) {
-					if (!seq->imgparam[i].incl)
-						continue;
-					double date = plot->data[j].x;
-					if (julian0) {
-						date += julian0;
-					}
-					fprintf(csv, "%.10lf, %g\n", date, plot->data[j].y);
-					j++;
+				fprintf(csv, "%.10lf", date);
+				while (x < MAX_SEQPSF && seq->photometry[x]) {
+					fprintf(csv, ", %g", tmp_plot->data[j].y);
+					tmp_plot = tmp_plot->next;
+					++x;
 				}
+				fprintf(csv, "\n");
+				tmp_plot = plot;
+				j++;
 			}
-			g_free(filename);
-			fclose(csv);
+		} else {
+			for (i = 0, j = 0; i < plot->nb; i++) {
+				if (!seq->imgparam[i].incl)
+					continue;
+				double date = plot->data[j].x;
+				if (julian0) {
+					date += julian0;
+				}
+				fprintf(csv, "%.10lf, %g\n", date, plot->data[j].y);
+				j++;
+			}
 		}
+		fclose(csv);
 	}
 	if (!ret) {
-		msg = siril_log_message(_("%s.csv has been saved.\n"), file);
-		siril_message_dialog( GTK_MESSAGE_INFO, _("Information"), msg);
+		siril_log_message(_("%s has been saved.\n"), filename);
 	} else {
 		siril_message_dialog( GTK_MESSAGE_INFO, _("Error"),
 				_("Something went wrong while saving plot"));
 
 	}
+
 	return 0;
 }
 
@@ -504,14 +482,6 @@ void on_plotSourceCombo_changed(GtkComboBox *box, gpointer user_data) {
 	drawPlot();
 }
 
-void on_GtkEntryCSV_changed(GtkEditable *editable, gpointer user_data) {
-	const gchar *txt;
-	if (!buttonExport)
-		return;
-	txt = gtk_entry_get_text(GTK_ENTRY(editable));
-	gtk_widget_set_sensitive(buttonExport, txt[0] != '\0' && plot_data);
-}
-
 void reset_plot() {
 	free_plot_data();
 	if (sourceCombo) {
@@ -521,7 +491,6 @@ void reset_plot() {
 		gtk_widget_set_visible(varCurve, FALSE);
 		gtk_widget_set_visible(arcsec, FALSE);
 		gtk_widget_set_visible(julianw, FALSE);
-		gtk_widget_set_sensitive(buttonExport, FALSE);
 		gtk_widget_set_sensitive(buttonClearLatest, FALSE);
 		gtk_widget_set_sensitive(buttonClearAll, FALSE);
 	}
@@ -550,7 +519,6 @@ void drawPlot() {
 		arcsec = lookup_widget("arcsecPhotometry");
 		julianw = lookup_widget("JulianPhotometry");
 		sourceCombo = lookup_widget("plotSourceCombo");
-		buttonExport = lookup_widget("ButtonSaveCSV");
 		buttonClearAll = lookup_widget("clearAllPhotometry");
 		buttonClearLatest = lookup_widget("clearLastPhotometry");
 	}
@@ -610,19 +578,59 @@ void drawPlot() {
 		build_registration_dataset(seq, layer, ref_image, plot_data);
 	}
 	gtk_widget_set_sensitive(julianw, julian0);
-	on_GtkEntryCSV_changed(GTK_EDITABLE(lookup_widget("GtkEntryCSV")), NULL);
 	gtk_widget_queue_draw(drawingPlot);
+}
+
+static void set_filter(GtkFileChooser *dialog, const gchar *format) {
+	GtkFileFilter *f = gtk_file_filter_new();
+	gchar *name = g_strdup_printf(_("Output files (*%s)"), format);
+	gchar *pattern = g_strdup_printf(_("*%s"), format);
+	gtk_file_filter_set_name(f, name);
+	gtk_file_filter_add_pattern(f, pattern);
+	gtk_file_chooser_add_filter(dialog, f);
+	gtk_file_chooser_set_filter(dialog, f);
+
+	g_free(name);
+	g_free(pattern);
+}
+
+static void save_dialog(const gchar *format, int (function)(pldata *, sequence *, gchar *)) {
+	SirilWidget *widgetdialog;
+	GtkFileChooser *dialog = NULL;
+	GtkWindow *control_window = GTK_WINDOW(lookup_widget("control_window"));
+	gint res;
+	gchar *filename;
+
+	filename = g_strdup(format);
+
+	widgetdialog = siril_file_chooser_save(control_window, GTK_FILE_CHOOSER_ACTION_SAVE);
+	dialog = GTK_FILE_CHOOSER(widgetdialog);
+	gtk_file_chooser_set_current_folder(dialog, com.wd);
+	gtk_file_chooser_set_select_multiple(dialog, FALSE);
+	gtk_file_chooser_set_do_overwrite_confirmation(dialog, TRUE);
+	gtk_file_chooser_set_current_name(dialog, filename);
+	set_filter(dialog, format);
+
+	res = siril_dialog_run(widgetdialog);
+	if (res == GTK_RESPONSE_ACCEPT) {
+		gchar *file = gtk_file_chooser_get_filename(dialog);
+		function(plot_data, &com.seq, file);
+
+		g_free(file);
+	}
+	siril_widget_destroy(widgetdialog);
+	g_free(filename);
 }
 
 void on_ButtonSaveCSV_clicked(GtkButton *button, gpointer user_data) {
 	set_cursor_waiting(TRUE);
-	exportCSV(plot_data, &com.seq);
+	save_dialog(".csv", exportCSV);
 	set_cursor_waiting(FALSE);
 }
 
 void on_varCurvePhotometry_clicked(GtkButton *button, gpointer user_data) {
 	set_cursor_waiting(TRUE);
-	lightCurve(plot_data, &com.seq);
+	save_dialog(".dat", lightCurve);
 	set_cursor_waiting(FALSE);
 }
 
