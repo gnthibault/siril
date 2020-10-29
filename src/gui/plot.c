@@ -594,7 +594,7 @@ static void set_filter(GtkFileChooser *dialog, const gchar *format) {
 	g_free(pattern);
 }
 
-static void save_dialog(const gchar *format, int (function)(pldata *, sequence *, gchar *)) {
+static void save_dialog(const gchar *format, int (export_function)(pldata *, sequence *, gchar *)) {
 	SirilWidget *widgetdialog;
 	GtkFileChooser *dialog = NULL;
 	GtkWindow *control_window = GTK_WINDOW(lookup_widget("control_window"));
@@ -614,7 +614,7 @@ static void save_dialog(const gchar *format, int (function)(pldata *, sequence *
 	res = siril_dialog_run(widgetdialog);
 	if (res == GTK_RESPONSE_ACCEPT) {
 		gchar *file = gtk_file_chooser_get_filename(dialog);
-		function(plot_data, &com.seq, file);
+		export_function(plot_data, &com.seq, file);
 
 		g_free(file);
 	}
