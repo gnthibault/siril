@@ -595,23 +595,17 @@ static void set_filter(GtkFileChooser *dialog, const gchar *format) {
 }
 
 static void save_dialog(const gchar *format, int (export_function)(pldata *, sequence *, gchar *)) {
-	SirilWidget *widgetdialog;
-	GtkFileChooser *dialog = NULL;
 	GtkWindow *control_window = GTK_WINDOW(lookup_widget("control_window"));
-	gint res;
-	gchar *filename;
+	SirilWidget *widgetdialog = siril_file_chooser_save(control_window, GTK_FILE_CHOOSER_ACTION_SAVE);
+	GtkFileChooser *dialog = GTK_FILE_CHOOSER(widgetdialog);
 
-	filename = g_strdup(format);
-
-	widgetdialog = siril_file_chooser_save(control_window, GTK_FILE_CHOOSER_ACTION_SAVE);
-	dialog = GTK_FILE_CHOOSER(widgetdialog);
 	gtk_file_chooser_set_current_folder(dialog, com.wd);
 	gtk_file_chooser_set_select_multiple(dialog, FALSE);
 	gtk_file_chooser_set_do_overwrite_confirmation(dialog, TRUE);
-	gtk_file_chooser_set_current_name(dialog, filename);
+	gtk_file_chooser_set_current_name(dialog, format);
 	set_filter(dialog, format);
 
-	res = siril_dialog_run(widgetdialog);
+	gint res = siril_dialog_run(widgetdialog);
 	if (res == GTK_RESPONSE_ACCEPT) {
 		gchar *file = gtk_file_chooser_get_filename(dialog);
 		export_function(plot_data, &com.seq, file);
@@ -619,7 +613,6 @@ static void save_dialog(const gchar *format, int (export_function)(pldata *, seq
 		g_free(file);
 	}
 	siril_widget_destroy(widgetdialog);
-	g_free(filename);
 }
 
 void on_ButtonSaveCSV_clicked(GtkButton *button, gpointer user_data) {
