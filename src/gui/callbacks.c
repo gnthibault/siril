@@ -121,21 +121,6 @@ void set_viewer_mode_widgets_sensitive(gboolean sensitive) {
 	gtk_widget_set_sensitive(user, sensitive);
 }
 
-/*
- * Update FWHM UNITS static function
- */
-
-static void update_fwhm_units_ok() {
-	GtkWidget *label_ok = GTK_WIDGET(lookup_widget("label_ok"));
-	gboolean update;
-
-	update = gfit.focal_length > 0.0 && gfit.pixel_size_x > 0.0f && gfit.pixel_size_y > 0.0f;
-
-	gtk_widget_set_visible(label_ok, update);
-	drawPlot();
-}
-
-
 GtkWidget* lookup_widget(const gchar *widget_name) {
 	return GTK_WIDGET(gtk_builder_get_object(builder, widget_name));
 }
@@ -1511,19 +1496,19 @@ void on_menu_gray_header_activate(GtkMenuItem *menuitem, gpointer user_data) {
 void on_focal_entry_changed(GtkEditable *editable, gpointer user_data) {
 	const gchar* focal_entry = gtk_entry_get_text(GTK_ENTRY(editable));
 	gfit.focal_length = atof(focal_entry);
-	update_fwhm_units_ok();
+	drawPlot();
 }
 
 void on_pitchX_entry_changed(GtkEditable *editable, gpointer user_data) {
 	const gchar* pitchX_entry = gtk_entry_get_text(GTK_ENTRY(editable));
 	gfit.pixel_size_x = (float) atof(pitchX_entry);
-	update_fwhm_units_ok();
+	drawPlot();
 }
 
 void on_pitchY_entry_changed(GtkEditable *editable, gpointer user_data) {
 	const gchar* pitchY_entry = gtk_entry_get_text(GTK_ENTRY(editable));
 	gfit.pixel_size_y = (float) atof(pitchY_entry);
-	update_fwhm_units_ok();
+	drawPlot();
 }
 
 void on_combobinning_changed(GtkComboBox *box, gpointer user_data) {
@@ -1547,7 +1532,7 @@ void on_combobinning_changed(GtkComboBox *box, gpointer user_data) {
 		default:
 			fprintf(stderr, "Should not happen\n");
 	}
-	update_fwhm_units_ok();
+	drawPlot();
 }
 
 void on_info_menu_informations_clicked(GtkButton *button, gpointer user_data) {
