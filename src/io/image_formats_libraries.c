@@ -360,6 +360,16 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 	TIFFGetFieldDefaulted(tif, TIFFTAG_MINSAMPLEVALUE, &(fit->lo));
 	TIFFGetFieldDefaulted(tif, TIFFTAG_MAXSAMPLEVALUE, &(fit->hi));
 
+	// Retrieve the Date/Time as in the TIFF TAG
+	gchar *date_time;
+
+	if (TIFFGetField(tif, TIFFTAG_DATETIME, &date_time)) {
+		int year, month, day, h, m, s;
+		sscanf(date_time, "%04d:%02d:%02d %02d:%02d:%02d", &year, &month, &day, &h, &m, &s);
+		g_snprintf(fit->date_obs, sizeof(fit->date_obs), "%04d-%02d-%02dT%02d:%02d:%02d",
+				year, month, day, h, m, s);
+	}
+
 	size_t npixels = width * height;
 
 	switch(nbits){
@@ -555,6 +565,16 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 		siril_log_message(_("TIFF file has unexpected number of channels (not 1 or 3).\n"));
 		free(filename);
 		return 1;
+	}
+
+	if (fit->date_obs[0]) {
+		int year, month, day, h, m, s;
+		sscanf(fit->date_obs, "%04d-%02d-%02dT%02d:%02d:%02d", &year, &month, &day, &h, &m, &s);
+		gchar *date_time = g_strdup_printf("%04d:%02d:%02d %02d:%02d:%02d",
+				year, month, day, h, m, s);
+
+		TIFFSetField(tif, TIFFTAG_DATETIME, date_time);
+		g_free(date_time);
 	}
 
 	if (embeded_icc && profile_len > 0) {
