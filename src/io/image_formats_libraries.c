@@ -344,6 +344,7 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 	WORD *data = NULL;
 	float *fdata = NULL;
 	uint16 sampleformat = 0;
+	gchar *date_obs = NULL;
 	
 	TIFF* tif = Siril_TIFFOpen(name, "r");
 	if (!tif) {
@@ -357,8 +358,6 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 	TIFFGetFieldDefaulted(tif, TIFFTAG_SAMPLEFORMAT, &sampleformat);
 	TIFFGetFieldDefaulted(tif, TIFFTAG_BITSPERSAMPLE, &nbits);
 	TIFFGetFieldDefaulted(tif, TIFFTAG_PHOTOMETRIC, &color);
-	TIFFGetFieldDefaulted(tif, TIFFTAG_MINSAMPLEVALUE, &(fit->lo));
-	TIFFGetFieldDefaulted(tif, TIFFTAG_MAXSAMPLEVALUE, &(fit->hi));
 
 	// Retrieve the Date/Time as in the TIFF TAG
 	gchar *date_time;
@@ -366,7 +365,7 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 	if (TIFFGetField(tif, TIFFTAG_DATETIME, &date_time)) {
 		int year, month, day, h, m, s;
 		sscanf(date_time, "%04d:%02d:%02d %02d:%02d:%02d", &year, &month, &day, &h, &m, &s);
-		g_snprintf(fit->date_obs, sizeof(fit->date_obs), "%04d-%02d-%02dT%02d:%02d:%02d",
+		date_obs = g_strdup_printf("%04d-%02d-%02dT%02d:%02d:%02d",
 				year, month, day, h, m, s);
 	}
 
@@ -404,6 +403,10 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 		return OPEN_IMAGE_ERROR;
 	}
 	clearfits(fit);
+	if (date_obs) {
+		g_snprintf(fit->date_obs, sizeof(fit->date_obs), "%s", date_obs);
+		g_free(date_obs);
+	}
 	fit->rx = width;
 	fit->ry = height;
 	fit->naxes[0] = width;
