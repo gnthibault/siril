@@ -1137,11 +1137,11 @@ void save_fits_header(fits *fit) {
 
 	for (i = 0; i < fit->naxes[2]; i++) {
 		if (fit->dft.norm[i] > 0.) {
-			char str1[] = "DFTNORM";
-			char str2[] = "Normalisation value for channel #";
+			const char *str1 = "DFTNORM";
+			const char *str2 = "Normalisation value for channel #";
 			char key_str[FLEN_KEYWORD], comment_str[FLEN_VALUE];
-			sprintf(key_str, "%s%d", str1, i);
-			sprintf(comment_str, "%s%d", str2, i);
+			g_sprintf(key_str, "%s%d", str1, i);
+			g_sprintf(comment_str, "%s%d", str2, i);
 			status = 0;
 			fits_update_key(fit->fptr, TDOUBLE, key_str, &(fit->dft.norm[i]),
 					comment_str, &status);
