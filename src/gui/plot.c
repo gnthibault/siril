@@ -940,15 +940,12 @@ static void do_popup_plotmenu(GtkWidget *my_widget, GdkEventButton *event) {
 }
 
 gboolean on_DrawingPlot_button_press_event(GtkWidget *widget,
-		GdkEventButton *event, gpointer user_data) {
-	if (event->button == GDK_BUTTON_SECONDARY) {
-		do_popup_plotmenu(widget, event);
-		return TRUE;
-	}
-	return FALSE;
+	GdkEventButton *event, gpointer user_data) {
+	do_popup_plotmenu(widget, event);
+	return TRUE;
 }
 
-static signed long extract_int(const gchar *str) {
+static signed long extract_int_from_label(const gchar *str) {
 	gchar *p = (gchar *)str;
 	while (*p) {
 		if (g_ascii_isdigit(*p) || ((*p == '-' || *p == '+') && g_ascii_isdigit(*(p + 1)))) {
@@ -966,9 +963,11 @@ void on_menu_plot_exclude_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	const gchar *label = gtk_menu_item_get_label(menuitem);
 	gint index;
 
-	index = extract_int(label);
-	index--;
+	index = extract_int_from_label(label);
+	if (index > 0) {
+		index--;
 
-	exclude_single_frame(index);
-	update_seqlist();
+		exclude_single_frame(index);
+		update_seqlist();
+	}
 }
