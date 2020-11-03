@@ -71,15 +71,32 @@ static pldata *alloc_plot_data(int size) {
 		PRINT_ALLOC_ERR;
 		return NULL;
 	}
+	plot->frame = calloc(size, sizeof(struct kpair));
+	if (!plot->frame) {
+		PRINT_ALLOC_ERR;
+		free(plot);
+		return NULL;
+	}
+	plot->julian = calloc(size, sizeof(struct kpair));
+	if (!plot->julian) {
+		PRINT_ALLOC_ERR;
+		free(plot->frame);
+		free(plot);
+		return NULL;
+	}
 	plot->data = calloc(size, sizeof(struct kpair));
 	if (!plot->data) {
 		PRINT_ALLOC_ERR;
+		free(plot->frame);
+		free(plot->julian);
 		free(plot);
 		return NULL;
 	}
 	plot->err = calloc(size, sizeof(struct kpair));
 	if (!plot->err) {
 		PRINT_ALLOC_ERR;
+		free(plot->frame);
+		free(plot->julian);
 		free(plot->data);
 		free(plot);
 		return NULL;
@@ -165,6 +182,30 @@ static double dateTimestamp_toJulian(char *timestamp, double exp) {
 	return encodeJD(dt);
 }
 
+static void set_x_values(sequence *seq, pldata *plot, int i, int j) {
+	if (seq->type == SEQ_SER && seq->ser_file->ts
+			&& seq->ser_file->ts_max > seq->ser_file->ts_min) {
+		double julian = serTimestamp_toJulian(seq->ser_file->ts[i]);
+		plot->julian[j].x = julian - (double)julian0;
+	} else if ((seq->type == SEQ_REGULAR || seq->type == SEQ_FITSEQ) &&
+				seq->imgparam[i].date_obs) {
+		char *tsi = seq->imgparam[i].date_obs;
+		double julian = dateTimestamp_toJulian(tsi, seq->exposure);
+		plot->julian[j].x = julian - (double)julian0;
+	} else {
+		plot->julian[j].x = (double) i + 1; // should not happen.
+	}
+	plot->frame[j].x = (double) i + 1;
+
+	if (julian0 && force_Julian) {
+		plot->data[j].x = plot->julian[j].x;
+	} else {
+		plot->data[j].x = plot->frame[j].x;
+	}
+
+	plot->err[j].x = plot->data[j].x;
+}
+
 static void build_photometry_dataset(sequence *seq, int dataset, int size,
 		int ref_image, pldata *plot) {
 	int i, j;
@@ -195,20 +236,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 				xlabel = g_strdup(_("Frames"));
 			}
 		}
-
-		if (julian0 && force_Julian && seq->type == SEQ_SER && seq->ser_file->ts
-				&& seq->ser_file->ts_max > seq->ser_file->ts_min) {
-			double julian = serTimestamp_toJulian(seq->ser_file->ts[i]);
-			plot->data[j].x = julian - (double)julian0;
-		} else if (julian0 && force_Julian && (seq->type == SEQ_REGULAR || seq->type == SEQ_FITSEQ) &&
-					seq->imgparam[i].date_obs) {
-			char *tsi = seq->imgparam[i].date_obs;
-			double julian = dateTimestamp_toJulian(tsi, seq->exposure);
-			plot->data[j].x = julian - (double)julian0;
-		} else {
-			plot->data[j].x = (double) i + 1;
-		}
-		plot->err[j].x = plot->data[j].x;
+		set_x_values(seq, plot, i, j);
 
 		switch (selected_source) {
 			case ROUNDNESS:
@@ -458,6 +486,10 @@ static void free_plot_data() {
 	pldata *plot = plot_data;
 	while (plot) {
 		pldata *next = plot->next;
+		if (plot->julian)
+			free(plot->julian);
+		if (plot->frame)
+			free(plot->frame);
 		if (plot->data)
 			free(plot->data);
 		if (plot->err)
@@ -859,8 +891,8 @@ static int get_index_of_frame(gdouble x, gdouble y) {
 
 	pldata *plot = plot_data;
 
-	point min = { plot->data[0].x, plot->data[0].y };
-	point max = { plot->data[com.seq.selnum - 1].x, plot->data[com.seq.selnum - 1].y };
+	point min = { plot->frame[0].x, plot->frame[0].y };
+	point max = { plot->frame[com.seq.selnum - 1].x, plot->frame[com.seq.selnum - 1].y };
 	point intervale = { get_dimx() / (max.x - min.x), get_dimy() / (max.y - min.y)};
 	point pos = { x - get_offsx(), get_dimy() - y + get_offsy() };
 
