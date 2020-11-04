@@ -2865,7 +2865,10 @@ int process_link(int nb) {
 	/* convert the list to an array for parallel processing */
 	char **files_to_link = glist_to_array(list, &count);
 
-	siril_log_color_message(_("Link: processing %d FITS files...\n"), "green", count);
+	gchar *str = ngettext("Link: processing %d FITS file...\n", "Link: processing %d FITS files...\n", count);
+	str = g_strdup_printf(str, count);
+	siril_log_color_message(str, "green");
+	g_free(str);
 
 	set_cursor_waiting(TRUE);
 	if (!com.script)
@@ -2972,7 +2975,10 @@ int process_convert(int nb) {
 	/* convert the list to an array for parallel processing */
 	char **files_to_link = glist_to_array(list, &count);
 
-	siril_log_color_message(_("Convert: processing %d files...\n"), "green", count);
+	gchar *str = ngettext("Convert: processing %d FITS file...\n", "Convert: processing %d FITS files...\n", count);
+	str = g_strdup_printf(str, count);
+	siril_log_color_message(str, "green");
+	g_free(str);
 
 	set_cursor_waiting(TRUE);
 	if (!com.script)
@@ -3064,8 +3070,11 @@ int process_register(int nb) {
 					return 1;
 				}
 				if (atoi(value) < AT_MATCH_MINPAIRS) {
-					siril_log_message(_("%d smaller than minimum allowable star pairs: %d, aborting.\n"),
-						atoi(value), AT_MATCH_MINPAIRS);
+					gchar *str = ngettext("%d smaller than minimum allowable star pairs: %d, aborting.\n", "%d smaller than minimum allowable star pairs: %d, aborting.\n", atoi(value));
+					str = g_strdup_printf(str, atoi(value), AT_MATCH_MINPAIRS);
+					siril_log_message(str);
+					g_free(str);
+
 					return 1;
 				}
 				reg_args->min_pairs = atoi(value);
@@ -3714,7 +3723,12 @@ int process_set_cpu(int nb){
 	{
 		proc_out = omp_get_num_threads();
 	}
-	siril_log_message(_("Using now %d logical processors\n"), proc_out);
+
+	gchar *str = ngettext("Using now %d logical processor\n", "Using now %d logical processors\n", proc_out);
+	str = g_strdup_printf(str, proc_out);
+	siril_log_message(str);
+	g_free(str);
+
 	com.max_thread = proc_out;
 	if (!com.headless)
 		update_spinCPU(0);
