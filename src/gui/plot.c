@@ -617,7 +617,7 @@ void drawPlot() {
 static void set_filter(GtkFileChooser *dialog, const gchar *format) {
 	GtkFileFilter *f = gtk_file_filter_new();
 	gchar *name = g_strdup_printf(_("Output files (*%s)"), format);
-	gchar *pattern = g_strdup_printf(_("*%s"), format);
+	gchar *pattern = g_strdup_printf("*%s", format);
 	gtk_file_filter_set_name(f, name);
 	gtk_file_filter_add_pattern(f, pattern);
 	gtk_file_chooser_add_filter(dialog, f);
