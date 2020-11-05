@@ -72,33 +72,22 @@ layer_info predefined_layers_colors[] = {
 
 struct _label_data {
 	const char *label_name;
-	const char *color;
 	char *text;
 };
 
 static gboolean set_label_text_idle(gpointer p) {
 	struct _label_data *args = (struct _label_data *) p;
 	GtkLabel *label = GTK_LABEL(lookup_widget(args->label_name));
-	const char *format = "<span foreground=\"%s\">%s</span>";
-	char *markup;
 
-	if (args->color == NULL) {
-		gtk_label_set_text(label, args->text);
-	} else {
-		markup = g_markup_printf_escaped(format, args->color, args->text);
-		gtk_label_set_markup(GTK_LABEL(label), markup);
-
-		g_free(markup);
-	}
+	gtk_label_set_text(label, args->text);
 	free(args->text);
 	free(args);
 	return FALSE;
 }
 
-static void set_label_text_from_main_thread(const char *label_name, const char *text, const char *color) {
+static void set_label_text_from_main_thread(const char *label_name, const char *text) {
 	struct _label_data *data = malloc(sizeof(struct _label_data));
 	data->label_name = label_name;
-	data->color = color;
 	data->text = strdup(text);
 	gdk_threads_add_idle(set_label_text_idle, data);
 }
@@ -1149,7 +1138,7 @@ void set_GUI_MEM(unsigned long long size, const gchar *label) {
 	} else {
 		str = g_strdup(_("Mem: N/A"));
 	}
-	set_label_text_from_main_thread(label, str, NULL);
+	set_label_text_from_main_thread(label, str);
 	g_free(str);
 }
 
@@ -1157,11 +1146,12 @@ void set_GUI_DiskSpace(int64_t space, const gchar *label) {
 	if (com.headless)
 		return;
 	gchar *str;
-	const gchar *color = NULL;
+	GtkStyleContext *context = gtk_widget_get_style_context(lookup_widget(label));
+	gtk_style_context_remove_class(context, "label-info");
 
 	if (space > 0) {
 		if (space < 1000000000) { // we want to warn user of space is less than 1GB
-			color = "red";
+			gtk_style_context_add_class(context, "label-info");
 		}
 		gchar *mem = pretty_print_memory(space);
 		str = g_strdup_printf(_("Disk Space: %s"), mem);
@@ -1169,7 +1159,7 @@ void set_GUI_DiskSpace(int64_t space, const gchar *label) {
 	} else {
 		str = g_strdup(_("Disk Space: N/A"));
 	}
-	set_label_text_from_main_thread(label, str, color);
+	set_label_text_from_main_thread(label, str);
 	g_free(str);
 }
 
