@@ -1138,7 +1138,7 @@ void set_GUI_misc() {
 }
 
 /* size is in kiB */
-void set_GUI_MEM(unsigned long long size) {
+void set_GUI_MEM(unsigned long long size, const gchar *label) {
 	if (com.headless)
 		return;
 	char *str;
@@ -1149,11 +1149,11 @@ void set_GUI_MEM(unsigned long long size) {
 	} else {
 		str = g_strdup(_("Mem: N/A"));
 	}
-	set_label_text_from_main_thread("labelmem", str, NULL);
+	set_label_text_from_main_thread(label, str, NULL);
 	g_free(str);
 }
 
-void set_GUI_DiskSpace(int64_t space) {
+void set_GUI_DiskSpace(int64_t space, const gchar *label) {
 	if (com.headless)
 		return;
 	gchar *str;
@@ -1169,7 +1169,7 @@ void set_GUI_DiskSpace(int64_t space) {
 	} else {
 		str = g_strdup(_("Disk Space: N/A"));
 	}
-	set_label_text_from_main_thread("labelFreeSpace", str, color);
+	set_label_text_from_main_thread(label, str, color);
 	g_free(str);
 }
 
