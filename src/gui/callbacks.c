@@ -1130,7 +1130,7 @@ void set_GUI_misc() {
 void set_GUI_MEM(unsigned long long size, const gchar *label) {
 	if (com.headless)
 		return;
-	char *str;
+	gchar *str;
 	if (size != 0) {
 		gchar *mem = pretty_print_memory(size * 1024);
 		str = g_strdup_printf(_("Mem: %s"), mem);
