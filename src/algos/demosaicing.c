@@ -1238,12 +1238,12 @@ int extractHa_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 		if (bayer <= BAYER_FILTER_MAX) {
 			if (bayer != tmp_pattern) {
 				if (bayer == BAYER_FILTER_NONE) {
-					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
+					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "salmon");
 				}
 				else {
 					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
 								" from Bayer pattern in settings (%s). Overriding settings.\n"),
-							"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
+							"salmon", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
 					tmp_pattern = bayer;
 				}
 			}
