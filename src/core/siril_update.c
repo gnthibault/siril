@@ -253,6 +253,7 @@ static gpointer fetch_url(gpointer p) {
 		g_clear_error(&error);
 		g_free(name);
 	}
+	set_progress_bar_data(NULL, PROGRESS_DONE);
 	gdk_threads_add_idle(end_update_idle, args);
 	g_object_unref(file);
 
