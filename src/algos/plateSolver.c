@@ -27,9 +27,7 @@
 #include <string.h>
 #include <math.h>
 #include <unistd.h>
-#ifdef HAVE_LIBCURL
-#include <curl/curl.h>
-#endif
+
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/sleef.h"
@@ -41,8 +39,6 @@
 #include "gui/dialogs.h"
 #include "gui/message_dialog.h"
 #include "gui/image_display.h"
-
-#ifdef HAVE_LIBCURL
 
 #include "gui/PSF_list.h"
 #include "algos/PSF.h"
@@ -174,7 +170,7 @@ static void fov_in_DHMS(double var, gchar *fov) {
 		g_snprintf(fov, 256, "%.2lf\"", decS);
 }
 
-static int parse_curl_buffer(char *buffer, struct object *obj) {
+static int parse_content_buffer(char *buffer, struct object *obj) {
 	char **token, **fields;
 	point center;
 	int nargs, i = 0, resolver = -1;
@@ -419,102 +415,19 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 	return g_string_free(url, FALSE);
 }
 
-/*****
- * HTTP functions
- ****/
+static gchar *fetch_url(const gchar *url) {
+	GFile *file = g_file_new_for_uri(url);
+	GError *error = NULL;
+	gchar *content = NULL;
 
-static CURL *curl;
-static const int DEFAULT_FETCH_RETRIES = 10;
-
-struct ucontent {
-	char *data;
-	size_t len;
-};
-
-static void init() {
-	if (!curl) {
-		printf("initializing CURL\n");
-		curl_global_init(CURL_GLOBAL_ALL);
-		curl = curl_easy_init();
+	if (!g_file_load_contents(file, NULL, &content, NULL, NULL, &error)) {
+		gchar *name = g_file_get_basename(file);
+		printf("Error loading %s: %s\n", name, error->message);
+		g_clear_error(&error);
+		g_free(name);
 	}
-
-	if (!curl)
-		exit(EXIT_FAILURE);
-}
-
-static size_t cbk_curl(void *buffer, size_t size, size_t nmemb, void *userp) {
-	size_t realsize = size * nmemb;
-	struct ucontent *mem = (struct ucontent *) userp;
-
-	mem->data = realloc(mem->data, mem->len + realsize + 1);
-
-	memcpy(&(mem->data[mem->len]), buffer, realsize);
-	mem->len += realsize;
-	mem->data[mem->len] = 0;
-
-	return realsize;
-}
-
-static char *fetch_url(const char *url) {
-	struct ucontent *content = malloc(sizeof(struct ucontent));
-	char *result, *error;
-	long code;
-	int retries;
-	unsigned int s;
-
-	printf("fetch_url(): %s\n", url);
-
-	init();
-
-	result = NULL;
-
-	retries = DEFAULT_FETCH_RETRIES;
-
-	retrieve: content->data = malloc(1);
-	content->data[0] = '\0';
-	content->len = 0;
-
-	curl_easy_setopt(curl, CURLOPT_URL, url);
-	curl_easy_setopt(curl, CURLOPT_VERBOSE, 0);
-	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cbk_curl);
-	curl_easy_setopt(curl, CURLOPT_WRITEDATA, content);
-
-	if (curl_easy_perform(curl) == CURLE_OK) {
-		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
-
-		switch (code) {
-		case 200:
-			result = content->data;
-			break;
-		case 500:
-		case 502:
-		case 503:
-		case 504:
-			printf("Fetch failed with code %ld for URL %s\n", code, url);
-
-			if (retries) {
-				s = 2 * (DEFAULT_FETCH_RETRIES - retries) + 2;
-				printf("Wait %uds before retry\n", s);
-				sleep(s);
-
-				free(content->data);
-				retries--;
-				goto retrieve;
-			}
-
-			break;
-		default:
-			error = siril_log_message(_("Fetch failed with code %ld for URL %s\n"), code, url);
-			siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), error);
-		}
-	}
-
-	if (!result)
-		free(content->data);
-
-	free(content);
-
-	return result;
+	g_object_unref(file);
+	return content;
 }
 
 static online_catalog get_online_catalog(double fov, double m) {
@@ -543,48 +456,63 @@ static online_catalog get_online_catalog(double fov, double m) {
 
 static gchar *download_catalog(online_catalog onlineCatalog, point catalog_center, double fov, double m) {
 	gchar *url;
-	char *buffer = NULL;
-	FILE *catalog = NULL;
-	FILE *fproj = NULL;
-	gchar *filename, *foutput = NULL;
+	gchar *buffer = NULL;
+	GError *error = NULL;
+	gchar *foutput = NULL;
 
 	/* ------------------- get Vizier catalog in catalog.dat -------------------------- */
 
 	url = get_catalog_url(catalog_center, m, fov, onlineCatalog);
 
-	filename = g_build_filename(g_get_tmp_dir(), "catalog.dat", NULL);
-	catalog = g_fopen(filename, "w+t");
-	if (catalog == NULL) {
-		fprintf(stderr, "plateSolver: Cannot open catalogue\n");
+	GFile *file = g_file_new_build_filename(g_get_tmp_dir(), "catalog.dat", NULL);
+	GOutputStream *output_stream = (GOutputStream*) g_file_replace(file, NULL, FALSE,
+			G_FILE_CREATE_NONE, NULL, &error);
+
+	if (output_stream == NULL) {
+		if (error != NULL) {
+			g_warning("%s\n", error->message);
+			g_clear_error(&error);
+			fprintf(stderr, "plateSolver: Cannot open catalogue\n");
+		}
+		g_object_unref(file);
 		return NULL;
 	}
+
 	buffer = fetch_url(url);
 	if (buffer) {
-		fprintf(catalog, "%s", buffer);
-		g_free(url);
-		free(buffer);
-		fclose(catalog);
+		if (!g_output_stream_write_all(output_stream, buffer, strlen(buffer), NULL, NULL, &error)) {
+			g_warning("%s\n", error->message);
+			g_clear_error(&error);
+			g_object_unref(output_stream);
+			g_object_unref(file);
+			return NULL;
+		}
+		const gchar *filename = g_file_peek_path(file);
+		g_object_unref(output_stream);
 
 		/* -------------------------------------------------------------------------------- */
 
 		/* --------- Project coords of Vizier catalog and save it into catalog.proj ------- */
 
-		foutput = g_build_filename(g_get_tmp_dir(), "catalog.proj", NULL);
-		fproj = g_fopen(foutput, "w+t");
-		if (fproj == NULL) {
-			fprintf(stderr, "plateSolver: Cannot open fproj\n");
-			g_free(foutput);
-			return NULL;
+		GFile *fproj = g_file_new_build_filename(g_get_tmp_dir(), "catalog.proj", NULL);
+
+		/* We want to remove the file if already exisit */
+		if (!g_file_delete(fproj, NULL, &error)
+				&& !g_error_matches(error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
+			// deletion failed for some reason other than the file not existing:
+			// so report the error
+			g_warning("Failed to delete %s: %s", g_file_peek_path(fproj),
+					error->message);
 		}
 
 		convert_catalog_coords(filename, catalog_center, fproj);
-		fclose(fproj);
+		foutput = g_file_get_path(fproj);
+		g_object_unref(file);
+		g_object_unref(fproj);
 
 		/* -------------------------------------------------------------------------------- */
 
 		is_result.px_cat_center = catalog_center;
-
-		g_free(filename);
 	}
 	return foutput;
 }
@@ -834,22 +762,27 @@ static void print_platesolving_results(Homography H, image_solved image, gboolea
    	update_gfit(image);
 }
 
-static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars) {
-	char line[LINELEN];
+static int read_NOMAD_catalog(GInputStream *stream, fitted_PSF **cstars) {
+	gchar *line;
 	fitted_PSF *star;
 
 	int i = 0;
 
-	while (fgets(line, LINELEN, catalog) != NULL) {
+	GDataInputStream *data_input = g_data_input_stream_new(stream);
+	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
+				NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, Bmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
+			g_free(line);
 			continue;
 		}
 		if (is_blank(line)) {
+			g_free(line);
 			continue;
 		}
 		if (g_str_has_prefix(line, "---")) {
+			g_free(line);
 			continue;
 		}
 		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Vmag, &Bmag);
@@ -862,19 +795,23 @@ static int read_NOMAD_catalog(FILE *catalog, fitted_PSF **cstars) {
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
+		g_free(line);
 	}
+	g_object_unref(data_input);
 	sort_stars(cstars, i);
 	siril_log_message(_("Catalog NOMAD size: %d objects\n"), i);
 	return i;
 }
 
-static int read_TYCHO2_catalog(FILE *catalog, fitted_PSF **cstars) {
-	char line[LINELEN];
+static int read_TYCHO2_catalog(GInputStream *stream, fitted_PSF **cstars) {
+	gchar *line;
 	fitted_PSF *star;
 
 	int i = 0;
 
-	while (fgets(line, LINELEN, catalog) != NULL) {
+	GDataInputStream *data_input = g_data_input_stream_new(stream);
+	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
+				NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, Bmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
@@ -897,27 +834,33 @@ static int read_TYCHO2_catalog(FILE *catalog, fitted_PSF **cstars) {
 		cstars[i + 1] = NULL;
 		i++;
 	}
+	g_object_unref(data_input);
 	sort_stars(cstars, i);
 	siril_log_message(_("Catalog TYCHO-2 size: %d objects\n"), i);
 	return i;
 }
 
-static int read_GAIA_catalog(FILE *catalog, fitted_PSF **cstars) {
-	char line[LINELEN];
+static int read_GAIA_catalog(GInputStream *stream, fitted_PSF **cstars) {
+	gchar *line;
 	fitted_PSF *star;
 
 	int i = 0;
 
-	while (fgets(line, LINELEN, catalog) != NULL) {
+	GDataInputStream *data_input = g_data_input_stream_new(stream);
+	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
+				NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Gmag = 0.0, BPmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
+			g_free(line);
 			continue;
 		}
 		if (is_blank(line)) {
+			g_free(line);
 			continue;
 		}
 		if (g_str_has_prefix(line, "---")) {
+			g_free(line);
 			continue;
 		}
 		sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Gmag, &BPmag);
@@ -930,28 +873,35 @@ static int read_GAIA_catalog(FILE *catalog, fitted_PSF **cstars) {
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
+		g_free(line);
 	}
+	g_object_unref(data_input);
 	sort_stars(cstars, i);
 	siril_log_message(_("Catalog Gaia DR2 size: %d objects\n"), i);
 	return i;
 }
 
-static int read_PPMXL_catalog(FILE *catalog, fitted_PSF **cstars) {
-	char line[LINELEN];
+static int read_PPMXL_catalog(GInputStream *stream, fitted_PSF **cstars) {
+	gchar *line;
 	fitted_PSF *star;
 
 	int i = 0;
 
-	while (fgets(line, LINELEN, catalog) != NULL) {
+	GDataInputStream *data_input = g_data_input_stream_new(stream);
+	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
+				NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Jmag = 0.0, Hmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
+			g_free(line);
 			continue;
 		}
 		if (is_blank(line)) {
+			g_free(line);
 			continue;
 		}
 		if (g_str_has_prefix(line, "---")) {
+			g_free(line);
 			continue;
 		}
 		sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Jmag, &Hmag);
@@ -964,28 +914,35 @@ static int read_PPMXL_catalog(FILE *catalog, fitted_PSF **cstars) {
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
+		g_free(line);
 	}
+	g_object_unref(data_input);
 	sort_stars(cstars, i);
 	siril_log_message(_("Catalog PPMXL size: %d objects\n"), i);
 	return i;
 }
 
-static int read_BRIGHT_STARS_catalog(FILE *catalog, fitted_PSF **cstars) {
-	char line[LINELEN];
+static int read_BRIGHT_STARS_catalog(GInputStream *stream, fitted_PSF **cstars) {
+	gchar *line;
 	fitted_PSF *star;
 
 	int i = 0;
 
-	while (fgets(line, LINELEN, catalog) != NULL) {
+	GDataInputStream *data_input = g_data_input_stream_new(stream);
+	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
+				NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, BV = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
+			g_free(line);
 			continue;
 		}
 		if (is_blank(line)) {
+			g_free(line);
 			continue;
 		}
 		if (g_str_has_prefix(line, "---")) {
+			g_free(line);
 			continue;
 		}
 		sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Vmag, &BV);
@@ -998,28 +955,35 @@ static int read_BRIGHT_STARS_catalog(FILE *catalog, fitted_PSF **cstars) {
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
+		g_free(line);
 	}
+	g_object_unref(data_input);
 	sort_stars(cstars, i);
 	siril_log_message(_("Catalog Bright stars size: %d objects\n"), i);
 	return i;
 }
 
-static int read_APASS_catalog(FILE *catalog, fitted_PSF **cstars) {
-	char line[LINELEN];
+static int read_APASS_catalog(GInputStream *stream, fitted_PSF **cstars) {
+	gchar *line;
 	fitted_PSF *star;
 
 	int i = 0;
 
-	while (fgets(line, LINELEN, catalog) != NULL) {
+	GDataInputStream *data_input = g_data_input_stream_new(stream);
+	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
+				NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, Bmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
+			g_free(line);
 			continue;
 		}
 		if (is_blank(line)) {
+			g_free(line);
 			continue;
 		}
 		if (g_str_has_prefix(line, "---")) {
+			g_free(line);
 			continue;
 		}
 		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Vmag, &Bmag);
@@ -1032,27 +996,29 @@ static int read_APASS_catalog(FILE *catalog, fitted_PSF **cstars) {
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
+		g_free(line);
 	}
+	g_object_unref(data_input);
 	sort_stars(cstars, i);
 	siril_log_message(_("Catalog APASS size: %d objects\n"), i);
 	return i;
 }
 
-static int read_catalog(FILE *catalog, fitted_PSF **cstars, int type) {
+static int read_catalog(GInputStream *stream, fitted_PSF **cstars, int type) {
 	switch (type) {
 	default:
 	case TYCHO2:
-		return read_TYCHO2_catalog(catalog, cstars);
+		return read_TYCHO2_catalog(stream, cstars);
 	case NOMAD:
-		return read_NOMAD_catalog(catalog, cstars);
+		return read_NOMAD_catalog(stream, cstars);
 	case GAIA:
-		return read_GAIA_catalog(catalog, cstars);
+		return read_GAIA_catalog(stream, cstars);
 	case PPMXL:
-		return read_PPMXL_catalog(catalog, cstars);
+		return read_PPMXL_catalog(stream, cstars);
 	case BRIGHT_STARS:
-		return read_BRIGHT_STARS_catalog(catalog, cstars);
+		return read_BRIGHT_STARS_catalog(stream, cstars);
 	case APASS:
-		return read_APASS_catalog(catalog, cstars);
+		return read_APASS_catalog(stream, cstars);
 	}
 }
 
@@ -1127,7 +1093,7 @@ static gboolean end_plate_solver(gpointer p) {
 
 gpointer match_catalog(gpointer p) {
 	struct plate_solver_data *args = (struct plate_solver_data *) p;
-	FILE *catalog;
+	GError *error = NULL;
 	fitted_PSF **cstars;
 	int n_fit = 0, n_cat = 0, n = 0, i = 0;
 	int attempt = 1;
@@ -1163,15 +1129,21 @@ gpointer match_catalog(gpointer p) {
 	}
 
 	/* open the file */
-	catalog = g_fopen(args->catalogStars, "r");
-	if (catalog == NULL) {
-		PRINT_ALLOC_ERR;
+	GFile *catalog = g_file_new_for_path(args->catalogStars);
+	GInputStream *input_stream = (GInputStream*) g_file_read(catalog, NULL, &error);
+	if (input_stream == NULL) {
+		if (error != NULL) {
+			g_warning("%s\n", error->message);
+			g_clear_error(&error);
+		}
 		free(cstars);
 		args->ret = 1;
 		siril_add_idle(end_plate_solver, args);
+		g_object_unref(catalog);
 		return GINT_TO_POINTER(1);
 	}
-	n_cat = read_catalog(catalog, cstars, args->onlineCatalog);
+
+	n_cat = read_catalog(input_stream, cstars, args->onlineCatalog);
 
 	/* make sure that arrays are not too small
 	 * make  sure that the max of stars is BRIGHTEST_STARS */
@@ -1209,7 +1181,8 @@ gpointer match_catalog(gpointer p) {
 	}
 	/* free data */
 	if (n_cat > 0) free_fitted_stars(cstars);
-	fclose(catalog);
+	g_object_unref(input_stream);
+	g_object_unref(catalog);
 	siril_add_idle(end_plate_solver, args);
 	return GINT_TO_POINTER(args->ret);
 }
@@ -1241,8 +1214,8 @@ static void url_encode(gchar **qry) {
 }
 
 static void search_object_in_catalogs(const gchar *object) {
-	GString *url;
-	gchar *gcurl, *result, *name;
+	GString *string_url;
+	gchar *url, *result, *name;
 	struct object obj;
 	GtkTreeView *GtkTreeViewIPS;
 
@@ -1256,21 +1229,21 @@ static void search_object_in_catalogs(const gchar *object) {
 	/* replace whitespaces by %20 for html purposes */
 	url_encode(&name);
 
-	url = g_string_new(CDSSESAME);
-	url = g_string_append(url, "/-oI/A?");
-	url = g_string_append(url, name);
-	gcurl = g_string_free(url, FALSE);
+	string_url = g_string_new(CDSSESAME);
+	string_url = g_string_append(string_url, "/-oI/A?");
+	string_url = g_string_append(string_url, name);
+	url = g_string_free(string_url, FALSE);
 
-	result = fetch_url(gcurl);
+	result = fetch_url(url);
 	if (result) {
-		parse_curl_buffer(result, &obj);
+		parse_content_buffer(result, &obj);
 		g_signal_handlers_block_by_func(GtkTreeViewIPS, on_GtkTreeViewIPS_cursor_changed, NULL);
 		add_object_to_list();
 		g_signal_handlers_unblock_by_func(GtkTreeViewIPS, on_GtkTreeViewIPS_cursor_changed, NULL);
 		free_Platedobject();
 	}
 	set_cursor_waiting(FALSE);
-	g_free(gcurl);
+	g_free(url);
 	g_free(result);
 	g_free(name);
 }
@@ -1434,8 +1407,6 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 	args->fit = &gfit;
 	return 0;
 }
-
-#endif
 
 gboolean confirm_delete_wcs_keywords(fits *fit) {
 	gboolean erase = TRUE;

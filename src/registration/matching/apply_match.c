@@ -98,8 +98,6 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_LIBCURL
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -255,4 +253,3 @@ image_solved *solved, TRANS *trans /* I: TRANS taking (x,y) -> (ra, dec) */
 
 	return (SH_SUCCESS);
 }
-#endif

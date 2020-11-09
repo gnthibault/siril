@@ -22,9 +22,6 @@
 	/* a buffer used for parsing command-line arguments */
 #define CMDBUFLEN       500
 
-   /* max length of lines in input files */
-#define LINELEN         300
-
    /* ignore any lines in input files that start with this */
 #define COMMENT_CHAR   '#'
 

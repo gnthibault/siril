@@ -263,7 +263,6 @@ ffmpeg = [
   dependency('libswscale', required : false),
   dependency('libswresample', required : false)
 ]
-libcurl_dep = dependency('libcurl', required : false)
 criterion_dep = dependency('criterion', required : false)
 
 ################################################################################
@@ -367,13 +366,6 @@ else
   warning('ffms2 not found. Not using FFMS.')
 endif
 
-if libcurl_dep.found()
-  conf_data.set('HAVE_LIBCURL', true, description : 'Using Curl.')
-else 
-  conf_data.set('HAVE_LIBCURL', false, description : 'Using Curl.')
-  warning('libcurl not found. Not using Curl.')
-endif
-
 conf_data.set('HAVE_CXX11', true, description : 'Define to 1 if cpp compiler is C++11 compliant.')
 
 ## Git configuration
@@ -401,10 +393,8 @@ externals_dep = declare_dependency(
     libtiff_dep,
     libjpeg_dep,
     libpng_dep,
-    libcurl_dep,
     libheif_dep,
     ffms2_dep,
-    libcurl_dep,
     openmp_dep,
     kplot_dep,
     ffmpeg
@@ -475,7 +465,6 @@ summary(
     'HEIF'      : libheif_dep.found(),
     'FFMS2'     : ffms2_dep.found(),
     'FFMPEG'    : ffmpeg_found,
-    'libcurl'   : libcurl_dep.found(),
     'criterion' : libraw_dep.found(),
   }, section: 'Optional dependencies'
 )

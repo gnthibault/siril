@@ -47,7 +47,6 @@ gpointer generic_sequence_worker(gpointer p) {
 	int nb_frames, excluded_frames = 0, progress = 0;
 	float nb_framesf;
 	int abort = 0;	// variable for breaking out of loop
-	GString *desc;	// temporary string description for logs
 
 	assert(args);
 	assert(args->seq);
@@ -119,11 +118,10 @@ gpointer generic_sequence_worker(gpointer p) {
 	}
 
 	/* Output print of algorithm description */
-	desc = g_string_new(args->description);
-	if (desc) {
-		desc = g_string_append(desc, _(": processing...\n"));
-		siril_log_color_message(desc->str, "green");
-		g_string_free(desc, TRUE);
+	if (args->description) {
+		gchar *desc = g_strdup_printf(_("%s: processing...\n"), args->description);
+		siril_log_color_message(desc, "green");
+		g_free(desc);
 	}
 
 	gboolean have_seqwriter = args->has_output &&

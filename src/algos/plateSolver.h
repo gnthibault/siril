@@ -76,10 +76,8 @@ struct image_solved_struct {
 };
 typedef struct image_solved_struct image_solved;
 
-#ifdef HAVE_LIBCURL
 int fill_plate_solver_structure(struct plate_solver_data *args);
 gpointer match_catalog(gpointer p);
-#endif
 
 gboolean confirm_delete_wcs_keywords(fits *fit);
 void invalidate_WCS_keywords(fits *fit);

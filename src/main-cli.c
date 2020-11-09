@@ -209,21 +209,29 @@ static void siril_app_activate(GApplication *application) {
 	init_num_procs();
 
 	if (main_option_script) {
-		FILE *fp;
+		GInputStream *input_stream;
 
 		if (g_strcmp0(main_option_script, "-") == 0) {
-			fp = stdin;
+			input_stream = (GInputStream *)stdin;
 		} else {
-			fp = g_fopen(main_option_script, "r");
-			if (fp == NULL) {
-				siril_log_message(_("File [%s] does not exist\n"), main_option_script);
+			GError *error;
+			GFile *file = g_file_new_for_path(main_option_script);
+			input_stream = (GInputStream *)g_file_read(file, NULL, &error);
+
+			if (input_stream == NULL) {
+				if (error != NULL) {
+					g_clear_error(&error);
+					siril_log_message(_("File [%s] does not exist\n"), main_option_script);
+				}
+				g_object_unref(file);
 				exit(EXIT_FAILURE);
 			}
+			g_object_unref(file);
 		}
 #ifdef _WIN32
 		ReconnectIO(1);
 #endif
-		if (execute_script(fp)) {
+		if (execute_script(input_stream)) {
 			exit(EXIT_FAILURE);
 		}
 	} else {

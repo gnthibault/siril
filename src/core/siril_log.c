@@ -101,27 +101,38 @@ static void save_log_file(gchar *filename) {
 	GtkTextBuffer *log;
 	GtkTextView *tv;
 	GtkTextIter start, end;
-	gchar *str, **token;
-	guint nargs, i;
-	FILE *f;
+	gchar *str;
+	GError *error = NULL;
 
 	tv = GTK_TEXT_VIEW(lookup_widget("output"));
 	log = gtk_text_view_get_buffer(tv);
 	gtk_text_buffer_get_bounds(log, &start, &end);
 	str = gtk_text_buffer_get_text(log, &start, &end, FALSE);
 
-	token = g_strsplit(str, "\n", -1);
-	nargs = g_strv_length(token);
+	GFile *file = g_file_new_for_path(filename);
+	GOutputStream *output_stream = (GOutputStream*) g_file_replace(file, NULL, FALSE,
+			G_FILE_CREATE_NONE, NULL, &error);
 
-	f = g_fopen(filename, "w");
-
-	for (i = 0; i < nargs; i++) {
-		fprintf(f, "%s\n", token[i]);
+	if (output_stream == NULL) {
+		if (error != NULL) {
+			g_warning("%s\n", error->message);
+			g_clear_error(&error);
+			siril_log_message(_("Cannot create logfile [%s]\n"), filename);
+		}
+		g_object_unref(file);
+		return;
 	}
 
-	fclose(f);
+    gsize bytes_written = 0;
+	if (!g_output_stream_write_all(output_stream, str, strlen(str),
+			&bytes_written, NULL, &error)) {
+		g_warning("%s\n", error->message);
+		g_clear_error(&error);
+	}
+
+	g_object_unref(output_stream);
+	g_object_unref(file);
 	g_free(str);
-	g_strfreev(token);
 }
 
 static void set_filter(GtkFileChooser *dialog) {

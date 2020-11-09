@@ -432,53 +432,91 @@ static int lightCurve(pldata *plot, sequence *seq, gchar *filename) {
 }
 
 static int exportCSV(pldata *plot, sequence *seq, gchar *filename) {
-	int i, j, ret = 0;
+	GError *error = NULL;
 
-	FILE *csv = g_fopen(filename, "w");
-	if (csv == NULL) {
-		ret = 1;
-	} else {
-		if (use_photometry) {
-			pldata *tmp_plot = plot;
-			for (i = 0, j = 0; i < plot->nb; i++) {
-				if (!seq->imgparam[i].incl)
-					continue;
-				int x = 0;
-				double date = tmp_plot->data[j].x;
-				if (julian0) {
-					date += julian0;
-				}
-				fprintf(csv, "%.10lf", date);
-				while (x < MAX_SEQPSF && seq->photometry[x]) {
-					fprintf(csv, ", %g", tmp_plot->data[j].y);
-					tmp_plot = tmp_plot->next;
-					++x;
-				}
-				fprintf(csv, "\n");
-				tmp_plot = plot;
-				j++;
-			}
-		} else {
-			for (i = 0, j = 0; i < plot->nb; i++) {
-				if (!seq->imgparam[i].incl)
-					continue;
-				double date = plot->data[j].x;
-				if (julian0) {
-					date += julian0;
-				}
-				fprintf(csv, "%.10lf, %g\n", date, plot->data[j].y);
-				j++;
-			}
+	GFile *file = g_file_new_for_path(filename);
+	GOutputStream *output_stream = (GOutputStream*) g_file_replace(file, NULL, FALSE,
+			G_FILE_CREATE_NONE, NULL, &error);
+
+	if (output_stream == NULL) {
+		if (error != NULL) {
+			g_warning("%s\n", error->message);
+			g_clear_error(&error);
+			fprintf(stderr, "exportCSV: Cannot export\n");
 		}
-		fclose(csv);
+		g_object_unref(file);
+		return 1;
 	}
-	if (!ret) {
-		siril_log_message(_("%s has been saved.\n"), filename);
-	} else {
-		siril_message_dialog( GTK_MESSAGE_INFO, _("Error"),
-				_("Something went wrong while saving plot"));
 
+	if (use_photometry) {
+		pldata *tmp_plot = plot;
+		for (int i = 0, j = 0; i < plot->nb; i++) {
+			if (!seq->imgparam[i].incl)
+				continue;
+			int x = 0;
+			double date = tmp_plot->data[j].x;
+			if (julian0 && force_Julian) {
+				date += julian0;
+			}
+			gchar *buffer = g_strdup_printf("%.10lf", date);
+			if (!g_output_stream_write_all(output_stream, buffer, strlen(buffer), NULL, NULL, &error)) {
+				g_warning("%s\n", error->message);
+				g_free(buffer);
+				g_clear_error(&error);
+				g_object_unref(output_stream);
+				g_object_unref(file);
+				return 1;
+			}
+			g_free(buffer);
+			while (x < MAX_SEQPSF && seq->photometry[x]) {
+				buffer = g_strdup_printf(", %g", tmp_plot->data[j].y);
+				if (!g_output_stream_write_all(output_stream, buffer, strlen(buffer), NULL, NULL, &error)) {
+					g_warning("%s\n", error->message);
+					g_free(buffer);
+					g_clear_error(&error);
+					g_object_unref(output_stream);
+					g_object_unref(file);
+					return 1;
+				}
+				tmp_plot = tmp_plot->next;
+				++x;
+				g_free(buffer);
+			}
+			if (!g_output_stream_write_all(output_stream, "\n", 1, NULL, NULL, &error)) {
+				g_warning("%s\n", error->message);
+				g_free(buffer);
+				g_clear_error(&error);
+				g_object_unref(output_stream);
+				g_object_unref(file);
+				return 1;
+			}
+			tmp_plot = plot;
+			j++;
+		}
+	} else {
+		for (int i = 0, j = 0; i < plot->nb; i++) {
+			if (!seq->imgparam[i].incl)
+				continue;
+			double date = plot->data[j].x;
+			if (julian0) {
+				date += julian0;
+			}
+			gchar *buffer = g_strdup_printf("%.10lf, %g\n", date, plot->data[j].y);
+			if (!g_output_stream_write_all(output_stream, buffer, strlen(buffer), NULL, NULL, &error)) {
+				g_warning("%s\n", error->message);
+				g_free(buffer);
+				g_clear_error(&error);
+				g_object_unref(output_stream);
+				g_object_unref(file);
+				return 1;
+			}
+			j++;
+			g_free(buffer);
+		}
 	}
+	siril_log_message(_("%s has been saved.\n"), filename);
+	g_object_unref(output_stream);
+	g_object_unref(file);
 
 	return 0;
 }
