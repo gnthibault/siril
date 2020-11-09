@@ -1425,10 +1425,9 @@ int process_bgnoise(int nb){
 }
 
 int process_histo(int nb){
-	size_t i;
+	GError *error = NULL;
 	int nlayer = atoi(word[1]);
-	const char* clayer;
-	char name [20];
+	const gchar* clayer;
 	
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
@@ -1437,21 +1436,47 @@ int process_histo(int nb){
 
 	if (nlayer>3 || nlayer <0)
 		return 1;
-	gsl_histogram* histo = computeHisto(&gfit, nlayer);
-	if (!isrgb(&gfit)) clayer = "bw";		//if B&W
-	else clayer = vport_number_to_name(nlayer);
-	snprintf(name, 20, "histo_%s.dat",clayer);
+	gsl_histogram *histo = computeHisto(&gfit, nlayer);
+	if (!isrgb(&gfit))
+		clayer = "bw";		//if B&W
+	else
+		clayer = vport_number_to_name(nlayer);
+	gchar *filename = g_strdup_printf("histo_%s.dat", clayer);
 
-	FILE *f = g_fopen(name, "w");
+	GFile *file = g_file_new_for_path(filename);
+	g_free(filename);
 
-	if (f == NULL) {
+	GOutputStream *output_stream = (GOutputStream*) g_file_replace(file, NULL, FALSE,
+			G_FILE_CREATE_NONE, NULL, &error);
+
+	if (output_stream == NULL) {
+		if (error != NULL) {
+			g_warning("%s\n", error->message);
+			g_clear_error(&error);
+			fprintf(stderr, "Cannot save histo\n");
+		}
+		g_object_unref(file);
 		return 1;
 	}
-	for (i = 0; i < USHRT_MAX + 1; i++)
-		fprintf(f, "%zu %d\n", i, (int) gsl_histogram_get (histo, i));
-	fclose(f);
+	for (size_t i = 0; i < USHRT_MAX + 1; i++) {
+		gchar *buffer = g_strdup_printf("%zu %d\n", i, (int) gsl_histogram_get (histo, i));
+
+		if (!g_output_stream_write_all(output_stream, buffer, strlen(buffer), NULL, NULL, &error)) {
+			g_warning("%s\n", error->message);
+			g_free(buffer);
+			g_clear_error(&error);
+			g_object_unref(output_stream);
+			g_object_unref(file);
+			return 1;
+		}
+		g_free(buffer);
+	}
+
+	siril_log_message(_("The file %s has been created for the %s layer.\n"), g_file_peek_path(file), clayer);
+
+	g_object_unref(output_stream);
+	g_object_unref(file);
 	gsl_histogram_free(histo);
-	siril_log_message(_("The file %s has been created for the %s layer.\n"), name, clayer);
 	return 0;
 }
 
@@ -1671,10 +1696,9 @@ int process_findstar(int nb){
 }
 
 int process_findhot(int nb){
+	GError *error = NULL;
 	long icold, ihot;
-	char filename[256];
-	int i;
-	char type;
+	gchar type;
 
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
@@ -1692,25 +1716,44 @@ int process_findhot(int nb){
 	deviant_pixel *dev = find_deviant_pixels(&gfit, sig, &icold, &ihot, FALSE);
 	siril_log_message(_("%ld cold and %ld hot pixels\n"), icold, ihot);
 
-	sprintf(filename, "%s.lst", word[1]);
-	FILE *cosme_file = g_fopen(filename, "w");
-	if (cosme_file == NULL) {
-		siril_log_message(_("Cannot open file: %s\n"), filename);
-		free(dev);
+	gchar *filename = g_strdup_printf("%s.lst", word[1]);
+	GFile *file = g_file_new_for_path(filename);
+	g_free(filename);
+
+	GOutputStream *output_stream = (GOutputStream*) g_file_replace(file, NULL, FALSE,
+			G_FILE_CREATE_NONE, NULL, &error);
+
+	if (output_stream == NULL) {
+		if (error != NULL) {
+			g_warning("%s\n", error->message);
+			g_clear_error(&error);
+			fprintf(stderr, "Cannot open file: %s\n", filename);
+		}
+		g_object_unref(file);
 		return 1;
 	}
 
-	for (i = 0; i < icold + ihot; i++) {
+	for (int i = 0; i < icold + ihot; i++) {
 		int y = gfit.ry - (int) dev[i].p.y - 1;  /* FITS is stored bottom to top */
 		if (dev[i].type == HOT_PIXEL)
 			type = 'H';
 		else
 			type = 'C';
-		fprintf(cosme_file, "P %d %d %c\n", (int) dev[i].p.x, y, type);
+		gchar *buffer = g_strdup_printf("P %d %d %c\n", (int) dev[i].p.x, y, type);
+		if (!g_output_stream_write_all(output_stream, buffer, strlen(buffer), NULL, NULL, &error)) {
+			g_warning("%s\n", error->message);
+			g_free(buffer);
+			g_clear_error(&error);
+			g_object_unref(output_stream);
+			g_object_unref(file);
+			return 1;
+		}
+		g_free(buffer);
 	}
 
 	free(dev);
-	fclose(cosme_file);
+	g_object_unref(output_stream);
+	g_object_unref(file);
 
 	return 0;
 }
@@ -1725,13 +1768,13 @@ int process_fix_xtrans(int nb) {
 }
 
 int process_cosme(int nb) {
-	FILE* cosme_file = NULL;
+	GError *error = NULL;
 	deviant_pixel dev;
-	char *filename;
+	gchar *filename;
 	double dirty;
 	int is_cfa, i = 0, retval = 0;
 	int nb_tokens;
-	char line[64];
+	gchar *line;
 	char type;
 
 	if (!single_image_is_loaded()) {
@@ -1744,22 +1787,30 @@ int process_cosme(int nb) {
 	} else {
 		filename = g_strdup(word[1]);
 	}
-	cosme_file = g_fopen(filename, "r");
-	if (cosme_file == NULL) {
-		siril_log_message(_("Cannot open file: %s\n"), filename);
-		g_free(filename);
+	GFile *file = g_file_new_for_path(filename);
+	g_free(filename);
+
+	GInputStream *input_stream = (GInputStream *)g_file_read(file, NULL, &error);
+
+	if (input_stream == NULL) {
+		if (error != NULL) {
+			g_clear_error(&error);
+			siril_log_message(_("File [%s] does not exist\n"), filename);
+		}
+
+		g_object_unref(file);
 		return 1;
 	}
-	g_free(filename);
-	if (word[0][5] == '_')
-		is_cfa = 1;
-	else
-		is_cfa = 0;
 
-	while (fgets(line, 63, cosme_file)) {
+	is_cfa = (word[0][5] == '_') ? 1 : 0;
+
+	GDataInputStream *data_input = g_data_input_stream_new(input_stream);
+	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
+				NULL, NULL))) {
 		++i;
 		switch (line[0]) {
 		case '#': // comments.
+			g_free(line);
 			continue;
 			break;
 		case 'P':
@@ -1768,6 +1819,7 @@ int process_cosme(int nb) {
 				fprintf(stderr, "cosmetic correction: "
 						"cosme file format error at line %d: %s", i, line);
 				retval = 1;
+				g_free(line);
 				continue;
 			}
 			if (nb_tokens == 2)	{
@@ -1786,6 +1838,7 @@ int process_cosme(int nb) {
 				fprintf(stderr, "cosmetic correction: "
 						"cosme file format error at line %d: %s\n", i, line);
 				retval = 1;
+				g_free(line);
 				continue;
 			}
 			dev.type = HOT_PIXEL; // we force it
@@ -1798,6 +1851,7 @@ int process_cosme(int nb) {
 				fprintf(stderr, "cosmetic correction: "
 						"cosme file format error at line %d: %s\n", i, line);
 				retval = 1;
+				g_free(line);
 				continue;
 			}
 			point center = {gfit.rx / 2.0, gfit.ry / 2.0};
@@ -1813,11 +1867,13 @@ int process_cosme(int nb) {
 					"cosme file format error at line %d: %s\n"), i, line);
 			retval = 1;
 		}
+		g_free(line);
 	}
 
-	fclose(cosme_file);
+	g_object_unref(input_stream);
+	g_object_unref(file);
 	if (retval)
-		siril_log_message(_("There were some errors, please check your input file.\n"));
+		siril_log_color_message(_("There were some errors, please check your input file.\n"), "salmon");
 
 	invalidate_stats_from_fit(&gfit);
 	adjust_cutoff_from_updated_gfit();

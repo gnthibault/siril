@@ -611,11 +611,22 @@ int atPrepareHomography(int numA, /* I: number of stars in list A */
 	mask = cvCalculH(star_array_A, star_array_B, num_stars_B, H);
 	ret = (mask == NULL ? 1 : 0);
 
-#ifdef HAVE_LIBCURL
 	if (print_output) {
+		GError *error = NULL;
 		int i;
 		s_star *starA, *starB;
-		FILE *BV_file = open_bv_file("w+t");
+		GFile *BV_file = g_file_new_build_filename(g_get_tmp_dir(), "photometric_cc.dat", NULL);
+		GOutputStream *output_stream = (GOutputStream*) g_file_replace(BV_file, NULL, FALSE,
+				G_FILE_CREATE_NONE, NULL, &error);
+
+		if (output_stream == NULL) {
+			if (error != NULL) {
+				g_warning("%s\n", error->message);
+				g_clear_error(&error);
+			}
+			g_object_unref(BV_file);
+			return 1;
+		}
 
 		for (i = 0; i < numB; i++) {
 			starA = &(star_array_A[i]);
@@ -623,15 +634,17 @@ int atPrepareHomography(int numA, /* I: number of stars in list A */
 			g_assert(starA != NULL);
 			g_assert(starB != NULL);
 			if (mask && mask[i] && starB->BV != -99.9) {
-				fprintf(BV_file,
-						" %4d %11.4e %11.4e %.3f\n",
-						i, starA->x, starA->y, starB->BV);
+				gchar *line = g_strdup_printf(" %4d %11.4e %11.4e %.3f\n", i, starA->x, starA->y, starB->BV);
+				if (!g_output_stream_write_all(output_stream, line, strlen(line), NULL, NULL, &error)) {
+					g_warning("%s\n", error->message);
+					g_clear_error(&error);
+				}
+				g_free(line);
 			}
 		}
-		fclose(BV_file);
+		g_object_unref(output_stream);
+		g_object_unref(BV_file);
 	}
-#endif
-
 
 	/*
 	 * clean up memory we allocated during the matching process

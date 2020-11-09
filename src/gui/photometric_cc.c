@@ -22,8 +22,6 @@
 #include <config.h>
 #endif
 
-#ifdef HAVE_LIBCURL
-
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -112,11 +110,13 @@ static void start_photometric_cc() {
 	}
 }
 
-static void read_photometry_cc_file(FILE *BV_file, fitted_PSF **stars, int *nb_stars) {
-	char line[512];
+static void read_photometry_cc_file(GInputStream *stream, fitted_PSF **stars, int *nb_stars) {
+	gchar *line;
 	int i = 0;
 
-	while (fgets(line, 512, BV_file) != NULL) {
+	GDataInputStream *data_input = g_data_input_stream_new(stream);
+	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
+				NULL, NULL))) {
 		int tmp;
 		fitted_PSF *star = malloc(sizeof(fitted_PSF));
 
@@ -127,6 +127,8 @@ static void read_photometry_cc_file(FILE *BV_file, fitted_PSF **stars, int *nb_s
 		i++;
 	}
 	*nb_stars = i;
+
+	g_object_unref(data_input);
 }
 
 static void bv2rgb(float *r, float *g, float *b, float bv) { // RGB <0,1> <- BV <-0.4,+2.0> [-]
@@ -488,7 +490,7 @@ static gboolean end_photometric_cc(gpointer p) {
 	stop_processing_thread();
 
 	free_fitted_stars(args->stars);
-	fclose(args->BV_file);
+	g_object_unref(args->bv_stream);
 	free(args);
 
 	redraw(com.cvport, REMAP_ALL);
@@ -516,7 +518,7 @@ static gpointer photometric_cc(gpointer p) {
 		initialize_photometric_param();
 	}
 
-	read_photometry_cc_file(args->BV_file, args->stars, &nb_stars);
+	read_photometry_cc_file(args->bv_stream, args->stars, &nb_stars);
 
 	get_background_coefficients(&gfit, bkg_sel, bg, FALSE);
 	chan = determine_chan_for_norm(bg, args->n_channel);
@@ -577,18 +579,11 @@ static rectangle get_bkg_selection() {
  * PUBLIC FUNCTIONS
  */
 
-FILE *open_bv_file(const gchar *mode) {
-	gchar *filename = g_build_filename(g_get_tmp_dir(), "photometric_cc.dat", NULL);
-	FILE *BV = g_fopen(filename, mode);
-	g_free(filename);
-	return BV;
-}
-
 int apply_photometric_cc() {
 	fitted_PSF **stars;
-	FILE *BV_file = NULL;
 	GtkComboBox *norm_box;
 	GtkToggleButton *auto_bkg;
+	GError *error = NULL;
 
 	norm_box = GTK_COMBO_BOX(lookup_widget("combo_box_cc_norm"));
 	auto_bkg = GTK_TOGGLE_BUTTON(lookup_widget("button_cc_bkg_auto"));
@@ -598,25 +593,38 @@ int apply_photometric_cc() {
 	invalidate_gfit_histogram();
 
 	set_cursor_waiting(TRUE);
-	BV_file = open_bv_file("r+t");
+	GFile *BV_file = g_file_new_build_filename(g_get_tmp_dir(), "photometric_cc.dat", NULL);
+	GInputStream *bv_stream = (GInputStream *)g_file_read(BV_file, NULL, &error);
+
+	if (bv_stream == NULL) {
+		if (error != NULL) {
+			g_clear_error(&error);
+			siril_log_message(_("File [%s] does not exist\n"), g_file_peek_path(BV_file));
+		}
+
+		g_object_unref(BV_file);
+		return 1;
+	}
 
 	stars = malloc((MAX_STARS + 1) * sizeof(fitted_PSF *));
 	if (stars == NULL) {
 		PRINT_ALLOC_ERR;
 		set_cursor_waiting(FALSE);
-		fclose(BV_file);
+		g_object_unref(BV_file);
 		return 1;
 	}
 
 	struct photometric_cc_data *args = malloc(sizeof(struct photometric_cc_data));
 
 	args->stars = stars;
-	args->BV_file = BV_file;
+	args->bv_stream = bv_stream;
 	args->n_channel = gtk_combo_box_get_active(norm_box);
 	args->bg_area = get_bkg_selection();
 	args->bg_auto = gtk_toggle_button_get_active(auto_bkg);
 
 	start_in_new_thread(photometric_cc, args);
+
+	g_object_unref(BV_file);
 
 	return 0;
 }
@@ -685,5 +693,3 @@ void on_button_cc_bkg_selection_clicked(GtkButton *button, gpointer user_data) {
 	gtk_spin_button_set_value(selection_cc_bkg_value[2], com.selection.w);
 	gtk_spin_button_set_value(selection_cc_bkg_value[3], com.selection.h);
 }
-
-#endif

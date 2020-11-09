@@ -95,12 +95,10 @@ void scripts_action_activate(GSimpleAction *action, GVariant *parameter,
 	siril_get_on_script_pages();
 }
 
-#ifdef HAVE_LIBCURL
 void updates_action_activate(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
 	siril_check_updates(TRUE);
 }
-#endif
 
 static gboolean is_extended = FALSE;
 

@@ -420,12 +420,6 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("info_menu_statistics"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("info_menu_astrometry"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("info_menu_dynamic_psf"), any_image_is_loaded);
-#ifdef HAVE_LIBCURL
-	/* Updates check */
-	gtk_widget_set_visible(lookup_widget("main_menu_updates"), TRUE);
-	/* Astrometry tool */
-	gtk_widget_set_visible(lookup_widget("info_menu_astrometry"), TRUE);
-#endif
 }
 
 void sliders_mode_set_state(sliders_mode sliders) {
@@ -1090,12 +1084,8 @@ void set_GUI_misc() {
 
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskQuit"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.save.quit);
-#ifdef HAVE_LIBCURL
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskUpdateStartup"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.check_update);
-#else
-	gtk_widget_set_visible(lookup_widget("frame24"), FALSE);
-#endif
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskScript"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.save.script);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("script_check_version"));

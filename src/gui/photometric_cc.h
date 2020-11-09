@@ -15,13 +15,12 @@ typedef struct struct_coeff {
 struct photometric_cc_data {
 	fits *fit;
 	fitted_PSF **stars;
-	FILE *BV_file;
+	GInputStream *bv_stream;
 	rectangle bg_area;
 	gboolean bg_auto;
 	int n_channel;
 };
 
-FILE *open_bv_file(const gchar *mode);
 int apply_photometric_cc();
 int get_photometry_catalog();
 

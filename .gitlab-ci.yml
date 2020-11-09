@@ -43,7 +43,7 @@ build-image:
     - echo "FROM debian:testing" > Dockerfile
     - echo "RUN apt-get update" >> Dockerfile
     - echo "RUN apt-get install -y --no-install-recommends \\" >> Dockerfile
-    - echo "at-spi2-core build-essential desktop-file-utils cmake hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev libopencv-dev librsvg2-dev libraw-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev libcurl4-gnutls-dev python3 ninja-build meson" >> Dockerfile
+    - echo "at-spi2-core build-essential desktop-file-utils cmake hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev libopencv-dev librsvg2-dev libraw-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev python3 ninja-build meson" >> Dockerfile
     - echo "RUN git clone --recurse-submodules --depth=1 -b bleeding https://github.com/Snaipe/Criterion.git \\" >> Dockerfile
     - echo " && cd Criterion \\" >> Dockerfile
     - echo " && git checkout $CRITERION_GIT_SHA1 \\" >> Dockerfile
@@ -71,7 +71,7 @@ build-image-stable:
     - echo "FROM debian:stable" > Dockerfile
     - echo "RUN apt-get update" >> Dockerfile
     - echo "RUN apt-get install -y --no-install-recommends \\" >> Dockerfile
-    - echo "at-spi2-core build-essential desktop-file-utils cmake hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev libopencv-dev librsvg2-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev libcurl4-gnutls-dev liblcms2-dev wget libtool python3 python3-pip" >> Dockerfile
+    - echo "at-spi2-core build-essential desktop-file-utils cmake hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev libopencv-dev librsvg2-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev liblcms2-dev wget libtool python3 python3-pip" >> Dockerfile
     - echo "RUN wget https://www.libraw.org/data/LibRaw-0.20.0.tar.gz \\" >> Dockerfile
     - echo " && tar xfv LibRaw-0.20.0.tar.gz \\" >> Dockerfile
     - echo " && cd LibRaw-0.20.0 \\" >> Dockerfile
@@ -295,7 +295,6 @@ win64-nightly:
     - siril-win64/testing-meson
   script:
     # Package shared ressources
-    - cp -fr ${CROSSROAD_OUT}/ssl ${INSTALL_PREFIX}
     - cp -fr ${CROSSROAD_OUT}/share/glib-2.0/ ${INSTALL_PREFIX}/share
     - cp -fr ${CROSSROAD_OUT}/share/icons/ ${INSTALL_PREFIX}/share
     - cp -fr ${CROSSROAD_OUT}/share/locale/ ${INSTALL_PREFIX}/share

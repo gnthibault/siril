@@ -298,24 +298,47 @@ static void remove_all_stars(){
 	redraw(com.cvport, REMAP_NONE);
 }
 
-static int save_list(gchar *file) {
+static int save_list(gchar *filename) {
 	int i = 0;
 	if (!com.stars)
 		return 1;
-	FILE *f = g_fopen(file, "w");
+	GError *error = NULL;
 
-	if (f) {
-		while (com.stars[i]) {
-			fprintf(f,
-					"%d\t%d\t%10.6f %10.6f %10.2f %10.2f %10.2f %10.2f %3.2f %10.3e %10.2f%s",
-					i + 1, com.stars[i]->layer, com.stars[i]->B, com.stars[i]->A,
-					com.stars[i]->xpos, com.stars[i]->ypos, com.stars[i]->fwhmx,
-					com.stars[i]->fwhmy, com.stars[i]->angle, com.stars[i]->rmse, com.stars[i]->mag, SIRIL_EOL);
-			i++;
+	GFile *file = g_file_new_for_path(filename);
+	GOutputStream *output_stream = (GOutputStream*) g_file_replace(file, NULL, FALSE,
+			G_FILE_CREATE_NONE, NULL, &error);
+
+	if (output_stream == NULL) {
+		if (error != NULL) {
+			g_warning("%s\n", error->message);
+			g_clear_error(&error);
+			fprintf(stderr, "save_list: Cannot save star list\n");
 		}
-		fclose(f);
-		siril_log_message(_("The file stars.lst has been created.\n"));
+		g_object_unref(file);
+		return 1;
 	}
+
+	while (com.stars[i]) {
+		gchar *buffer = g_strdup_printf(
+				"%d\t%d\t%10.6f %10.6f %10.2f %10.2f %10.2f %10.2f %3.2f %10.3e %10.2f%s",
+				i + 1, com.stars[i]->layer, com.stars[i]->B, com.stars[i]->A,
+				com.stars[i]->xpos, com.stars[i]->ypos, com.stars[i]->fwhmx,
+				com.stars[i]->fwhmy, com.stars[i]->angle, com.stars[i]->rmse, com.stars[i]->mag, SIRIL_EOL);
+
+		if (!g_output_stream_write_all(output_stream, buffer, strlen(buffer), NULL, NULL, &error)) {
+			g_warning("%s\n", error->message);
+			g_free(buffer);
+			g_clear_error(&error);
+			g_object_unref(output_stream);
+			g_object_unref(file);
+			return 1;
+		}
+		i++;
+		g_free(buffer);
+	}
+	siril_log_message(_("The file %s has been created.\n"), filename);
+	g_object_unref(file);
+
 	return 0;
 }
 

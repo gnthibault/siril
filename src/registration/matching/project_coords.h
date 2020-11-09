@@ -3,6 +3,6 @@
 
 #include <stdio.h>
 
-int convert_catalog_coords(char *fileA, point coord, FILE *out);
+int convert_catalog_coords(const char *fileA, point coord, GFile *out);
 
 #endif /* SRC_REGISTRATION_MATCHING_PROJECT_COORDS_H_ */

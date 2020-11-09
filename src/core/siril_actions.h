@@ -36,9 +36,7 @@ void about_action_activate(GSimpleAction *action, GVariant *parameter, gpointer 
 void preferences_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void close_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void scripts_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) ;
-#ifdef HAVE_LIBCURL
 void updates_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
-#endif
 void full_screen_activated(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void keyboard_shortcuts_activated(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void tab_conversion_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);

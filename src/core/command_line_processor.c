@@ -67,21 +67,19 @@ static void parseLine(char *myline, int len, int *nb) {
 	*nb = wordnb;
 }
 
-static void remove_CR_and_LF(char *str) {
-	char *src, *dst;
-	for (src = dst = str; *src != '\0'; src++) {
-		*dst = *src;
-		if (*dst != '\r' && *dst != '\n')
-			dst++;
-	}
-	*dst = '\0';
+static void remove_trailing_cr(char *str) {
+	if (str == NULL)
+		return;
+	int length = strlen(str);
+	if (str[length - 1] == '\r')
+		str[length - 1] = '\0';
 }
 
-static int executeCommand(int wordnb) {
+static int execute_command(int wordnb) {
 	// search for the command in the list
 	if (word[0] == NULL) return 1;
 	int i = G_N_ELEMENTS(commands);
-	while (strcasecmp(commands[--i].name, word[0])) {
+	while (g_ascii_strcasecmp(commands[--i].name, word[0])) {
 		if (i == 0) {
 			siril_log_message(_("Unknown command: '%s' or not implemented yet\n"), word[0]);
 			return 1 ;
@@ -117,7 +115,7 @@ static void update_log_icon(gboolean is_running) {
 }
 
 struct log_status_bar_idle_data {
-	char *myline;
+	gchar *myline;
 	int line;
 };
 
@@ -131,14 +129,12 @@ static gboolean log_status_bar_idle_callback(gpointer p) {
 	update_log_icon(TRUE);
 
 	newline = g_strdup(data->myline);
-	remove_CR_and_LF(newline);
 	status = g_strdup_printf(_("Processing line %d: %s"), data->line, newline);
 
 	gtk_statusbar_push(statusbar_script, 0, status);
 	g_free(newline);
 	g_free(status);
-
-	free(data->myline);
+	g_free(data->myline);
 	free(data);
 
 	return FALSE;	// only run once
@@ -150,7 +146,7 @@ static void display_command_on_status_bar(int line, char *myline) {
 
 		data = malloc(sizeof(struct log_status_bar_idle_data));
 		data->line = line;
-		data->myline = myline ? strdup(myline) : NULL;
+		data->myline = myline ? g_strdup(myline) : NULL;
 		gdk_threads_add_idle(log_status_bar_idle_callback, data);
 	}
 }
@@ -172,10 +168,9 @@ static gboolean end_script(gpointer p) {
 }
 
 gpointer execute_script(gpointer p) {
-	FILE *fp = (FILE *)p;
+	GInputStream *input_stream = (GInputStream*) p;
 	gboolean check_required = FALSE;
-	ssize_t read;
-	char *linef, *myline;
+	gchar *buffer;
 	int line = 0, retval = 0;
 	int wordnb;
 	int startmem, endmem;
@@ -183,37 +178,41 @@ gpointer execute_script(gpointer p) {
 
 	com.script = TRUE;
 	com.stop_script = FALSE;
+
+	gettimeofday(&t_start, NULL);
+
 	/* Now we want to save the cwd in order to come back after
 	 * script execution
 	 */
 	gchar *saved_cwd = g_strdup(com.wd);
-	gettimeofday(&t_start, NULL);
 	startmem = get_available_memory_in_MB();
-#if (_POSIX_C_SOURCE < 200809L)
-	linef = calloc(256, sizeof(char));
-	while (fgets(linef, 256, fp)) {
-		read = strlen(linef) + 1;
-#else
-	size_t lenf = 0;
-	linef = NULL;
-	while ((read = getline(&linef, &lenf, fp)) != -1) {
-#endif
+	gsize length = 0;
+	GDataInputStream *data_input = g_data_input_stream_new(input_stream);
+	while ((buffer = g_data_input_stream_read_line_utf8(data_input, &length,
+			NULL, NULL))) {
 		++line;
 		if (com.stop_script) {
 			retval = 1;
+			g_free (buffer);
 			break;
 		}
 		/* Displays comments */
-		if (linef[0] == '#') {
-			siril_log_color_message(linef, "blue");
+		if (buffer[0] == '#') {
+			siril_log_color_message("%s\n", "blue", buffer);
+			g_free (buffer);
 			continue;
 		}
-		if (linef[0] == '\0' || linef[0] == '\n' || linef[0] == '\r')
+		if (buffer[0] == '\0') {
+			g_free (buffer);
 			continue;
+		}
 
-		myline = strdup(linef);
-		display_command_on_status_bar(line, myline);
-		parseLine(myline, read, &wordnb);
+		/* in Windows case, remove trailing CR */
+		remove_trailing_cr(buffer);
+
+		display_command_on_status_bar(line, buffer);
+		parseLine(buffer, length, &wordnb);
+		/* check for requires command */
 		if (!g_ascii_strcasecmp(word[0], "requires")) {
 			check_required = TRUE;
 		} else {
@@ -221,29 +220,30 @@ gpointer execute_script(gpointer p) {
 				siril_log_color_message(_("The \"requires\" command is missing at the top of the script file."
 						" This command is needed to check script compatibility.\n"), "red");
 				retval = 1;
+				g_free (buffer);
 				break;
 			}
 		}
-		if ((retval = executeCommand(wordnb))) {
-			remove_CR_and_LF(linef);
-			siril_log_message(_("Error in line %d: '%s'.\n"), line, linef);
+		if ((retval = execute_command(wordnb))) {
+			siril_log_message(_("Error in line %d: '%s'.\n"), line, buffer);
 			siril_log_message(_("Exiting batch processing.\n"));
-			free(myline);
+			g_free (buffer);
 			break;
 		}
 		if (waiting_for_thread()) {
-			free(myline);
 			retval = 1;
+			g_free (buffer);
 			break;	// abort script on command failure
 		}
 		endmem = get_available_memory_in_MB();
 		siril_debug_print("End of command %s, memory difference: %d MB\n", word[0], startmem - endmem);
 		startmem = endmem;
 		memset(word, 0, sizeof word);
-		free(myline);
+		g_free (buffer);
 	}
-	free(linef);
-	fclose(fp);
+	g_free(buffer);
+	g_object_unref(data_input);
+	g_object_unref(input_stream);
 	com.script = FALSE;
 	/* Now we want to restore the saved cwd */
 	siril_change_dir(saved_cwd, NULL);
@@ -255,7 +255,7 @@ gpointer execute_script(gpointer p) {
 		show_time_msg(t_start, t_end, _("Total execution time"));
 	} else {
 		char *msg = siril_log_message(_("Script execution failed.\n"));
-		msg[strlen(msg)-1] = '\0';
+		msg[strlen(msg) - 1] = '\0';
 		set_progress_bar_data(msg, PROGRESS_DONE);
 	}
 	g_free(saved_cwd);
@@ -317,8 +317,9 @@ static void show_command_help_popup(GtkEntry *entry) {
 }
 
 int processcommand(const char *line) {
-	int wordnb = 0, len;
-	char *myline;
+	int wordnb = 0;
+	gchar *myline;
+	GError *error = NULL;
 
 	if (line[0] == '\0' || line[0] == '\n')
 		return 0;
@@ -329,26 +330,37 @@ int processcommand(const char *line) {
 		}
 		if (com.script_thread)
 			g_thread_join(com.script_thread);
+
+		/* Switch to console tab */
+		control_window_switch_to_tab(OUTPUT_LOGS);
+
 		char filename[256];
 		g_strlcpy(filename, line + 1, 250);
 		expand_home_in_filename(filename, 256);
-		FILE* fp = g_fopen(filename, "r");
-		if (fp == NULL) {
-			siril_log_message(_("File [%s] does not exist\n"), filename);
+
+		GFile *file = g_file_new_for_path(filename);
+		GInputStream *input_stream = (GInputStream *)g_file_read(file, NULL, &error);
+
+		if (input_stream == NULL) {
+			if (error != NULL) {
+				g_clear_error(&error);
+				siril_log_message(_("File [%s] does not exist\n"), filename);
+			}
+
+			g_object_unref(file);
 			return 1;
 		}
-		/* Switch to console tab */
-		control_window_switch_to_tab(OUTPUT_LOGS);
 		/* ensure that everything is closed */
 		process_close(0);
 		/* Then, run script */
 		siril_log_message(_("Starting script %s\n"), filename);
-		com.script_thread = g_thread_new("script", execute_script, fp);
+		com.script_thread = g_thread_new("script", execute_script, input_stream);
+		g_object_unref(file);
 	} else {
 		myline = strdup(line);
-		len = strlen(line);
+		int len = strlen(line);
 		parseLine(myline, len, &wordnb);
-		if (executeCommand(wordnb)) {
+		if (execute_command(wordnb)) {
 			siril_log_color_message(_("Command execution failed.\n"), "red");
 			if (!com.script && !com.headless) {
 				show_command_help_popup(GTK_ENTRY(lookup_widget("command")));
