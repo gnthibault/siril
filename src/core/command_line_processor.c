@@ -241,7 +241,6 @@ gpointer execute_script(gpointer p) {
 		memset(word, 0, sizeof word);
 		g_free (buffer);
 	}
-	g_free(buffer);
 	g_object_unref(data_input);
 	g_object_unref(input_stream);
 	com.script = FALSE;
