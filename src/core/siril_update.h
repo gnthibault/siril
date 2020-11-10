@@ -30,6 +30,7 @@ typedef struct {
 
 struct _update_data {
 	gchar *url;
+	long code;
 	gchar *content;
 	gboolean verbose;
 	char *msg;

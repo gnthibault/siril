@@ -258,6 +258,7 @@ siril_common_LDADD = \
 	$(GSL_LIBS) \
 	$(FFMS2_LIBS) \
 	$(LIBCONFIG_LIBS) \
+	$(LIBCURL) \
 	$(EXTRA_LIBS) \
 	$(LIBATOMIC_LIBS) \
 	$(libdbghelp) \

@@ -28,6 +28,11 @@
 #include <math.h>
 #include <unistd.h>
 
+#if defined OS_OSX && defined HAVE_LIBRAW
+#include <curl/curl.h>
+#endif
+
+
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/sleef.h"
@@ -415,6 +420,105 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 	return g_string_free(url, FALSE);
 }
 
+#if defined OS_OSX && defined HAVE_LIBRAW
+/*****
+ * HTTP functions
+ ****/
+
+static CURL *curl;
+static const int DEFAULT_FETCH_RETRIES = 10;
+
+struct ucontent {
+	char *data;
+	size_t len;
+};
+
+static void init() {
+	if (!curl) {
+		printf("initializing CURL\n");
+		curl_global_init(CURL_GLOBAL_ALL);
+		curl = curl_easy_init();
+	}
+
+	if (!curl)
+		exit(EXIT_FAILURE);
+}
+
+static size_t cbk_curl(void *buffer, size_t size, size_t nmemb, void *userp) {
+	size_t realsize = size * nmemb;
+	struct ucontent *mem = (struct ucontent *) userp;
+
+	mem->data = realloc(mem->data, mem->len + realsize + 1);
+
+	memcpy(&(mem->data[mem->len]), buffer, realsize);
+	mem->len += realsize;
+	mem->data[mem->len] = 0;
+
+	return realsize;
+}
+
+static char *fetch_url(const char *url) {
+	struct ucontent *content = malloc(sizeof(struct ucontent));
+	char *result, *error;
+	long code;
+	int retries;
+	unsigned int s;
+
+	printf("fetch_url(): %s\n", url);
+
+	init();
+
+	result = NULL;
+
+	retries = DEFAULT_FETCH_RETRIES;
+
+	retrieve: content->data = malloc(1);
+	content->data[0] = '\0';
+	content->len = 0;
+
+	curl_easy_setopt(curl, CURLOPT_URL, url);
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 0);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cbk_curl);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, content);
+
+	if (curl_easy_perform(curl) == CURLE_OK) {
+		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
+
+		switch (code) {
+		case 200:
+			result = content->data;
+			break;
+		case 500:
+		case 502:
+		case 503:
+		case 504:
+			printf("Fetch failed with code %ld for URL %s\n", code, url);
+
+			if (retries) {
+				s = 2 * (DEFAULT_FETCH_RETRIES - retries) + 2;
+				printf("Wait %uds before retry\n", s);
+				sleep(s);
+
+				free(content->data);
+				retries--;
+				goto retrieve;
+			}
+
+			break;
+		default:
+			error = siril_log_message(_("Fetch failed with code %ld for URL %s\n"), code, url);
+			siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"), error);
+		}
+	}
+
+	if (!result)
+		free(content->data);
+
+	free(content);
+
+	return result;
+}
+#else
 static gchar *fetch_url(const gchar *url) {
 	GFile *file = g_file_new_for_uri(url);
 	GError *error = NULL;
@@ -427,6 +531,7 @@ static gchar *fetch_url(const gchar *url) {
 	g_object_unref(file);
 	return content;
 }
+#endif
 
 static online_catalog get_online_catalog(double fov, double m) {
 	GtkComboBox *box;

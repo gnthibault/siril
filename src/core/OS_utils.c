@@ -78,7 +78,7 @@
  * @param name the path of the directory to be tested
  * @return the disk space remaining in bytes, or a negative value if error
  */
-#ifdef OS_X
+#ifdef OS_OSX
 static int64_t find_space(const gchar *name) {
 	NSError *error;
 
