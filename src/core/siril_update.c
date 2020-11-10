@@ -404,7 +404,7 @@ void siril_check_updates(gboolean verbose) {
 static void siril_check_updates_callback(GObject *source, GAsyncResult *result,
 		gpointer user_data) {
 	struct _update_data *args = (struct _update_data *) user_data;
-	char *msg = NULL;
+	gchar *msg = NULL;
 	GtkMessageType message_type;
 	gchar *changelog = NULL;
 	gchar *data = NULL;
@@ -437,11 +437,13 @@ static void siril_check_updates_callback(GObject *source, GAsyncResult *result,
 		}
 		message_type = GTK_MESSAGE_INFO;
 	} else {
-		msg = args->msg;
 		message_type = GTK_MESSAGE_ERROR;
+		gchar *uri = g_file_get_uri(G_FILE(source));
 		g_printerr("%s: loading of %s failed: %s\n", G_STRFUNC,
-				g_file_get_uri(G_FILE(source)), error->message);
+				uri, error->message);
+		msg = siril_log_message(_("Siril cannot access to %s\n"), uri);
 		g_clear_error(&error);
+		g_free(uri);
 	}
 	if (args->verbose) {
 		set_cursor_waiting(FALSE);
