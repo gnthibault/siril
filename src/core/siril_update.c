@@ -180,10 +180,8 @@ static gchar *get_changelog(gint x, gint y, gint z, gint p) {
 	GFile *file = g_file_new_for_uri(changelog_url);
 
 	if (!g_file_load_contents(file, NULL, &result, NULL, NULL, &error)) {
-		gchar *name = g_file_get_basename(file);
-		printf("Error loading %s: %s\n", name, error->message);
+		siril_log_message(_("Error loading url: %s: %s\n"), changelog_url, error->message);
 		g_clear_error(&error);
-		g_free(name);
 	}
 
 	g_free(changelog_url);
@@ -193,15 +191,19 @@ static gchar *get_changelog(gint x, gint y, gint z, gint p) {
 	return result;
 }
 
-static gboolean end_update_idle(gpointer p) {
+static void siril_check_updates_callback(GObject *source, GAsyncResult *result,
+		gpointer user_data) {
+	struct _update_data *args = (struct _update_data *) user_data;
 	char *msg = NULL;
 	GtkMessageType message_type;
 	gchar *changelog = NULL;
 	gchar *data = NULL;
 	version_number current_version, last_version_available;
-	struct _update_data *args = (struct _update_data *) p;
+	GError *error = NULL;
+	gsize file_length = 0;
 
-	if (args->content) {
+	if (g_file_load_contents_finish(G_FILE(source), result, &args->content,
+			&file_length, NULL, &error)) {
 		last_version_available = get_last_version_number(args->content);
 		current_version = get_current_version_number();
 		gint x = last_version_available.major_version;
@@ -227,37 +229,24 @@ static gboolean end_update_idle(gpointer p) {
 	} else {
 		msg = args->msg;
 		message_type = GTK_MESSAGE_ERROR;
+		g_printerr("%s: loading of %s failed: %s\n", G_STRFUNC,
+				g_file_get_uri(G_FILE(source)), error->message);
+		g_clear_error(&error);
 	}
-	set_cursor_waiting(FALSE);
-	if (msg && args->verbose)
-		siril_data_dialog(message_type, _("Software Update"), msg, data);
+	if (args->verbose) {
+		set_cursor_waiting(FALSE);
+		if (msg) {
+			siril_data_dialog(message_type, _("Software Update"), msg, data);
+		}
+	}
+
+	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
 
 	/* free data */
 	g_free(args->content);
 	g_free(data);
 	g_free(changelog);
 	free(args);
-	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
-	stop_processing_thread();
-	return FALSE;
-}
-
-static gpointer fetch_url(gpointer p) {
-	struct _update_data *args = (struct _update_data *) p;
-	GFile *file = g_file_new_for_uri(args->url);
-	GError *error = NULL;
-
-	if (!g_file_load_contents(file, NULL, &args->content, NULL, NULL, &error)) {
-		gchar *name = g_file_get_basename(file);
-		args->msg = siril_log_message("Error loading %s: %s\n", name, error->message);
-		g_clear_error(&error);
-		g_free(name);
-	}
-	set_progress_bar_data(NULL, PROGRESS_DONE);
-	gdk_threads_add_idle(end_update_idle, args);
-	g_object_unref(file);
-
-	return NULL;
 }
 
 void siril_check_updates(gboolean verbose) {
@@ -268,7 +257,12 @@ void siril_check_updates(gboolean verbose) {
 	args->content = NULL;
 	args->verbose = verbose;
 
+	GFile *file = g_file_new_for_uri(args->url);
 	set_progress_bar_data(_("Looking for updates..."), PROGRESS_NONE);
-	set_cursor_waiting(TRUE);
-	start_in_new_thread(fetch_url, args);
+	if (args->verbose)
+		set_cursor_waiting(TRUE);
+
+	g_file_load_contents_async(file, NULL, siril_check_updates_callback, args);
+
+	g_object_unref(file);
 }

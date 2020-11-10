@@ -421,10 +421,8 @@ static gchar *fetch_url(const gchar *url) {
 	gchar *content = NULL;
 
 	if (!g_file_load_contents(file, NULL, &content, NULL, NULL, &error)) {
-		gchar *name = g_file_get_basename(file);
-		printf("Error loading %s: %s\n", name, error->message);
+		siril_log_message(_("Error loading url: %s: %s\n"), url, error->message);
 		g_clear_error(&error);
-		g_free(name);
 	}
 	g_object_unref(file);
 	return content;

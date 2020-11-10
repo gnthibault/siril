@@ -32,10 +32,8 @@ static gchar *get_buffer_from_css_file(gchar *css) {
 	gchar *str;
 
 	if (!g_file_load_contents(file, NULL, &str, NULL, NULL, &error)) {
-		gchar *name = g_file_get_basename(file);
-		printf("Error loading %s: %s\n", name, error->message);
+		printf("Error loading %s: %s\n", g_file_peek_path(file), error->message);
 		g_clear_error(&error);
-		g_free(name);
 	}
 	return str;
 }

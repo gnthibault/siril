@@ -35,6 +35,7 @@ struct _update_data {
 	char *msg;
 };
 
+//void siril_check_updates(gboolean verbose);
 void siril_check_updates(gboolean verbose);
 
 #endif /* SRC_CORE_SIRIL_UPDATE_H_ */
