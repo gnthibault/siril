@@ -11,3 +11,10 @@ option('openmp',
  value : 'true',
  description: 'build with OpenMP support'
 )
+
+option('enable-libcurl',
+ type: 'combo', 
+ value: 'platform-default',
+ description: 'Use libcurl instead of GIO',
+ choices: [ 'yes', 'no', 'platform-default' ]
+)

@@ -28,10 +28,9 @@
 #include <math.h>
 #include <unistd.h>
 
-#if defined OS_OSX && defined HAVE_LIBCURL
+#ifdef HAVE_LIBCURL
 #include <curl/curl.h>
 #endif
-
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -420,7 +419,7 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 	return g_string_free(url, FALSE);
 }
 
-#if defined OS_OSX && defined HAVE_LIBCURL
+#ifdef HAVE_LIBCURL
 /*****
  * HTTP functions
  ****/

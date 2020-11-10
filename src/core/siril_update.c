@@ -22,9 +22,10 @@
 #include <config.h>
 #endif
 
-#if defined OS_OSX && defined HAVE_LIBCURL
+#ifdef HAVE_LIBCURL
 #include <curl/curl.h>
 #endif
+
 #include <string.h>
 
 #include "core/siril.h"
@@ -194,8 +195,7 @@ static gchar *get_changelog(gint x, gint y, gint z, gint p) {
 	return result;
 }
 
-#if defined OS_OSX && defined HAVE_LIBCURL
-
+#ifdef HAVE_LIBCURL
 static const int DEFAULT_FETCH_RETRIES = 5;
 static CURL *curl;
 
