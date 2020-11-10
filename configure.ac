@@ -228,15 +228,17 @@ PKG_CHECK_MODULES(FFMS2, [ffms2],
 		  [AC_DEFINE([HAVE_FFMS2], [1], [Using FFMS2])],
 		  AC_MSG_WARN([libffms2 not found. Not using AVI importer.]))
 
+
 dnl checking several ffmpeg libraries
 PKG_CHECK_MODULES(FFMPEG, [libavformat libavutil >= 55.20 libavcodec libswscale libswresample],
 		[AC_DEFINE([HAVE_FFMPEG], [1], [film export supported])],
 		AC_MSG_WARN([ffmpeg libav libraries not found or too old. Not using film export formats.]))
-	
+
 dnl checking libcurl
 m4_include([m4/libcurl.m4])
 LIBCURL_CHECK_CONFIG([yes], [7.10.0],
-        [AC_DEFINE([HAVE_LIBCURL], [1], [Using Libcurl ])],	
+        [AC_DEFINE([HAVE_LIBCURL], [1], [Using Libcurl ])],
+        AC_MSG_WARN([libcurl not found. Not using web interaction.]))
 
 dnl ================================================================
 dnl Collect some arguments.
@@ -378,4 +380,3 @@ AC_SUBST([AM_LDFLAGS])
 
 AC_CONFIG_FILES([Makefile src/Makefile subprojects/Makefile pixmaps/Makefile pixmaps/icons/Makefile platform-specific/Makefile platform-specific/linux/Makefile po/Makefile.in])
 AC_OUTPUT
-
