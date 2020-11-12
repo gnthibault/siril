@@ -51,15 +51,36 @@ extern "C" {
 
 /** code from darktable */
 /**
+ *
+ *
+ */
+
+static GMutex mutex;
+
+// exiv2's readMetadata is not thread safe in 0.26. so we lock it. since readMetadata might throw an exception we
+// wrap it into some c++ magic to make sure we unlock in all cases. well, actually not magic but basic raii.
+// FIXME: check again once we rely on 0.27
+class Lock
+{
+public:
+  Lock() { g_mutex_lock(&mutex); }
+  ~Lock() { g_mutex_unlock(&mutex); }
+};
+
+#define read_metadata_threadsafe(image)                       \
+{                                                             \
+  Lock lock;                                                  \
+  image->readMetadata();                                      \
+}
+
+/*
  * Get the largest possible thumbnail from the image
  */
-int siril_get_thumbnail_exiv(const char *path, uint8_t **buffer, size_t *size,
-		char **mime_type) {
+int siril_get_thumbnail_exiv(const char *path, uint8_t **buffer, size_t *size, char **mime_type) {
 	try {
-		std::unique_ptr<Exiv2::Image> image(
-				Exiv2::ImageFactory::open(WIDEN(path)));
+		std::unique_ptr<Exiv2::Image> image(Exiv2::ImageFactory::open(WIDEN(path)));
 		assert(image.get() != 0);
-		image->readMetadata();
+		read_metadata_threadsafe(image);
 
 		// Get a list of preview images available in the image. The list is sorted
 		// by the preview image pixel size, starting with the smallest preview.
@@ -84,8 +105,7 @@ int siril_get_thumbnail_exiv(const char *path, uint8_t **buffer, size_t *size,
 		*mime_type = strdup(preview.mimeType().c_str());
 		*buffer = (uint8_t*) malloc(_size);
 		if (!*buffer) {
-			std::cerr << "[exiv2] couldn't allocate memory for thumbnail for "
-					<< path << std::endl;
+			std::cerr << "[exiv2] couldn't allocate memory for thumbnail for " << path << std::endl;
 			return 1;
 		}
 		//std::cerr << "[exiv2] "<< path << ": found thumbnail "<< preview.width() << "x" << preview.height() << std::endl;
