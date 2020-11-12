@@ -3658,6 +3658,7 @@ WARNING: it will erase all registration and statistics data.</property>
                                         <property name="visible">True</property>
                                         <property name="can_focus">True</property>
                                         <property name="receives_default">True</property>
+                                        <property name="tooltip_text" translatable="yes">Show/Hide list of images in the sequence with registration data</property>
                                         <property name="halign">center</property>
                                         <signal name="clicked" handler="on_seqlist_button_clicked" swapped="no"/>
                                       </object>
@@ -7014,12 +7015,13 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
             <property name="halign">start</property>
             <property name="margin_bottom">3</property>
             <child>
-              <object class="GtkLabel" id="label139">
+              <object class="GtkLabel" id="label_name_of_seq">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Sequence:</property>
                 <attributes>
                   <attribute name="style" value="italic"/>
+                  <attribute name="weight" value="bold"/>
                 </attributes>
               </object>
               <packing>

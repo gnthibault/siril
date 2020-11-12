@@ -181,14 +181,14 @@ static void update_preview_cb(GtkFileChooser *file_chooser, gpointer p) {
 	GFile *file;
 	GFileInfo *file_info;
 
-	uri = gtk_file_chooser_get_preview_uri (file_chooser);
+	uri = gtk_file_chooser_get_preview_uri(file_chooser);
 	if (uri == NULL) {
-		gtk_file_chooser_set_preview_widget_active (file_chooser, FALSE);
+		gtk_file_chooser_set_preview_widget_active(file_chooser, FALSE);
 		return;
 	}
 
-	file = g_file_new_for_uri (uri);
-	file_info = g_file_query_info (file,
+	file = g_file_new_for_uri(uri);
+	file_info = g_file_query_info(file,
 				       G_FILE_ATTRIBUTE_TIME_MODIFIED ","
 				       G_FILE_ATTRIBUTE_STANDARD_TYPE ","
 				       G_FILE_ATTRIBUTE_STANDARD_SIZE ","
@@ -202,6 +202,8 @@ static void update_preview_cb(GtkFileChooser *file_chooser, gpointer p) {
 	data->filename = filename;
 	data->file_info = file_info;
 	data->file_chooser = file_chooser;
+
+	g_object_unref(file);
 
 	start_in_new_thread(update_preview_cb_idle, data);
 }

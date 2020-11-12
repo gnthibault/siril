@@ -312,27 +312,42 @@ void set_display_mode() {
 
 /* fill the label indicating how many images are selected in the gray and
  * which one is the reference image, at the bottom of the main window */
-int adjust_sellabel() {
-	static GtkLabel *global_label = NULL;
-	char *bufferglobal;
+void adjust_sellabel() {
+	static GtkLabel *global_label = NULL, *label_name_of_seq = NULL;
+	gchar *buffer_global, *buffer_title;
 
 	if (global_label == NULL) {
 		global_label = GTK_LABEL(lookup_widget("labelseq"));
+		label_name_of_seq = GTK_LABEL(lookup_widget("label_name_of_seq"));
 	}
 
 	if (sequence_is_loaded()) {
 		gchar *seq_basename = g_path_get_basename(com.seq.seqname);
 
-		bufferglobal = g_strdup_printf(_("%s, %d/%d images selected"), seq_basename, com.seq.selnum, com.seq.number);
+		buffer_global = g_strdup_printf(_("%s, %d/%d images selected"),
+				seq_basename, com.seq.selnum, com.seq.number);
+		buffer_title = g_strdup(_("Sequence:"));
+
 		g_free(seq_basename);
+	} else if (single_image_is_loaded()) {
+		gchar *filename = g_path_get_basename(com.uniq->filename);
+
+		buffer_global = g_strdup_printf(_("%s"), filename);
+		buffer_title = g_strdup(_("Image:"));
+
+		g_free(filename);
 	} else {
-		bufferglobal = g_strdup(_("- none -"));
+		buffer_global = g_strdup(_("- none -"));
+		buffer_title = NULL;
+
 		gtk_widget_set_sensitive(lookup_widget("goregister_button"), FALSE);
 	}
 
-	gtk_label_set_text(global_label, bufferglobal);
-	g_free(bufferglobal);
-	return 0;
+	gtk_label_set_text(label_name_of_seq, buffer_title);
+	gtk_label_set_text(global_label, buffer_global);
+
+	g_free(buffer_global);
+	g_free(buffer_title);
 }
 
 void set_icon_entry(GtkEntry *entry, gchar *string) {
