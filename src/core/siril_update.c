@@ -195,11 +195,11 @@ static gchar *get_changelog(gint x, gint y, gint z, gint p) {
 	return result;
 }
 
-static gchar *check_version(gchar *content, gboolean *verbose, gchar **data) {
+static gchar *check_version(struct _update_data *args, gchar **data) {
 	gchar *changelog = NULL;
 	gchar *msg = NULL;
 
-	version_number last_version_available = get_last_version_number(content);
+	version_number last_version_available = get_last_version_number(args->content);
 	version_number current_version = get_current_version_number();
 	gint x = last_version_available.major_version;
 	gint y = last_version_available.minor_version;
@@ -212,12 +212,12 @@ static gchar *check_version(gchar *content, gboolean *verbose, gchar **data) {
 		changelog = get_changelog(x, y, z, patch);
 		*data = parse_changelog(changelog);
 		/* force the verbose variable */
-		*verbose = TRUE;
+		args->verbose = TRUE;
 	} else if (compare_version(current_version, last_version_available)	> 0) {
-		if (*verbose)
+		if (args->verbose)
 			msg = siril_log_message(_("No update check: this is a development version\n"));
 	} else {
-		if (*verbose)
+		if (args->verbose)
 			msg = siril_log_message(_("Siril is up to date\n"));
 	}
 	g_free(changelog);
@@ -280,7 +280,7 @@ static gboolean end_update_idle(gpointer p) {
 					args->code);
 		}
 	} else {
-		msg = check_version(args->content, &args->verbose, &data);
+		msg = check_version(args, &data);
 		message_type = GTK_MESSAGE_INFO;
 	}
 	if (args->verbose) {
@@ -416,7 +416,7 @@ static void siril_check_updates_callback(GObject *source, GAsyncResult *result,
 
 	if (g_file_load_contents_finish(G_FILE(source), result, &args->content,
 			NULL, NULL, &error)) {
-		msg = check_version(args->content, &args->verbose, &data);
+		msg = check_version(args, &data);
 		message_type = GTK_MESSAGE_INFO;
 	} else {
 		gchar *uri = g_file_get_uri(G_FILE(source));
