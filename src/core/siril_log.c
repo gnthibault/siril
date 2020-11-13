@@ -69,7 +69,7 @@ gchar* g_date_time_format_iso8601(GDateTime *datetime) {
 #endif
 
 static gchar* build_timestamp() {
-#if !GLIB_CHECK_VERSION(2,26,0)
+#if !GLIB_CHECK_VERSION(2,62,0)
 	GTimeVal time;
 
 	g_get_current_time(&time);
