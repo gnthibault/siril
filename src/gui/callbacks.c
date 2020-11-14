@@ -1131,13 +1131,13 @@ void set_GUI_misc() {
 	gtk_combo_box_set_active_id(fit_ext, com.pref.ext);
 }
 
-/* size is in kiB */
+/* size is in Bytes */
 void set_GUI_MEM(unsigned long long size, const gchar *label) {
 	if (com.headless)
 		return;
 	gchar *str;
 	if (size != 0) {
-		gchar *mem = pretty_print_memory(size * 1024);
+		gchar *mem = g_format_size_full(size, G_FORMAT_SIZE_IEC_UNITS);
 		str = g_strdup_printf(_("Mem: %s"), mem);
 		g_free(mem);
 	} else {
@@ -1158,7 +1158,7 @@ void set_GUI_DiskSpace(int64_t space, const gchar *label) {
 		if (space < 1000000000) { // we want to warn user of space is less than 1GB
 			gtk_style_context_add_class(context, "label-info");
 		}
-		gchar *mem = pretty_print_memory(space);
+		gchar *mem = g_format_size_full(space, G_FORMAT_SIZE_IEC_UNITS);
 		str = g_strdup_printf(_("Disk Space: %s"), mem);
 		g_free(mem);
 	} else {

@@ -130,7 +130,7 @@ static unsigned long long update_used_RAM_memory() {
 	unsigned long long shared;
 
 	if (!initialized) {
-		page_size = getpagesize() / 1024L;
+		page_size = getpagesize();
 
 		if (page_size > 0)
 			fd = g_open("/proc/self/statm", O_RDONLY);
@@ -162,21 +162,21 @@ static unsigned long long update_used_RAM_memory() {
 
 	mach_msg_type_number_t t_info_count = TASK_BASIC_INFO_COUNT;
 	task_info(current_task(), TASK_BASIC_INFO, (task_info_t)&t_info, &t_info_count);
-	return ((unsigned long long) t_info.resident_size / 1024ULL);
+	return ((unsigned long long) t_info.resident_size);
 }
 #elif defined(BSD) /* BSD (DragonFly BSD, FreeBSD, OpenBSD, NetBSD). In fact, it could work with linux */
 static unsigned long long update_used_RAM_memory() {
 	struct rusage usage;
 
 	getrusage(RUSAGE_SELF, &usage);
-	return ((unsigned long long) usage.ru_maxrss);
+	return ((unsigned long long) usage.ru_maxrss * 1024ULL);
 }
 #elif defined(_WIN32) /* Windows */
 static unsigned long long update_used_RAM_memory() {
 	PROCESS_MEMORY_COUNTERS memCounter;
 
 	if (GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof(memCounter)))
-		return (memCounter.WorkingSetSize / 1024ULL);
+		return (memCounter.WorkingSetSize);
 	return 0ULL;
 }
 #else
@@ -196,23 +196,6 @@ gboolean update_displayed_memory() {
 	set_GUI_DiskSpace((double)find_space(com.wd), "labelFreeSpace");
 	set_GUI_DiskSpace((double)find_space(com.pref.swap_dir), "free_mem_swap");
 	return TRUE;
-}
-
-/**
- * From a number of bytes in input, returns a string (to be freed) comprehensible by a
- * human for this size, for example 1.5G instead of 1500000000
- * @param bytes
- * @return a formated string showing memory
- */
-gchar *pretty_print_memory(int64_t bytes) {
-	const char *units[] = { "", "k", "M", "G", "T", "P", "E", "Z", "Y" };
-	int i = 0;
-	double mem = (double)bytes;
-	while (mem >= 1000.0 && i < sizeof units) {
-		mem = mem / 1024.0;
-		i++;
-	}
-	return g_strdup_printf("%.1f%s", mem, units[i]);
 }
 
 #define MAX_COMP_FREESPACE_RATIO 3
@@ -237,9 +220,9 @@ int test_available_space(int64_t req_size) {
 
 	if (req_size > free_space) {
 		char * msg;
-		gchar *avail = pretty_print_memory(free_space);
-		gchar *required = pretty_print_memory(req_size);
-		gchar *missing = pretty_print_memory(req_size - free_space);
+		gchar *avail = g_format_size_full(free_space, G_FORMAT_SIZE_IEC_UNITS);
+		gchar *required = g_format_size_full(req_size, G_FORMAT_SIZE_IEC_UNITS);
+		gchar *missing = g_format_size_full(req_size - free_space, G_FORMAT_SIZE_IEC_UNITS);
 		if (com.pref.comp.fits_enabled) {
 			if (req_size / free_space < MAX_COMP_FREESPACE_RATIO) {
 				msg = siril_log_message(_("Compression enabled: There may no be enough free disk space to perform this operation: "

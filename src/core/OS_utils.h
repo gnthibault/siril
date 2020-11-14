@@ -23,7 +23,6 @@
 #include <stdint.h>
 
 gboolean update_displayed_memory();
-gchar* pretty_print_memory(int64_t bytes);
 int test_available_space(int64_t req_size);
 int get_available_memory_in_MB();
 int get_max_memory_in_MB();
