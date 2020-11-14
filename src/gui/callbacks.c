@@ -1155,7 +1155,7 @@ void set_GUI_DiskSpace(int64_t space, const gchar *label) {
 	gtk_style_context_remove_class(context, "label-info");
 
 	if (space > 0) {
-		if (space < 1000000000) { // we want to warn user of space is less than 1GB
+		if (space < 1073741824) { // we want to warn user of space is less than 1GiB
 			gtk_style_context_add_class(context, "label-info");
 		}
 		gchar *mem = g_format_size_full(space, G_FORMAT_SIZE_IEC_UNITS);
