@@ -188,7 +188,6 @@ typedef struct point_struct point;
 typedef struct pointf_struct pointf;
 typedef struct pointi_struct pointi;
 typedef struct historic_struct historic;
-typedef struct dateTime_struct dateTime;
 typedef struct fwhm_struct fitted_PSF;
 typedef struct star_finder_struct star_finder_params;
 typedef struct pref_struct preferences;
@@ -288,7 +287,7 @@ typedef enum { SEQ_REGULAR, SEQ_SER, SEQ_FITSEQ,
 struct imdata {
 	int filenum;		/* real file index in the sequence, i.e. for mars9.fit = 9 */
 	gboolean incl;		/* selected in the sequence, included for future processings? */
-	char *date_obs;		/* date of the observation, processed and copied from the header */
+	GDateTime *date_obs;/* date of the observation, processed and copied from the header */
 };
 
 /* registration data, exists once for each image and each layer */
@@ -418,8 +417,7 @@ struct ffit {
 	unsigned int binning_x, binning_y;		// XBINNING and YBINNING keys
 	gboolean unbinned;
 	char row_order[FLEN_VALUE];
-	char date_obs[FLEN_VALUE];		// YYYY-MM-DDThh:mm:ss observation start, UT
-	char date[FLEN_VALUE];		// YYYY-MM-DDThh:mm:ss creation of file, UT
+	GDateTime *date, *date_obs;
 	char instrume[FLEN_VALUE];		// INSTRUME key
 	char telescop[FLEN_VALUE];		// TELESCOP key
 	char observer[FLEN_VALUE];		// OBSERVER key

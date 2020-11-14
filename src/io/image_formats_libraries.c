@@ -344,7 +344,6 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 	WORD *data = NULL;
 	float *fdata = NULL;
 	uint16 sampleformat = 0;
-	gchar *date_obs = NULL;
 	
 	TIFF* tif = Siril_TIFFOpen(name, "r");
 	if (!tif) {
@@ -361,12 +360,10 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 
 	// Retrieve the Date/Time as in the TIFF TAG
 	gchar *date_time;
+	int year, month, day, h, m, s;
 
 	if (TIFFGetField(tif, TIFFTAG_DATETIME, &date_time)) {
-		int year, month, day, h, m, s;
 		sscanf(date_time, "%04d:%02d:%02d %02d:%02d:%02d", &year, &month, &day, &h, &m, &s);
-		date_obs = g_strdup_printf("%04d-%02d-%02dT%02d:%02d:%02d",
-				year, month, day, h, m, s);
 	}
 
 	size_t npixels = width * height;
@@ -403,9 +400,10 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 		return OPEN_IMAGE_ERROR;
 	}
 	clearfits(fit);
-	if (date_obs) {
-		g_snprintf(fit->date_obs, sizeof(fit->date_obs), "%s", date_obs);
-		g_free(date_obs);
+	if (date_time) {
+		GTimeZone *tz = g_time_zone_new_utc();
+		fit->date_obs = g_date_time_new(tz, year, month, day, h, m, s);
+		g_object_unref(tz);
 	}
 	fit->rx = width;
 	fit->ry = height;
@@ -570,11 +568,8 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 		return 1;
 	}
 
-	if (fit->date_obs[0]) {
-		int year, month, day, h, m, s;
-		sscanf(fit->date_obs, "%04d-%02d-%02dT%02d:%02d:%02d", &year, &month, &day, &h, &m, &s);
-		gchar *date_time = g_strdup_printf("%04d:%02d:%02d %02d:%02d:%02d",
-				year, month, day, h, m, s);
+	if (fit->date_obs) {
+		gchar *date_time = g_date_time_format(fit->date_obs, "%Y:%m:%d %H:%M:%S");
 
 		TIFFSetField(tif, TIFFTAG_DATETIME, date_time);
 		g_free(date_time);
@@ -1196,30 +1191,6 @@ int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 /********************* RAW IMPORT *********************/
 #ifdef HAVE_LIBRAW
 
-static void get_FITS_date(time_t date, char *date_obs) {
-	struct tm *t;
-#ifdef HAVE_GMTIME_R
-	struct tm t_;
-#endif
-
-#ifdef _WIN32
-	t = gmtime (&date);
-#else
-#ifdef HAVE_GMTIME_R
-	t = gmtime_r (&date, &t_);
-#else
-	t = gmtime(&date);
-#endif /* HAVE_GMTIME_R */
-#endif /* _WIN32 */
-
-	/* If the gmtime() call has failed, "secs" is too big. */
-	if (t) {
-		g_snprintf(date_obs, FLEN_VALUE, "%04d-%02d-%02dT%02d:%02d:%02d",
-				t->tm_year + 1900, t->tm_mon + 1, t->tm_mday, t->tm_hour,
-				t->tm_min, t->tm_sec);
-	}
-}
-
 #if LIBRAW_VERSION < LIBRAW_MAKE_VERSION(0, 18, 0)
 #define LIBRAW_FORMAT_1INCH 5
 #endif
@@ -1449,7 +1420,7 @@ static int readraw(const char *name, fits *fit) {
 			fit->aperture = raw->other.aperture;
 		g_snprintf(fit->instrume, FLEN_VALUE, "%s %s", raw->idata.make,
 				raw->idata.model);
-		get_FITS_date(raw->other.timestamp, fit->date_obs);
+		fit->date_obs = g_date_time_new_from_unix_utc(raw->other.timestamp);
 		mirrorx(fit, FALSE);
 	}
 
@@ -1613,7 +1584,7 @@ static int readraw_in_cfa(const char *name, fits *fit) {
 		fit->aperture = raw->other.aperture;
 	g_snprintf(fit->instrume, FLEN_VALUE, "%s %s", raw->idata.make,
 			raw->idata.model);
-	get_FITS_date(raw->other.timestamp, fit->date_obs);
+	fit->date_obs = g_date_time_new_from_unix_utc(raw->other.timestamp);
 	if (filters)
 		g_snprintf(fit->bayer_pattern, FLEN_VALUE, "%s", pattern);
 

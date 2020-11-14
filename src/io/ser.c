@@ -35,6 +35,7 @@
 #endif
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/siril_date.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "algos/demosaicing.h"
@@ -44,133 +45,23 @@
 
 static gboolean user_warned = FALSE;
 
-/* 62135596800 sec from year 0001 to 01 janv. 1970 00:00:00 GMT */
-static const uint64_t epochTicks = 621355968000000000UL;
-static const uint64_t ticksPerSecond = 10000000;
-
 static int ser_write_header(struct ser_struct *ser_file);
 static int ser_write_image_for_writer(struct seqwriter_data *writer, fits *image, int index);
 static int ser_write_frame_from_fit_internal(struct ser_struct *ser_file, fits *fit, int frame_no);
 
-/* Given a SER timestamp, return a char string representation
- * MUST be freed
- */
-static char *ser_timestamp(uint64_t timestamp) {
-	char *str = malloc(64);
-	uint64_t t1970_ms = (timestamp - epochTicks) / 10000;
-	time_t secs = t1970_ms / 1000;
-	int ms = t1970_ms % 1000;
-	struct tm *t;
-#ifdef HAVE_GMTIME_R
-	struct tm t_;
-#endif
-
-#ifdef _WIN32
-	t = gmtime (&secs);
-#else
-#ifdef HAVE_GMTIME_R
-	t = gmtime_r (&secs, &t_);
-#else
-	t = gmtime(&secs);
-#endif /* HAVE_GMTIME_R */
-#endif /* _WIN32 */
-
-	/* If the gmtime() call has failed, "secs" is too big. */
-	if (t == NULL) {
-		free(str);
-		return NULL;
-	}
-
-	sprintf(str, "%04d-%02d-%02dT%02d:%02d:%02d.%03d", t->tm_year + 1900,
-			t->tm_mon + 1, t->tm_mday, t->tm_hour, t->tm_min, t->tm_sec, ms);
-
-	return str;
-}
 
 /* Output SER timestamp */
 static int display_date(uint64_t timestamp, char *txt) {
 	if (timestamp == 0)
 		return -1;
 
-	char *str = ser_timestamp(timestamp);
-	if (str) {
+	GDateTime *date = ser_timestamp_to_date_time(timestamp);
+	if (date) {
+		gchar *str = date_time_to_FITS_date(date);
 		fprintf(stdout, "%s%s\n", txt, str);
 		free(str);
 	}
-	return 0;
-}
-
-static time_t mktime_utc(struct tm *tm) {
-	time_t retval;
-
-#ifndef HAVE_TIMEGM
-	static const gint days_before[] = { 0, 31, 59, 90, 120, 151, 181, 212, 243,
-			273, 304, 334 };
-#endif
-
-#ifndef HAVE_TIMEGM
-	if (tm->tm_mon < 0 || tm->tm_mon > 11)
-		return (time_t) -1;
-
-	retval = (tm->tm_year - 70) * 365;
-	retval += (tm->tm_year - 68) / 4;
-	retval += days_before[tm->tm_mon] + tm->tm_mday - 1;
-
-	if (tm->tm_year % 4 == 0 && tm->tm_mon < 2)
-		retval -= 1;
-
-	retval = ((((retval * 24) + tm->tm_hour) * 60) + tm->tm_min) * 60
-			+ tm->tm_sec;
-#else
-	retval = timegm (tm);
-#endif /* !HAVE_TIMEGM */
-
-	return retval;
-}
-
-/* Convert FITS keyword DATE in a UNIX time format
- * DATE match this pattern: 1900-01-01T00:00:00
- */
-static int FITS_date_key_to_Unix_time(char *date, uint64_t *utc,
-		uint64_t *local) {
-	struct tm timeinfo = { };
-	time_t ut, t;
-	int year = 0, month = 0, day = 0, hour = 0, min = 0, ms = 0;
-	float sec = 0.0;
-
-	if (date[0] == '\0')
-		return -1;
-
-	sscanf(date, "%04d-%02d-%02dT%02d:%02d:%f", &year, &month, &day, &hour,
-			&min, &sec);
-
-	timeinfo.tm_year = year - 1900;
-	timeinfo.tm_mon = month - 1;
-	timeinfo.tm_mday = day;
-	timeinfo.tm_hour = hour;
-	timeinfo.tm_min = min;
-	timeinfo.tm_sec = (int) sec;
-	ms = ((int) (sec * 1000) % 1000);
-
-	// Hopefully these are not needed
-	timeinfo.tm_wday = 0;
-	timeinfo.tm_yday = 0;
-	timeinfo.tm_isdst = -1;
-
-	/* get UTC time from timeinfo* */
-	ut = mktime_utc(&timeinfo);
-	ut *= ticksPerSecond;
-	ut += epochTicks;
-	ut += ms * 10000;
-	*utc = (uint64_t) ut;
-
-	/* get local time from timeinfo* */
-	t = mktime(&timeinfo);
-	t *= ticksPerSecond;
-	t += epochTicks;
-	t += ms * 10000;
-	*local = (uint64_t) t;
-
+	g_date_time_unref(date);
 	return 0;
 }
 
@@ -232,7 +123,7 @@ static int ser_read_timestamp(struct ser_struct *ser_file) {
 
 		// Seek to start of timestamps
 		for (i = 0; i < ser_file->frame_count; i++) {
-			if ((int64_t)-1 == fseek64(ser_file->file, offset+(i*8), SEEK_SET))
+			if ((int64_t) -1 == fseek64(ser_file->file, offset + (i * 8), SEEK_SET))
 				return -1;
 
 			if (8 != fread(&ser_file->ts[i], 1, 8, ser_file->file))
@@ -505,8 +396,8 @@ static int ser_write_header_from_fit(struct ser_struct *ser_file, fits *fit) {
 		memcpy(ser_file->telescope, fit->telescop, 40);
 	}
 
-	if (FITS_date_key_to_Unix_time(fit->date_obs, &ser_file->date_utc, &ser_file->date) == -1)
-		FITS_date_key_to_Unix_time(fit->date, &ser_file->date_utc, &ser_file->date);
+	if (!fit->date_obs)
+		ser_file->date = (uint64_t) g_date_time_to_unix(fit->date);
 	return 0;
 }
 
@@ -587,7 +478,7 @@ void ser_convertTimeStamp(struct ser_struct *ser_file, GSList *timestamp) {
 	int i = 0;
 	if (ser_file->ts)
 		free(ser_file->ts);
-	ser_file->ts = calloc(8, ser_file->frame_count);
+	ser_file->ts = calloc(sizeof(uint64_t), ser_file->frame_count);
 	if (!ser_file->ts) {
 		PRINT_ALLOC_ERR;
 		return;
@@ -596,10 +487,9 @@ void ser_convertTimeStamp(struct ser_struct *ser_file, GSList *timestamp) {
 
 	GSList *t = timestamp;
 	while (t && i < ser_file->frame_count) {
-		uint64_t utc, local;
-		FITS_date_key_to_Unix_time(t->data, &utc, &local);
+		uint64_t utc = (uint64_t) g_date_time_to_unix((GDateTime *)t->data);
 		t = t->next;
-		memcpy(&ser_file->ts[i], &utc, 8);
+		memcpy(&ser_file->ts[i], &utc, sizeof(uint64_t));
 		i++;
 	}
 }
@@ -919,10 +809,12 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 
 	/* copy the SER timestamp to the fits */
 	if (ser_file->ts) {
-		char *timestamp = ser_timestamp(ser_file->ts[frame_no]);
+		GDateTime *timestamp = ser_timestamp_to_date_time(ser_file->ts[frame_no]);
 		if (timestamp) {
-			g_snprintf(fit->date_obs, FLEN_VALUE, "%s", timestamp);
-			free(timestamp);
+			if (fit->date_obs) {
+				g_date_time_unref(fit->date_obs);
+			}
+			fit->date_obs = timestamp;
 		}
 	}
 
@@ -1164,10 +1056,12 @@ int ser_read_opened_partial_fits(struct ser_struct *ser_file, int layer,
 		return -1;
 	fit->top_down = TRUE;
 	if (ser_file->ts) {
-		char *timestamp = ser_timestamp(ser_file->ts[frame_no]);
+		GDateTime *timestamp = ser_timestamp_to_date_time(ser_file->ts[frame_no]);
 		if (timestamp) {
-			g_snprintf(fit->date_obs, FLEN_VALUE, "%s", timestamp);
-			free(timestamp);
+			if (fit->date_obs) {
+				g_date_time_unref(fit->date_obs);
+			}
+			fit->date_obs = timestamp;
 		}
 	}
 	return ser_read_opened_partial(ser_file, layer, frame_no, fit->pdata[0], area);
@@ -1277,8 +1171,8 @@ static int ser_write_frame_from_fit_internal(struct ser_struct *ser_file, fits *
 	ser_file->frame_count++;
 
 	if (!ser_alloc_ts(ser_file, frame_no)) {
-		uint64_t utc, local;
-		FITS_date_key_to_Unix_time(fit->date_obs, &utc, &local);
+		uint64_t utc;
+		utc = (uint64_t) g_date_time_to_unix(fit->date_obs);
 		ser_file->ts[frame_no] = utc;
 	}
 
