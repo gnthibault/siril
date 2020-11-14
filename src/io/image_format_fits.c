@@ -30,8 +30,9 @@
 #include <windows.h>
 #endif
 
-#include "image_format_fits.h"
+#include "core/siril.h"
 #include "core/proto.h"
+#include "core/siril_date.h"
 #include "core/OS_utils.h"
 #include "io/sequence.h"
 #include "io/fits_sequence.h"
@@ -40,6 +41,7 @@
 #include "algos/statistics.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
+#include "image_format_fits.h"
 
 static char *MIPSHI[] = {"MIPS-HI", "CWHITE", "DATAMAX", NULL };
 static char *MIPSLO[] = {"MIPS-LO", "CBLACK", "DATAMIN", NULL };
@@ -65,19 +67,21 @@ static int CompressionMethods[] = { RICE_1, GZIP_1, GZIP_2, HCOMPRESS_1};
 
 static void read_fits_date_obs_header(fits *fit) {
 	int status = 0;
-	fits_read_key(fit->fptr, TSTRING, "DATE-OBS", &(fit->date_obs), NULL, &status);
+	char ut_start[FLEN_VALUE] = { 0 };
+	char date_obs[FLEN_VALUE] = { 0 };
+
+	fits_read_key(fit->fptr, TSTRING, "DATE-OBS", &date_obs, NULL, &status);
 
 	status = 0;
-	char ut_start[FLEN_VALUE];
 	/** Case seen in some FITS files. Needed to get date back in SER conversion **/
-	fits_read_key(fit->fptr, TSTRING, "UT-START", &ut_start, NULL,
-				&status);
-	if (ut_start[0] != '\0' && fit->date_obs[2] == G_DIR_SEPARATOR) {
+	fits_read_key(fit->fptr, TSTRING, "UT-START", &ut_start, NULL, &status);
+	if (ut_start[0] != '\0' && date_obs[2] == '/') {
 		int year, month, day;
-		sscanf(fit->date_obs, "%02d/%02d/%04d", &day, &month, &year);
-		g_snprintf(fit->date_obs, sizeof(fit->date_obs), "%04d-%02d-%02dT%s",
-				year, month, day, ut_start);
+		if (sscanf(date_obs, "%02d/%02d/%04d", &day, &month, &year) == 4) {
+			g_snprintf(date_obs, sizeof(date_obs), "%04d-%02d-%02dT%s", year, month, day, ut_start);
+		}
 	}
+	fit->date_obs = FITS_date_to_date_time(date_obs);
 }
 
 void fit_get_photometry_data(fits *fit) {
@@ -298,8 +302,9 @@ void read_fits_header(fits *fit) {
 	read_fits_date_obs_header(fit);
 
 	status = 0;
-	fits_read_key(fit->fptr, TSTRING, "DATE", &(fit->date), NULL,
-			&status);
+	char date[FLEN_VALUE];
+	fits_read_key(fit->fptr, TSTRING, "DATE", &date, NULL, &status);
+	fit->date = FITS_date_to_date_time(date);
 
 	__tryToFindKeywords(fit->fptr, TDOUBLE, Focal, &fit->focal_length);
 	if (!sequence_is_loaded() || com.seq.current == 0)
@@ -1004,9 +1009,12 @@ void save_fits_header(fits *fit) {
 			"UTC date that FITS file was created", &status);
 
 	status = 0;
-	if (fit->date_obs[0] != '\0')
-		fits_update_key(fit->fptr, TSTRING, "DATE-OBS", &(fit->date_obs),
+	if (fit->date_obs) {
+		gchar *formatted_date = date_time_to_FITS_date(fit->date_obs);
+		fits_update_key(fit->fptr, TSTRING, "DATE-OBS", &formatted_date,
 				"YYYY-MM-DDThh:mm:ss observation start, UT", &status);
+		g_free(formatted_date);
+	}
 
 	/* all keywords below are non-standard */
 	status = 0;
@@ -1314,6 +1322,10 @@ void clearfits(fits *fit) {
 		free(fit->header);
 	if (fit->history)
 		g_slist_free_full(fit->history, free);
+	if (fit->date_obs)
+		g_date_time_unref(fit->date_obs);
+	if (fit->date)
+		g_date_time_unref(fit->date);
 	if (fit->stats) {
 		for (int i = 0; i < fit->naxes[2]; i++)
 			free_stats(fit->stats[i]);
@@ -1864,8 +1876,8 @@ int copy_fits_metadata(fits *from, fits *to) {
 	to->binning_x = from->binning_x;
 	to->binning_y = from->binning_y;
 
-	strncpy(to->date_obs, from->date_obs, FLEN_VALUE);
-	strncpy(to->date, from->date, FLEN_VALUE);
+	to->date = g_date_time_ref(from->date);
+	to->date_obs = g_date_time_ref(from->date_obs);
 	strncpy(to->instrume, from->instrume, FLEN_VALUE);
 	strncpy(to->telescop, from->telescop, FLEN_VALUE);
 	strncpy(to->observer, from->observer, FLEN_VALUE);

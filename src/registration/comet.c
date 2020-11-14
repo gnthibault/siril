@@ -20,6 +20,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/siril_date.h"
 #include "core/processing.h"
 #include "algos/PSF.h"
 #include "io/sequence.h"
@@ -30,65 +31,36 @@
 #include "registration.h"
 
 static pointf velocity = { 0.f, 0.f };
-static time_t t_of_image_1 = { 0 };
-static time_t t_of_image_2 = { 0 };
+static GDateTime *t_of_image_1 = NULL;
+static GDateTime *t_of_image_2 = NULL;
 static pointf pos_of_image1 = { 0 };
 static pointf pos_of_image2 = { 0 };
 
-static time_t FITS_date_key_to_sec(char *date) {
-	struct tm timeinfo = { };
-	time_t t;
-	int year = 0, month = 0, day = 0, hour = 0, min = 0;
-	float sec = 0.f;
-
-	if (date[0] == '\0')
-		return 0;
-
-	if (sscanf(date, "%04d-%02d-%02dT%02d:%02d:%f", &year, &month, &day, &hour,
-			&min, &sec) != 6) {
-		return 0;
-	}
-
-	timeinfo.tm_year = year - 1900;
-	timeinfo.tm_mon = month - 1;
-	timeinfo.tm_mday = day;
-	timeinfo.tm_hour = hour;
-	timeinfo.tm_min = min;
-	timeinfo.tm_sec = (int) sec;
-
-	// Hopefully these are not needed
-	timeinfo.tm_wday = 0;
-	timeinfo.tm_yday = 0;
-	timeinfo.tm_isdst = -1;
-
-	/* get local time from timeinfo* */
-	t = mktime(&timeinfo);
-
-	return t;
-}
-
-static pointf compute_velocity(time_t t1, time_t t2, pointf d1, pointf d2) {
+static pointf compute_velocity(GDateTime *t1, GDateTime *t2, pointf d1, pointf d2) {
 	float delta_t;
-	pointf delta_d, px_per_hour;
+	pointf delta_d, px_per_hour = { 0.f, 0.f };
 
-	delta_t = (float) t2 - (float) t1;
-	delta_d.x = d2.x - d1.x;
-	delta_d.y = d2.y - d1.y;
+	if (t1 && t2) {
+		delta_t = g_date_time_difference(t2, t1);
+		delta_d.x = d2.x - d1.x;
+		delta_d.y = d2.y - d1.y;
 
-	px_per_hour.x = delta_d.x / delta_t * 3600.f;
-	px_per_hour.y = delta_d.y / delta_t * 3600.f;
+		px_per_hour.x = delta_d.x / delta_t * 3600000000.f;
+		px_per_hour.y = delta_d.y / delta_t * 3600000000.f;
+	}
 
 	return px_per_hour;
 }
 
-static int get_comet_shift(time_t ref, time_t img, pointf px_per_hour, float *reg_x, float *reg_y) {
+static int get_comet_shift(GDateTime *ref, GDateTime *img, pointf px_per_hour, pointf *reg) {
 	float delta_t;
 
-	delta_t = (float)img - (float)ref;
-	delta_t /= 3600.f;
-	*reg_x = delta_t * px_per_hour.x;
-	*reg_y = delta_t * px_per_hour.y;
-
+	if (img && ref) {
+		delta_t = (float) g_date_time_difference(img, ref);
+		delta_t /= 3600000000.f;
+		reg->x = delta_t * px_per_hour.x;
+		reg->y = delta_t * px_per_hour.y;
+	}
 	return 0;
 }
 
@@ -103,13 +75,13 @@ static void update_velocity() {
 	g_free(v_txt);
 }
 
-static void update_entry1(float x, float y) {
+static void update_entry1(pointf pt) {
 	GtkEntry *entry_x = GTK_ENTRY(lookup_widget("entry1_x_comet"));
 	GtkEntry *entry_y = GTK_ENTRY(lookup_widget("entry1_y_comet"));
 	gchar *txt_x, *txt_y;
 
-	txt_x = g_strdup_printf("%7.2f", x);
-	txt_y = g_strdup_printf("%7.2f", y);
+	txt_x = g_strdup_printf("%7.2f", pt.x);
+	txt_y = g_strdup_printf("%7.2f", pt.y);
 
 	gtk_entry_set_text(entry_x, txt_x);
 	gtk_entry_set_text(entry_y, txt_y);
@@ -118,13 +90,13 @@ static void update_entry1(float x, float y) {
 	g_free(txt_y);
 }
 
-static void update_entry2(float x, float y) {
+static void update_entry2(pointf pt) {
 	GtkEntry *entry_x = GTK_ENTRY(lookup_widget("entry2_x_comet"));
 	GtkEntry *entry_y = GTK_ENTRY(lookup_widget("entry2_y_comet"));
 	gchar *txt_x, *txt_y;
 
-	txt_x = g_strdup_printf("%7.2f", x);
-	txt_y = g_strdup_printf("%7.2f", y);
+	txt_x = g_strdup_printf("%7.2f", pt.x);
+	txt_y = g_strdup_printf("%7.2f", pt.y);
 
 	gtk_entry_set_text(entry_x, txt_x);
 	gtk_entry_set_text(entry_y, txt_y);
@@ -150,18 +122,21 @@ void on_button1_comet_clicked(GtkButton *button, gpointer p) {
 			pos_of_image1.x = result->x0 + com.selection.x;
 			pos_of_image1.y = com.selection.y + com.selection.h - result->y0;
 			free(result);
-			if (gfit.date_obs[0] == '\0') {
+			if (!gfit.date_obs) {
 				siril_message_dialog(GTK_MESSAGE_ERROR,
 						_("There is no timestamp stored in the file"),
 						_("Siril cannot perform the registration without date information in the file."));
 			} else {
-				t_of_image_1 = FITS_date_key_to_sec(gfit.date_obs);
+				if (t_of_image_1) {
+					g_date_time_unref(t_of_image_1);
+				}
+				t_of_image_1 = g_date_time_ref(gfit.date_obs);
 				if (!t_of_image_1) {
 					siril_message_dialog(GTK_MESSAGE_ERROR,
 							_("Unable to convert DATE-OBS to a valid date"),
 							_("Siril cannot convert the DATE-OBS keyword into a valid date needed in the alignment."));
 				}
-				update_entry1(pos_of_image1.x, pos_of_image1.y);
+				update_entry1(pos_of_image1);
 			}
 		}
 		set_cursor_waiting(FALSE);
@@ -179,18 +154,21 @@ void on_button2_comet_clicked(GtkButton *button, gpointer p) {
 			pos_of_image2.x = result->x0 + com.selection.x;
 			pos_of_image2.y = com.selection.y + com.selection.h - result->y0;
 			free(result);
-			if (gfit.date_obs[0] == '\0') {
+			if (!gfit.date_obs) {
 				siril_message_dialog(GTK_MESSAGE_ERROR,
 						_("There is no timestamp stored in the file"),
 						_("Siril cannot perform the registration without date information in the file."));
 			} else {
-				t_of_image_2 = FITS_date_key_to_sec(gfit.date_obs);
+				if (t_of_image_2) {
+					g_date_time_unref(t_of_image_2);
+				}
+				t_of_image_2 = g_date_time_ref(gfit.date_obs);
 				if (!t_of_image_2) {
 					siril_message_dialog(GTK_MESSAGE_ERROR,
 							_("Unable to convert DATE-OBS to a valid date"),
 							_("Siril cannot convert the DATE-OBS keyword into a valid date needed in the alignment."));
 				}
-				update_entry2(pos_of_image2.x, pos_of_image2.y);
+				update_entry2(pos_of_image2);
 			}
 		}
 		set_cursor_waiting(FALSE);
@@ -211,12 +189,16 @@ void on_entry_comet_changed(GtkEditable *editable, gpointer user_data) {
 	update_velocity();
 }
 
+pointf get_velocity() {
+	return velocity;
+}
+
 /***** generic moving object registration *****/
 
 struct comet_align_data {
 	struct registration_args *regargs;
 	regdata *current_regdata;
-	time_t reference_date;
+	GDateTime *reference_date;
 };
 
 static int comet_align_prepare_hook(struct generic_seq_args *args) {
@@ -246,7 +228,7 @@ static int comet_align_prepare_hook(struct generic_seq_args *args) {
 		free(cadata->current_regdata);
 		return 1;
 	}
-	cadata->reference_date = FITS_date_key_to_sec(ref.date_obs);
+	cadata->reference_date = g_date_time_ref(ref.date_obs);
 	clearfits(&ref);
 
 	if (regargs->x2upscale)
@@ -258,18 +240,17 @@ static int comet_align_prepare_hook(struct generic_seq_args *args) {
 static int comet_align_image_hook(struct generic_seq_args *args, int out_index, int in_index, fits *fit, rectangle *_) {
 	struct comet_align_data *cadata = args->user;
 	struct registration_args *regargs = cadata->regargs;
-	float reg_x, reg_y;
+	pointf reg = { 0.f, 0.f };
 
 	if (!regargs->cumul) {
 		/* data initialization */
-		set_shifts(args->seq, in_index, regargs->layer, 0.f, 0.f, FALSE);
+		set_shifts(args->seq, in_index, regargs->layer, reg.x, reg.y, FALSE);
 	}
 
-	time_t date_obs = FITS_date_key_to_sec(fit->date_obs);
-	get_comet_shift(cadata->reference_date, date_obs, velocity, &reg_x, &reg_y);
+	get_comet_shift(cadata->reference_date, fit->date_obs, velocity, &reg);
 
 	/* get_comet_shift does not car about orientation of image */
-	set_shifts(args->seq, in_index, regargs->layer, -reg_x, reg_y, FALSE);
+	set_shifts(args->seq, in_index, regargs->layer, -reg.x, reg.y, FALSE);
 	return 0;
 }
 
@@ -282,8 +263,11 @@ static int comet_align_finalize_hook(struct generic_seq_args *args) {
 		args->seq->regparam[regargs->layer] = NULL;
 	}
 
-	free(args->user);
-	args->user = NULL;
+	if (cadata->reference_date)
+		g_date_time_unref(cadata->reference_date);
+
+	free(cadata);
+	cadata = NULL;
 	return 0;
 }
 

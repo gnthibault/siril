@@ -938,6 +938,16 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 			unreserve_thread();
 			return;
 		}
+	} else if (method->method_ptr == register_comet) {
+		pointf velocity = get_velocity();
+		if ((velocity.x == 0.0 && velocity.y == 0.0)
+				|| isinf(velocity.x) || isinf(velocity.y)) {
+			msg = siril_log_color_message(_("The object is not moving, please check your registration data.\n"), "red");
+			siril_message_dialog( GTK_MESSAGE_WARNING, _("Warning"), msg);
+			free(reg_args);
+			unreserve_thread();
+			return;
+		}
 	}
 	/* getting the selected registration layer from the combo box. The value is the index
 	 * of the selected line, and they are in the same order than layers so there should be

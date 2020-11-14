@@ -31,6 +31,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/siril_date.h"
 #include "core/OS_utils.h"
 #include "core/processing.h"
 #include "gui/callbacks.h"
@@ -128,71 +129,21 @@ static void build_registration_dataset(sequence *seq, int layer, int ref_image,
 
 }
 
-static const uint64_t epochTicks = 621355968000000000UL;
-
-static double serTimestamp_toJulian(uint64_t timestamp) {
-	struct tm *t;
-	dateTime dt;
-	uint64_t t1970_ms = (timestamp - epochTicks) / 10000;
-	time_t secs = t1970_ms / 1000;
-	int ms = t1970_ms % 1000;
-#ifdef HAVE_GMTIME_R
-	struct tm t_;
-#endif
-
-#ifdef _WIN32
-	t = gmtime (&secs);
-#else
-#ifdef HAVE_GMTIME_R
-	t = gmtime_r (&secs, &t_);
-#else
-	t = gmtime(&secs);
-#endif /* HAVE_GMTIME_R */
-#endif /* _WIN32 */
-
-	/* If the gmtime() call has failed, "secs" is too big. */
-	if (t == NULL) {
-		return -1.0;
-	}
-
-	/* Get real year and month */
-	memset(&dt, 0, sizeof(dateTime));
-	dt.year = t->tm_year + 1900;
-	dt.month = t->tm_mon + 1;
-	dt.day = t->tm_mday;
-	dt.hour = t->tm_hour;
-	dt.min = t->tm_min;
-	dt.sec = t->tm_sec;
-	dt.ms = ms;
-
-	return encodeJD(dt);
-}
-
-static double dateTimestamp_toJulian(char *timestamp, double exp) {
-	dateTime dt;
-
-	if (timestamp[0] == '\0')
-		return -1;
-
-	memset(&dt, 0, sizeof(dateTime));
-	sscanf(timestamp, "%04d-%02d-%02dT%02d:%02d:%02d.%02d", &dt.year, &dt.month, &dt.day,
-			&dt.hour, &dt.min, &dt.sec, &dt.ms);
-	/* we add exposure / 2 to the timestamp */
-	dt.sec += exp / 2.0;
-
-	return encodeJD(dt);
-}
-
 static void set_x_values(sequence *seq, pldata *plot, int i, int j) {
-	if (seq->type == SEQ_SER && seq->ser_file->ts
-			&& seq->ser_file->ts_max > seq->ser_file->ts_min) {
-		double julian = serTimestamp_toJulian(seq->ser_file->ts[i]);
-		plot->julian[j] = julian - (double)julian0;
-	} else if ((seq->type == SEQ_REGULAR || seq->type == SEQ_FITSEQ) &&
-				seq->imgparam[i].date_obs) {
-		char *tsi = seq->imgparam[i].date_obs;
-		double julian = dateTimestamp_toJulian(tsi, seq->exposure);
-		plot->julian[j] = julian - (double)julian0;
+	if (seq->imgparam[i].date_obs) {
+		double julian;
+		GDateTime *tsi = g_date_time_ref(seq->imgparam[i].date_obs);
+		if (seq->exposure) {
+			GDateTime *new_dt = g_date_time_add_seconds(tsi, seq->exposure / 2.0);
+			julian = date_time_to_Julian(new_dt);
+			g_date_time_unref(new_dt);
+		} else {
+			julian = date_time_to_Julian(tsi);
+		}
+
+		plot->julian[j] = julian - (double) julian0;
+
+		g_date_time_unref(tsi);
 	} else {
 		plot->julian[j] = (double) i + 1; // should not happen.
 	}
@@ -219,16 +170,16 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 		if (!seq->imgparam[i].incl || !psfs[i])
 			continue;
 		if (!julian0 && !xlabel) {
-			/* X axis init */
-			if (seq->type == SEQ_SER && seq->ser_file->ts
-					&& seq->ser_file->ts_max > seq->ser_file->ts_min) {
-				/* Get SER start date */
-				julian0 = (int) serTimestamp_toJulian(seq->ser_file->ts[i]);
-			} else if ((seq->type == SEQ_REGULAR || seq->type == SEQ_FITSEQ) &&
-					seq->imgparam[i].date_obs) {
-				/* Get FITS start date */
-				char *ts0 = seq->imgparam[i].date_obs;
-				julian0 = (int) dateTimestamp_toJulian(ts0, seq->exposure);
+			if (seq->imgparam[i].date_obs) {
+				GDateTime *ts0 = g_date_time_ref(seq->imgparam[i].date_obs);
+				if (seq->exposure) {
+					GDateTime *new_dt = g_date_time_add_seconds(ts0, seq->exposure / 2.0);
+					julian0 = (int) date_time_to_Julian(new_dt);
+					g_date_time_unref(new_dt);
+				} else {
+					julian0 = (int) date_time_to_Julian(ts0);
+				}
+				g_date_time_unref(ts0);
 			}
 			if (julian0 && force_Julian) {
 				xlabel = calloc(XLABELSIZE, sizeof(char));
@@ -715,8 +666,10 @@ void on_clearLatestPhotometry_clicked(GtkButton *button, gpointer user_data) {
 		i--;
 		free_photometry_set(&com.seq, i);
 	}
-	if (i == 0)
+	if (i == 0) {
 		reset_plot();
+		clear_stars_list();
+	}
 	drawPlot();
 }
 
@@ -726,6 +679,7 @@ void on_clearAllPhotometry_clicked(GtkButton *button, gpointer user_data) {
 		free_photometry_set(&com.seq, i);
 	}
 	reset_plot();
+	clear_stars_list();
 	drawPlot();
 }
 

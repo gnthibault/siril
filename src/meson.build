@@ -61,6 +61,7 @@ src_files = [
   'core/siril_actions.c',
   'core/siril_app_dirs.c',
   'core/siril_cmd_help.c',
+  'core/siril_date.c',
   'core/siril_language.c',
   'core/siril_log.c',
   'core/siril_update.c',

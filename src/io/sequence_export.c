@@ -1,8 +1,8 @@
 #include <string.h>
 
-#include "algos/geometry.h"
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/siril_date.h"
 #include "sequence.h"
 #include "ser.h"
 #include "stacking/stacking.h"
@@ -18,6 +18,8 @@
 #ifdef HAVE_FFMPEG
 #include "io/mp4_output.h"
 #endif
+#include "algos/geometry.h"
+
 
 struct exportseq_args {
 	sequence *seq;
@@ -79,7 +81,7 @@ static gpointer export_sequence(gpointer ptr) {
 	struct ser_struct *ser_file = NULL;
 	GSList *timestamp = NULL;
 	char *filter_descr;
-	gchar *strTime;
+	GDateTime *strTime;
 #ifdef HAVE_FFMPEG
 	struct mp4_struct *mp4_file = NULL;
 #endif
@@ -406,7 +408,7 @@ static gpointer export_sequence(gpointer ptr) {
 				break;
 #endif
 			case TYPESER:
-				strTime = strdup(destfit.date_obs);
+				strTime = g_date_time_ref(destfit.date_obs);
 				timestamp = g_slist_append (timestamp, strTime);
 				if (ser_write_frame_from_fit(ser_file, &destfit, i - skipped))
 					siril_log_message(
@@ -452,7 +454,7 @@ free_and_reset_progress_bar:
 		ser_convertTimeStamp(ser_file, timestamp);
 		ser_write_and_close(ser_file);
 		free(ser_file);
-		g_slist_free_full(timestamp, g_free);
+		g_slist_free_full(timestamp, (GDestroyNotify) g_date_time_unref);
 	}
 	else if (args->convflags == TYPEAVI) {
 		avi_file_close(0);
