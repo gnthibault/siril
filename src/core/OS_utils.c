@@ -372,7 +372,7 @@ guint64 get_available_memory() {
 		fclose(fp);
 		g_free(buf);
 		if (value != -1L)
-			mem = guint64 (value * 1024UL);
+			mem = (guint64) (value * 1024UL);
 	}
 	return mem;
 #elif defined(_WIN32) /* Windows */
@@ -380,7 +380,7 @@ guint64 get_available_memory() {
 	MEMORYSTATUSEX memStatusEx = { 0 };
 	memStatusEx.dwLength = sizeof(MEMORYSTATUSEX);
 	if (GlobalMemoryStatusEx(&memStatusEx)) {
-		mem = guint64 (memStatusEx.ullAvailPhys);
+		mem = (guint64) (memStatusEx.ullAvailPhys);
 	}
 	return mem;
 #else
