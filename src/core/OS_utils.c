@@ -184,7 +184,7 @@ static guint64 update_used_RAM_memory() {
 #elif defined(_WIN32) /* Windows */
 	PROCESS_MEMORY_COUNTERS_EX memCounter;
 
-	if (GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof(memCounter)))
+	if (GetProcessMemoryInfo(GetCurrentProcess(), (PPROCESS_MEMORY_COUNTERS) &memCounter, sizeof(memCounter)))
 		return (memCounter.PrivateUsage);
 	return (guint64) 0;
 #else

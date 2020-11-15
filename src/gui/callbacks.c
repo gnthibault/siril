@@ -332,7 +332,7 @@ void adjust_sellabel() {
 	} else if (single_image_is_loaded()) {
 		gchar *filename = g_path_get_basename(com.uniq->filename);
 
-		buffer_global = g_strdup_printf(_("%s"), filename);
+		buffer_global = g_strdup_printf("%s", filename);
 		buffer_title = g_strdup(_("Image:"));
 
 		g_free(filename);
