@@ -741,8 +741,11 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		data_pool[i].tmp = malloc(bufferSize);
 		if (!data_pool[i].pix || !data_pool[i].tmp) {
 			PRINT_ALLOC_ERR;
-			fprintf(stderr, "Cannot allocate %zu (free memory: %d)\n", bufferSize / BYTES_IN_A_MB, get_available_memory_in_MB());
+			gchar *available = g_format_size_full(get_available_memory(), G_FORMAT_SIZE_IEC_UNITS);
+			fprintf(stderr, "Cannot allocate %zu (free memory: %s)\n", bufferSize / BYTES_IN_A_MB, available);
 			fprintf(stderr, "CHANGE MEMORY SETTINGS if stacking takes too much.\n");
+
+			g_free(available);
 			retval = ST_ALLOC_ERROR;
 			goto free_and_close;
 		}
@@ -873,10 +876,11 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 						pix_idx -= shiftx;
 					}
 
-					WORD pixel; float fpixel;
+					WORD pixel = 0; float fpixel = 0.f;
 					if (itype == DATA_FLOAT)
-						fpixel = ((float*)data->pix[frame])[pix_idx];
-					else	pixel = ((WORD *)data->pix[frame])[pix_idx];
+						fpixel = ((float*) data->pix[frame])[pix_idx];
+					else
+						pixel = ((WORD*) data->pix[frame])[pix_idx];
 					double tmp;
 					switch (args->normalize) {
 						default:

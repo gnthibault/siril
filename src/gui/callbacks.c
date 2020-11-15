@@ -1132,12 +1132,12 @@ void set_GUI_misc() {
 }
 
 /* size is in Bytes */
-void set_GUI_MEM(unsigned long long size, const gchar *label) {
+void set_GUI_MEM(guint64 used, const gchar *label) {
 	if (com.headless)
 		return;
 	gchar *str;
-	if (size != 0) {
-		gchar *mem = g_format_size_full(size, G_FORMAT_SIZE_IEC_UNITS);
+	if (used > 0) {
+		gchar *mem = g_format_size_full(used, G_FORMAT_SIZE_IEC_UNITS);
 		str = g_strdup_printf(_("Mem: %s"), mem);
 		g_free(mem);
 	} else {
@@ -1147,7 +1147,7 @@ void set_GUI_MEM(unsigned long long size, const gchar *label) {
 	g_free(str);
 }
 
-void set_GUI_DiskSpace(int64_t space, const gchar *label) {
+void set_GUI_DiskSpace(gint64 space, const gchar *label) {
 	if (com.headless)
 		return;
 	gchar *str;

@@ -66,11 +66,11 @@ int single_image_is_loaded() {
 	return 0;
 }
 
-void set_GUI_MEM(unsigned long size) {
+void set_GUI_MEM(guint64 used, const gchar *label) {
         fprintf(stderr, "ERROR: calling undefined function set_GUI_MEM\n");
 }
 
-void set_GUI_DiskSpace(double mem) {
+void set_GUI_DiskSpace(gint64 space, const gchar *label) {
         fprintf(stderr, "ERROR: calling undefined function set_GUI_DiskSpace\n");
 }
 

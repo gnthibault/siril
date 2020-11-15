@@ -20,11 +20,11 @@
 #ifndef SRC_CORE_OS_UTILS_H_
 #define SRC_CORE_OS_UTILS_H_
 
-#include <stdint.h>
+#include <glib.h>
 
 gboolean update_displayed_memory();
 int test_available_space(int64_t req_size);
-int get_available_memory_in_MB();
+guint64 get_available_memory();
 int get_max_memory_in_MB();
 #ifdef _WIN32
 gchar *get_special_folder(int csidl);

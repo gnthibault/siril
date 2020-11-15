@@ -185,7 +185,7 @@ gpointer execute_script(gpointer p) {
 	 * script execution
 	 */
 	gchar *saved_cwd = g_strdup(com.wd);
-	startmem = get_available_memory_in_MB();
+	startmem = get_available_memory() / BYTES_IN_A_MB;
 	gsize length = 0;
 	GDataInputStream *data_input = g_data_input_stream_new(input_stream);
 	while ((buffer = g_data_input_stream_read_line_utf8(data_input, &length,
@@ -235,7 +235,7 @@ gpointer execute_script(gpointer p) {
 			g_free (buffer);
 			break;	// abort script on command failure
 		}
-		endmem = get_available_memory_in_MB();
+		endmem = get_available_memory() / BYTES_IN_A_MB;
 		siril_debug_print("End of command %s, memory difference: %d MB\n", word[0], startmem - endmem);
 		startmem = endmem;
 		memset(word, 0, sizeof word);
