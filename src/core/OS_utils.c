@@ -129,8 +129,8 @@ static guint64 update_used_RAM_memory() {
 	static gint fd = -1;
 	gchar buffer[128];
 	gint size;
-	unsigned long long resident;
-	unsigned long long shared;
+	guint64 resident;
+	guint64 shared;
 
 	if (!initialized) {
 		page_size = getpagesize();
@@ -154,7 +154,7 @@ static guint64 update_used_RAM_memory() {
 
 	buffer[size] = '\0';
 
-	if (sscanf(buffer, "%*u %llu %llu", &resident, &shared) != 2)
+	if (sscanf(buffer, "%*u %" G_GUINT64_FORMAT " %" G_GUINT64_FORMAT, &resident, &shared) != 2)
 		return (guint64) 0;
 
 	return (guint64) (resident /*- shared*/) * page_size;
@@ -254,8 +254,8 @@ int test_available_space(gint64 req_size) {
 		g_free(missing);
 		return res;
 	}
-	siril_debug_print("Tested free space ok: %ld for %ld MB free\n",
-			(long)(req_size / BYTES_IN_A_MB), (long)(free_space / BYTES_IN_A_MB));
+	siril_debug_print("Tested free space ok: %" G_GINT64_FORMAT " for %" G_GINT64_FORMAT " MB free\n",
+			(gint64)(req_size / BYTES_IN_A_MB), (gint64)(free_space / BYTES_IN_A_MB));
 	return 0;
 }
 

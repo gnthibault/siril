@@ -19,9 +19,10 @@
  */
 #include <glib.h>
 #include <glib/gprintf.h>
-#include <stdint.h>
 
 #include "siril_date.h"
+
+#define SER_TIME_1970 (unsigned long long)621355968000000000 // 621.355.968.000.000.000 ticks between 1st Jan 0001 and 1st Jan 1970.
 
 #if !GLIB_CHECK_VERSION(2,62,0)
 /**
@@ -156,10 +157,10 @@ gchar* build_timestamp_filename() {
  * @return a newly allocated GDateTime that should be freed
  * with g_date_time_unref().
  */
-GDateTime *ser_timestamp_to_date_time(uint64_t timestamp) {
+GDateTime *ser_timestamp_to_date_time(guint64 timestamp) {
 	GDateTime *dt, *new_dt = NULL;
-	uint64_t t1970_ms = (timestamp - 621355968000000000UL) / 10000;
-	int64_t secs = t1970_ms / 1000;
+	guint64 t1970_ms = (timestamp - SER_TIME_1970) / 10000;
+	gint64 secs = t1970_ms / 1000;
 	gint ms = t1970_ms % 1000;
 
 	dt = g_date_time_new_from_unix_utc(secs);
