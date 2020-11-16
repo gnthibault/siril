@@ -182,10 +182,10 @@ static guint64 update_used_RAM_memory() {
 	getrusage(RUSAGE_SELF, &usage);
 	return ((guint64) usage.ru_maxrss * 1024UL);
 #elif defined(_WIN32) /* Windows */
-	PROCESS_MEMORY_COUNTERS_EX memCounter;
+	PROCESS_MEMORY_COUNTERS memCounter;
 
-	if (GetProcessMemoryInfo(GetCurrentProcess(), (PPROCESS_MEMORY_COUNTERS) &memCounter, sizeof(memCounter)))
-		return (memCounter.PrivateUsage);
+	if (GetProcessMemoryInfo(GetCurrentProcess(), &memCounter, sizeof(memCounter)))
+		return (memCounter.WorkingSetSize);
 	return (guint64) 0;
 #else
 	return (guint64) 0;

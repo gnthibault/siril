@@ -46,7 +46,6 @@
 #include "gui/plot.h"
 #include "ser.h"
 #include "fits_sequence.h"
-#include "fits_sequence.h"
 #ifdef HAVE_FFMS2
 #include "films.h"
 #endif
