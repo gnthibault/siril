@@ -2,11 +2,10 @@
 #define _SER_H_
 
 #ifdef HAVE_CONFIG_H
-#  include <config.h>
+#include <config.h>
 #endif
 
 #include <stdio.h>
-#include <stdint.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
@@ -99,16 +98,16 @@ struct ser_struct {
 	char observer[40];		// 40	(42)
 	char instrument[40];		// 40	(82)
 	char telescope[40];		// 40	(122)
-	uint64_t date;		// 8	(162)
-	uint64_t date_utc;	// 8 (170)
+	guint64 date;		// 8	(162)
+	guint64 date_utc;	// 8 (170)
 
 	/* timestamps (not in the header, timestamps are in trailer) */
-	uint64_t *ts;			// total timestamps
+	guint64 *ts;			// total timestamps
 	int ts_alloc;			// allocated number of elements in ts
-	uint64_t ts_min, ts_max;// min and max timestamp
+	guint64 ts_min, ts_max;// min and max timestamp
 	double fps;				// frame rate
 
-	int64_t filesize;			// size of the file
+	gint64 filesize;			// size of the file
 
 	// internal representations of header data
 	ser_pixdepth byte_pixel_depth;	// more useful representation of the bit_pixel_depth
@@ -137,7 +136,7 @@ int ser_read_opened_partial_fits(struct ser_struct *ser_file, int layer,
 int ser_read_opened_partial(struct ser_struct *ser_file, int layer,
 		int frame_no, WORD *buffer, const rectangle *area);
 int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame);
-int64_t ser_compute_file_size(struct ser_struct *ser_file, int nb_frames);
+gint64 ser_compute_file_size(struct ser_struct *ser_file, int nb_frames);
 GdkPixbuf* get_thumbnail_from_ser(char *filename, gchar **descr);
 
 #endif

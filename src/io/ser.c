@@ -22,11 +22,7 @@
  * on big endian systems.
  */
 
-#include <sys/types.h>
-#include <sys/time.h>
-#include <sys/stat.h>
 #include <fcntl.h>
-#include <unistd.h>
 #include <stdio.h>
 #include <string.h>
 #include <math.h>
@@ -51,7 +47,7 @@ static int ser_write_frame_from_fit_internal(struct ser_struct *ser_file, fits *
 
 
 /* Output SER timestamp */
-static int display_date(uint64_t timestamp, char *txt) {
+static int display_date(guint64 timestamp, char *txt) {
 	if (timestamp == 0)
 		return -1;
 
@@ -98,8 +94,8 @@ static char *convert_color_id_to_char(ser_color color_id) {
 static int ser_read_timestamp(struct ser_struct *ser_file) {
 	int i;
 	gboolean timestamps_in_order = TRUE;
-	uint64_t previous_ts = 0L;
-	int64_t frame_size;
+	guint64 previous_ts = 0L;
+	gint64 frame_size;
 
 	ser_file->fps = -1.0;	// will be calculated from the timestamps
 
@@ -110,8 +106,8 @@ static int ser_read_timestamp(struct ser_struct *ser_file) {
 
 	frame_size = ser_file->image_width *
 		ser_file->image_height * ser_file->number_of_planes;
-	int64_t offset = SER_HEADER_LEN + frame_size *
-		(int64_t)ser_file->byte_pixel_depth * (int64_t)ser_file->frame_count;
+	gint64 offset = SER_HEADER_LEN + frame_size *
+		(gint64)ser_file->byte_pixel_depth * (gint64)ser_file->frame_count;
 	/* Check if file is large enough to have timestamps */
 	if (ser_file->filesize >= offset + (8 * ser_file->frame_count)) {
 		ser_file->ts = calloc(8, ser_file->frame_count);
@@ -123,7 +119,7 @@ static int ser_read_timestamp(struct ser_struct *ser_file) {
 
 		// Seek to start of timestamps
 		for (i = 0; i < ser_file->frame_count; i++) {
-			if ((int64_t) -1 == fseek64(ser_file->file, offset + (i * 8), SEEK_SET))
+			if ((gint64) -1 == fseek64(ser_file->file, offset + (i * 8), SEEK_SET))
 				return -1;
 
 			if (8 != fread(&ser_file->ts[i], 1, 8, ser_file->file))
@@ -133,9 +129,9 @@ static int ser_read_timestamp(struct ser_struct *ser_file) {
 		}
 
 		/* Check order of Timestamps */
-		uint64_t *ts_ptr = ser_file->ts;
-		uint64_t min_ts = *ts_ptr;
-		uint64_t max_ts = *ts_ptr;
+		guint64 *ts_ptr = ser_file->ts;
+		guint64 min_ts = *ts_ptr;
+		guint64 max_ts = *ts_ptr;
 
 		for (i = 0; i < ser_file->frame_count; i++) {
 			if (*ts_ptr < previous_ts) {
@@ -179,10 +175,10 @@ static int ser_read_timestamp(struct ser_struct *ser_file) {
 
 static int ser_recompute_frame_count(struct ser_struct *ser_file) {
 	int frame_count_calculated;
-	int64_t filesize = ser_file->filesize;
+	gint64 filesize = ser_file->filesize;
 
 	siril_log_message(_("Trying to fix broken SER file...\n"));
-	int64_t frame_size = ser_file->image_width * ser_file->image_height;
+	gint64 frame_size = ser_file->image_width * ser_file->image_height;
 	if (frame_size == 0)
 		return 0;
 
@@ -275,7 +271,7 @@ static int ser_read_header(struct ser_struct *ser_file) {
 
 static int ser_write_timestamps(struct ser_struct *ser_file) {
 	int i;
-	int64_t frame_size;
+	gint64 frame_size;
 
 	if (!ser_file->frame_count || ser_file->image_width <= 0 ||
 			ser_file->image_height <= 0 || ser_file->byte_pixel_depth <= 0 ||
@@ -286,15 +282,15 @@ static int ser_write_timestamps(struct ser_struct *ser_file) {
 		// Seek to start of timestamps
 		frame_size = ser_file->image_width * ser_file->image_height
 			* ser_file->number_of_planes;
-		int64_t offset = SER_HEADER_LEN + frame_size * 
-			(int64_t)ser_file->byte_pixel_depth * (int64_t)ser_file->frame_count;
+		gint64 offset = SER_HEADER_LEN + frame_size *
+			(gint64)ser_file->byte_pixel_depth * (gint64)ser_file->frame_count;
 
 		for (i = 0; i < ser_file->frame_count; i++) {
-			uint64_t ts;
+			guint64 ts;
 
 			if (i >= ser_file->ts_alloc)
 				break;
-			if ((int64_t)-1 == fseek64(ser_file->file, offset+(i*8), SEEK_SET)) {
+			if ((gint64)-1 == fseek64(ser_file->file, offset+(i*8), SEEK_SET)) {
 				return -1;
 			}
 
@@ -316,7 +312,7 @@ static int ser_write_header(struct ser_struct *ser_file) {
 
 	if (!ser_file || ser_file->file == NULL)
 		return -1;
-	if ((int64_t) -1 == fseek64(ser_file->file, 0, SEEK_SET)) {
+	if ((gint64) -1 == fseek64(ser_file->file, 0, SEEK_SET)) {
 		perror("seek");
 		return -1;
 	}
@@ -397,7 +393,7 @@ static int ser_write_header_from_fit(struct ser_struct *ser_file, fits *fit) {
 	}
 
 	if (!fit->date_obs)
-		ser_file->date = (uint64_t) g_date_time_to_unix(fit->date);
+		ser_file->date = (guint64) g_date_time_to_unix(fit->date);
 	return 0;
 }
 
@@ -420,7 +416,7 @@ static int get_SER_Bayer_Pattern(ser_color pattern) {
  * read in it, depending on ser_file's endianess and pixel depth, data is
  * reorganized to match Siril's data format . */
 static void ser_manage_endianess_and_depth(struct ser_struct *ser_file,
-		WORD *data, int64_t frame_size) {
+		WORD *data, gint64 frame_size) {
 	int i;
 	if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8) {
 		// inline conversion to 16 bit
@@ -445,7 +441,7 @@ static int ser_alloc_ts(struct ser_struct *ser_file, int frame_no) {
 	omp_set_lock(&ser_file->ts_lock);
 #endif
 	if (ser_file->ts_alloc <= frame_no) {
-		uint64_t *new = realloc(ser_file->ts, (frame_no + 1) * 2 * sizeof(uint64_t));
+		guint64 *new = realloc(ser_file->ts, (frame_no + 1) * 2 * sizeof(guint64));
 		if (!new) {
 			PRINT_ALLOC_ERR;
 			retval = 1;
@@ -478,7 +474,7 @@ void ser_convertTimeStamp(struct ser_struct *ser_file, GSList *timestamp) {
 	int i = 0;
 	if (ser_file->ts)
 		free(ser_file->ts);
-	ser_file->ts = calloc(sizeof(uint64_t), ser_file->frame_count);
+	ser_file->ts = calloc(sizeof(guint64), ser_file->frame_count);
 	if (!ser_file->ts) {
 		PRINT_ALLOC_ERR;
 		return;
@@ -487,9 +483,9 @@ void ser_convertTimeStamp(struct ser_struct *ser_file, GSList *timestamp) {
 
 	GSList *t = timestamp;
 	while (t && i < ser_file->frame_count) {
-		uint64_t utc = (uint64_t) g_date_time_to_unix((GDateTime *)t->data);
+		guint64 utc = (guint64) g_date_time_to_unix((GDateTime *)t->data);
 		t = t->next;
-		memcpy(&ser_file->ts[i], &utc, sizeof(uint64_t));
+		memcpy(&ser_file->ts[i], &utc, sizeof(guint64));
 		i++;
 	}
 }
@@ -678,7 +674,7 @@ void ser_init_struct(struct ser_struct *ser_file) {
  * frame number starts at 0 */
 int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 	int retval = 0, i, j, swap = 0;
-	int64_t offset, frame_size;
+	gint64 offset, frame_size;
 	size_t read_size;
 	WORD *olddata, *tmp;
 	if (!ser_file || ser_file->file == NULL || !ser_file->number_of_planes ||
@@ -698,13 +694,13 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 	}
 
 	offset = SER_HEADER_LEN	+ frame_size *
-		(int64_t)ser_file->byte_pixel_depth * (int64_t)frame_no;
+		(gint64)ser_file->byte_pixel_depth * (gint64)frame_no;
 	/*fprintf(stdout, "offset is %lu (frame %d, %d pixels, %d-byte)\n", offset,
 	 frame_no, frame_size, ser_file->pixel_bytedepth);*/
 #ifdef _OPENMP
 	omp_set_lock(&ser_file->fd_lock);
 #endif
-	if ((int64_t)-1 == fseek64(ser_file->file, offset, SEEK_SET)) {
+	if ((gint64)-1 == fseek64(ser_file->file, offset, SEEK_SET)) {
 		perror("fseek in SER");
 		retval = -1;
 	} else {
@@ -866,7 +862,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
  * */
 static int read_area_from_image(struct ser_struct *ser_file, const int frame_no,
 		WORD *outbuf, const rectangle *area, const int layer) {
-	int64_t offset, frame_size;
+	gint64 offset, frame_size;
 	int retval = 0;
 	WORD *read_buffer;
 	size_t read_size = ser_file->image_width * area->h * ser_file->byte_pixel_depth;
@@ -893,7 +889,7 @@ static int read_area_from_image(struct ser_struct *ser_file, const int frame_no,
 		area->y * ser_file->image_width *
 		ser_file->byte_pixel_depth * (layer != -1 ? 3 : 1);	// requested area
 
-	if ((int64_t)-1 == fseek64(ser_file->file, offset, SEEK_SET)) {
+	if ((gint64)-1 == fseek64(ser_file->file, offset, SEEK_SET)) {
 		perror("fseek in SER");
 		retval = -1;
 	} else {
@@ -1077,7 +1073,7 @@ int ser_write_frame_from_fit(struct ser_struct *ser_file, fits *fit, int frame_n
 static int ser_write_frame_from_fit_internal(struct ser_struct *ser_file, fits *fit, int frame_no) {
 	int pixel, plane, dest;
 	int ret, retval = 0;
-	int64_t offset, frame_size;
+	gint64 offset, frame_size;
 	BYTE *data8 = NULL;			// for 8-bit files
 	WORD *data16 = NULL;		// for 16-bit files
 
@@ -1099,7 +1095,7 @@ static int ser_write_frame_from_fit_internal(struct ser_struct *ser_file, fits *
 		ser_file->number_of_planes;
 
 	offset = SER_HEADER_LEN	+ frame_size *
-			(int64_t)ser_file->byte_pixel_depth * (int64_t)frame_no;
+			(gint64)ser_file->byte_pixel_depth * (gint64)frame_no;
 
 	if (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8) {
 		data8 = malloc(frame_size * ser_file->byte_pixel_depth);
@@ -1134,7 +1130,7 @@ static int ser_write_frame_from_fit_internal(struct ser_struct *ser_file, fits *
 #ifdef _OPENMP
 	omp_set_lock(&ser_file->fd_lock);
 #endif
-	if ((int64_t)-1 == fseek64(ser_file->file, offset, SEEK_SET)) {
+	if ((gint64)-1 == fseek64(ser_file->file, offset, SEEK_SET)) {
 #ifdef _OPENMP
 		omp_unset_lock(&ser_file->fd_lock);
 #endif
@@ -1171,8 +1167,8 @@ static int ser_write_frame_from_fit_internal(struct ser_struct *ser_file, fits *
 	ser_file->frame_count++;
 
 	if (!ser_alloc_ts(ser_file, frame_no)) {
-		uint64_t utc;
-		utc = (uint64_t) g_date_time_to_unix(fit->date_obs);
+		guint64 utc;
+		utc = (guint64) g_date_time_to_unix(fit->date_obs);
 		ser_file->ts[frame_no] = utc;
 	}
 
@@ -1182,8 +1178,8 @@ free_and_quit:
 	return retval;
 }
 
-int64_t ser_compute_file_size(struct ser_struct *ser_file, int nb_frames) {
-	int64_t frame_size, size = ser_file->filesize;
+gint64 ser_compute_file_size(struct ser_struct *ser_file, int nb_frames) {
+	gint64 frame_size, size = ser_file->filesize;
 
 	if (nb_frames != ser_file->frame_count) {
 		frame_size = (size - SER_HEADER_LEN) / ser_file->frame_count;
