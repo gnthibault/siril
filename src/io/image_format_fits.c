@@ -1011,7 +1011,7 @@ void save_fits_header(fits *fit) {
 	status = 0;
 	if (fit->date_obs) {
 		gchar *formatted_date = date_time_to_FITS_date(fit->date_obs);
-		fits_update_key(fit->fptr, TSTRING, "DATE-OBS", &formatted_date,
+		fits_update_key(fit->fptr, TSTRING, "DATE-OBS", formatted_date,
 				"YYYY-MM-DDThh:mm:ss observation start, UT", &status);
 		g_free(formatted_date);
 	}
