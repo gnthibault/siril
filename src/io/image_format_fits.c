@@ -1866,10 +1866,6 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 
 		if (from->stats && from->stats[layer])
 			add_stats_to_fit(to, 0, from->stats[layer]);
-		if (from->date)
-			to->date = g_date_time_ref(from->date);
-		if (from->date_obs)
-			to->date_obs = g_date_time_ref(from->date_obs);
 	}
 	
 	return 0;
