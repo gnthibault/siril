@@ -20,7 +20,7 @@
 #ifndef SRC_CORE_ICC_PROFILE_H_
 #define SRC_CORE_ICC_PROFILE_H_
 
-const unsigned char* get_sRGB_profile_data(uint32_t *len);
-const unsigned char* get_gray_profile_data(uint32_t *len);
+const unsigned char* get_sRGB_profile_data(guint32 *len);
+const unsigned char* get_gray_profile_data(guint32 *len);
 
 #endif /* SRC_CORE_ICC_PROFILE_H_ */

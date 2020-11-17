@@ -19,7 +19,6 @@
  */
 
 #include <stdlib.h>
-#include <stdint.h>
 #include <string.h>
 #include <float.h>
 #include <sys/stat.h>

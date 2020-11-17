@@ -21,7 +21,6 @@
 #include <string.h>
 #include <math.h>
 #include <gsl/gsl_statistics_float.h>
-#include <stdint.h>
 
 #include "core/siril.h"
 #include "stacking/siril_fit_linear.h"
@@ -43,7 +42,7 @@ static float siril_stats_float_sd(const float data[], int N) {
 }
 
 static int percentile_clipping(float pixel, float sig[], float median,
-		uint64_t rej[]) {
+		guint64 rej[]) {
 	float plow = sig[0];
 	float phigh = sig[1];
 
@@ -61,7 +60,7 @@ static int percentile_clipping(float pixel, float sig[], float median,
  * The function returns 0 if no rejections are required, 1 if it's a high
  * rejection and -1 for a low-rejection */
 static int sigma_clipping_float(float pixel, float sigma, float sigmalow,
-		float sigmahigh, float median, uint64_t rej[]) {
+		float sigmahigh, float median, guint64 rej[]) {
 
 	if (median - pixel > sigma * sigmalow) {
 		rej[0]++;
@@ -74,7 +73,7 @@ static int sigma_clipping_float(float pixel, float sigma, float sigmalow,
 }
 
 static int line_clipping(float pixel, float sig[], float sigma, int i, float a,
-		float b, uint64_t rej[]) {
+		float b, guint64 rej[]) {
 	float sigmalow = sig[0];
 	float sigmahigh = sig[1];
 
@@ -89,7 +88,7 @@ static int line_clipping(float pixel, float sig[], float sigma, int i, float a,
 }
 
 int apply_rejection_float(struct _data_block *data, int nb_frames,
-		struct stacking_args *args, uint64_t crej[2]) {
+		struct stacking_args *args, guint64 crej[2]) {
 	int N = nb_frames;	// N is the number of pixels kept from the current stack
 	double median = 0.0;
 	int pixel, output, changed, n, r = 0;

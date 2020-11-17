@@ -18,8 +18,7 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include "core/siril.h"
-#include "core/proto.h"
+#include <glib.h>
 
 #include "icc_profile.h"
 
@@ -663,12 +662,12 @@ static unsigned char sGray_icc[] = {
 static unsigned int sGray_icc_len = 656;
 
 
-const unsigned char* get_sRGB_profile_data(uint32_t *len) {
+const unsigned char* get_sRGB_profile_data(guint32 *len) {
 	*len = sRGB_icc_len;
 	return sRGB_icc;
 }
 
-const unsigned char* get_gray_profile_data(uint32_t *len) {
+const unsigned char* get_gray_profile_data(guint32 *len) {
 	*len = sGray_icc_len;
 	return sGray_icc;
 }

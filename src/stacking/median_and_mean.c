@@ -387,7 +387,7 @@ static void norm_to_0_1_range(fits *fit) {
  * after and similar to median but takes into account the registration data and
  * does a different operation to keep the final pixel values.
  *********************************************************************************/
-static int percentile_clipping(WORD pixel, float sig[], float median, uint64_t rej[]) {
+static int percentile_clipping(WORD pixel, float sig[], float median, guint64 rej[]) {
 	float plow = sig[0];
 	float phigh = sig[1];
 
@@ -405,7 +405,7 @@ static int percentile_clipping(WORD pixel, float sig[], float median, uint64_t r
 /* Rejection of pixels, following sigma_(high/low) * sigma.
  * The function returns 0 if no rejections are required, 1 if it's a high
  * rejection and -1 for a low-rejection */
-static int sigma_clipping(WORD pixel, float sig[], float sigma, float median, uint64_t rej[]) {
+static int sigma_clipping(WORD pixel, float sig[], float sigma, float median, guint64 rej[]) {
 	float sigmalow = sig[0];
 	float sigmahigh = sig[1];
 
@@ -427,7 +427,7 @@ static void Winsorize(WORD *pixel, WORD m0, WORD m1, int N) {
 	}
 }
 
-static int line_clipping(WORD pixel, float sig[], float sigma, int i, float a, float b, uint64_t rej[]) {
+static int line_clipping(WORD pixel, float sig[], float sigma, int i, float a, float b, guint64 rej[]) {
 	float sigmalow = sig[0];
 	float sigmahigh = sig[1];
 
@@ -441,7 +441,7 @@ static int line_clipping(WORD pixel, float sig[], float sigma, int i, float a, f
 	return 0;
 }
 
-static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stacking_args *args, uint64_t crej[2]) {
+static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stacking_args *args, guint64 crej[2]) {
 	int N = nb_frames;	// N is the number of pixels kept from the current stack
 	float median = 0.f;
 	int pixel, output, changed, n, r = 0;
@@ -625,7 +625,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	fits fit = { 0 }, *fptr; // output result
 	fits ref = { 0 }; // reference image, used to get metadata back
 	// data for mean/rej only
-	uint64_t irej[3][2] = {{0,0}, {0,0}, {0,0}};
+	guint64 irej[3][2] = {{0,0}, {0,0}, {0,0}};
 	regdata *layerparam = NULL;
 	gboolean use_regdata = is_mean;
 
@@ -834,7 +834,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 			size_t pdata_idx = (naxes[1] - (my_block->start_row + y) - 1) * naxes[0];
 			/* index of the line in the read data, data->pix[frame] */
 			size_t line_idx = y * naxes[0];
-			uint64_t crej[2] = {0, 0};
+			guint64 crej[2] = {0, 0};
 			if (retval) break;
 
 			// update progress bar
@@ -927,7 +927,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 						if (kept_pixels == 0)
 							mean = quickmedian(data->stack, nb_frames);
 						else {
-							int64_t sum = 0L;
+							gint64 sum = 0L;
 							for (frame = 0; frame < kept_pixels; ++frame) {
 								sum += ((WORD *)data->stack)[frame];
 							}

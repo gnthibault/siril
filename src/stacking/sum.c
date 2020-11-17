@@ -30,7 +30,7 @@
 #include "gui/progress_and_log.h"
 
 struct sum_stacking_data {
-	uint64_t *sum[3];	// the new image's channels
+	guint64 *sum[3];	// the new image's channels
 	double *fsum[3];	// the new image's channels, for float input image
 	double exposure;	// sum of the exposures
 	int reglayer;		// layer used for registration data
@@ -58,7 +58,7 @@ static int sum_stacking_prepare_hook(struct generic_seq_args *args) {
 		}
 		ssdata->sum[0] = NULL;
 	} else {
-		ssdata->sum[0] = calloc(nbdata, sizeof(uint64_t) * args->seq->nb_layers);
+		ssdata->sum[0] = calloc(nbdata, sizeof(guint64) * args->seq->nb_layers);
 		if (ssdata->sum[0] == NULL){
 			PRINT_ALLOC_ERR;
 			return ST_ALLOC_ERROR;
@@ -127,7 +127,7 @@ static int sum_stacking_image_hook(struct generic_seq_args *args, int o, int i, 
 // convert the result and store it into gfit
 static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 	struct sum_stacking_data *ssdata = args->user;
-	uint64_t max = 0L;	// max value of the image's channels
+	guint64 max = 0L;	// max value of the image's channels
 	double fmax = 0.0;
 	size_t i, nbdata;
 	int layer;
@@ -181,7 +181,7 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 		} else {
 			double ratio = 1.0 / (double)max;
 			for (layer=0; layer<args->seq->nb_layers; ++layer){
-				uint64_t *from = ssdata->sum[layer];
+				guint64 *from = ssdata->sum[layer];
 				float *to = gfit.fpdata[layer];
 				for (i=0; i < nbdata; ++i) {
 					*to++ = (float)((double)(*from++) * ratio);
@@ -196,7 +196,7 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 		}
 
 		for (layer=0; layer<args->seq->nb_layers; ++layer){
-			uint64_t *from = ssdata->sum[layer];
+			guint64 *from = ssdata->sum[layer];
 			WORD *to = gfit.pdata[layer];
 			for (i=0; i < nbdata; ++i) {
 				if (ratio == 1.0)
