@@ -1878,8 +1878,10 @@ int copy_fits_metadata(fits *from, fits *to) {
 	to->binning_x = from->binning_x;
 	to->binning_y = from->binning_y;
 
-	to->date = g_date_time_ref(from->date);
-	to->date_obs = g_date_time_ref(from->date_obs);
+	if (from->date)
+		to->date = g_date_time_ref(from->date);
+	if (from->date_obs)
+		to->date_obs = g_date_time_ref(from->date_obs);
 	strncpy(to->instrume, from->instrume, FLEN_VALUE);
 	strncpy(to->telescop, from->telescop, FLEN_VALUE);
 	strncpy(to->observer, from->observer, FLEN_VALUE);
