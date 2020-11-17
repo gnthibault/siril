@@ -62,6 +62,14 @@ clock_t perf_test(double (*function)(WORD *data, size_t datasize),
 	return t_end - t_start;
 }
 
+/******
+ *
+ * As clock_t has an unspecified type, we follow the advice on this link to output results:
+ * https://stackoverflow.com/questions/1083142/what-s-the-correct-way-to-use-printf-to-print-a-clock-t
+ *
+ *
+ *  */
+
 void MeasureSmall()
 {
 	int datasize = 8;
@@ -75,9 +83,9 @@ void MeasureSmall()
 	clock_t t_quick = perf_test(quickmedian, datasize, nb_draws, nb_times_each);
 	clock_t t_hist = perf_test(_histogram_sort, datasize, nb_draws, nb_times_each);
 
-	fprintf(stdout, "siril quicksort time:\t%ld\n", t_siril);
-	fprintf(stdout, "quickmedian time:\t%ld\n", t_quick);
-	fprintf(stdout, "histogram_median time:\t%ld\n", t_hist);
+	fprintf(stdout, "siril quicksort time:\t%.0Lf\n", (long double) t_siril);
+	fprintf(stdout, "quickmedian time:\t%.0Lf\n", (long double) t_quick);
+	fprintf(stdout, "histogram_median time:\t%.0Lf\n", (long double) t_hist);
 }
 
 void MeasureBig()
@@ -90,9 +98,9 @@ void MeasureBig()
 	clock_t t_quick = perf_test(quickmedian, datasize, 1, 1);
 	clock_t t_hist = perf_test(_histogram_sort, datasize, 1, 1);
 
-	fprintf(stdout, "siril quicksort time:\t%ld\n", t_siril);
-	fprintf(stdout, "quickmedian time:\t%ld\n", t_quick);
-	fprintf(stdout, "histogram_median time:\t%ld\n", t_hist);
+	fprintf(stdout, "siril quicksort time:\t%.0Lf\n", (long double) t_siril);
+	fprintf(stdout, "quickmedian time:\t%.0Lf\n", (long double) t_quick);
+	fprintf(stdout, "histogram_median time:\t%.0Lf\n", (long double) t_hist);
 }
 
 int main()
