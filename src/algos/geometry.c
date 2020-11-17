@@ -642,11 +642,11 @@ void on_menu_gray_crop_seq_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	siril_open_dialog("crop_dialog");
 }
 
-int64_t crop_compute_size_hook(struct generic_seq_args *args, int nb_frames) {
+gint64 crop_compute_size_hook(struct generic_seq_args *args, int nb_frames) {
 	struct crop_sequence_data *c_args = (struct crop_sequence_data*) args->user;
 	double ratio = (double)(c_args->area.h * c_args->area.w) / (double)(args->seq->rx * args->seq->ry);
 	double fullseqsize = seq_compute_size(args->seq, nb_frames, args->output_type);
-	return (int64_t)(fullseqsize * ratio);
+	return (gint64)(fullseqsize * ratio);
 }
 
 int crop_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,

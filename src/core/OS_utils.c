@@ -232,19 +232,19 @@ int test_available_space(gint64 req_size) {
 		if (com.pref.comp.fits_enabled) {
 			if (req_size / free_space < MAX_COMP_FREESPACE_RATIO) {
 				msg = siril_log_message(_("Compression enabled: There may no be enough free disk space to perform this operation: "
-						"%sB available for %sB needed (missing %sB)\n"),
+						"%s available for %s needed (missing %s)\n"),
 						avail, required, missing);
 				queue_message_dialog(GTK_MESSAGE_WARNING, _("Compression enabled: There may not be enough free disk space to perform this operation"), msg);
 			} else {
 				msg = siril_log_message(_("Compression enabled: It is likely that there is not enough free disk space to perform this operation: "
-						"%sB available for %sB needed (missing %sB)\n"),
+						"%s available for %s needed (missing %s)\n"),
 						avail, required, missing);
 				queue_message_dialog(GTK_MESSAGE_WARNING, _("Compression enabled: It is likely that there is not enough free disk space to perform this operation"), msg);
 			}
 			res = 0;
 		} else {
 			msg = siril_log_message(_("Not enough free disk space to perform this operation: "
-						"%sB available for %sB needed (missing %sB)\n"),
+						"%s available for %s needed (missing %s)\n"),
 						avail, required, missing);
 			queue_message_dialog(GTK_MESSAGE_ERROR, _("Not enough disk space"), msg);
 			res = 1;

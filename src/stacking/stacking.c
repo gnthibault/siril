@@ -586,8 +586,8 @@ int stack_get_max_number_of_rows(sequence *seq, int nb_images_to_stack) {
 	if (max_memory > 0) {
 		siril_log_message(_("Using %d MB memory maximum for stacking\n"), max_memory);
 		int elem_size = get_data_type(seq->bitpix) == DATA_FLOAT ? sizeof(float) : sizeof(WORD);
-		uint64_t number_of_rows = (uint64_t)max_memory * BYTES_IN_A_MB /
-			((uint64_t)seq->rx * nb_images_to_stack * elem_size * com.max_thread);
+		guint64 number_of_rows = (guint64)max_memory * BYTES_IN_A_MB /
+			((guint64)seq->rx * nb_images_to_stack * elem_size * com.max_thread);
 		// this is how many rows we can load in parallel from all images of the
 		// sequence and be under the limit defined in config in megabytes.
 		// We want to avoid having blocks larger than the half or they will decrease parallelism

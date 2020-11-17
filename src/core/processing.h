@@ -38,7 +38,7 @@ struct generic_seq_args {
 	int nb_filtered_images;
 
 	/** function called to compute the required disk size if has_output */
-	int64_t (*compute_size_hook)(struct generic_seq_args *, int);
+	gint64 (*compute_size_hook)(struct generic_seq_args *, int);
 	/** function called before iterating through the sequence */
 	int (*prepare_hook)(struct generic_seq_args *);
 	/** function called for each image with image index in sequence, number

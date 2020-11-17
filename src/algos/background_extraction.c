@@ -290,14 +290,14 @@ static double get_sample_median(double *buf, const int xx,
 	return median;
 }
 
-static unsigned int _rand(uint64_t *const p_rng) {
+static unsigned int _rand(guint64 *const p_rng) {
 	*p_rng = *p_rng * 1103515245 + 12345U;
 	return (unsigned int) *p_rng;
 }
 
 static gboolean convert_fits_to_img(fits *fit, double *image, int channel, gboolean add_dither) {
 
-	uint64_t seed = time(NULL);
+	guint64 seed = time(NULL);
 
 	const int height = fit->ry;
 	const int width = fit->rx;

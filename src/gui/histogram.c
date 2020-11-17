@@ -20,7 +20,6 @@
 
 #include <gsl/gsl_histogram.h>
 #include <string.h>
-#include <stdint.h>
 #include <math.h>
 #include <float.h>
 #include "core/siril.h"
@@ -57,7 +56,7 @@ static double histo_color_r[] = { 1.0, 0.0, 0.0, 0.0 };
 static double histo_color_g[] = { 0.0, 1.0, 0.0, 0.0 };
 static double histo_color_b[] = { 0.0, 0.0, 1.0, 0.0 };
 static float graph_height = 0.f;	// the max value of all bins
-static uint64_t clipped[] = { 0, 0 };
+static guint64 clipped[] = { 0, 0 };
 
 static GtkToggleToolButton *toggles[MAXVPORT] = { NULL };
 static GtkToggleToolButton *toggleGrid = NULL, *toggleCurve = NULL;
@@ -566,7 +565,7 @@ static void apply_mtf_to_histo(gsl_histogram *histo, float norm,
 		WORD mtf;
 		float binval = gsl_histogram_get(histo, i);
 		float pxl = ((float)i / norm);
-		uint64_t clip[2] = { 0, 0 };
+		guint64 clip[2] = { 0, 0 };
 
 		if (i < round_to_WORD(lo * norm)) {
 			pxl = lo;

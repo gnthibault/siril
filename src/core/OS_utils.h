@@ -23,7 +23,7 @@
 #include <glib.h>
 
 gboolean update_displayed_memory();
-int test_available_space(int64_t req_size);
+int test_available_space(gint64 req_size);
 guint64 get_available_memory();
 int get_max_memory_in_MB();
 #ifdef _WIN32

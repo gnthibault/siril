@@ -107,7 +107,7 @@ gpointer generic_sequence_worker(gpointer p) {
 	}
 
 	if (args->has_output && !args->partial_image) {
-		int64_t size;
+		gint64 size;
 		if (args->compute_size_hook)
 			size = args->compute_size_hook(args, nb_frames);
 		else size = seq_compute_size(args->seq, nb_frames, args->output_type);

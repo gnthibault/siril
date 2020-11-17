@@ -53,8 +53,8 @@ static gboolean stfComputed;	// Flag to know if STF parameters are available
 static float stfShadows, stfHighlights, stfM;
 
 static void remaprgb(void) {
-	uint32_t *dst;
-	const uint32_t *bufr, *bufg, *bufb;
+	guint32 *dst;
+	const guint32 *bufr, *bufg, *bufb;
 	gint i;
 	int nbdata;
 
@@ -95,14 +95,14 @@ static void remaprgb(void) {
 	}
 	// WARNING : this assumes that R, G and B buffers are already allocated and mapped
 	// it seems ok, but one can probably imagine situations where it segfaults
-	bufr = (const uint32_t*) com.graybuf[RED_VPORT];
-	bufg = (const uint32_t*) com.graybuf[GREEN_VPORT];
-	bufb = (const uint32_t*) com.graybuf[BLUE_VPORT];
+	bufr = (const guint32*) com.graybuf[RED_VPORT];
+	bufg = (const guint32*) com.graybuf[GREEN_VPORT];
+	bufb = (const guint32*) com.graybuf[BLUE_VPORT];
 	if (bufr == NULL || bufg == NULL || bufb == NULL) {
 		siril_debug_print("remaprgb: gray buffers not allocated for display\n");
 		return;
 	}
-	dst = (uint32_t*) com.rgbbuf;	// index is j
+	dst = (guint32*) com.rgbbuf;	// index is j
 	nbdata = gfit.rx * gfit.ry;	// source images are 32-bit RGBA
 
 #ifdef _OPENMP
@@ -321,10 +321,10 @@ static void remap(int vport) {
 			switch (color) {
 				default:
 				case NORMAL_COLOR:
-					*(uint32_t*)(dst + dst_index) = dst_pixel_value << 16 | dst_pixel_value << 8 | dst_pixel_value;
+					*(guint32*)(dst + dst_index) = dst_pixel_value << 16 | dst_pixel_value << 8 | dst_pixel_value;
 					break;
 				case RAINBOW_COLOR:
-					*(uint32_t*)(dst + dst_index) = rainbow_index[dst_pixel_value][0] << 16 | rainbow_index[dst_pixel_value][1] << 8 | rainbow_index[dst_pixel_value][2];
+					*(guint32*)(dst + dst_index) = rainbow_index[dst_pixel_value][0] << 16 | rainbow_index[dst_pixel_value][1] << 8 | rainbow_index[dst_pixel_value][2];
 			}
 		}
 	}

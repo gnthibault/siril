@@ -181,9 +181,9 @@ static int darkOptimization(fits *raw, struct preprocessing_data *args) {
 	return ret;
 }
 
-static int64_t prepro_compute_size_hook(struct generic_seq_args *args, int nb_images) {
+static gint64 prepro_compute_size_hook(struct generic_seq_args *args, int nb_images) {
 	struct preprocessing_data *prepro = args->user;
-	int64_t size = seq_compute_size(args->seq, nb_images, args->output_type);
+	gint64 size = seq_compute_size(args->seq, nb_images, args->output_type);
 	if (prepro->debayer)
 		size *= 3;
 	return size;
