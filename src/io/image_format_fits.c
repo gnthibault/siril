@@ -1020,6 +1020,11 @@ void save_fits_header(fits *fit) {
 	}
 
 	status = 0;
+	if (fit->exposure > 0.)
+		fits_update_key(fit->fptr, TDOUBLE, "EXPTIME", &(fit->exposure),
+				"Exposure time [s]", &status);
+
+	status = 0;
 	if (fit->expstart > 0.)
 		fits_update_key(fit->fptr, TDOUBLE, "EXPSTART", &(fit->expstart),
 				"Exposure start time (standard Julian date)", &status);
@@ -1055,11 +1060,6 @@ void save_fits_header(fits *fit) {
 	if (fit->ccd_temp)
 		fits_update_key(fit->fptr, TDOUBLE, "CCD-TEMP", &(fit->ccd_temp),
 				"CCD temp in C", &status);
-
-	status = 0;
-	if (fit->exposure > 0.)
-		fits_update_key(fit->fptr, TDOUBLE, "EXPTIME", &(fit->exposure),
-				"Exposure time [s]", &status);
 
 	status = 0;
 	if (fit->aperture > 0.)
