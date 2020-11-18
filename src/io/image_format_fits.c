@@ -72,13 +72,15 @@ static void read_fits_date_obs_header(fits *fit) {
 
 	fits_read_key(fit->fptr, TSTRING, "DATE-OBS", &date_obs, NULL, &status);
 
-	status = 0;
+	if (status == KEY_NO_EXIST) {
 	/** Case seen in some FITS files. Needed to get date back in SER conversion **/
-	fits_read_key(fit->fptr, TSTRING, "UT-START", &ut_start, NULL, &status);
-	if (ut_start[0] != '\0' && date_obs[2] == '/') {
-		int year, month, day;
-		if (sscanf(date_obs, "%02d/%02d/%04d", &day, &month, &year) == 4) {
-			g_snprintf(date_obs, sizeof(date_obs), "%04d-%02d-%02dT%s", year, month, day, ut_start);
+		status = 0;
+		fits_read_key(fit->fptr, TSTRING, "UT-START", &ut_start, NULL, &status);
+		if (ut_start[0] != '\0' && date_obs[2] == '/') {
+			int year, month, day;
+			if (sscanf(date_obs, "%02d/%02d/%04d", &day, &month, &year) == 4) {
+				g_snprintf(date_obs, sizeof(date_obs), "%04d-%02d-%02dT%s", year, month, day, ut_start);
+			}
 		}
 	}
 	fit->date_obs = FITS_date_to_date_time(date_obs);
@@ -1013,8 +1015,19 @@ void save_fits_header(fits *fit) {
 		gchar *formatted_date = date_time_to_FITS_date(fit->date_obs);
 		fits_update_key(fit->fptr, TSTRING, "DATE-OBS", formatted_date,
 				"YYYY-MM-DDThh:mm:ss observation start, UT", &status);
+
 		g_free(formatted_date);
 	}
+
+	status = 0;
+	if (fit->expstart > 0.)
+		fits_update_key(fit->fptr, TDOUBLE, "EXPSTART", &(fit->expstart),
+				"Exposure start time (standard Julian date)", &status);
+
+	status = 0;
+	if (fit->expend > 0.)
+		fits_update_key(fit->fptr, TDOUBLE, "EXPEND", &(fit->expend),
+				"Exposure end time (standard Julian date)", &status);
 
 	/* all keywords below are non-standard */
 	status = 0;
@@ -1159,11 +1172,15 @@ void save_fits_header(fits *fit) {
 
 /********************** public functions ************************************/
 
-double get_exposure_from_fitsfile(fitsfile *fptr) {
-	double exp = 0.0;
+void get_date_data_from_fitsfile(fitsfile *fptr, GDateTime **dt, double *exposure) {
+	char date_obs[FLEN_VALUE];
 
-	__tryToFindKeywords(fptr, TDOUBLE, Exposure, &exp);
-	return exp;
+	__tryToFindKeywords(fptr, TDOUBLE, Exposure, exposure);
+	int status = 0;
+	fits_read_key(fptr, TSTRING, "DATE-OBS", &date_obs, NULL, &status);
+	if (!status) {
+		*dt = FITS_date_to_date_time(date_obs);
+	}
 }
 
 int import_metadata_from_fitsfile(fitsfile *fptr, fits *to) {

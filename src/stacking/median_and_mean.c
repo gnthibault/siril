@@ -24,13 +24,43 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/OS_utils.h"
-#include "stacking.h"
+#include "core/siril_date.h"
 #include "io/sequence.h"
 #include "io/ser.h"
 #include "io/image_format_fits.h"
 #include "gui/progress_and_log.h"
 #include "algos/sorting.h"
+#include "stacking/stacking.h"
 #include "stacking/siril_fit_linear.h"
+
+typedef struct {
+	GDateTime *date_obs;
+	gdouble exposure;
+} DateEvent;
+
+static void free_list_date(gpointer data) {
+	DateEvent *item = data;
+
+	g_date_time_unref(item->date_obs);
+	g_slice_free(DateEvent, item);
+}
+
+static DateEvent* new_item(GDateTime *dt, gdouble exposure) {
+	DateEvent *item;
+
+	item = g_slice_new(DateEvent);
+	item->exposure = exposure;
+	item->date_obs = dt;
+
+	return item;
+}
+
+static gint list_date_compare(gconstpointer *a, gconstpointer *b) {
+	const DateEvent *dt1 = (const DateEvent *) a;
+	const DateEvent *dt2 = (const DateEvent *) b;
+
+	return g_date_time_compare(dt1->date_obs, dt2->date_obs);
+}
 
 // in this case, N is the number of frames, so int is fine
 static float siril_stats_ushort_sd(const WORD data[], int N) {
@@ -66,11 +96,10 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean);
  * remaining ones is used.
  * ****************************************************************************/
 
-int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, long *naxes, double *exposure, fits *fit) {
+int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, long *naxes, GList **list_date, fits *fit) {
 	char msg[256], filename[256];
 	int i, status, oldbitpix = 0, oldnaxis = -1, nb_frames = args->nb_images_to_stack;
 	long oldnaxes[3] = { 0 };
-	*exposure = 0.0;
 
 	if (args->seq->type == SEQ_REGULAR) {
 		for (i = 0; i < nb_frames; ++i) {
@@ -131,8 +160,13 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 				oldbitpix = *bitpix;
 			}
 
-			/* exposure summing */
-			*exposure += get_exposure_from_fitsfile(args->seq->fptr[image_index]);
+			gdouble current_exp;
+			GDateTime *dt = NULL;
+
+			get_date_data_from_fitsfile(args->seq->fptr[image_index], &dt, &current_exp);
+			if (dt) {
+				*list_date = g_list_prepend(*list_date, new_item(dt, current_exp));
+			}
 
 			/* We copy metadata from reference to the final fit */
 			if (image_index == args->ref_image)
@@ -614,11 +648,50 @@ int stack_median(struct stacking_args *args) {
 	return stack_mean_or_median(args, FALSE);
 }
 
+static void compute_date_time_keywords(GList *list_date, fits *fit) {
+	if (list_date) {
+		gdouble exposure = 0.0;
+		GDateTime *date_obs;
+		gdouble start, end;
+		GList *list;
+		/* First we want to sort the list */
+		list_date = g_list_sort(list_date, (GCompareFunc) list_date_compare);
+		/* Then we compute the sum of exposure */
+		for (list = list_date; list; list = list->next) {
+			exposure += ((DateEvent *)list->data)->exposure;
+		}
+
+		/* go to the first stacked image and get needed values */
+		list_date = g_list_first(list_date);
+		date_obs = g_date_time_ref(((DateEvent *)list_date->data)->date_obs);
+		start = date_time_to_Julian(((DateEvent *)list_date->data)->date_obs);
+
+		/* go to the last stacked image and get needed values
+		 * This time we need to add the exposure to the date_obs
+		 * to exactly retrieve the end of the exposure
+		 */
+		list_date = g_list_last(list_date);
+		gdouble last_exp = ((DateEvent *)list_date->data)->exposure;
+		GDateTime *last_date = ((DateEvent *)list_date->data)->date_obs;
+		GDateTime *corrected_last_date = g_date_time_add_seconds(last_date, (gdouble) last_exp);
+
+		end = date_time_to_Julian(corrected_last_date);
+
+		g_date_time_unref(corrected_last_date);
+
+		/* we address the computed values to the keywords */
+		fit->exposure = exposure;
+		fit->date_obs = date_obs;
+		fit->expstart = start;
+		fit->expend = end;
+	}
+}
+
 static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	int nb_frames;		/* number of frames actually used */
 	int bitpix, i, naxis, cur_nb = 0, retval = ST_OK, pool_size = 1;
 	long naxes[3];
-	double exposure = 0.0;
+	GList *list_date = NULL;
 	struct _data_block *data_pool = NULL;
 	struct _image_block *blocks = NULL;
 	data_type itype;	// input data type
@@ -649,7 +722,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	set_progress_bar_data(NULL, PROGRESS_RESET);
 
 	/* first loop: open all fits files and check they are of same size */
-	if ((retval = stack_open_all_files(args, &bitpix, &naxis, naxes, &exposure, &ref))) {
+	if ((retval = stack_open_all_files(args, &bitpix, &naxis, naxes, &list_date, &ref))) {
 		goto free_and_close;
 	}
 
@@ -1018,8 +1091,8 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		for (i = 0; i < fit.naxes[2]; i++)
 			gfit.pdata[i] = fit.pdata[i];
 	}
-	if (is_mean)
-		gfit.exposure = exposure;
+
+	compute_date_time_keywords(list_date, &gfit);
 
 free_and_close:
 	fprintf(stdout, "free and close (%d)\n", retval);
@@ -1034,6 +1107,7 @@ free_and_close:
 		}
 		free(data_pool);
 	}
+	g_list_free_full(list_date, (GDestroyNotify) free_list_date);
 	if (blocks) free(blocks);
 	if (args->coeff.offset) free(args->coeff.offset);
 	if (args->coeff.mul) free(args->coeff.mul);
