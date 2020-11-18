@@ -10,7 +10,7 @@ char *copy_header(fits *fit);
 data_type get_data_type(int bitpix);
 void fit_get_photometry_data(fits *fit);
 int readfits(const char *filename, fits *fit, char *realname, gboolean force_float);
-double get_exposure_from_fitsfile(fitsfile *fptr);
+void get_date_data_from_fitsfile(fitsfile *fptr, GDateTime **dt, double *exposure);
 int import_metadata_from_fitsfile(fitsfile *fptr, fits *to);
 void clearfits(fits*);
 int readfits_partial(const char *filename, int layer, fits *fit,

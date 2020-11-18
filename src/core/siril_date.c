@@ -198,11 +198,25 @@ GDateTime *FITS_date_to_date_time(char *date) {
 
 /**
  *
- * @param date, a GDateTIme
+ * @param datetime, a GDateTIme
  * @return a newly allocated string formatted as expected in
  * FITS header: "%Y-%m-%dT%H:%M:%S.%f" or NULL in the case that
  * there was an error  The string should be freed with g_free().
  */
-gchar *date_time_to_FITS_date(GDateTime *date) {
-	return g_date_time_format(date, "%Y-%m-%dT%H:%M:%S.%f");
+gchar *date_time_to_FITS_date(GDateTime *datetime) {
+	GString *outstr = NULL;
+	gchar *main_date = NULL;
+	gchar *format = "%Y-%m-%dT%H:%M:%S";
+
+	/* if datetime has sub-second non-zero values below the second precision we
+	 * should print them as well */
+	if (g_date_time_get_microsecond(datetime) % G_TIME_SPAN_SECOND != 0)
+		format = "%Y-%m-%dT%H:%M:%S.%f";
+
+	/* Main date and time. */
+	main_date = g_date_time_format(datetime, format);
+	outstr = g_string_new(main_date);
+	g_free(main_date);
+
+	return g_string_free(outstr, FALSE);
 }

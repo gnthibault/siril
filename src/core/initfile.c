@@ -554,7 +554,7 @@ int checkinitfile() {
 	}
 	g_free(pathname);
 
-	com.initfile = g_strdup(config_file);
+	com.initfile = config_file;
 
 	if (readinitfile()) {
 		/* init file does not exist, so we create it */

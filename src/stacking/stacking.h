@@ -143,7 +143,7 @@ struct _data_block {
 	float *xf, *yf, m_x, m_dx2;// data for the linear fit rejection
 };
 
-int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, long *naxes, double *exposure, fits *fit);
+int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, long *naxes, GList **date_time, fits *fit);
 int stack_compute_parallel_blocks(struct _image_block **blocks, int max_number_of_rows,
 		int nb_channels, long *naxes, size_t *largest_block_height,
 		int *nb_parallel_stacks, int nb_threads);

@@ -418,6 +418,7 @@ struct ffit {
 	gboolean unbinned;
 	char row_order[FLEN_VALUE];
 	GDateTime *date, *date_obs;
+	double expstart, expend;
 	char instrume[FLEN_VALUE];		// INSTRUME key
 	char telescop[FLEN_VALUE];		// TELESCOP key
 	char observer[FLEN_VALUE];		// OBSERVER key

@@ -77,6 +77,7 @@ static GHashTable *parse_locale_codes(GHashTable *table) {
 		g_hash_table_insert(string_lang,
 				g_strdup_printf("%s [%s]", str_name ? str_name : "???", code),
 				NULL);
+		g_free(str_name);
 	}
 	return string_lang;
 }
@@ -160,6 +161,8 @@ void siril_language_fill_combo() {
 	if (!lang_changed) {
 		gtk_combo_box_set_active(GTK_COMBO_BOX(lang_combo), 0);
 	}
+
+	g_list_free(list);
 }
 
 void language_init(const gchar *language) {
