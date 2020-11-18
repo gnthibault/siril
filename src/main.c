@@ -52,8 +52,6 @@
 #include "core/siril_language.h"
 #include "core/siril_update.h"
 #include "core/OS_utils.h"
-#include "algos/star_finder.h"
-#include "algos/photometry.h"
 #include "io/sequence.h"
 #include "io/conversion.h"
 #include "io/single_image.h"
@@ -61,7 +59,6 @@
 #include "gui/progress_and_log.h"
 #include "gui/siril_css.h"
 #include "registration/registration.h"
-#include "stacking/stacking.h"
 
 /* the global variables of the whole project */
 cominfo com;	// the main data struct
@@ -221,22 +218,9 @@ static void siril_app_activate(GApplication *application) {
 
 	siril_log_color_message(_("Welcome to %s v%s\n"), "bold", PACKAGE, VERSION);
 
-	/***************
-	 *  initialization of some parameters that need to be done before
-	 * checkinitfile
-	 ***************/
 	/* initialize converters (utilities used for different image types importing) */
 	gchar *supported_files = initialize_converters();
-	/* initialize compression preferences */
-	initialize_compression_param();
-	/* initialize photometric variables */
-	initialize_photometric_param();
-	/* initialize peaker variables */
-	init_peaker_default();
-	/* initialize sequence-related stuff */
-	initialize_sequence(&com.seq, TRUE);
-	/* initialize stacking-relatede stuff */
-	initialize_stacking_default();
+	startup_cwd = g_get_current_dir();
 
 	if (checkinitfile()) {
 		fprintf(stderr,	_("Could not load or create settings file, exiting.\n"));
