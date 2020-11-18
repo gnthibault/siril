@@ -535,9 +535,31 @@ int writeinitfile() {
 	return 0;
 }
 
+void init_settings() {
+	com.pref.stack.mem_mode = 0;
+	com.pref.stack.memory_ratio = 0.9;
+	com.pref.stack.memory_amount = 4.0;
+	com.pref.thumbnail_size = 256;
+	com.pref.ext = g_strdup(".fit");
+	com.pref.force_to_16bit = FALSE;
+	com.pref.swap_dir = g_strdup(g_get_tmp_dir());
+
+	com.wd = g_strdup(siril_get_startup_dir());
+	startup_cwd = g_get_current_dir();
+
+	com.pref.first_start = TRUE;
+	com.pref.save.quit = FALSE;
+	com.pref.save.script = TRUE;
+	com.pref.check_script_version = TRUE;
+	com.pref.show_thumbnails = TRUE;
+	com.pref.remember_windows = TRUE;
+	com.pref.check_update = TRUE;
+	com.pref.font_scale = 100.0;
+}
+
 int checkinitfile() {
 	/* First we try to read the file given on command line */
-	if (com.initfile && !readinitfile()) {
+	if (!readinitfile()) {
 		return 0;
 	}
 	/* no file given on command line, set initfile to default location */
@@ -558,6 +580,7 @@ int checkinitfile() {
 
 	if (readinitfile()) {
 		/* init file does not exist, so we create it */
+		init_settings();
 		return writeinitfile();
 	}
 	return 0;

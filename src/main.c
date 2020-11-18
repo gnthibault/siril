@@ -238,21 +238,6 @@ static void siril_app_activate(GApplication *application) {
 	/* initialize stacking-relatede stuff */
 	initialize_stacking_default();
 
-	/* we also initialize a couple of important variables */
-	com.pref.stack.mem_mode = 0;
-	com.pref.stack.memory_ratio = 0.9;
-	com.pref.stack.memory_amount = 4.0;
-	com.pref.thumbnail_size = 256;
-	com.pref.ext = g_strdup(".fit");
-	com.pref.force_to_16bit = FALSE;
-	com.pref.swap_dir = g_strdup(g_get_tmp_dir());
-
-	/* set default CWD, and load init file
-	 * checkinitfile will load all saved parameters
-	 * */
-	com.wd = g_strdup(siril_get_startup_dir());
-	startup_cwd = g_get_current_dir();
-
 	if (checkinitfile()) {
 		fprintf(stderr,	_("Could not load or create settings file, exiting.\n"));
 		exit(EXIT_FAILURE);
