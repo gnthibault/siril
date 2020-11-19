@@ -47,7 +47,7 @@ time, or their support won't be included.
  * **libheif** for HEIF format files import
  * **libpng** (>= 1.6) for PNG format support
  * **libavformat**, **libavutil** (>= 55.20), **libavcodec**, **libswscale** and **libswresample** for avi export (usually provided by ffmpeg)
- * **libcurl** for web interaction. Useless on GNU-Linux and Windows MUST be installed on macOS platform as GIO is broken
+ * **libcurl** for web interaction. Useless on GNU-Linux MUST be installed on macOS and Windows platform as GIO is broken
  * **criterion** for unit testing
  * **gnuplot** for photometry graphs output
 

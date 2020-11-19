@@ -419,7 +419,7 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 	return g_string_free(url, FALSE);
 }
 
-#if defined __linux__ && defined HAVE_LIBCURL
+#if defined HAVE_LIBCURL
 /*****
  * HTTP functions
  ****/
