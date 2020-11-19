@@ -224,7 +224,8 @@ static gchar *check_version(struct _update_data *args, gchar **data) {
 	return msg;
 }
 
-#ifdef HAVE_LIBCURL
+// TODO: For now, to fix this bug https://gitlab.com/free-astro/siril/-/issues/604() we need to use GIO for Windows
+#if defined HAVE_LIBCURL && !defined _WIN32
 static const int DEFAULT_FETCH_RETRIES = 5;
 static CURL *curl;
 

@@ -419,7 +419,7 @@ static gchar *get_catalog_url(point center, double mag_limit, double dfov, int t
 	return g_string_free(url, FALSE);
 }
 
-#ifdef HAVE_LIBCURL
+#if defined __linux__ && defined HAVE_LIBCURL
 /*****
  * HTTP functions
  ****/
@@ -585,12 +585,14 @@ static gchar *download_catalog(online_catalog onlineCatalog, point catalog_cente
 		if (!g_output_stream_write_all(output_stream, buffer, strlen(buffer), NULL, NULL, &error)) {
 			g_warning("%s\n", error->message);
 			g_clear_error(&error);
+			g_free(buffer);
 			g_object_unref(output_stream);
 			g_object_unref(file);
 			return NULL;
 		}
 		const gchar *filename = g_file_peek_path(file);
 		g_object_unref(output_stream);
+		g_free(buffer);
 
 		/* -------------------------------------------------------------------------------- */
 
@@ -1289,30 +1291,32 @@ gpointer match_catalog(gpointer p) {
 	return GINT_TO_POINTER(args->ret);
 }
 
-static void url_encode(gchar **qry) {
-	int new_string_length = 0;
-	for (gchar *c = *qry; *c != '\0'; c++) {
-		if (*c == ' ')
-			new_string_length += 2;
-		new_string_length++;
+static gchar* url_cleanup(const gchar *uri_string) {
+	GString *copy;
+	const gchar *end;
+
+	/* Skip leading whitespace */
+	while (g_ascii_isspace(*uri_string))
+		uri_string++;
+
+	/* Ignore trailing whitespace */
+	end = uri_string + strlen(uri_string);
+	while (end > uri_string && g_ascii_isspace(*(end - 1)))
+		end--;
+
+	/* Copy the rest, encoding unencoded spaces and stripping other whitespace */
+	copy = g_string_sized_new(end - uri_string);
+	while (uri_string < end) {
+		if (*uri_string == ' ')
+			g_string_append(copy, "%20");
+		else if (g_ascii_isspace(*uri_string))
+			; // @suppress("Suspicious semicolon")
+		else
+			g_string_append_c(copy, *uri_string);
+		uri_string++;
 	}
-	gchar *qstr = g_malloc((new_string_length + 1) * sizeof qstr[0]);
-	gchar *c1, *c2;
-	for (c1 = *qry, c2 = qstr; *c1 != '\0'; c1++) {
-		if (*c1 == ' ') {
-			c2[0] = '%';
-			c2[1] = '2';
-			c2[2] = '0';
-			c2 += 3;
-		} else {
-			*c2 = *c1;
-			c2++;
-		}
-	}
-	*c2 = '\0';
-	g_free(*qry);
-	*qry = g_strdup(qstr);
-	g_free(qstr);
+
+	return g_string_free(copy, FALSE);
 }
 
 static void search_object_in_catalogs(const gchar *object) {
@@ -1326,17 +1330,15 @@ static void search_object_in_catalogs(const gchar *object) {
 	set_cursor_waiting(TRUE);
 
 	name = g_utf8_strup(object, -1);
-	/* Removes leading and trailing whitespace */
-	name = g_strstrip(name);
-	/* replace whitespaces by %20 for html purposes */
-	url_encode(&name);
 
 	string_url = g_string_new(CDSSESAME);
 	string_url = g_string_append(string_url, "/-oI/A?");
 	string_url = g_string_append(string_url, name);
 	url = g_string_free(string_url, FALSE);
 
-	result = fetch_url(url);
+	gchar *cleaned_url = url_cleanup(url);
+
+	result = fetch_url(cleaned_url);
 	if (result) {
 		parse_content_buffer(result, &obj);
 		g_signal_handlers_block_by_func(GtkTreeViewIPS, on_GtkTreeViewIPS_cursor_changed, NULL);
@@ -1345,6 +1347,7 @@ static void search_object_in_catalogs(const gchar *object) {
 		free_Platedobject();
 	}
 	set_cursor_waiting(FALSE);
+	g_free(cleaned_url);
 	g_free(url);
 	g_free(result);
 	g_free(name);

@@ -200,7 +200,7 @@ if get_option('enable-libcurl') == 'yes'
 elif get_option('enable-libcurl') == 'no'
   enable_libcurl = false
 else # == 'platform-default'
-  if platform_osx
+  if platform_windows or platform_osx
       enable_libcurl = true
   else
       enable_libcurl = false
