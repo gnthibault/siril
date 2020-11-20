@@ -193,7 +193,7 @@ static double get_xc() {
 
 	entry = GTK_ENTRY(lookup_widget("entry_rgradient_xc"));
 
-	return atof(gtk_entry_get_text(entry));
+	return g_ascii_strtod(gtk_entry_get_text(entry), NULL);
 }
 
 static double get_yc() {
@@ -201,7 +201,7 @@ static double get_yc() {
 
 	entry = GTK_ENTRY(lookup_widget("entry_rgradient_yc"));
 
-	return atof(gtk_entry_get_text(entry));
+	return g_ascii_strtod(gtk_entry_get_text(entry), NULL);
 }
 
 static double get_dR() {

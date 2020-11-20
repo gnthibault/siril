@@ -1072,7 +1072,7 @@ gboolean on_drawingarea_histograms_button_release_event(GtkWidget *widget,
 }
 
 void on_histoMidEntry_activate(GtkEntry *entry, gpointer user_data) {
-	float mid = atof(gtk_entry_get_text(entry));
+	float mid = g_ascii_strtod(gtk_entry_get_text(entry), NULL);
 	if (mid <= _shadows) mid = _shadows;
 	if (mid >= _highlights) mid = _highlights;
 	_midtones = mid;
@@ -1086,7 +1086,7 @@ void on_histoMidEntry_activate(GtkEntry *entry, gpointer user_data) {
 }
 
 void on_histoShadEntry_activate(GtkEntry *entry, gpointer user_data) {
-	float lo = atof(gtk_entry_get_text(entry));
+	float lo = g_ascii_strtod(gtk_entry_get_text(entry), NULL);
 	if (lo <= 0.f) lo = 0.f;
 	if (lo >= _highlights) lo = _highlights;
 	_shadows = lo;
@@ -1100,7 +1100,7 @@ void on_histoShadEntry_activate(GtkEntry *entry, gpointer user_data) {
 }
 
 void on_histoHighEntry_activate(GtkEntry *entry, gpointer user_data) {
-	float hi = atof(gtk_entry_get_text(entry));
+	float hi = g_ascii_strtod(gtk_entry_get_text(entry), NULL);
 	if (hi <= _shadows) hi = _shadows;
 	if (hi >= 1.f) hi = 1.f;
 	_highlights = hi;

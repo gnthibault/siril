@@ -24,15 +24,15 @@
 #include "gui/fix_xtrans_af.h"
 
 void save_xtrans_ui_pixels() {
-	com.pref.xtrans_af.x = atoi(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_af_x"))));
-	com.pref.xtrans_af.y = atoi(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_af_y"))));
-	com.pref.xtrans_af.w = atoi(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_af_w"))));
-	com.pref.xtrans_af.h = atoi(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_af_h"))));
+	com.pref.xtrans_af.x = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_af_x"))), NULL, 10);
+	com.pref.xtrans_af.y = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_af_y"))), NULL, 10);
+	com.pref.xtrans_af.w = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_af_w"))), NULL, 10);
+	com.pref.xtrans_af.h = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_af_h"))), NULL, 10);
 
-	com.pref.xtrans_sample.x = atoi(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_sample_x"))));
-	com.pref.xtrans_sample.y = atoi(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_sample_y"))));
-	com.pref.xtrans_sample.w = atoi(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_sample_w"))));
-	com.pref.xtrans_sample.h = atoi(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_sample_h"))));
+	com.pref.xtrans_sample.x = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_sample_x"))), NULL, 10);
+	com.pref.xtrans_sample.y = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_sample_y"))), NULL, 10);
+	com.pref.xtrans_sample.w = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_sample_w"))), NULL, 10);
+	com.pref.xtrans_sample.h = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_sample_h"))), NULL, 10);
 }
 
 void init_xtrans_ui_pixels() {

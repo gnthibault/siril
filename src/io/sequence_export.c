@@ -523,11 +523,11 @@ void on_buttonExportSeq_clicked(GtkButton *button, gpointer user_data) {
 	case EXPORT_MP4:
 	case EXPORT_WEBM:
 		fpsEntry = GTK_ENTRY(lookup_widget("entryAviFps"));
-		args->avi_fps = atoi(gtk_entry_get_text(fpsEntry));
+		args->avi_fps = g_ascii_strtod(gtk_entry_get_text(fpsEntry), NULL);
 		widthEntry = GTK_ENTRY(lookup_widget("entryAviWidth"));
-		args->dest_width = atof(gtk_entry_get_text(widthEntry));
+		args->dest_width = g_ascii_strtoll(gtk_entry_get_text(widthEntry), NULL, 10);
 		heightEntry = GTK_ENTRY(lookup_widget("entryAviHeight"));
-		args->dest_height = atof(gtk_entry_get_text(heightEntry));
+		args->dest_height = g_ascii_strtoll(gtk_entry_get_text(heightEntry), NULL, 10);
 		checkResize = GTK_TOGGLE_BUTTON(lookup_widget("checkAviResize"));
 		adjQual = GTK_ADJUSTMENT(gtk_builder_get_object(builder,"adjustment3"));
 		args->quality = (int)gtk_adjustment_get_value(adjQual);
@@ -604,7 +604,7 @@ void on_entryAviWidth_changed(GtkEditable *editable, gpointer user_data) {
 
 	if (com.selection.w && com.selection.h) return;
 	ratio = (double) com.seq.ry / (double) com.seq.rx;
-	width = atof(gtk_entry_get_text(GTK_ENTRY(editable)));
+	width = g_ascii_strtod(gtk_entry_get_text(GTK_ENTRY(editable)),NULL);
 	height = ratio * width;
 	c_height = g_strdup_printf("%d", (int)(height));
 
@@ -621,7 +621,7 @@ void on_entryAviHeight_changed(GtkEditable *editable, gpointer user_data) {
 
 	if (com.selection.w && com.selection.h) return;
 	ratio = (double) com.seq.rx / (double) com.seq.ry;
-	height = atof(gtk_entry_get_text(GTK_ENTRY(editable)));
+	height = g_ascii_strtod(gtk_entry_get_text(GTK_ENTRY(editable)), NULL);
 	width = ratio * height;
 	c_width = g_strdup_printf("%d", (int)(width));
 

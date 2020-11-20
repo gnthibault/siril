@@ -971,7 +971,7 @@ int	get_index_and_basename(const char *filename, char **basename, int *index, in
 	digit_idx = i;
 
 	buffer = strdup(filename);
-	buffer[fnlen-strlen(com.pref.ext)] = '\0';		// for atoi()
+	buffer[fnlen - strlen(com.pref.ext)] = '\0';		// for g_ascii_strtoll()
 	do {
 		if (buffer[i] == '0' && first_zero < 0)
 			first_zero = i;
@@ -987,7 +987,7 @@ int	get_index_and_basename(const char *filename, char **basename, int *index, in
 	if (first_zero >= 0)
 		*fixed = digit_idx - i + 1;
 	//else *fixed = 0;
-	*index = atoi(buffer+i);
+	*index = g_ascii_strtoll(buffer+i, NULL, 10);
 	if (*basename == NULL) {	// don't copy it if we already have it
 		*basename = malloc(i * sizeof(char) + 1);
 		strncpy(*basename, buffer, i);

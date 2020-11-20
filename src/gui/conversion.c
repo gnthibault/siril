@@ -210,7 +210,8 @@ static void initialize_convert() {
 	if (output_type == SEQ_REGULAR) {
 		GtkEntry *startEntry = GTK_ENTRY(lookup_widget("startIndiceEntry"));
 		const gchar *index = gtk_entry_get_text(startEntry);
-		args->start = (atoi(index) <= 0 || atoi(index) >= INDEX_MAX) ? 1 : atoi(index);
+		args->start = (g_ascii_strtoll(index, NULL, 10) <= 0
+						|| g_ascii_strtoll(index, NULL, 10) >= INDEX_MAX) ?	1 : g_ascii_strtoll(index, NULL, 10);
 	}
 	else args->start = 0;
 	args->list = files_to_convert;

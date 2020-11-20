@@ -52,14 +52,14 @@ static const gchar* download_url = DOMAIN_NAME"index.php?title=Siril:";
  * @param version version to be tested
  * @return 0 if the version is not patched. The version of the patch is returned otherwise.
  */
-static gint check_for_patch(gchar *version) {
-	gint i = 0;
+static guint check_for_patch(gchar *version) {
+	guint i = 0;
 
 	while (version[i]) {
 		if (g_ascii_isalpha(version[i])) return 0;
 		i++;
 	}
-	return (atoi(version));
+	return (g_ascii_strtoull(version, NULL, 10));
 }
 
 static version_number get_current_version_number() {
@@ -67,9 +67,9 @@ static version_number get_current_version_number() {
 	version_number version;
 
 	fullVersionNumber = g_strsplit_set(PACKAGE_VERSION, ".-", -1);
-	version.major_version = atoi(fullVersionNumber[0]);
-	version.minor_version = atoi(fullVersionNumber[1]);
-	version.micro_version = atoi(fullVersionNumber[2]);
+	version.major_version = g_ascii_strtoull(fullVersionNumber[0], NULL, 10);
+	version.minor_version = g_ascii_strtoull(fullVersionNumber[1], NULL, 10);
+	version.micro_version = g_ascii_strtoull(fullVersionNumber[2], NULL, 10);
 	version.patched_version = (fullVersionNumber[3] == NULL) ? 0 : check_for_patch(fullVersionNumber[3]);
 
 	g_strfreev(fullVersionNumber);
@@ -81,7 +81,7 @@ static version_number get_last_version_number(gchar *buffer) {
 	gchar **token;
 	gchar **fullVersionNumber;
 	gchar *v = NULL;
-	gint i, nargs;
+	guint i, nargs;
 	version_number version = { 0 };
 
 	token = g_strsplit(buffer, "\n", -1);
@@ -102,10 +102,10 @@ static version_number get_last_version_number(gchar *buffer) {
 		g_fprintf(stdout, "last tagged version: %s\n", v);
 		fullVersionNumber = g_strsplit_set(v, ".-", -1);
 
-		version.major_version = atoi(fullVersionNumber[0]);
-		version.minor_version = atoi(fullVersionNumber[1]);
-		version.micro_version = atoi(fullVersionNumber[2]);
-		version.patched_version = (fullVersionNumber[3] == NULL) ? 0 : atoi(fullVersionNumber[3]);
+		version.major_version = g_ascii_strtoull(fullVersionNumber[0], NULL, 10);
+		version.minor_version = g_ascii_strtoull(fullVersionNumber[1], NULL, 10);
+		version.micro_version = g_ascii_strtoull(fullVersionNumber[2], NULL, 10);
+		version.patched_version = (fullVersionNumber[3] == NULL) ? 0 : g_ascii_strtoull(fullVersionNumber[3], NULL, 10);
 
 		g_strfreev(fullVersionNumber);
 		g_strfreev(token);
@@ -148,7 +148,7 @@ static int compare_version(version_number v1, version_number v2) {
 static gchar *parse_changelog(gchar *changelog) {
 	gchar **token;
 	GString *strResult;
-	gint nargs, i;
+	guint nargs, i;
 
 	token = g_strsplit(changelog, "\n", -1);
 	nargs = g_strv_length(token);
@@ -201,10 +201,10 @@ static gchar *check_version(struct _update_data *args, gchar **data) {
 
 	version_number last_version_available = get_last_version_number(args->content);
 	version_number current_version = get_current_version_number();
-	gint x = last_version_available.major_version;
-	gint y = last_version_available.minor_version;
-	gint z = last_version_available.micro_version;
-	gint patch = last_version_available.patched_version;
+	guint x = last_version_available.major_version;
+	guint y = last_version_available.minor_version;
+	guint z = last_version_available.micro_version;
+	guint patch = last_version_available.patched_version;
 	if (compare_version(current_version, last_version_available) < 0) {
 		msg = siril_log_message(_("New version is available. You can download it at "
 						"<a href=\"%s%d.%d.%d\">%s%d.%d.%d</a>\n"),

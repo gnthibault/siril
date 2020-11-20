@@ -539,7 +539,7 @@ static void test_for_master_files(struct preprocessing_data *args) {
 				args->autolevel = gtk_toggle_button_get_active(autobutton);
 				if (!args->autolevel) {
 					GtkEntry *norm_entry = GTK_ENTRY(lookup_widget("entry_flat_norm"));
-					args->normalisation = atof(gtk_entry_get_text(norm_entry));
+					args->normalisation = g_ascii_strtod(gtk_entry_get_text(norm_entry), NULL);
 				}
 			}
 		}

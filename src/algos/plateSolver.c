@@ -241,7 +241,7 @@ static double get_focal() {
 	GtkEntry *focal_entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_focal"));
 	const gchar *value = gtk_entry_get_text(focal_entry);
 
-	return atof(value);
+	return g_ascii_strtod(value, NULL);
 }
 
 /* get pixel in µm */
@@ -249,7 +249,7 @@ static double get_pixel() {
 	GtkEntry *pixel_entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_pixels"));
 	const gchar *value = gtk_entry_get_text(pixel_entry);
 
-	return atof(value);
+	return g_ascii_strtod(value, NULL);
 }
 
 static double get_resolution(double focal, double pixel) {
@@ -295,7 +295,7 @@ static point get_center_of_catalog() {
 
 	ra.hour = gtk_spin_button_get_value_as_int(GtkSpinIPS_RA_h);
 	ra.min = gtk_spin_button_get_value_as_int(GtkSpinIPS_RA_m);
-	ra.sec = atof(gtk_entry_get_text(GtkEntryIPS_RA_s));
+	ra.sec = g_ascii_strtod(gtk_entry_get_text(GtkEntryIPS_RA_s), NULL);
 
 	/* get Dec center */
 	GtkSpinIPS_Dec_deg = GTK_SPIN_BUTTON(lookup_widget("GtkSpinIPS_Dec_deg"));
@@ -305,7 +305,7 @@ static point get_center_of_catalog() {
 
 	dec.degree = gtk_spin_button_get_value_as_int(GtkSpinIPS_Dec_deg);
 	dec.min = gtk_spin_button_get_value_as_int(GtkSpinIPS_Dec_m);
-	dec.sec = atof(gtk_entry_get_text(GtkEntryIPS_Dec_s));
+	dec.sec = g_ascii_strtod(gtk_entry_get_text(GtkEntryIPS_Dec_s), NULL);
 	if (gtk_toggle_button_get_active(GtkCheckButtonIPS_S)) {
 		dec.degree = -dec.degree;
 	}

@@ -449,7 +449,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 		return -1;
 	}
 	buf[i] = '\0';
-	fit->rx = atoi(buf);
+	fit->rx = g_ascii_strtoull(buf, NULL, 10);
 	j = ++i;
 	while (buf[j] >= '0' && buf[j] <= '9')
 		j++;
@@ -462,7 +462,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 		return -1;
 	}
 	buf[j] = '\0';
-	fit->ry = atoi(buf + i);
+	fit->ry = g_ascii_strtoull(buf + i, NULL, 10);
 
 	do {
 		if (fgets(buf, 256, file) == NULL) {
@@ -478,7 +478,7 @@ int import_pnm_to_fits(const char *filename, fits *fit) {
 		return -1;
 	}
 	buf[i] = '\0';
-	max_val = atoi(buf);
+	max_val = g_ascii_strtoll(buf, NULL, 10);
 	if (max_val < UCHAR_MAX) {
 		fclose(file);
 		return -1;

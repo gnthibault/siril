@@ -63,7 +63,7 @@ static gboolean end_update_preview_cb(gpointer p) {
 
 	/* try to read file size */
 	if (args->pixbuf && (bytes_str = gdk_pixbuf_get_option(args->pixbuf, "tEXt::Thumb::Size")) != NULL) {
-		bytes = atoi(bytes_str);
+		bytes = g_ascii_strtoll(bytes_str, NULL, 10);
 		size_str = g_format_size(bytes);
 	} else {
 		if (type == G_FILE_TYPE_REGULAR) {

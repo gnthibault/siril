@@ -22,10 +22,10 @@
 
 
 typedef struct {
-	gint major_version;
-	gint minor_version;
-	gint micro_version;
-	gint patched_version;
+	guint major_version;
+	guint minor_version;
+	guint micro_version;
+	guint patched_version;
 } version_number;
 
 struct _update_data {

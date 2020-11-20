@@ -1490,19 +1490,19 @@ void on_menu_gray_header_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 void on_focal_entry_changed(GtkEditable *editable, gpointer user_data) {
 	const gchar* focal_entry = gtk_entry_get_text(GTK_ENTRY(editable));
-	gfit.focal_length = atof(focal_entry);
+	gfit.focal_length = g_ascii_strtod(focal_entry, NULL);
 	drawPlot();
 }
 
 void on_pitchX_entry_changed(GtkEditable *editable, gpointer user_data) {
 	const gchar* pitchX_entry = gtk_entry_get_text(GTK_ENTRY(editable));
-	gfit.pixel_size_x = (float) atof(pitchX_entry);
+	gfit.pixel_size_x = (float) g_ascii_strtod(pitchX_entry, NULL);
 	drawPlot();
 }
 
 void on_pitchY_entry_changed(GtkEditable *editable, gpointer user_data) {
 	const gchar* pitchY_entry = gtk_entry_get_text(GTK_ENTRY(editable));
-	gfit.pixel_size_y = (float) atof(pitchY_entry);
+	gfit.pixel_size_y = (float) g_ascii_strtod(pitchY_entry, NULL);
 	drawPlot();
 }
 
@@ -1682,7 +1682,7 @@ void on_max_entry_changed(GtkEditable *editable, gpointer user_data) {
 	const gchar *txt = gtk_entry_get_text(GTK_ENTRY(editable));
 	if (g_ascii_isalnum(txt[0])) {
 
-		int value = atoi(txt);
+		guint value = g_ascii_strtoull(txt, NULL, 10);
 
 		if (com.sliders != USER) {
 			com.sliders = USER;
@@ -1740,7 +1740,7 @@ void on_min_entry_changed(GtkEditable *editable, gpointer user_data) {
 	const gchar *txt = gtk_entry_get_text(GTK_ENTRY(editable));
 	if (g_ascii_isalnum(txt[0])) {
 
-		int value = atoi(txt);
+		guint value = g_ascii_strtoull(txt, NULL, 10);
 
 		if (com.sliders != USER) {
 			com.sliders = USER;

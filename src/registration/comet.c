@@ -181,10 +181,10 @@ void on_entry_comet_changed(GtkEditable *editable, gpointer user_data) {
 	GtkEntry *entry2_x = GTK_ENTRY(lookup_widget("entry2_x_comet"));
 	GtkEntry *entry2_y = GTK_ENTRY(lookup_widget("entry2_y_comet"));
 
-	pos_of_image1.x = atof(gtk_entry_get_text(entry1_x));
-	pos_of_image1.y = atof(gtk_entry_get_text(entry1_y));
-	pos_of_image2.x = atof(gtk_entry_get_text(entry2_x));
-	pos_of_image2.y = atof(gtk_entry_get_text(entry2_y));
+	pos_of_image1.x = g_ascii_strtod(gtk_entry_get_text(entry1_x), NULL);
+	pos_of_image1.y = g_ascii_strtod(gtk_entry_get_text(entry1_y), NULL);
+	pos_of_image2.x = g_ascii_strtod(gtk_entry_get_text(entry2_x), NULL);
+	pos_of_image2.y = g_ascii_strtod(gtk_entry_get_text(entry2_y), NULL);
 
 	update_velocity();
 }
