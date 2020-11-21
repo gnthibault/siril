@@ -29,7 +29,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include <fcntl.h>
-#include <glib.h>
 
 #ifdef _WIN32
 #include <windows.h>
@@ -354,7 +353,7 @@ guint64 get_available_memory() {
 				(gint64)vm_stats.inactive_count +
 				(gint64)vm_stats.wire_count) * (gint64) page_size;
 
-		mem = guint64 (unused_memory);
+		mem = (guint64) (unused_memory);
 	}
 	return mem;
 #elif defined(BSD) /* BSD (DragonFly BSD, FreeBSD, OpenBSD, NetBSD). ----------- */
