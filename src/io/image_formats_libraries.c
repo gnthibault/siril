@@ -359,7 +359,7 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 	TIFFGetFieldDefaulted(tif, TIFFTAG_PHOTOMETRIC, &color);
 
 	// Retrieve the Date/Time as in the TIFF TAG
-	gchar *date_time;
+	gchar *date_time = NULL;
 	int year, month, day, h, m, s;
 
 	if (TIFFGetField(tif, TIFFTAG_DATETIME, &date_time)) {
