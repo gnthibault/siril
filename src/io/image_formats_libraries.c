@@ -403,7 +403,7 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 	if (date_time) {
 		GTimeZone *tz = g_time_zone_new_utc();
 		fit->date_obs = g_date_time_new(tz, year, month, day, h, m, s);
-		g_object_unref(tz);
+		g_time_zone_unref(tz);
 	}
 	fit->rx = width;
 	fit->ry = height;
