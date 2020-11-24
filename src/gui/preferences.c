@@ -86,7 +86,7 @@ static preferences pref_init = {
 		.ext = NULL,
 		.swap_dir = NULL,
 		.script_path = NULL,
-		{
+		{ // raw_set
 				.mul[0] = 1.0,
 				.mul[1] = 1.0,
 				.mul[2] = 1.0,
@@ -99,7 +99,7 @@ static preferences pref_init = {
 				.gamm[0] = 1.0,
 				.gamm[1] = 1.0,
 		},
-		{
+		{ // debayer_config
 				.open_debayer = FALSE,
 				.use_bayer_header = TRUE,
 				.bayer_pattern = BAYER_FILTER_RGGB,
@@ -108,14 +108,14 @@ static preferences pref_init = {
 				.xbayeroff = 0,
 				.ybayeroff = 0,
 		},
-		{
+		{ // phot_config
 				.gain = 2.3,
 				.inner = 20.0,
 				.outer = 30.0,
 				.minval = 0,
 				.maxval = 60000,
 		},
-		{
+		{ // stack_config
 				.method = 0,
 				.normalisation_method = ADDITIVE_SCALING,
 				.rej_method = WINSORIZED,
@@ -126,7 +126,7 @@ static preferences pref_init = {
 				.memory_ratio = 0.9,
 				.memory_amount = 10,
 		},
-		{
+		{ // comp_config
 				.fits_enabled = FALSE,
 				.fits_method = 0,
 				.fits_quantization = 16.0,
