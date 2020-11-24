@@ -678,6 +678,8 @@ static void free_preferences(preferences *pref) {
 
 void initialize_default_preferences() {
 	reset_preferences();
+	com.pref.ext = g_strdup(".fit");
+	com.pref.swap_dir = g_strdup(g_get_tmp_dir());
 }
 
 void on_apply_settings_button_clicked(GtkButton *button, gpointer user_data) {

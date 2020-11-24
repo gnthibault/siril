@@ -222,8 +222,6 @@ static void siril_app_activate(GApplication *application) {
 	/* initialize sequence-related stuff */
 	initialize_sequence(&com.seq, TRUE);
 
-	com.wd = g_strdup(siril_get_startup_dir());
-
 	siril_log_color_message(_("Welcome to %s v%s\n"), "bold", PACKAGE, VERSION);
 
 	/* initialize converters (utilities used for different image types importing) */

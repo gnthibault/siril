@@ -563,6 +563,7 @@ int checkinitfile() {
 	if (readinitfile()) {
 		/* init file does not exist, so we create it */
 		initialize_default_preferences();
+		com.wd = g_strdup(siril_get_startup_dir());
 		return writeinitfile();
 	}
 	return 0;
