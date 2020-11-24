@@ -200,7 +200,7 @@ static guint64 update_used_RAM_memory() {
 gboolean update_displayed_memory() {
 	set_GUI_MEM(update_used_RAM_memory(), "labelmem");
 	set_GUI_DiskSpace(find_space(com.wd), "labelFreeSpace");
-	set_GUI_DiskSpace(find_space(com.pref.swap_dir), "free_mem_swap");
+	set_GUI_DiskSpace(find_space(get_swap_dir()), "free_mem_swap");
 	return TRUE;
 }
 

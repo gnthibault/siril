@@ -7,6 +7,7 @@
 GtkWidget* lookup_widget (const gchar *widget_name);
 
 void initialize_all_GUI(gchar *files);
+void siril_set_theme(int active);
 void load_prefered_theme();
 void set_cutoff_sliders_max_values();		// was set_upper_minmax
 void set_cutoff_sliders_values();		// was set_ranges

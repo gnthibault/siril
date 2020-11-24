@@ -40,11 +40,11 @@
 #include "registration/registration.h"
 #include "stacking/stacking.h"
 #include "compositing/align_rgb.h"
+#include "preferences.h"
 #include "image_display.h"
 #include "image_interactions.h"
 #include "callbacks.h"
 #include "plot.h"
-#include "preferences.h"
 #include "message_dialog.h"
 #include "PSF_list.h"
 #include "histogram.h"
@@ -154,14 +154,16 @@ static void update_icons_to_theme(gboolean is_dark) {
 	}
 }
 
+void siril_set_theme(int active) {
+	GtkSettings *settings = gtk_settings_get_default();
+	g_object_set(settings, "gtk-application-prefer-dark-theme", active == 0, NULL);
+	update_icons_to_theme(active == 0);
+}
+
 void on_combo_theme_changed(GtkComboBox *box, gpointer user_data) {
-	GtkSettings *settings;
+	int active = gtk_combo_box_get_active(box);
 
-	com.pref.combo_theme = gtk_combo_box_get_active(box);
-
-	settings = gtk_settings_get_default();
-	g_object_set(settings, "gtk-application-prefer-dark-theme", com.pref.combo_theme == 0, NULL);
-	update_icons_to_theme(com.pref.combo_theme == 0);
+	siril_set_theme(active);
 }
 
 static void initialize_theme_GUI() {
@@ -878,11 +880,6 @@ void initialize_FITS_name_entries() {
 	final_stack = GTK_ENTRY(lookup_widget("entryresultfile"));
 
 	if (com.pref.prepro_bias_lib && (g_file_test(com.pref.prepro_bias_lib, G_FILE_TEST_EXISTS))) {
-		GtkFileChooser *button = GTK_FILE_CHOOSER(lookup_widget("filechooser_bias_lib"));
-		GtkToggleButton *toggle = GTK_TOGGLE_BUTTON(lookup_widget("check_button_pref_bias"));
-
-		gtk_file_chooser_set_filename(button, com.pref.prepro_bias_lib);
-		gtk_toggle_button_set_active(toggle, com.pref.use_bias_lib);
 		if (com.pref.use_bias_lib) {
 			str[0] = g_strdup_printf("%s", com.pref.prepro_bias_lib);
 		} else {
@@ -893,11 +890,6 @@ void initialize_FITS_name_entries() {
 	}
 
 	if (com.pref.prepro_dark_lib && (g_file_test(com.pref.prepro_dark_lib, G_FILE_TEST_EXISTS))) {
-		GtkFileChooser *button = GTK_FILE_CHOOSER(lookup_widget("filechooser_dark_lib"));
-		GtkToggleButton *toggle = GTK_TOGGLE_BUTTON(lookup_widget("check_button_pref_dark"));
-
-		gtk_file_chooser_set_filename(button, com.pref.prepro_dark_lib);
-		gtk_toggle_button_set_active(toggle, com.pref.use_dark_lib);
 		if (com.pref.use_dark_lib) {
 			str[1] = g_strdup_printf("%s", com.pref.prepro_dark_lib);
 		} else {
@@ -908,11 +900,6 @@ void initialize_FITS_name_entries() {
 	}
 
 	if (com.pref.prepro_flat_lib && (g_file_test(com.pref.prepro_flat_lib, G_FILE_TEST_EXISTS))) {
-		GtkFileChooser *button = GTK_FILE_CHOOSER(lookup_widget("filechooser_flat_lib"));
-		GtkToggleButton *toggle = GTK_TOGGLE_BUTTON(lookup_widget("check_button_pref_flat"));
-
-		gtk_file_chooser_set_filename(button, com.pref.prepro_flat_lib);
-		gtk_toggle_button_set_active(toggle, com.pref.use_flat_lib);
 		if (com.pref.use_flat_lib) {
 			str[2] = g_strdup_printf("%s", com.pref.prepro_flat_lib);
 		} else {
@@ -1102,9 +1089,9 @@ void set_GUI_misc() {
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskUpdateStartup"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.check_update);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("miscAskScript"));
-	gtk_toggle_button_set_active(ToggleButton, com.pref.save.script);
+	gtk_toggle_button_set_active(ToggleButton, com.pref.save.warn_script);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("script_check_version"));
-	gtk_toggle_button_set_active(ToggleButton, com.pref.check_script_version);
+	gtk_toggle_button_set_active(ToggleButton, com.pref.script_check_requires);
 	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("show_preview_button"));
 	gtk_toggle_button_set_active(ToggleButton, com.pref.show_thumbnails);
 	GtkComboBox *thumb_box = GTK_COMBO_BOX(lookup_widget("thumbnails_box_size"));
@@ -1272,7 +1259,7 @@ void initialize_all_GUI(gchar *supported_files) {
 	init_mouse();
 
 	/* populate language combo */
-	siril_language_fill_combo();
+	siril_language_fill_combo(com.pref.combo_lang);
 
 	/* Keybord Shortcuts */
 	load_accels();
@@ -1290,7 +1277,7 @@ void initialize_all_GUI(gchar *supported_files) {
 
 	/* initialize menu gui */
 	update_MenuItem();
-	initialize_script_menu(TRUE);
+	initialize_script_menu();
 
 	/* initialize command completion */
 	init_completion_command();
@@ -1304,19 +1291,17 @@ void initialize_all_GUI(gchar *supported_files) {
 	/* initialize stacking methods */
 	initialize_stacking_methods();
 
+	/* set all preferences button in the dialog */
+	set_preferences_dialog_from_global();
+
+	initialize_FITS_name_entries();
+
+	initialize_log_tags();
+
 	/* register some callbacks */
 	register_selection_update_callback(update_export_crop_label);
 	register_selection_update_callback(update_display_selection);
 	register_selection_update_callback(update_display_fwhm);
-
-	/* initialization of some paths */
-	initialize_path_directory();
-
-	initialize_FITS_name_entries();
-
-	init_xtrans_ui_pixels();
-
-	initialize_log_tags();
 
 	/* support for converting files by dragging onto the GtkTreeView */
 	gtk_drag_dest_set(lookup_widget("treeview_convert"),
@@ -1324,14 +1309,11 @@ void initialize_all_GUI(gchar *supported_files) {
 			GDK_ACTION_COPY);
 
 	set_GUI_CWD();
-	set_GUI_misc();
 	siril_log_message(_("Default FITS extension is set to %s\n"), com.pref.ext);
-	set_GUI_compression();
-	set_GUI_photometry();
+
 	init_peaker_GUI();
 #ifdef HAVE_LIBRAW
 	set_libraw_settings_menu_available(TRUE);	// enable libraw settings
-	set_GUI_LIBRAW();
 #else
 	set_libraw_settings_menu_available(FALSE);	// disable libraw settings
 #endif

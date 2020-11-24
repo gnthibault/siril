@@ -140,18 +140,21 @@ static gint locale_compare(gconstpointer *a, gconstpointer *b) {
 	return result;
 }
 
-void siril_language_fill_combo() {
+void siril_language_fill_combo(const gchar *language) {
 	GtkComboBoxText *lang_combo = GTK_COMBO_BOX_TEXT(lookup_widget("combo_language"));
 	GList *list = g_hash_table_get_keys(full_lang_list);
 	gboolean lang_changed = FALSE;
 	int i = 1;
+
+	gtk_combo_box_text_remove_all(lang_combo);
+	gtk_combo_box_text_append(lang_combo, 0, _("System Language"));
 
 	list = g_list_sort(list, (GCompareFunc) locale_compare);
 
 	for (GList *l = list; l; l = l->next) {
 		gtk_combo_box_text_append_text(lang_combo, l->data);
 		gchar *locale = extract_locale_from_string(l->data);
-		if (!g_strcmp0(com.pref.combo_lang, locale)) {
+		if (!g_strcmp0(language, locale)) {
 			gtk_combo_box_set_active(GTK_COMBO_BOX(lang_combo), i);
 			lang_changed = TRUE;
 		}
@@ -178,15 +181,13 @@ void language_init(const gchar *language) {
 	setlocale(LC_ALL, "");
 }
 
-void update_language() {
+gchar *get_interface_language() {
 	GtkComboBoxText *lang_combo = GTK_COMBO_BOX_TEXT(lookup_widget("combo_language"));
 
-	g_free(com.pref.combo_lang);
 	if (gtk_combo_box_get_active(GTK_COMBO_BOX(lang_combo)) == 0) {
-		com.pref.combo_lang = g_strdup("");
+		return g_strdup("");
 	} else {
 		gchar *str = gtk_combo_box_text_get_active_text(lang_combo);
-		com.pref.combo_lang = extract_locale_from_string(str);
+		return extract_locale_from_string(str);
 	}
-	writeinitfile();
 }

@@ -28,8 +28,8 @@ typedef struct {
 
 
 void siril_language_parser_init();
-void siril_language_fill_combo();
+void siril_language_fill_combo(const gchar *language);
 void language_init(const gchar *language);
-void update_language();
+gchar *get_interface_language();
 
 #endif /* SRC_CORE_SIRIL_LANGUAGE_H_ */

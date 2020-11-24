@@ -64,34 +64,6 @@ static GSList *initialize_script_paths(){
 	return list;
 }
 
-static GSList *get_list_from_textview() {
-	GSList *list = NULL;
-	static GtkTextBuffer *tbuf = NULL;
-	static GtkTextView *text = NULL;
-	GtkTextIter start, end;
-	gchar *txt;
-	gint i = 0;
-
-	if (!tbuf) {
-		text = GTK_TEXT_VIEW(lookup_widget("GtkTxtScriptPath"));
-		tbuf = gtk_text_view_get_buffer(text);
-	}
-	gtk_text_buffer_get_bounds(tbuf, &start, &end);
-	txt = gtk_text_buffer_get_text(tbuf, &start, &end, TRUE);
-	if (txt) {
-		gchar **token = g_strsplit(txt, "\n", -1);
-		while (token[i]) {
-			if (*token[i] != '\0')
-				list = g_slist_prepend(list, g_strdup(token[i]));
-			i++;
-		}
-		list = g_slist_reverse(list);
-		g_strfreev(token);
-	}
-
-	return list;
-}
-
 static void add_path_to_gtkText(gchar *path) {
 	static GtkTextBuffer *tbuf = NULL;
 	static GtkTextView *text = NULL;
@@ -113,11 +85,13 @@ static void add_path_to_gtkText(gchar *path) {
 	gtk_text_view_scroll_to_mark(text, insert_mark, 0.0, TRUE, 0.0, 1.0);
 }
 
-static void fill_gtkText(GSList *list) {
-	while (list) {
-		add_path_to_gtkText((gchar *) list->data);
-		list = list->next;
-	}
+static void clear_gtk_list() {
+	GtkTextView *text = GTK_TEXT_VIEW(lookup_widget("GtkTxtScriptPath"));
+	GtkTextBuffer *tbuf = gtk_text_view_get_buffer(text);
+	GtkTextIter start_iter, end_iter;
+	gtk_text_buffer_get_start_iter(tbuf, &start_iter);
+	gtk_text_buffer_get_end_iter(tbuf, &end_iter);
+	gtk_text_buffer_delete(tbuf, &start_iter, &end_iter);
 }
 
 static GSList *search_script(const char *path) {
@@ -153,11 +127,15 @@ static void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 		return;
 	}
 
-	if (!com.pref.save.script) {
+	if (com.pref.save.warn_script) {
+		gboolean dont_show_again;
 		gboolean confirm = siril_confirm_dialog_and_remember(
-				_("Please read me before using scripts"), CONFIRM_RUN_SCRIPTS, &com.pref.save.script);
-		/* update setting buttons */
-		set_GUI_misc();
+				_("Please read me before using scripts"), CONFIRM_RUN_SCRIPTS, &dont_show_again);
+		com.pref.save.warn_script = !dont_show_again;
+		/* We do not use set_GUI_misc because some button state can be in an unsaved state if the
+		 * preference dialog is opened
+		 */
+		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("miscAskScript")), com.pref.save.warn_script);
 		/* update config file */
 		writeinitfile();
 		if (!confirm) {
@@ -202,7 +180,7 @@ static void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 	g_object_unref(file);
 }
 
-int initialize_script_menu(gboolean UpdateScriptPath) {
+int initialize_script_menu() {
 	static GtkWidget *menuscript = NULL;
 	GSList *list, *script, *s;
 	GtkWidget *menu;
@@ -211,17 +189,8 @@ int initialize_script_menu(gboolean UpdateScriptPath) {
 	if (!menuscript) {
 		menuscript = lookup_widget("header_scripts_button");
 	}
-
-	if (!com.pref.script_path) {
-		script = initialize_script_paths();
-		com.pref.script_path = script;
-	} else {
-		script = com.pref.script_path;
-	}
 	
-	if (UpdateScriptPath) {
-		fill_gtkText(script);
-	}
+	script = set_list_to_preferences_dialog(com.pref.script_path);
 
 	menu = gtk_menu_new();
 	gtk_widget_hide(menuscript);
@@ -256,22 +225,23 @@ int initialize_script_menu(gboolean UpdateScriptPath) {
 			g_slist_free_full(list, g_free);
 		}
 	}
+
 	writeinitfile();
 
 	return 0;
 }
 
-int refresh_scripts(gchar **error) {
+int refresh_scripts(gboolean update_list, gchar **error) {
 	gchar *err = NULL;
 	int retval;
-	GSList *list = get_list_from_textview();
+	GSList *list = get_list_from_preferences_dialog();
 	if (list == NULL) {
 		err = siril_log_color_message(_("Cannot refresh the scripts if the list is empty.\n"), "red");
 		retval = 1;
 	} else {
 		g_slist_free_full(com.pref.script_path, g_free);
 		com.pref.script_path = list;
-		retval = initialize_script_menu(FALSE);
+		retval = initialize_script_menu();
 	}
 	if (error) {
 		*error = err;
@@ -279,13 +249,44 @@ int refresh_scripts(gchar **error) {
 	return retval;
 }
 
-void fill_script_paths_list() {
-	g_slist_free_full(com.pref.script_path, g_free);
-	GSList *list = get_list_from_textview();
-	com.pref.script_path = list;
-	writeinitfile();
+GSList *get_list_from_preferences_dialog() {
+	GSList *list = NULL;
+	static GtkTextBuffer *tbuf = NULL;
+	static GtkTextView *text = NULL;
+	GtkTextIter start, end;
+	gchar *txt;
+	gint i = 0;
+
+	if (!tbuf) {
+		text = GTK_TEXT_VIEW(lookup_widget("GtkTxtScriptPath"));
+		tbuf = gtk_text_view_get_buffer(text);
+	}
+	gtk_text_buffer_get_bounds(tbuf, &start, &end);
+	txt = gtk_text_buffer_get_text(tbuf, &start, &end, TRUE);
+	if (txt) {
+		gchar **token = g_strsplit(txt, "\n", -1);
+		while (token[i]) {
+			if (*token[i] != '\0')
+				list = g_slist_prepend(list, g_strdup(token[i]));
+			i++;
+		}
+		list = g_slist_reverse(list);
+		g_strfreev(token);
+	}
+
+	return list;
 }
 
+GSList *set_list_to_preferences_dialog(GSList *list) {
+	clear_gtk_list();
+	if (list == NULL) {
+		list = initialize_script_paths();
+	}
+	for (GSList *l = list; l; l = l->next) {
+		add_path_to_gtkText((gchar *) l->data);
+	}
+	return list;
+}
 
 /* Get Scripts menu */
 

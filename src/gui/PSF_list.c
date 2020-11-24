@@ -422,7 +422,7 @@ void fill_stars_list(fits *fit, fitted_PSF **stars) {
 	com.selected_star = -1;
 }
 
-void refresh_stars_list(fitted_PSF **star){
+void refresh_star_list(fitted_PSF **star){
 	get_stars_list_store();
 	gtk_list_store_clear(liststore_stars);
 	fill_stars_list(&gfit, com.stars);
@@ -521,7 +521,7 @@ void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data)
 	com.stars = peaker(&gfit, layer, &com.starfinder_conf, &nbstars, NULL, TRUE);
 	siril_log_message(_("Found %d stars in image, channel #%d\n"), nbstars, layer);
 	if (com.stars)
-		refresh_stars_list(com.stars);
+		refresh_star_list(com.stars);
 	set_cursor_waiting(FALSE);
 }
 

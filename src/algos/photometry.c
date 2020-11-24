@@ -355,5 +355,5 @@ void initialize_photometric_param() {
 	com.pref.phot_set.outer = 30;
 	com.pref.phot_set.gain = 2.3;
 	com.pref.phot_set.minval = 0;
-	com.pref.phot_set.maxval = 65535;
+	com.pref.phot_set.maxval = 60000;
 }

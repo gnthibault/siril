@@ -50,6 +50,7 @@
 #include "core/signals.h"
 #include "core/siril_app_dirs.h"
 #include "core/OS_utils.h"
+#include "algos/star_finder.h"
 #include "io/sequence.h"
 #include "io/conversion.h"
 #include "io/single_image.h"
@@ -148,6 +149,13 @@ static void siril_app_activate(GApplication *application) {
 	}
 
 	global_initialization();
+
+	/* initialize peaker variables */
+	init_peaker_default();
+	/* initialize sequence-related stuff */
+	initialize_sequence(&com.seq, TRUE);
+
+	com.wd = g_strdup(siril_get_startup_dir());
 
 	siril_log_color_message(_("Welcome to %s v%s\n"), "bold", PACKAGE, VERSION);
 

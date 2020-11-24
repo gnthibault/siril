@@ -17423,6 +17423,35 @@ If the selection is empty, the whole image will be used as reference.</property>
             <property name="can_focus">False</property>
             <property name="layout_style">end</property>
             <child>
+              <object class="GtkButton" id="reset_settings_button">
+                <property name="label" translatable="yes">Reset</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <signal name="clicked" handler="on_reset_settings_button_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="cancel_settings_button">
+                <property name="label">gtk-cancel</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="use_stock">True</property>
+                <signal name="clicked" handler="on_cancel_settings_button_clicked" swapped="no"/>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkButton" id="apply_settings_button">
                 <property name="label">gtk-apply</property>
                 <property name="visible">True</property>
@@ -17437,7 +17466,7 @@ If the selection is empty, the whole image will be used as reference.</property>
               <packing>
                 <property name="expand">False</property>
                 <property name="fill">True</property>
-                <property name="position">0</property>
+                <property name="position">2</property>
               </packing>
             </child>
           </object>
@@ -17472,6 +17501,260 @@ If the selection is empty, the whole image will be used as reference.</property>
                 <property name="can_focus">False</property>
                 <property name="transition_type">slide-up-down</property>
                 <property name="interpolate_size">True</property>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">10</property>
+                    <child>
+                      <object class="GtkLabel" id="label26">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">FITS/SER debayer</property>
+                        <property name="xalign">0</property>
+                        <style>
+                          <class name="title"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkFrame" id="framedebayer">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label_xalign">0</property>
+                        <property name="shadow_type">none</property>
+                        <child>
+                          <object class="GtkAlignment" id="alignment15">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="left_padding">12</property>
+                            <child>
+                              <object class="GtkGrid" id="grid22">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="valign">start</property>
+                                <property name="row_spacing">10</property>
+                                <property name="column_homogeneous">True</property>
+                                <child>
+                                  <object class="GtkCheckButton" id="checkbutton_SER_use_header">
+                                    <property name="label" translatable="yes">Bayer information from file's header if available</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="tooltip_text" translatable="yes">If this box is checked, Siril will automatically apply the Bayer pattern found in the file's header as well as X and Y Bayer offsets. If the result looks wrong uncheck this box and choose manually your pattern in the Debayer box below.</property>
+                                    <property name="halign">start</property>
+                                    <property name="draw_indicator">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">0</property>
+                                    <property name="width">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="checkbutton_debayer_compatibility">
+                                    <property name="label" translatable="yes">Debayer FITS files in top-down if no explicit keywords found</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="tooltip_markup" translatable="yes">Siril read FITS data in the bottom-up orientation but a lot of capture software do not meet this specification. If data are stored in top-down orientation (as they usual do), you need to check this box in order to debayer the file in the right orientation.</property>
+                                    <property name="halign">start</property>
+                                    <property name="draw_indicator">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">6</property>
+                                    <property name="width">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="label_warning_debayer">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Due to algorithm constraints more complex demosaicing algorithms cannot be used in the rejection stacking. Our tests also showed that there is no gain in quaity when many images are used, while processing time increases 20-fold.</property>
+                                    <property name="valign">center</property>
+                                    <property name="label" translatable="yes">Warning: For SER on-the-fly demosaicing, the RCD algorithm is always used.</property>
+                                    <property name="wrap">True</property>
+                                    <property name="max_width_chars">40</property>
+                                    <attributes>
+                                      <attribute name="weight" value="bold"/>
+                                      <attribute name="foreground" value="#ffff00000000"/>
+                                    </attributes>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">3</property>
+                                    <property name="width">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="label91">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Select your camera's Bayer pattern.</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Bayer/mosaic pattern: </property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBoxText" id="comboBayer_pattern">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Select your camera's Bayer pattern.</property>
+                                    <property name="hexpand">True</property>
+                                    <property name="active">0</property>
+                                    <items>
+                                      <item>RGGB</item>
+                                      <item>BGGR</item>
+                                      <item>GBRG</item>
+                                      <item>GRBG</item>
+                                    </items>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="label95">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Select an interpolation method to perform demosaicing.</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Debayer interpolation: </property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBoxText" id="comboBayer_inter">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_markup" translatable="yes">Select an interpolation method to perform demosaicing.
+
+* &lt;b&gt;Fast Debayer&lt;/b&gt; is the fastest algorithm available in Siril. However, other algorithms listed below are often quite better.
+* &lt;b&gt;VNG4&lt;/b&gt;, Threshold-Based Variable Number of Gradients, works on a 5x5 pixel neighborhood around each source pixel. It is a very good algorithm for flat areas of the image (like sky background) but produces artifacts in high contrast areas (like stars).
+* &lt;b&gt;AHD&lt;/b&gt;, Adaptive Homogeneity-Directed, is another well known debayer algorithm. However it usually shows artefacts in the background and bad star shapes.
+* &lt;b&gt;AMaZE&lt;/b&gt;, Aliasing Minimization and Zipper Elimination, is an algorithm that gives good results specially on low noise captures.
+* &lt;b&gt;DCB&lt;/b&gt;, Double Corrected Bilinear, a more recent algorithm, can show some artifacts in the background like AHD.
+* &lt;b&gt;HPHD&lt;/b&gt;, Heterogeneity-Projection Hard-Decision, is an old algorithm giving some nice results but that is quite slow.
+* &lt;b&gt;IGV&lt;/b&gt; and &lt;b&gt;LMMSE&lt;/b&gt; are very good when working with very noisy images. However, IGV tends to lose some chromatic information, while LMMSE is one of the most computational expensive demosaicers and needs a lot of memory.
+* &lt;b&gt;RCD&lt;/b&gt;, Ratio Corrected Demosaicing, intends to smooth the colour correction errors that are common in many other interpolation methods. It does an excellent job for round edges, for example stars, and is therefore the default algorithm used in Siril.
+
+For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt; is used regardless of the method selected in the preferences.</property>
+                                    <property name="hexpand">True</property>
+                                    <property name="active">7</property>
+                                    <items>
+                                      <item translatable="yes">Fast Debayer</item>
+                                      <item translatable="yes">VNG4</item>
+                                      <item translatable="yes">AHD</item>
+                                      <item translatable="yes">AMaZE</item>
+                                      <item translatable="yes">DCB</item>
+                                      <item translatable="yes">HPHD</item>
+                                      <item translatable="yes">IGV</item>
+                                      <item translatable="yes">LMMSE</item>
+                                      <item translatable="yes">RCD</item>
+                                    </items>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="xbayeroff_label">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">X offset:</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">4</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel" id="ybayeroff_label">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Y offset:</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">5</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkSpinButton" id="xbayeroff_spin">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip_text" translatable="yes">X offset of Bayer array.</property>
+                                    <property name="halign">start</property>
+                                    <property name="text" translatable="yes">0</property>
+                                    <property name="adjustment">xbayeroff_adj</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">4</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkSpinButton" id="ybayeroff_spin">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip_text" translatable="yes">Y offset of Bayer array.</property>
+                                    <property name="halign">start</property>
+                                    <property name="text" translatable="yes">0</property>
+                                    <property name="adjustment">ybayeroff_adj</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">5</property>
+                                  </packing>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel" id="label15">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_top">10</property>
+                            <property name="margin_bottom">10</property>
+                            <property name="label" translatable="yes">Debayer</property>
+                            <property name="single_line_mode">True</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                            </attributes>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="name">preferences_p1</property>
+                    <property name="title" translatable="yes">FITS/SER debayer</property>
+                  </packing>
+                </child>
                 <child>
                   <object class="GtkBox">
                     <property name="visible">True</property>
@@ -18000,262 +18283,8 @@ If the selection is empty, the whole image will be used as reference.</property>
                     </child>
                   </object>
                   <packing>
-                    <property name="name">preferences_p1</property>
-                    <property name="title" translatable="yes">DSLR RAW debayer</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkBox">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="orientation">vertical</property>
-                    <property name="spacing">10</property>
-                    <child>
-                      <object class="GtkLabel" id="label26">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">FITS/SER debayer</property>
-                        <property name="xalign">0</property>
-                        <style>
-                          <class name="title"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkFrame" id="framedebayer">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label_xalign">0</property>
-                        <property name="shadow_type">none</property>
-                        <child>
-                          <object class="GtkAlignment" id="alignment15">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="left_padding">12</property>
-                            <child>
-                              <object class="GtkGrid" id="grid22">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="valign">start</property>
-                                <property name="row_spacing">10</property>
-                                <property name="column_homogeneous">True</property>
-                                <child>
-                                  <object class="GtkCheckButton" id="checkbutton_SER_use_header">
-                                    <property name="label" translatable="yes">Bayer information from file's header if available</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_text" translatable="yes">If this box is checked, Siril will automatically apply the Bayer pattern found in the file's header as well as X and Y Bayer offsets. If the result looks wrong uncheck this box and choose manually your pattern in the Debayer box below.</property>
-                                    <property name="halign">start</property>
-                                    <property name="draw_indicator">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">0</property>
-                                    <property name="width">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkCheckButton" id="checkbutton_debayer_compatibility">
-                                    <property name="label" translatable="yes">Debayer FITS files in top-down if no explicit keywords found</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="tooltip_markup" translatable="yes">Siril read FITS data in the bottom-up orientation but a lot of capture software do not meet this specification. If data are stored in top-down orientation (as they usual do), you need to check this box in order to debayer the file in the right orientation.</property>
-                                    <property name="halign">start</property>
-                                    <property name="draw_indicator">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">6</property>
-                                    <property name="width">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_warning_debayer">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Due to algorithm constraints more complex demosaicing algorithms cannot be used in the rejection stacking. Our tests also showed that there is no gain in quaity when many images are used, while processing time increases 20-fold.</property>
-                                    <property name="valign">center</property>
-                                    <property name="label" translatable="yes">Warning: For SER on-the-fly demosaicing, the RCD algorithm is always used.</property>
-                                    <property name="wrap">True</property>
-                                    <property name="max_width_chars">40</property>
-                                    <attributes>
-                                      <attribute name="weight" value="bold"/>
-                                      <attribute name="foreground" value="#ffff00000000"/>
-                                    </attributes>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">3</property>
-                                    <property name="width">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label91">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Select your camera's Bayer pattern.</property>
-                                    <property name="halign">start</property>
-                                    <property name="label" translatable="yes">Bayer/mosaic pattern: </property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkComboBoxText" id="comboBayer_pattern">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Select your camera's Bayer pattern.</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="active">0</property>
-                                    <items>
-                                      <item>RGGB</item>
-                                      <item>BGGR</item>
-                                      <item>GBRG</item>
-                                      <item>GRBG</item>
-                                    </items>
-                                    <signal name="changed" handler="on_comboBayer_pattern_changed" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label95">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Select an interpolation method to perform demosaicing.</property>
-                                    <property name="halign">start</property>
-                                    <property name="label" translatable="yes">Debayer interpolation: </property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkComboBoxText" id="comboBayer_inter">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_markup" translatable="yes">Select an interpolation method to perform demosaicing.
-
-* &lt;b&gt;Fast Debayer&lt;/b&gt; is the fastest algorithm available in Siril. However, other algorithms listed below are often quite better.
-* &lt;b&gt;VNG4&lt;/b&gt;, Threshold-Based Variable Number of Gradients, works on a 5x5 pixel neighborhood around each source pixel. It is a very good algorithm for flat areas of the image (like sky background) but produces artifacts in high contrast areas (like stars).
-* &lt;b&gt;AHD&lt;/b&gt;, Adaptive Homogeneity-Directed, is another well known debayer algorithm. However it usually shows artefacts in the background and bad star shapes.
-* &lt;b&gt;AMaZE&lt;/b&gt;, Aliasing Minimization and Zipper Elimination, is an algorithm that gives good results specially on low noise captures.
-* &lt;b&gt;DCB&lt;/b&gt;, Double Corrected Bilinear, a more recent algorithm, can show some artifacts in the background like AHD.
-* &lt;b&gt;HPHD&lt;/b&gt;, Heterogeneity-Projection Hard-Decision, is an old algorithm giving some nice results but that is quite slow.
-* &lt;b&gt;IGV&lt;/b&gt; and &lt;b&gt;LMMSE&lt;/b&gt; are very good when working with very noisy images. However, IGV tends to lose some chromatic information, while LMMSE is one of the most computational expensive demosaicers and needs a lot of memory.
-* &lt;b&gt;RCD&lt;/b&gt;, Ratio Corrected Demosaicing, intends to smooth the colour correction errors that are common in many other interpolation methods. It does an excellent job for round edges, for example stars, and is therefore the default algorithm used in Siril.
-
-For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt; is used regardless of the method selected in the preferences.</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="active">7</property>
-                                    <items>
-                                      <item translatable="yes">Fast Debayer</item>
-                                      <item translatable="yes">VNG4</item>
-                                      <item translatable="yes">AHD</item>
-                                      <item translatable="yes">AMaZE</item>
-                                      <item translatable="yes">DCB</item>
-                                      <item translatable="yes">HPHD</item>
-                                      <item translatable="yes">IGV</item>
-                                      <item translatable="yes">LMMSE</item>
-                                      <item translatable="yes">RCD</item>
-                                    </items>
-                                    <signal name="changed" handler="on_comboBayer_inter_changed" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="xbayeroff_label">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="label" translatable="yes">X offset:</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">4</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="ybayeroff_label">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="label" translatable="yes">Y offset:</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">5</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkSpinButton" id="xbayeroff_spin">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="halign">start</property>
-                                    <property name="text" translatable="yes">0</property>
-                                    <property name="adjustment">xbayeroff_adj</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">4</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkSpinButton" id="ybayeroff_spin">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="halign">start</property>
-                                    <property name="text" translatable="yes">0</property>
-                                    <property name="adjustment">ybayeroff_adj</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">5</property>
-                                  </packing>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child type="label">
-                          <object class="GtkLabel" id="label15">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_top">10</property>
-                            <property name="margin_bottom">10</property>
-                            <property name="label" translatable="yes">Debayer</property>
-                            <property name="single_line_mode">True</property>
-                            <attributes>
-                              <attribute name="weight" value="bold"/>
-                            </attributes>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                  </object>
-                  <packing>
                     <property name="name">preferences_p2</property>
-                    <property name="title" translatable="yes">FITS/SER debayer</property>
+                    <property name="title" translatable="yes">DSLR RAW debayer</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
@@ -18307,7 +18336,6 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                     <property name="filter">filefilter_fits</property>
                                     <property name="title" translatable="yes">master-bias</property>
                                     <property name="width_chars">40</property>
-                                    <signal name="file-set" handler="on_filechooser_bias_lib_file_set" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -18322,7 +18350,6 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                     <property name="filter">filefilter_fits</property>
                                     <property name="title" translatable="yes">master-dark</property>
                                     <property name="width_chars">40</property>
-                                    <signal name="file-set" handler="on_filechooser_dark_lib_file_set" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -18337,7 +18364,6 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                     <property name="filter">filefilter_fits</property>
                                     <property name="title" translatable="yes">master-flat</property>
                                     <property name="width_chars">40</property>
-                                    <signal name="file-set" handler="on_filechooser_flat_lib_file_set" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -18416,7 +18442,6 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                     <property name="tooltip_text" translatable="yes">Use the chosen master as default file in the pre-processing tab</property>
                                     <property name="halign">start</property>
                                     <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_check_button_pref_flat_toggled" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">3</property>
@@ -18432,7 +18457,6 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                     <property name="tooltip_text" translatable="yes">Use the chosen master as default file in the pre-processing tab</property>
                                     <property name="halign">start</property>
                                     <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_check_button_pref_dark_toggled" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">3</property>
@@ -18448,7 +18472,6 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                     <property name="tooltip_text" translatable="yes">Use the chosen master as default file in the pre-processing tab</property>
                                     <property name="halign">start</property>
                                     <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_check_button_pref_bias_toggled" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">3</property>
@@ -18609,6 +18632,7 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                           <object class="GtkEntry" id="xtrans_af_h">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="text">0</property>
                                           </object>
                                           <packing>
                                             <property name="left_attach">3</property>
@@ -18619,6 +18643,7 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                           <object class="GtkEntry" id="xtrans_af_w">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="text">0</property>
                                           </object>
                                           <packing>
                                             <property name="left_attach">3</property>
@@ -18629,6 +18654,7 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                           <object class="GtkEntry" id="xtrans_af_y">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="text">0</property>
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
@@ -18639,6 +18665,7 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                           <object class="GtkEntry" id="xtrans_af_x">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="text">0</property>
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
@@ -18734,6 +18761,7 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                           <object class="GtkEntry" id="xtrans_sample_x">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="text">0</property>
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
@@ -18744,6 +18772,7 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                           <object class="GtkEntry" id="xtrans_sample_y">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="text">0</property>
                                           </object>
                                           <packing>
                                             <property name="left_attach">1</property>
@@ -18754,6 +18783,7 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                           <object class="GtkEntry" id="xtrans_sample_w">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="text">0</property>
                                           </object>
                                           <packing>
                                             <property name="left_attach">3</property>
@@ -18764,6 +18794,7 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                           <object class="GtkEntry" id="xtrans_sample_h">
                                             <property name="visible">True</property>
                                             <property name="can_focus">True</property>
+                                            <property name="text">0</property>
                                           </object>
                                           <packing>
                                             <property name="left_attach">3</property>
@@ -19119,22 +19150,6 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                         <property name="position">3</property>
                       </packing>
                     </child>
-                    <child>
-                      <object class="GtkButton" id="button_reset_photometry">
-                        <property name="label" translatable="yes">Restore to Default</property>
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="receives_default">True</property>
-                        <property name="tooltip_text" translatable="yes">Restore the defaut parameters</property>
-                        <property name="valign">center</property>
-                        <signal name="clicked" handler="on_button_reset_photometry_clicked" swapped="no"/>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">4</property>
-                      </packing>
-                    </child>
                   </object>
                   <packing>
                     <property name="name">preferences_p3</property>
@@ -19252,13 +19267,13 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                 <property name="orientation">vertical</property>
                                 <child>
                                   <object class="GtkCheckButton" id="miscAskScript">
-                                    <property name="label" translatable="yes">Don't show warning before script execution</property>
+                                    <property name="label" translatable="yes">Show warning before script execution</property>
                                     <property name="visible">True</property>
                                     <property name="can_focus">True</property>
                                     <property name="receives_default">False</property>
                                     <property name="halign">start</property>
+                                    <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_miscAskScript_toggled" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -19278,7 +19293,6 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                     <property name="halign">start</property>
                                     <property name="active">True</property>
                                     <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_script_check_version_toggled" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -19422,7 +19436,6 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                     <property name="adjustment">adj_fontsize</property>
                                     <property name="numeric">True</property>
                                     <property name="value">100</property>
-                                    <signal name="value-changed" handler="on_pref_fontsize_value_changed" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -19503,7 +19516,6 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                 <property name="halign">start</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_rememberWindowsCheck_toggled" swapped="no"/>
                               </object>
                             </child>
                           </object>
@@ -19583,7 +19595,6 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                                       <item translatable="yes">Small (128x128)</item>
                                       <item translatable="yes">Normal (256x256)</item>
                                     </items>
-                                    <signal name="changed" handler="on_thumbnails_box_size_changed" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -19714,7 +19725,6 @@ Configuring a memory amount larger than what is available on your system may res
                                     <property name="digits">2</property>
                                     <property name="numeric">True</property>
                                     <property name="value">0.90000000000000002</property>
-                                    <signal name="value-changed" handler="on_spinbutton_mem_ratio_value_changed" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -19734,7 +19744,6 @@ Configuring a memory amount larger than what is available on your system may res
                                     <property name="digits">2</property>
                                     <property name="numeric">True</property>
                                     <property name="value">4</property>
-                                    <signal name="value-changed" handler="on_spinbutton_mem_amount_value_changed" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -19958,7 +19967,6 @@ The technique gives very good compression for astronomical images and is relativ
                                     <property name="digits">2</property>
                                     <property name="numeric">True</property>
                                     <property name="value">4</property>
-                                    <signal name="value-changed" handler="on_spinbutton_comp_fits_hcompress_scale_value_changed" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">2</property>
@@ -20191,7 +20199,6 @@ The technique gives very good compression for astronomical images and is relativ
                                       <item id=".fits" translatable="yes">.fits</item>
                                       <item id=".fts" translatable="yes">.fts</item>
                                     </items>
-                                    <signal name="changed" handler="on_combobox_ext_changed" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -20222,7 +20229,6 @@ The technique gives very good compression for astronomical images and is relativ
                                       <item translatable="yes">16-bit unsigned integer</item>
                                       <item translatable="yes">32-bit floating point</item>
                                     </items>
-                                    <signal name="changed" handler="on_combobox_type_changed" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left_attach">1</property>
@@ -20280,7 +20286,6 @@ The technique gives very good compression for astronomical images and is relativ
                                 <property name="can_focus">True</property>
                                 <property name="tooltip_text" translatable="yes">Copyright when saving image as TIFF</property>
                                 <property name="width_chars">50</property>
-                                <signal name="changed" handler="on_miscCopyright_changed" swapped="no"/>
                               </object>
                             </child>
                           </object>
@@ -20324,7 +20329,6 @@ The technique gives very good compression for astronomical images and is relativ
                                 <property name="receives_default">False</property>
                                 <property name="halign">start</property>
                                 <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_confirmDontShowButton_toggled" swapped="no"/>
                               </object>
                             </child>
                           </object>
@@ -20411,7 +20415,6 @@ The technique gives very good compression for astronomical images and is relativ
                                 <property name="halign">start</property>
                                 <property name="active">True</property>
                                 <property name="draw_indicator">True</property>
-                                <signal name="toggled" handler="on_miscAskUpdateStartup_toggled" swapped="no"/>
                               </object>
                             </child>
                           </object>
