@@ -392,7 +392,7 @@ static int ser_write_header_from_fit(struct ser_struct *ser_file, fits *fit) {
 		memcpy(ser_file->telescope, fit->telescop, 40);
 	}
 
-	if (!fit->date_obs)
+	if (fit->date_obs)
 		ser_file->date = (guint64) g_date_time_to_unix(fit->date_obs);
 	return 0;
 }
