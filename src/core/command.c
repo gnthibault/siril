@@ -1691,7 +1691,7 @@ int process_findstar(int nb){
 	com.stars = peaker(&gfit, layer, &com.starfinder_conf, &nbstars, NULL, TRUE);
 	siril_log_message(_("Found %d stars in image, channel #%d\n"), nbstars, layer);
 	if (com.stars)
-		refresh_stars_list(com.stars);
+		refresh_star_list(com.stars);
 	return 0;
 }
 
@@ -1937,7 +1937,7 @@ int process_cdg(int nb) {
 
 int process_clear(int nb) {
 	if (com.script) return 0;
-	GtkTextView *text = GTK_TEXT_VIEW(gtk_builder_get_object(builder, "output"));
+	GtkTextView *text = GTK_TEXT_VIEW(lookup_widget("output"));
 	GtkTextBuffer *tbuf = gtk_text_view_get_buffer(text);
 	GtkTextIter start_iter, end_iter;
 	gtk_text_buffer_get_start_iter(tbuf, &start_iter);
@@ -3856,7 +3856,7 @@ int process_extract(int nb) {
 }
 
 int process_reloadscripts(int nb){
-	return refresh_scripts(NULL);
+	return refresh_scripts(FALSE, NULL);
 }
 
 

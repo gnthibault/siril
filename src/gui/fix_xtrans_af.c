@@ -23,18 +23,6 @@
 #include "gui/callbacks.h"
 #include "gui/fix_xtrans_af.h"
 
-void save_xtrans_ui_pixels() {
-	com.pref.xtrans_af.x = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_af_x"))), NULL, 10);
-	com.pref.xtrans_af.y = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_af_y"))), NULL, 10);
-	com.pref.xtrans_af.w = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_af_w"))), NULL, 10);
-	com.pref.xtrans_af.h = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_af_h"))), NULL, 10);
-
-	com.pref.xtrans_sample.x = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_sample_x"))), NULL, 10);
-	com.pref.xtrans_sample.y = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_sample_y"))), NULL, 10);
-	com.pref.xtrans_sample.w = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_sample_w"))), NULL, 10);
-	com.pref.xtrans_sample.h = g_ascii_strtoll(gtk_entry_get_text(GTK_ENTRY(lookup_widget("xtrans_sample_h"))), NULL, 10);
-}
-
 void init_xtrans_ui_pixels() {
 	char pixel_value[256];
 

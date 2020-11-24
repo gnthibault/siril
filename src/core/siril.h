@@ -544,9 +544,15 @@ struct star_finder_struct {
 
 struct save_config_struct {
 	gboolean quit;
-	gboolean script;
+	gboolean warn_script;
 };
 
+/**
+ * This is the preference structure.
+ * WARNING!!
+ * If you update something in this structure you absolutely need to
+ * update pref_init in preferences.c
+ */
 struct pref_struct {
 	gboolean first_start; // use to display information at first use
 	/* state of window */
@@ -570,13 +576,13 @@ struct pref_struct {
 	gboolean show_thumbnails; // show or don't show thumbnails in open dialog box
 	gint thumbnail_size;
 	gboolean check_update; // check update at startup
-	gboolean check_script_version; // check the requires command in scripts
+	gboolean script_check_requires; // check the requires command in scripts
 
 	gint combo_theme;           // value of the combobox theme
 	gdouble font_scale;           // font scale
 	gchar *combo_lang;           // string value of the combobox lang
 
-	char *ext;		// FITS extension used in SIRIL
+	gchar *ext;		// FITS extension used in SIRIL
 
 	gchar *swap_dir;		// swap directory
 	GSList *script_path;	// script path directories
@@ -594,6 +600,9 @@ struct pref_struct {
 
 	gchar *copyright;		// User copyright when saving image as TIFF
 };
+/**
+ * End of preference structure. Read above.
+ */
 
 /* The global data structure of siril, the only with gfit and the gtk builder,
  * declared in main.c */
