@@ -87,18 +87,17 @@ static preferences pref_init = {
 		.swap_dir = NULL,
 		.script_path = NULL,
 		{
-				{
-						1.0, 1.0, 1.0 // mul[3]
-				},
+				.mul[0] = 1.0,
+				.mul[1] = 1.0,
+				.mul[2] = 1.0,
 				.bright = 1.0,
 				.auto_mul = 1,
 				.use_camera_wb = 0,
 				.use_auto_wb = 0,
 				.user_qual = 2,
 				.user_black = 0,
-				{
-						1.0, 1.0 // gamm[2]
-				},
+				.gamm[0] = 1.0,
+				.gamm[1] = 1.0,
 		},
 		{
 				.open_debayer = FALSE,
