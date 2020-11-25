@@ -62,6 +62,22 @@
         {
             "name": "fftw3",
             "buildsystem": "autotools",
+             "build-options": {
+                "arch": {
+                    "x86_64": {
+                        "config-opts": [
+                            "--enable-sse2",
+                            "--enable-avx",
+                            "--enable-avx-128-fma"
+                        ]
+                    },
+                    "aarch64": {
+                        "config-opts": [
+                            "--enable-neon"
+                        ]
+                    }
+                }
+            },           
             "config-opts": [
                 "--enable-float",
                 "--enable-threads",
