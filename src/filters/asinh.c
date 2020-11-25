@@ -162,7 +162,7 @@ int asinhlut(fits *fit, double beta, double offset, gboolean RGBspace) {
 
 
 static void apply_asinh_changes() {
-	gboolean status = (asinh_stretch_value != 1.0) || (asinh_black_value != 0.0) || asinh_rgb_space;
+	gboolean status = (asinh_stretch_value != 1.0) || (asinh_black_value != 0.0) || !asinh_rgb_space;
 	asinh_close(!status);
 }
 
@@ -185,7 +185,7 @@ void on_asinh_dialog_show(GtkWidget *widget, gpointer user_data) {
 	asinh_startup();
 	asinh_stretch_value = 1.0;
 	asinh_black_value = 0.0;
-	asinh_rgb_space = FALSE;
+	asinh_rgb_space = TRUE;
 
 	set_notify_block(TRUE);
 	gtk_toggle_button_set_active(toggle_rgb, asinh_rgb_space);
@@ -229,7 +229,7 @@ void on_asinh_undo_clicked(GtkButton *button, gpointer user_data) {
 	GtkToggleButton *toggle_rgb = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_RGBspace"));
 	asinh_stretch_value = 1.0;
 	asinh_black_value = 0.0;
-	asinh_rgb_space = FALSE;
+	asinh_rgb_space = TRUE;
 
 	set_notify_block(TRUE);
 	gtk_toggle_button_set_active(toggle_rgb, asinh_rgb_space);
