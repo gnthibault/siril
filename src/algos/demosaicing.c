@@ -1026,6 +1026,10 @@ void get_debayer_area(const rectangle *area, rectangle *debayer_area,
 	assert(debayer_area->w > 2);
 }
 
+static void clear_Bayer_information(fits *fit) {
+	memset(fit->bayer_pattern, 0, FLEN_VALUE);
+}
+
 static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_pattern pattern) {
 	size_t i, j, npixels = fit->naxes[0] * fit->naxes[1];
 	int width = fit->rx;
@@ -1084,7 +1088,8 @@ static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_
 			fits_flip_top_to_bottom(fit);
 		}
 	}
-
+	/* we remove Bayer header because not needed now */
+	clear_Bayer_information(fit);
 	return 0;
 }
 
@@ -1118,6 +1123,8 @@ static int debayer_float(fits* fit, interpolation_method interpolation, sensor_p
 	if (interpolation == XTRANS && !top_down) {
 		fits_flip_top_to_bottom(fit);
 	}
+	/* we remove Bayer header because not needed now */
+	clear_Bayer_information(fit);
 	return 0;
 }
 
