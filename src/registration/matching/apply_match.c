@@ -111,13 +111,12 @@
 
 #undef DEBUG           /* get some of diagnostic output */
 
-static int
-proc_star_file(fitted_PSF **s, image_solved *solved, TRANS *trans);
+static int proc_star_file(image_solved *solved, TRANS *trans);
 
 int apply_match(image_solved *solved, TRANS trans) {
 
 	/* now walk through the file and do the dirty work */
-	if (proc_star_file(com.stars, solved, &trans) != SH_SUCCESS) {
+	if (proc_star_file(solved, &trans) != SH_SUCCESS) {
 		shError("can't process data for platesolving");
 		return (1);
 	}
@@ -147,9 +146,8 @@ int apply_match(image_solved *solved, TRANS trans) {
  *   SH_GENERIC_ERROR      if not
  */
 
-static int proc_star_file(fitted_PSF **s, /* I: name of input data with star list */
-image_solved *solved, TRANS *trans /* I: TRANS taking (x,y) -> (ra, dec) */
-) {
+/* I: TRANS taking (x,y) -> (ra, dec) */
+static int proc_star_file(image_solved *solved, TRANS *trans) {
 //	int i = 0;
 	double xval, yval;
 	double r_dec;
