@@ -407,9 +407,13 @@ void on_combobox_comp_fits_method_changed(GtkComboBox *box, gpointer user_data) 
 }
 
 void set_GUI_compression() {
+	GtkToggleButton *enabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_enabled_radio"));
+	GtkToggleButton *disabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_disbled_radio"));
+
+	gtk_toggle_button_set_active(enabled, com.pref.comp.fits_enabled);
+	gtk_toggle_button_set_active(disabled, !com.pref.comp.fits_enabled);
+
 	if (com.pref.comp.fits_enabled) {
-		GtkToggleButton *enabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_enabled_radio"));
-		gtk_toggle_button_set_active(enabled, com.pref.comp.fits_enabled);
 		GtkComboBox *box = GTK_COMBO_BOX(lookup_widget("combobox_comp_fits_method"));
 		GtkSpinButton *quantiz = GTK_SPIN_BUTTON(lookup_widget("spinbutton_comp_fits_quantization"));
 		GtkSpinButton *hscale = GTK_SPIN_BUTTON(lookup_widget("spinbutton_comp_fits_hcompress_scale"));
@@ -421,8 +425,6 @@ void set_GUI_compression() {
 		}
 		siril_log_message(_("FITS compression enabled\n"), com.pref.ext);
 	} else {
-		GtkToggleButton *disabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_disabled_radio"));
-		gtk_toggle_button_set_active(disabled, !com.pref.comp.fits_enabled);
 		siril_log_message(_("FITS compression disabled\n"));
 	}
 }
@@ -626,6 +628,7 @@ static void set_preferences_ui(preferences *pref) {
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spinbutton_mem_ratio")), pref->stack.memory_ratio);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spinbutton_mem_amount")), pref->stack.memory_amount);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_disabled_radio")), !pref->comp.fits_enabled);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_enabled_radio")), pref->comp.fits_enabled);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget("combobox_comp_fits_method")), pref->comp.fits_method);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spinbutton_comp_fits_quantization")), pref->comp.fits_quantization);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spinbutton_comp_fits_hcompress_scale")), pref->comp.fits_hcompress_scale);
