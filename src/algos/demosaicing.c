@@ -1738,8 +1738,6 @@ void apply_split_cfa_to_sequence(struct split_cfa_data *split_cfa_args) {
 	struct generic_seq_args *args = create_default_seqargs(split_cfa_args->seq);
 	args->filtering_criterion = seq_filter_included;
 	args->nb_filtered_images = split_cfa_args->seq->selnum;
-	args->prepare_hook = seq_prepare_hook;
-	args->finalize_hook = seq_finalize_hook;
 	args->image_hook = split_cfa_image_hook;
 	args->description = _("Split CFA");
 	args->new_seq_prefix = split_cfa_args->seqEntry;
