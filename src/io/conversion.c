@@ -431,7 +431,7 @@ image_type get_type_for_extension(const char *extension) {
 	} else if ((supported_filetypes & TYPESER) && !g_ascii_strcasecmp(extension, "ser")) {
 		return TYPESER;
 	} else if (!g_ascii_strcasecmp(extension, "fit") || !g_ascii_strcasecmp(extension, "fits") ||
-			!g_ascii_strcasecmp(extension, "fts")) {
+			!g_ascii_strcasecmp(extension, "fts") || !g_ascii_strcasecmp(extension, "fz")) {
 		return TYPEFITS;
 	}
 	return TYPEUNDEF; // not recognized or not supported

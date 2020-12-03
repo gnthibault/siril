@@ -63,12 +63,12 @@ static void gtk_filter_add(GtkFileChooser *file_chooser, const gchar *title,
 
 static void set_filters_dialog(GtkFileChooser *chooser, int whichdial) {
 	GString *all_filter = NULL;
-	gchar *fits_filter = "*.fit;*.FIT;*.fits;*.FITS;*.fts;*.FTS";
+	gchar *fits_filter = "*.fit;*.FIT;*.fits;*.FITS;*.fts;*.FTS;*.fits.fz";
 	gchar *netpbm_filter = "*.ppm;*.PPM;*.pnm;*.PNM;*.pgm;*.PGM";
 	gchar *pic_filter = "*.pic;*.PIC";
 	gchar *ser_filter = "*.ser;*.SER";
 	if (whichdial != OD_CONVERT && whichdial != OD_OPEN) {
-		gtk_filter_add(chooser, _("FITS Files (*.fit, *.fits, *.fts)"),
+		gtk_filter_add(chooser, _("FITS Files (*.fit, *.fits, *.fts, *.fits.fz)"),
 				fits_filter, com.filter == TYPEFITS);
 	} else {
 		all_filter = g_string_new(fits_filter);
