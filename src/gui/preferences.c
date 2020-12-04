@@ -238,8 +238,8 @@ static void update_user_interface_preferences() {
 	com.pref.combo_lang = get_interface_language();
 	int theme = gtk_combo_box_get_active(GTK_COMBO_BOX(lookup_widget("combo_theme")));
 	if (theme != com.pref.combo_theme) {
-		theme = com.pref.combo_theme;
-		siril_set_theme(com.pref.combo_theme);
+		com.pref.combo_theme = theme;
+		siril_set_theme(theme);
 	}
 	com.pref.font_scale = gtk_spin_button_get_value(GTK_SPIN_BUTTON(lookup_widget("pref_fontsize")));
 	com.pref.remember_windows = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("rememberWindowsCheck")));
