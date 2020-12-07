@@ -490,6 +490,6 @@ summary(
     'FFMS2'     : ffms2_dep.found(),
     'FFMPEG'    : ffmpeg_found,
     'libcurl'   : libcurl_dep.found(),
-    'criterion' : libraw_dep.found(),
+    'criterion' : criterion_dep.found(),
   }, section: 'Optional dependencies'
 )
