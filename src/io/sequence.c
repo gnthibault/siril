@@ -42,6 +42,7 @@
 #include "core/OS_utils.h"
 #include "core/initfile.h"
 #include "core/undo.h"
+#include "gui/utils.h"
 #include "gui/callbacks.h"
 #include "gui/plot.h"
 #include "ser.h"
@@ -195,7 +196,7 @@ int check_seq(int recompute_stats) {
 	}
 	if ((dir = g_dir_open(com.wd, 0, &error)) == NULL) {
 		fprintf (stderr, "check_seq: %s\n", error->message);
-		g_error_free(error);
+		g_clear_error(&error);
 		g_free(com.wd);
 		com.wd = NULL;
 		return 1;
@@ -965,7 +966,7 @@ int	get_index_and_basename(const char *filename, char **basename, int *index, in
 	*basename = NULL;
 	fnlen = strlen(filename);
 	if (fnlen < strlen(com.pref.ext)+2) return -1;
-	if (!ends_with(filename, com.pref.ext)) return -1;
+	if (!g_str_has_suffix(filename, com.pref.ext)) return -1;
 	i = fnlen-strlen(com.pref.ext)-1;
 	if (!isdigit(filename[i])) return -1;
 	digit_idx = i;

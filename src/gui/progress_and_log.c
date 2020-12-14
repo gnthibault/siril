@@ -22,7 +22,8 @@
 #include <unistd.h>
 #include <assert.h>
 #include <string.h>
-#include "callbacks.h"
+#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "core/pipe.h"
 #include "core/siril_log.h"
 

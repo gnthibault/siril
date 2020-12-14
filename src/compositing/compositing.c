@@ -36,6 +36,7 @@
 #include "gui/image_display.h"
 #include "gui/image_interactions.h"
 #include "gui/PSF_list.h"
+#include "gui/utils.h"
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
 #include "gui/dialogs.h"

@@ -30,7 +30,7 @@
 #include "core/proto.h"
 #include "core/initfile.h"
 #include "core/siril_app_dirs.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 
 #include "siril_language.h"
 

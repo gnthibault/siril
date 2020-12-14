@@ -29,6 +29,7 @@
 #include "core/OS_utils.h"
 #include "io/conversion.h"
 #include "io/sequence.h"
+#include "gui/utils.h"
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
@@ -370,7 +371,7 @@ void on_treeview_convert_drag_data_received(GtkWidget *widget,
 			fprintf(stderr, "Could not convert uri to local path: %s",
 					error->message);
 			bad_files++;
-			g_error_free(error);
+			g_clear_error(&error);
 		}
 	}
 	list = g_slist_sort(list, (GCompareFunc) strcompare);
@@ -497,12 +498,12 @@ void process_destroot(sequence_type output_type) {
 	destroot = g_str_to_ascii(name, NULL); // we want to avoid special char
 	gboolean seq_exists = FALSE;
 	if (output_type == SEQ_SER) {
-		if (!ends_with(destroot, ".ser"))
+		if (!g_str_has_suffix(destroot, ".ser"))
 			str_append(&destroot, ".ser");
 		seq_exists = check_if_seq_exist(destroot, FALSE);
 	}
 	else if (output_type == SEQ_FITSEQ) {
-		if (!ends_with(destroot, com.pref.ext))
+		if (!g_str_has_suffix(destroot, com.pref.ext))
 			str_append(&destroot, com.pref.ext);
 		seq_exists = check_if_seq_exist(destroot, FALSE);
 	}

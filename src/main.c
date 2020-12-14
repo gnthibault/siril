@@ -56,6 +56,7 @@
 #include "io/sequence.h"
 #include "io/conversion.h"
 #include "io/single_image.h"
+#include "gui/utils.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/siril_css.h"
@@ -107,6 +108,7 @@ static GActionEntry app_entries[] = {
 	{ "open",  open_action_activate },
 	{ "save", save_action_activate },
 	{ "save_as", save_as_action_activate },
+	{ "snapshot", snapshot_action_activate },
 	{ "close", close_action_activate },
 	{ "undo", undo_action_activate },
 	{ "redo", redo_action_activate },
@@ -141,7 +143,7 @@ void load_glade_file() {
 	if (!gtk_builder_add_from_file(builder, gladefile, &err)) {
 		g_error(_("%s was not found or contains errors, "
 					"cannot render GUI:\n%s\n Exiting.\n"), gladefile, err->message);
-		g_error_free(err);
+		g_clear_error(&err);
 		exit(EXIT_FAILURE);
 	}
 	g_printf(_("Successfully loaded '%s'\n"), gladefile);

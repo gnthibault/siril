@@ -33,7 +33,7 @@
 #include "gui/image_display.h"
 #include "gui/PSF_list.h"
 #include "gui/progress_and_log.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "io/sequence.h"
 #include "io/ser.h"
 #include "io/image_format_fits.h"

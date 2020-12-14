@@ -30,7 +30,7 @@
 #include "io/image_format_fits.h"
 #include "gui/progress_and_log.h"
 #include "gui/image_interactions.h"
-#include "gui/callbacks.h" // for delete_selected_area()
+#include "gui/utils.h" // for delete_selected_area()
 #include "opencv/opencv.h"
 
 #include "stacking.h"

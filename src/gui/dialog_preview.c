@@ -22,7 +22,7 @@
 #include "core/proto.h"
 #include "core/processing.h"
 #include "core/exif.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/histogram.h"
 #include "io/ser.h"
 #include "io/image_format_fits.h"

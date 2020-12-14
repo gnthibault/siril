@@ -26,9 +26,11 @@
 #include "core/siril.h"
 #include "core/OS_utils.h"
 #include "algos/statistics.h"
+#include "algos/annotate.h"
 #include "algos/background_extraction.h"
 #include "gui/image_interactions.h"
 #include "gui/image_display.h"
+#include "gui/utils.h"
 #include "gui/callbacks.h"
 #include "gui/dialogs.h"
 #include "gui/message_dialog.h"
@@ -55,6 +57,7 @@ void close_single_image() {
 	 */
 	if (!com.headless) {
 		siril_close_preview_dialogs();
+		initialize_wcs_toggle_button();
 	}
 	free_image_data();
 	undo_flush();
@@ -76,6 +79,8 @@ void free_image_data() {
 		clear_sampling_setting_box();	// clear focal and pixel pitch info
 		free_background_sample_list(com.grad_samples);
 		com.grad_samples = NULL;
+		g_slist_free_full(com.found_object, (GDestroyNotify)free_object);
+		com.found_object = NULL;
 		reset_display_offset();
 		reset_zoom_default();
 	}

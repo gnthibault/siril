@@ -26,10 +26,14 @@
 #include "core/proto.h"
 #include "core/OS_utils.h"
 #include "core/processing.h"
+#include "core/siril_date.h"
 #include "gui/progress_and_log.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/message_dialog.h"
 #include "gui/dialog_preview.h"
+#include "gui/utils.h"
+#include "gui/image_display.h"
+#include "gui/callbacks.h"
 #include "io/conversion.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
@@ -686,6 +690,94 @@ void on_header_save_as_button_clicked() {
 		}
 	}
 }
+
+static gboolean snapshot_notification_close(gpointer user_data) {
+	gtk_widget_hide(GTK_WIDGET(user_data));
+	return FALSE;
+}
+
+static GtkWidget *snapshot_notification(GtkWidget *widget, const gchar *filename, GdkPixbuf *pixbuf) {
+	gchar *text = g_strdup_printf("Snapshot <b>%s</b> was saved into the working directory.", filename);
+	GtkWidget *popover = popover_new_with_image(widget, text, pixbuf);
+#if GTK_CHECK_VERSION(3, 22, 0)
+	gtk_popover_popup(GTK_POPOVER(popover));
+#else
+	gtk_widget_show(popover);
+#endif
+	g_free(text);
+	return popover;
+}
+
+static void snapshot_callback(GObject *source_object, GAsyncResult *result,
+		gpointer user_data) {
+	GError *error = NULL;
+
+	if (!gdk_pixbuf_save_to_stream_finish(result, &error)) {
+		siril_log_message(_("Cannot take snapshot: %s\n"), error->message);
+		g_clear_error(&error);
+	} else {
+		gchar *filename = (gchar *)user_data;
+		GtkWidget *widget = lookup_widget("header_snapshot_button");
+		GtkWidget *popover = snapshot_notification(widget, filename, (GdkPixbuf *)source_object);
+		g_timeout_add(5000, (GSourceFunc) snapshot_notification_close, (gpointer) popover);
+
+		g_free(filename);
+	}
+}
+
+void on_header_snapshot_button_clicked() {
+	GError *error = NULL;
+	gchar *timestamp, *filename;
+	GdkPixbuf *pixbuf;
+	GFile *file;
+	GOutputStream *stream;
+	GtkWidget *widget;
+	const gchar *area[] = {"drawingarear", "drawingareag", "drawingareab", "drawingareargb" };
+
+	widget = lookup_widget(area[com.cvport]);
+	timestamp = build_timestamp_filename();
+	filename = g_strdup_printf("%s.png", timestamp);
+
+	g_free(timestamp);
+	/* create cr from the surface */
+	cairo_surface_t *surface = cairo_surface_create_similar(com.surface[com.cvport], CAIRO_CONTENT_COLOR_ALPHA, gfit.rx, gfit.ry);
+	cairo_t *cr = cairo_create(surface);
+
+	/* add image and all annotations if available */
+	add_image_and_label_to_cairo(cr, com.cvport);
+
+	cairo_destroy(cr);
+
+	guint w = gtk_widget_get_allocated_width(widget);
+	guint h = gtk_widget_get_allocated_height(widget);
+
+	pixbuf = gdk_pixbuf_get_from_surface(surface, 0, 0, w, h);
+	if (pixbuf) {
+		file = g_file_new_build_filename(com.wd, filename, NULL);
+
+		stream = (GOutputStream*) g_file_replace(file, NULL, FALSE,	G_FILE_CREATE_NONE, NULL, &error);
+		if (stream == NULL) {
+			if (error != NULL) {
+				g_warning("%s\n", error->message);
+				g_clear_error(&error);
+			}
+			g_free(filename);
+			g_object_unref(pixbuf);
+			g_object_unref(file);
+			return;
+		}
+		gdk_pixbuf_save_to_stream_async(pixbuf, stream, "png", NULL,
+				snapshot_callback, (gpointer) g_file_get_basename(file), NULL);
+
+		g_object_unref(stream);
+		g_object_unref(pixbuf);
+		g_object_unref(file);
+	}
+	cairo_surface_destroy(surface);
+	g_free(filename);
+}
+
+#undef NEW_SIZE
 
 void on_header_save_button_clicked() {
 	if (single_image_is_loaded() && com.uniq->fileexist) {

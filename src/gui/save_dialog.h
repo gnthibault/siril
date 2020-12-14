@@ -17,6 +17,7 @@ enum {
 };
 
 void on_header_save_as_button_clicked();
+void on_header_snapshot_button_clicked();
 void on_header_save_button_clicked();
 
 #endif /* SRC_GUI_SAVE_DIALOG_H_ */

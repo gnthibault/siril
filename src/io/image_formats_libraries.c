@@ -51,7 +51,7 @@
 #include "core/proto.h"
 #include "core/icc_profile.h"
 #include "algos/geometry.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/progress_and_log.h"
 #include "single_image.h"
 #include "image_format_fits.h"
@@ -515,7 +515,7 @@ int savetif(const char *name, fits *fit, uint16_t bitspersample){
 	gboolean write_ok = TRUE;
 	gboolean embeded_icc = TRUE;
 
-	if (!ends_with(filename, ".tif") && (!ends_with(filename, ".tiff"))) {
+	if (!g_str_has_suffix(filename, ".tif") && (!g_str_has_suffix(filename, ".tiff"))) {
 		filename = str_append(&filename, ".tif");
 	}
 
@@ -774,7 +774,7 @@ int savejpg(const char *name, fits *fit, int quality){
 	jpeg_create_compress(&cinfo);
 
 	char *filename = strdup(name);
-	if (!ends_with(filename, ".jpg") && (!ends_with(filename, ".jpeg"))) {
+	if (!g_str_has_suffix(filename, ".jpg") && (!g_str_has_suffix(filename, ".jpeg"))) {
 		filename = str_append(&filename, ".jpg");
 	}
 
@@ -860,8 +860,8 @@ int savejpg(const char *name, fits *fit, int quality){
 	free(filename);
 	return OPEN_IMAGE_OK;
 }
-#endif	// HAVE_LIBJPEG
 
+#endif	// HAVE_LIBJPEG
 
 /********************* PNG IMPORT *********************/
 
@@ -1072,7 +1072,7 @@ int savepng(const char *name, fits *fit, uint32_t bytes_per_sample,
 	const uint32_t height = fit->ry;
 
 	char *filename = strdup(name);
-	if (!ends_with(filename, ".png")) {
+	if (!g_str_has_suffix(filename, ".png")) {
 		filename = str_append(&filename, ".png");
 	}
 

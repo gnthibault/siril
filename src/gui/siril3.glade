@@ -601,6 +601,11 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="step_increment">1</property>
     <property name="page_increment">10</property>
   </object>
+  <object class="GtkImage" id="astrometry">
+    <property name="visible">True</property>
+    <property name="can_focus">False</property>
+    <property name="pixbuf">pixmaps/astrometry_dark.png</property>
+  </object>
   <object class="GtkColorChooserDialog" id="colorchooserdialog">
     <property name="can_focus">False</property>
     <property name="border_width">5</property>
@@ -2422,6 +2427,28 @@ enter a visible wavelength in nm</property>
                 <property name="position">1</property>
               </packing>
             </child>
+            <child>
+              <object class="GtkButton" id="header_snapshot_button">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="tooltip_text" translatable="yes">Take a snapshot of your displayed image.</property>
+                <property name="action_name">app.snapshot</property>
+                <property name="use_underline">True</property>
+                <child>
+                  <object class="GtkImage">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">camera-photo-symbolic</property>
+                  </object>
+                </child>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
           </object>
           <packing>
             <property name="pack_type">end</property>
@@ -2533,6 +2560,22 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
                         <child>
+                          <object class="GtkLabel" id="labelfilename_red">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">current red file</property>
+                            <property name="halign">end</property>
+                            <style>
+                              <class name="label-data"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
                           <object class="GtkScrolledWindow" id="scrolledwindowr">
                             <property name="visible">True</property>
                             <property name="can_focus">True</property>
@@ -2559,7 +2602,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="position">0</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -2569,44 +2612,47 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                             <property name="valign">center</property>
                             <property name="spacing">2</property>
                             <child>
-                              <object class="GtkLabel" id="labeldensity_red">
+                              <object class="GtkLabel" id="labelzoom_red">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="valign">center</property>
-                                <property name="ellipsize">end</property>
-                                <property name="width_chars">22</property>
+                                <property name="halign">start</property>
+                                <property name="width_chars">6</property>
+                                <property name="max_width_chars">6</property>
+                                <style>
+                                  <class name="label-data"/>
+                                </style>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="padding">12</property>
-                                <property name="position">2</property>
+                                <property name="position">0</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkSeparator" id="vseparatorr2">
+                              <object class="GtkSeparator">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="orientation">vertical</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">3</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="labelfilename_red">
+                              <object class="GtkLabel" id="labelfwhm_red">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="tooltip_text" translatable="yes">current red file</property>
-                                <property name="ellipsize">start</property>
+                                <property name="halign">start</property>
+                                <style>
+                                  <class name="label-data"/>
+                                </style>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
                                 <property name="fill">True</property>
                                 <property name="padding">6</property>
-                                <property name="position">4</property>
+                                <property name="position">2</property>
                               </packing>
                             </child>
                             <child>
@@ -2618,19 +2664,52 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="position">5</property>
+                                <property name="position">3</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkLabel" id="labelselection_red">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="width_chars">30</property>
+                                <property name="halign">end</property>
+                                <property name="ellipsize">start</property>
+                                <style>
+                                  <class name="label-data"/>
+                                </style>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
                                 <property name="fill">True</property>
                                 <property name="padding">3</property>
+                                <property name="position">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator" id="vseparatorr2">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">5</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="labeldensity_red">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="width_chars">30</property>
+                                <style>
+                                  <class name="label-data"/>
+                                </style>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="padding">12</property>
                                 <property name="position">6</property>
                               </packing>
                             </child>
@@ -2647,17 +2726,19 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="labelfwhmred">
+                              <object class="GtkLabel" id="labelwcs_red">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="halign">end</property>
-                                <property name="label" translatable="yes">fwhm: no selection</property>
+                                <property name="ellipsize">start</property>
+                                <property name="width_chars">30</property>
+                                <style>
+                                  <class name="label-data"/>
+                                </style>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
+                                <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="padding">3</property>
-                                <property name="pack_type">end</property>
                                 <property name="position">8</property>
                               </packing>
                             </child>
@@ -2665,7 +2746,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                       </object>
@@ -2687,6 +2768,22 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel" id="labelfilename_green">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">current green file</property>
+                            <property name="halign">end</property>
+                            <style>
+                              <class name="label-data"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
                         <child>
                           <object class="GtkScrolledWindow" id="scrolledwindowg">
                             <property name="visible">True</property>
@@ -2714,7 +2811,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="position">0</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -2724,43 +2821,47 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                             <property name="valign">center</property>
                             <property name="spacing">2</property>
                             <child>
-                              <object class="GtkLabel" id="labeldensity_green">
+                              <object class="GtkLabel" id="labelzoom_green">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="ellipsize">end</property>
-                                <property name="width_chars">22</property>
+                                <property name="halign">start</property>
+                                <property name="width_chars">6</property>
+                                <property name="max_width_chars">6</property>
+                                <style>
+                                  <class name="label-data"/>
+                                </style>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="padding">4</property>
-                                <property name="position">2</property>
+                                <property name="position">0</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkSeparator" id="vseparatorg2">
+                              <object class="GtkSeparator">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="orientation">vertical</property>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
-                                <property name="fill">False</property>
-                                <property name="position">3</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="labelfilename_green">
+                              <object class="GtkLabel" id="labelfwhm_green">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="tooltip_text" translatable="yes">current green file</property>
-                                <property name="ellipsize">start</property>
+                                <property name="halign">start</property>
+                                <style>
+                                  <class name="label-data"/>
+                                </style>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
                                 <property name="fill">True</property>
                                 <property name="padding">8</property>
-                                <property name="position">4</property>
+                                <property name="position">2</property>
                               </packing>
                             </child>
                             <child>
@@ -2772,20 +2873,36 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">False</property>
-                                <property name="position">5</property>
+                                <property name="position">3</property>
                               </packing>
                             </child>
                             <child>
                               <object class="GtkLabel" id="labelselection_green">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="width_chars">30</property>
+                                <property name="halign">end</property>
+                                <property name="ellipsize">start</property>
+                                <style>
+                                  <class name="label-data"/>
+                                </style>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
                                 <property name="fill">True</property>
                                 <property name="padding">3</property>
-                                <property name="position">6</property>
+                                <property name="position">4</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator" id="vseparatorg2">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="orientation">vertical</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">5</property>
                               </packing>
                             </child>
                             <child>
@@ -2797,20 +2914,39 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="position">7</property>
+                                <property name="position">6</property>
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="labelfwhmgreen">
+                              <object class="GtkLabel" id="labeldensity_green">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="halign">end</property>
+                                <property name="halign">start</property>
+                                <property name="width_chars">30</property>
+                                <style>
+                                  <class name="label-data"/>
+                                </style>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
+                                <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="padding">3</property>
-                                <property name="pack_type">end</property>
+                                <property name="padding">4</property>
+                                <property name="position">6</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="labelwcs_green">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="width_chars">30</property>
+                                <style>
+                                  <class name="label-data"/>
+                                </style>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
                                 <property name="position">8</property>
                               </packing>
                             </child>
@@ -2818,7 +2954,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                       </object>
@@ -2844,6 +2980,22 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel" id="labelfilename_blue">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="tooltip_text" translatable="yes">current blue file</property>
+                            <property name="halign">end</property>
+                            <style>
+                              <class name="label-data"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
                         <child>
                           <object class="GtkScrolledWindow" id="scrolledwindowb">
                             <property name="visible">True</property>
@@ -2871,7 +3023,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="position">0</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -2881,16 +3033,46 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                             <property name="valign">center</property>
                             <property name="spacing">2</property>
                             <child>
-                              <object class="GtkLabel" id="labeldensity_blue">
+                              <object class="GtkLabel" id="labelzoom_blue">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="ellipsize">end</property>
-                                <property name="width_chars">22</property>
+                                <property name="halign">start</property>
+                                <property name="width_chars">6</property>
+                                <property name="max_width_chars">6</property>
+                                <style>
+                                  <class name="label-data"/>
+                                </style>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="padding">4</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="labelfwhm_blue">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <style>
+                                  <class name="label-data"/>
+                                </style>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                                <property name="padding">8</property>
                                 <property name="position">2</property>
                               </packing>
                             </child>
@@ -2907,16 +3089,19 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="labelfilename_blue">
+                              <object class="GtkLabel" id="labelselection_blue">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="tooltip_text" translatable="yes">current blue file</property>
+                                <property name="halign">end</property>
                                 <property name="ellipsize">start</property>
+                                <style>
+                                  <class name="label-data"/>
+                                </style>
                               </object>
                               <packing>
                                 <property name="expand">True</property>
                                 <property name="fill">True</property>
-                                <property name="padding">8</property>
+                                <property name="padding">3</property>
                                 <property name="position">4</property>
                               </packing>
                             </child>
@@ -2933,15 +3118,19 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="labelselection_blue">
+                              <object class="GtkLabel" id="labeldensity_blue">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
+                                <property name="halign">start</property>
                                 <property name="width_chars">30</property>
+                                <style>
+                                  <class name="label-data"/>
+                                </style>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
+                                <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="padding">3</property>
+                                <property name="padding">4</property>
                                 <property name="position">6</property>
                               </packing>
                             </child>
@@ -2958,16 +3147,18 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="labelfwhmblue">
+                              <object class="GtkLabel" id="labelwcs_blue">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="halign">end</property>
+                                <property name="halign">start</property>
+                                <property name="width_chars">30</property>
+                                <style>
+                                  <class name="label-data"/>
+                                </style>
                               </object>
                               <packing>
-                                <property name="expand">True</property>
+                                <property name="expand">False</property>
                                 <property name="fill">True</property>
-                                <property name="padding">3</property>
-                                <property name="pack_type">end</property>
                                 <property name="position">8</property>
                               </packing>
                             </child>
@@ -2975,7 +3166,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                       </object>
@@ -3001,6 +3192,21 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkLabel" id="labelfilename_rgb">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">end</property>
+                            <style>
+                              <class name="label-data"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
                         <child>
                           <object class="GtkScrolledWindow" id="scrolledwindowrgb">
                             <property name="visible">True</property>
@@ -3028,7 +3234,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                           <packing>
                             <property name="expand">True</property>
                             <property name="fill">True</property>
-                            <property name="position">0</property>
+                            <property name="position">1</property>
                           </packing>
                         </child>
                         <child>
@@ -3059,7 +3265,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="position">1</property>
+                            <property name="position">2</property>
                           </packing>
                         </child>
                       </object>
@@ -7309,6 +7515,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                 <property name="halign">start</property>
                 <property name="valign">center</property>
                 <property name="show_arrow">False</property>
+                <property name="icon_size">5</property>
                 <child>
                   <object class="GtkToolItem" id="tool_item_display">
                     <property name="visible">True</property>
@@ -7391,6 +7598,30 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="use_underline">True</property>
                     <property name="icon_widget">image_colormap</property>
                     <signal name="toggled" handler="on_colormap_button_toggled" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkSeparatorToolItem" id="separateur8">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToggleToolButton" id="annotate_button">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="tooltip_text" translatable="yes">Show object names if WCS information is available</property>
+                    <property name="use_underline">True</property>
+                    <property name="icon_widget">astrometry</property>
+                    <signal name="toggled" handler="on_annotate_button_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -11245,9 +11476,21 @@ Uncheck if images come from a monochrome sensor.</property>
         <child internal-child="action_area">
           <object class="GtkButtonBox" id="dialog-action_area12">
             <property name="can_focus">False</property>
-            <property name="layout_style">end</property>
+            <property name="hexpand">True</property>
+            <property name="layout_style">expand</property>
             <child>
-              <placeholder/>
+              <object class="GtkLinkButton" id="data_extra_button">
+                <property name="label" translatable="yes">More details...</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="relief">none</property>
+              </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
               <object class="GtkButton" id="button_data_ok">
@@ -11258,12 +11501,9 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="receives_default">True</property>
                 <property name="use_stock">True</property>
                 <signal name="clicked" handler="on_button_data_ok_clicked" swapped="no"/>
-                <style>
-                  <class name="suggested-action"/>
-                </style>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">1</property>
               </packing>
@@ -17752,7 +17992,443 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                   </object>
                   <packing>
                     <property name="name">preferences_p1</property>
-                    <property name="title" translatable="yes">FITS/SER debayer</property>
+                    <property name="title" translatable="yes">FITS/SER Debayer</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkBox">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="orientation">vertical</property>
+                    <property name="spacing">10</property>
+                    <child>
+                      <object class="GtkLabel" id="label92">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label" translatable="yes">FITS options</property>
+                        <property name="xalign">0</property>
+                        <style>
+                          <class name="title"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkFrame" id="frame14">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label_xalign">0</property>
+                        <property name="shadow_type">none</property>
+                        <child>
+                          <object class="GtkAlignment" id="alignment17">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="left_padding">12</property>
+                            <child>
+                              <object class="GtkGrid">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="column_homogeneous">True</property>
+                                <child>
+                                  <object class="GtkComboBoxText" id="combobox_ext">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Choose the type of extension used by Siril. By default it is .fit.</property>
+                                    <property name="valign">center</property>
+                                    <property name="margin_top">4</property>
+                                    <property name="active">0</property>
+                                    <items>
+                                      <item id=".fit" translatable="yes">.fit</item>
+                                      <item id=".fits" translatable="yes">.fits</item>
+                                      <item id=".fts" translatable="yes">.fts</item>
+                                    </items>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Extension:</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBoxText" id="combobox_type">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_text" translatable="yes">Choose the type of FITS that will be used by default. 32-bit floating point is the format giving the best precision, however it takes twice as much disk space than unsigned 16-bit integers. All processing tool will work with the chosen format except the RGB compositing tool that always will convert images in 32-bit.</property>
+                                    <property name="valign">center</property>
+                                    <property name="margin_top">4</property>
+                                    <property name="active">1</property>
+                                    <items>
+                                      <item translatable="yes">16-bit unsigned integer</item>
+                                      <item translatable="yes">32-bit floating point</item>
+                                    </items>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Default Type:</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel" id="label94">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_top">10</property>
+                            <property name="margin_bottom">10</property>
+                            <property name="label" translatable="yes">&lt;b&gt;FITS Format&lt;/b&gt;</property>
+                            <property name="use_markup">True</property>
+                            <property name="single_line_mode">True</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkFrame" id="frame27">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label_xalign">0</property>
+                        <property name="shadow_type">none</property>
+                        <child>
+                          <object class="GtkAlignment" id="alignment31">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="left_padding">12</property>
+                            <child>
+                              <object class="GtkCheckButton" id="check_button_aladin">
+                                <property name="label" translatable="yes">Enable Aladin compatibility (CTYPE3 = 'RGB ')</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="tooltip_text" translatable="yes">Aladin considers a 3D FITS cube as a RGB image (Red, Blue and Green components) if the FITS keywork CTYPE3 = 'RGB ' is specified in the header. In this case any BITPIX value are supported. Without the FITS keywork CTYPE3 = 'RGB ' set, only FITS cube with 3 frames sharing the same dimension and with a BITPIX=8 will be automatically detected as RGB FITS.</property>
+                                <property name="draw_indicator">True</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel" id="label96">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_top">10</property>
+                            <property name="margin_bottom">10</property>
+                            <property name="label" translatable="yes">&lt;b&gt;FITS Header&lt;/b&gt;</property>
+                            <property name="use_markup">True</property>
+                            <property name="single_line_mode">True</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkFrame" id="frameSettingsCompression">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="label_xalign">0</property>
+                        <property name="shadow_type">none</property>
+                        <child>
+                          <object class="GtkAlignment" id="alignmentSettingsCompression">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="left_padding">12</property>
+                            <child>
+                              <object class="GtkGrid">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="row_spacing">10</property>
+                                <property name="row_homogeneous">True</property>
+                                <property name="column_homogeneous">True</property>
+                                <child>
+                                  <object class="GtkRadioButton" id="comp_fits_disabled_radio">
+                                    <property name="label" translatable="yes">None</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="margin_bottom">1</property>
+                                    <property name="active">True</property>
+                                    <property name="draw_indicator">True</property>
+                                    <signal name="toggled" handler="on_comp_fits_radio_toggled" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">0</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkRadioButton" id="comp_fits_enabled_radio">
+                                    <property name="label" translatable="yes">Enabled</property>
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="draw_indicator">True</property>
+                                    <property name="group">comp_fits_disabled_radio</property>
+                                    <signal name="toggled" handler="on_comp_fits_radio_toggled" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">0</property>
+                                    <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkSpinButton" id="spinbutton_comp_fits_quantization">
+                                    <property name="visible">True</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip_text" translatable="yes">While floating-point format images may be losslessly compressed (using gzip, since Rice and Hcompress only compress integer arrays), these images often do not compress very well because the pixel values are too noisy; the less significant bits in the mantissa of the pixel values effectively contain incompressible random bit patterns. In order to achieve higher compression, one needs to remove some of this noise, but without losing the useful information content. If it is too large, one undersamples the pixel values resulting in a loss of information in the image. If it is too small, however, it preserves too much of the noise (or even amplifies the noise) in the pixel values, resulting in poor compression.</property>
+                                    <property name="halign">start</property>
+                                    <property name="valign">center</property>
+                                    <property name="width_chars">9</property>
+                                    <property name="text">8,00</property>
+                                    <property name="input_purpose">number</property>
+                                    <property name="adjustment">adj_comp_fits_quantization</property>
+                                    <property name="digits">2</property>
+                                    <property name="numeric">True</property>
+                                    <property name="value">8</property>
+                                    <signal name="value-changed" handler="on_spinbutton_comp_fits_quantization_value_changed" object="combobox_comp_fits_method" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkComboBoxText" id="combobox_comp_fits_method">
+                                    <property name="visible">True</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="tooltip_markup" translatable="yes">Select an algorithm method for FITS compression:
+
+* &lt;b&gt;Rice&lt;/b&gt;: The Rice algorithm is simple and very fast
+* &lt;b&gt;GZIP 1&lt;/b&gt;: The gzip algorithm is used to compress and uncompress the image pixels. Gzip is the compression algorithm used in the free GNU software utility of the same name.
+* &lt;b&gt;GZIP 2&lt;/b&gt;: The bytes in the array of image pixel values are shuffled into decreasing order of significance before being compressed with the gzip algorithm. This is usually especially effective when compressing floating-point arrays.
+* &lt;b&gt;Hcompress&lt;/b&gt;: Briefly, the method used is:
+	- 1. a wavelet transform called the H-transform (a Haar transform generalized to two dimensions), followed by
+	- 2. quantization that discards noise in the image while retaining the signal on all scales, followed by
+	- 3. quadtree coding of the quantized coefficients.
+The technique gives very good compression for astronomical images and is relatively fast. The calculations are carried out using integer arithmetic and are entirely reversible. Consequently, the program can be used for either lossy or lossless compression, with no special approach needed for the lossless case (e.g. there is no need for a file of residuals.)</property>
+                                    <property name="halign">start</property>
+                                    <property name="valign">center</property>
+                                    <property name="hexpand">True</property>
+                                    <property name="active">0</property>
+                                    <property name="active_id">rice</property>
+                                    <items>
+                                      <item id="rice">Rice</item>
+                                      <item id="gzip1" translatable="yes">GZIP1</item>
+                                      <item id="gzip2" translatable="yes">GZIP2</item>
+                                      <item id="hcompress" translatable="yes">Hcompress</item>
+                                    </items>
+                                    <signal name="changed" handler="on_combobox_comp_fits_method_changed" object="spinbutton_comp_fits_quantization" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Method</property>
+                                    <property name="use_markup">True</property>
+                                    <property name="single_line_mode">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Quantization level</property>
+                                    <property name="use_markup">True</property>
+                                    <property name="single_line_mode">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">Tile dimensions</property>
+                                    <property name="use_markup">True</property>
+                                    <property name="single_line_mode">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">4</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="label" translatable="yes">HCompress scale factor</property>
+                                    <property name="use_markup">True</property>
+                                    <property name="single_line_mode">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">1</property>
+                                    <property name="top_attach">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkSpinButton" id="spinbutton_comp_fits_hcompress_scale">
+                                    <property name="visible">True</property>
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="tooltip_text" translatable="yes">The integer scale parameter determines the amount of compression. Scale = 0 or 1 leads to lossless compression. If the scale factor is greater than 1 then the compression is lossy. For astronomical images, lossless compression is generally rather ineffective because the images have a good deal of noise, which is inherently incompressible. However, if some of this noise is discarded then the images compress very well. The scale factor determines how much of the noise is discarded. Setting scale to 2 times sigma, the RMS noise in the image, usually results in compression by about a factor of 10 (i.e. the compressed image requires about 1.5 bits/pixel), while producing a decompressed image that is nearly indistinguishable from the original.</property>
+                                    <property name="halign">start</property>
+                                    <property name="valign">center</property>
+                                    <property name="width_chars">9</property>
+                                    <property name="text">4,00</property>
+                                    <property name="input_purpose">number</property>
+                                    <property name="adjustment">adj_comp_fits_hcompress_scale</property>
+                                    <property name="digits">2</property>
+                                    <property name="numeric">True</property>
+                                    <property name="value">4</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkSpinButton" id="spinbutton_comp_fits_tileX">
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="halign">start</property>
+                                    <property name="valign">center</property>
+                                    <property name="width_chars">9</property>
+                                    <property name="text">100,00</property>
+                                    <property name="input_purpose">number</property>
+                                    <property name="adjustment">adj_comp_fits_tilex</property>
+                                    <property name="digits">2</property>
+                                    <property name="numeric">True</property>
+                                    <property name="value">100</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">2</property>
+                                    <property name="top_attach">4</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkSpinButton" id="spinbutton_comp_fits_tileY">
+                                    <property name="sensitive">False</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="halign">start</property>
+                                    <property name="valign">center</property>
+                                    <property name="width_chars">9</property>
+                                    <property name="text">100,00</property>
+                                    <property name="input_purpose">number</property>
+                                    <property name="adjustment">adj_comp_fits_tiley</property>
+                                    <property name="digits">2</property>
+                                    <property name="numeric">True</property>
+                                    <property name="value">100</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left_attach">3</property>
+                                    <property name="top_attach">4</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                                <child>
+                                  <placeholder/>
+                                </child>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">&lt;b&gt;FITS Compression&lt;/b&gt;</property>
+                            <property name="use_markup">True</property>
+                            <property name="single_line_mode">True</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                  </object>
+                  <packing>
+                    <property name="name">preferences_p8</property>
+                    <property name="title" translatable="yes">FITS Options</property>
+                    <property name="position">1</property>
                   </packing>
                 </child>
                 <child>
@@ -18284,8 +18960,8 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                   </object>
                   <packing>
                     <property name="name">preferences_p2</property>
-                    <property name="title" translatable="yes">DSLR RAW debayer</property>
-                    <property name="position">1</property>
+                    <property name="title" translatable="yes">DSLR RAW Debayer</property>
+                    <property name="position">2</property>
                   </packing>
                 </child>
                 <child>
@@ -18844,7 +19520,7 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                   <packing>
                     <property name="name">page0</property>
                     <property name="title" translatable="yes">Pre-processing</property>
-                    <property name="position">2</property>
+                    <property name="position">3</property>
                   </packing>
                 </child>
                 <child>
@@ -19154,7 +19830,7 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                   <packing>
                     <property name="name">preferences_p3</property>
                     <property name="title" translatable="yes">Photometry</property>
-                    <property name="position">3</property>
+                    <property name="position">4</property>
                   </packing>
                 </child>
                 <child>
@@ -19328,7 +20004,7 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                   <packing>
                     <property name="name">preferences_p4</property>
                     <property name="title" translatable="yes">Scripts</property>
-                    <property name="position">4</property>
+                    <property name="position">5</property>
                   </packing>
                 </child>
                 <child>
@@ -19628,7 +20304,7 @@ For the XTRANS sensor, a special algorithm called &lt;b&gt;Markesteijn&lt;/b&gt;
                   <packing>
                     <property name="name">preferences_p5</property>
                     <property name="title" translatable="yes">User Interface</property>
-                    <property name="position">5</property>
+                    <property name="position">6</property>
                   </packing>
                 </child>
                 <child>
@@ -19791,278 +20467,11 @@ Configuring a memory amount larger than what is available on your system may res
                         <property name="position">1</property>
                       </packing>
                     </child>
-                    <child>
-                      <object class="GtkFrame" id="frameSettingsCompression">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label_xalign">0</property>
-                        <property name="shadow_type">none</property>
-                        <child>
-                          <object class="GtkAlignment" id="alignmentSettingsCompression">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="left_padding">12</property>
-                            <child>
-                              <object class="GtkGrid">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="row_spacing">10</property>
-                                <property name="row_homogeneous">True</property>
-                                <property name="column_homogeneous">True</property>
-                                <child>
-                                  <object class="GtkRadioButton" id="comp_fits_disabled_radio">
-                                    <property name="label" translatable="yes">None</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="margin_bottom">1</property>
-                                    <property name="active">True</property>
-                                    <property name="draw_indicator">True</property>
-                                    <signal name="toggled" handler="on_comp_fits_radio_toggled" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkRadioButton" id="comp_fits_enabled_radio">
-                                    <property name="label" translatable="yes">Enabled</property>
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="receives_default">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="draw_indicator">True</property>
-                                    <property name="group">comp_fits_disabled_radio</property>
-                                    <signal name="toggled" handler="on_comp_fits_radio_toggled" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkSpinButton" id="spinbutton_comp_fits_quantization">
-                                    <property name="visible">True</property>
-                                    <property name="sensitive">False</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip_text" translatable="yes">While floating-point format images may be losslessly compressed (using gzip, since Rice and Hcompress only compress integer arrays), these images often do not compress very well because the pixel values are too noisy; the less significant bits in the mantissa of the pixel values effectively contain incompressible random bit patterns. In order to achieve higher compression, one needs to remove some of this noise, but without losing the useful information content. If it is too large, one undersamples the pixel values resulting in a loss of information in the image. If it is too small, however, it preserves too much of the noise (or even amplifies the noise) in the pixel values, resulting in poor compression.</property>
-                                    <property name="halign">start</property>
-                                    <property name="valign">center</property>
-                                    <property name="width_chars">9</property>
-                                    <property name="text">8,00</property>
-                                    <property name="input_purpose">number</property>
-                                    <property name="adjustment">adj_comp_fits_quantization</property>
-                                    <property name="digits">2</property>
-                                    <property name="numeric">True</property>
-                                    <property name="value">8</property>
-                                    <signal name="value-changed" handler="on_spinbutton_comp_fits_quantization_value_changed" object="combobox_comp_fits_method" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="top_attach">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkComboBoxText" id="combobox_comp_fits_method">
-                                    <property name="visible">True</property>
-                                    <property name="sensitive">False</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_markup" translatable="yes">Select an algorithm method for FITS compression:
-
-* &lt;b&gt;Rice&lt;/b&gt;: The Rice algorithm is simple and very fast
-* &lt;b&gt;GZIP 1&lt;/b&gt;: The gzip algorithm is used to compress and uncompress the image pixels. Gzip is the compression algorithm used in the free GNU software utility of the same name.
-* &lt;b&gt;GZIP 2&lt;/b&gt;: The bytes in the array of image pixel values are shuffled into decreasing order of significance before being compressed with the gzip algorithm. This is usually especially effective when compressing floating-point arrays.
-* &lt;b&gt;Hcompress&lt;/b&gt;: Briefly, the method used is:
-	- 1. a wavelet transform called the H-transform (a Haar transform generalized to two dimensions), followed by
-	- 2. quantization that discards noise in the image while retaining the signal on all scales, followed by
-	- 3. quadtree coding of the quantized coefficients.
-The technique gives very good compression for astronomical images and is relatively fast. The calculations are carried out using integer arithmetic and are entirely reversible. Consequently, the program can be used for either lossy or lossless compression, with no special approach needed for the lossless case (e.g. there is no need for a file of residuals.)</property>
-                                    <property name="halign">start</property>
-                                    <property name="valign">center</property>
-                                    <property name="hexpand">True</property>
-                                    <property name="active">0</property>
-                                    <property name="active_id">rice</property>
-                                    <items>
-                                      <item id="rice">Rice</item>
-                                      <item id="gzip1" translatable="yes">GZIP1</item>
-                                      <item id="gzip2" translatable="yes">GZIP2</item>
-                                      <item id="hcompress" translatable="yes">Hcompress</item>
-                                    </items>
-                                    <signal name="changed" handler="on_combobox_comp_fits_method_changed" object="spinbutton_comp_fits_quantization" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="label" translatable="yes">Method</property>
-                                    <property name="use_markup">True</property>
-                                    <property name="single_line_mode">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="label" translatable="yes">Quantization level</property>
-                                    <property name="use_markup">True</property>
-                                    <property name="single_line_mode">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">2</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="label" translatable="yes">Tile dimensions</property>
-                                    <property name="use_markup">True</property>
-                                    <property name="single_line_mode">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">4</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="label" translatable="yes">HCompress scale factor</property>
-                                    <property name="use_markup">True</property>
-                                    <property name="single_line_mode">True</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">3</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkSpinButton" id="spinbutton_comp_fits_hcompress_scale">
-                                    <property name="visible">True</property>
-                                    <property name="sensitive">False</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="tooltip_text" translatable="yes">The integer scale parameter determines the amount of compression. Scale = 0 or 1 leads to lossless compression. If the scale factor is greater than 1 then the compression is lossy. For astronomical images, lossless compression is generally rather ineffective because the images have a good deal of noise, which is inherently incompressible. However, if some of this noise is discarded then the images compress very well. The scale factor determines how much of the noise is discarded. Setting scale to 2 times sigma, the RMS noise in the image, usually results in compression by about a factor of 10 (i.e. the compressed image requires about 1.5 bits/pixel), while producing a decompressed image that is nearly indistinguishable from the original.</property>
-                                    <property name="halign">start</property>
-                                    <property name="valign">center</property>
-                                    <property name="width_chars">9</property>
-                                    <property name="text">4,00</property>
-                                    <property name="input_purpose">number</property>
-                                    <property name="adjustment">adj_comp_fits_hcompress_scale</property>
-                                    <property name="digits">2</property>
-                                    <property name="numeric">True</property>
-                                    <property name="value">4</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="top_attach">3</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkSpinButton" id="spinbutton_comp_fits_tileX">
-                                    <property name="sensitive">False</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="halign">start</property>
-                                    <property name="valign">center</property>
-                                    <property name="width_chars">9</property>
-                                    <property name="text">100,00</property>
-                                    <property name="input_purpose">number</property>
-                                    <property name="adjustment">adj_comp_fits_tilex</property>
-                                    <property name="digits">2</property>
-                                    <property name="numeric">True</property>
-                                    <property name="value">100</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">2</property>
-                                    <property name="top_attach">4</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkSpinButton" id="spinbutton_comp_fits_tileY">
-                                    <property name="sensitive">False</property>
-                                    <property name="can_focus">True</property>
-                                    <property name="halign">start</property>
-                                    <property name="valign">center</property>
-                                    <property name="width_chars">9</property>
-                                    <property name="text">100,00</property>
-                                    <property name="input_purpose">number</property>
-                                    <property name="adjustment">adj_comp_fits_tiley</property>
-                                    <property name="digits">2</property>
-                                    <property name="numeric">True</property>
-                                    <property name="value">100</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">3</property>
-                                    <property name="top_attach">4</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                                <child>
-                                  <placeholder/>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child type="label">
-                          <object class="GtkLabel">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">&lt;b&gt;FITS Compression&lt;/b&gt;</property>
-                            <property name="use_markup">True</property>
-                            <property name="single_line_mode">True</property>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
-                      </packing>
-                    </child>
                   </object>
                   <packing>
                     <property name="name">preferences_p6</property>
                     <property name="title" translatable="yes">Performances</property>
-                    <property name="position">6</property>
+                    <property name="position">7</property>
                   </packing>
                 </child>
                 <child>
@@ -20168,105 +20577,6 @@ The technique gives very good compression for astronomical images and is relativ
                         <property name="expand">False</property>
                         <property name="fill">True</property>
                         <property name="position">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkFrame" id="frame14">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label_xalign">0</property>
-                        <property name="shadow_type">none</property>
-                        <child>
-                          <object class="GtkAlignment" id="alignment17">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="left_padding">12</property>
-                            <child>
-                              <object class="GtkGrid">
-                                <property name="visible">True</property>
-                                <property name="can_focus">False</property>
-                                <property name="column_homogeneous">True</property>
-                                <child>
-                                  <object class="GtkComboBoxText" id="combobox_ext">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Choose the type of extension used by Siril. By default it is .fit.</property>
-                                    <property name="valign">center</property>
-                                    <property name="margin_top">4</property>
-                                    <property name="active">0</property>
-                                    <items>
-                                      <item id=".fit" translatable="yes">.fit</item>
-                                      <item id=".fits" translatable="yes">.fits</item>
-                                      <item id=".fts" translatable="yes">.fts</item>
-                                    </items>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="label" translatable="yes">Extension:</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkComboBoxText" id="combobox_type">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="tooltip_text" translatable="yes">Choose the type of FITS that will be used by default. 32-bit floating point is the format giving the best precision, however it takes twice as much disk space than unsigned 16-bit integers. All processing tool will work with the chosen format except the RGB compositing tool that always will convert images in 32-bit.</property>
-                                    <property name="valign">center</property>
-                                    <property name="margin_top">4</property>
-                                    <property name="active">1</property>
-                                    <items>
-                                      <item translatable="yes">16-bit unsigned integer</item>
-                                      <item translatable="yes">32-bit floating point</item>
-                                    </items>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">1</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="halign">start</property>
-                                    <property name="label" translatable="yes">Default Type:</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">1</property>
-                                  </packing>
-                                </child>
-                              </object>
-                            </child>
-                          </object>
-                        </child>
-                        <child type="label">
-                          <object class="GtkLabel" id="label94">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="margin_top">10</property>
-                            <property name="margin_bottom">10</property>
-                            <property name="label" translatable="yes">&lt;b&gt;FITS Format&lt;/b&gt;</property>
-                            <property name="use_markup">True</property>
-                            <property name="single_line_mode">True</property>
-                          </object>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
                       </packing>
                     </child>
                     <child>
@@ -20443,7 +20753,7 @@ The technique gives very good compression for astronomical images and is relativ
                   <packing>
                     <property name="name">preferences_p7</property>
                     <property name="title" translatable="yes">Miscellaneous</property>
-                    <property name="position">7</property>
+                    <property name="position">8</property>
                   </packing>
                 </child>
               </object>

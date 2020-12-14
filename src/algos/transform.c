@@ -112,7 +112,7 @@
 
 #include "core/siril.h"
 #include "core/siril_log.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/progress_and_log.h"
 #include "algos/Def_Math.h"
 #include "algos/Def_Mem.h"

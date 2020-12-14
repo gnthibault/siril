@@ -33,8 +33,10 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/siril_world_cs.h"
 #include "algos/photometry.h"
 #include "algos/sorting.h"
+#include "algos/siril_wcs.h"
 #include "filters/median.h"
 
 #include "PSF.h"
@@ -690,25 +692,46 @@ fitted_PSF *psf_global_minimisation(gsl_matrix* z, double bg, int layer,
 }
 
 void psf_display_result(fitted_PSF *result, rectangle *area) {
-	char buffer[256];
+	char *buffer, *coordinates;
 	char *str;
 	if (com.magOffset > 0.0)
 		str = "true reduced";
 	else
 		str = "relative";
 
-	g_snprintf(buffer, sizeof(buffer), _("PSF fit Result:\n"
-			"x0=%0.2f px, y0=%0.2f px\n"
+	double x = result->x0 + area->x;
+	double y = area->y + area->h - result->y0;
+
+	if (has_wcs()) {
+		double world_x, world_y;
+		SirilWorldCS *world_cs;
+		pix2wcs(x, (double) gfit.ry - y, &world_x, &world_y);
+		world_cs = siril_world_cs_new_from_a_d(world_x, world_y);
+		gchar *ra = siril_world_cs_alpha_format(world_cs, "%02dh%02dm%02ds");
+		gchar *dec = siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'%02d\"");
+		coordinates = g_strdup_printf("x0=%0.2f px, y0=%0.2f px (%s , %s)", x, y, ra, dec);
+
+		siril_world_cs_unref(world_cs);
+		g_free(ra);
+		g_free(dec);
+	} else {
+		coordinates = g_strdup_printf("x0=%0.2f px, y0=%0.2f px", x, y);
+	}
+
+	buffer = g_strdup_printf(_("PSF fit Result:\n"
+			"%s\n"
 			"FWHM X=%0.2f%s, FWHM Y=%0.2f%s\n"
 			"Angle=%0.2f deg\n"
 			"Background value=%0.6f\n"
 			"Maximal intensity=%0.6f\n"
 			"Magnitude (%s)=%0.2f\n"
-			"RMSE=%.3e\n"), result->x0 + area->x, area->y + area->h - result->y0,
+			"RMSE=%.3e\n"), coordinates,
 			result->fwhmx, result->units, result->fwhmy, result->units,
 			result->angle, result->B, result->A, str, result->mag + com.magOffset, result->rmse);
 
 	siril_log_message(buffer);
+	g_free(buffer);
+	g_free(coordinates);
 }
 
 #define _2_SQRT_2_LOG2 1.55185049709

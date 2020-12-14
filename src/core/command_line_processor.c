@@ -30,8 +30,10 @@
 #include "core/proto.h"
 #include "core/initfile.h"
 #include "core/OS_utils.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/progress_and_log.h"
+#include "gui/utils.h"
+#include "gui/callbacks.h"
 #include "core/processing.h"
 #include "core/command_list.h"
 #include "io/sequence.h"
@@ -377,9 +379,9 @@ int processcommand(const char *line) {
 sequence *load_sequence(const char *name, char **get_filename) {
 	gchar *file = g_strdup(name);
 	gchar *altfile = NULL;
-	if (!ends_with(name, ".seq")) {
+	if (!g_str_has_suffix(name, ".seq")) {
 		str_append(&file, ".seq");
-		if (!ends_with(name, "_"))
+		if (!g_str_has_suffix(name, "_"))
 			altfile = g_strdup_printf("%s_.seq", name);
 	}
 

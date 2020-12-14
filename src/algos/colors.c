@@ -30,7 +30,7 @@
 #include "core/undo.h"
 #include "core/OS_utils.h"
 #include "gui/progress_and_log.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/image_display.h"
 #include "gui/image_interactions.h"
 #include "gui/message_dialog.h"

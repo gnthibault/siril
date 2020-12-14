@@ -25,6 +25,7 @@
 #include "core/siril_update.h"
 #include "core/siril_cmd_help.h"
 #include "gui/about_dialog.h"
+#include "gui/utils.h"
 #include "gui/callbacks.h"
 #include "gui/open_dialog.h"
 #include "gui/save_dialog.h"
@@ -54,6 +55,11 @@ void save_action_activate(GSimpleAction *action, GVariant *parameter,
 void save_as_action_activate(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
 	on_header_save_as_button_clicked();
+}
+
+void snapshot_action_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	on_header_snapshot_button_clicked();
 }
 
 void undo_action_activate(GSimpleAction *action, GVariant *parameter,

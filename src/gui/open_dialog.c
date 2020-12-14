@@ -35,6 +35,7 @@
 #include "io/sequence.h"
 #include "io/single_image.h"
 #include "io/fits_sequence.h"
+#include "gui/utils.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
@@ -389,7 +390,7 @@ void on_open_recent_action_item_activated(GtkRecentChooser *chooser,
 	if (error) {
 		g_warning("Could not convert uri \"%s\" to a local path: %s", uri,
 				error->message);
-		g_error_free(error);
+		g_clear_error(&error);
 		return;
 	}
 

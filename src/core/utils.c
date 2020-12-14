@@ -30,6 +30,7 @@
 #include <fcntl.h>
 #include <string.h>
 #include <assert.h>
+#include <math.h>
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -41,7 +42,7 @@
 #include "io/conversion.h"
 #include "io/ser.h"
 #include "io/sequence.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/progress_and_log.h"
 #include "io/single_image.h"
 
@@ -493,24 +494,6 @@ gboolean isrgb(fits *fit) {
 }
 
 /**
- *  Looks whether the string str ends with ending. This is case insensitive
- *  @param str the string to check
- *  @param ending the suffix to look for
- *  @return TRUE if str ends with ending
- */
-gboolean ends_with(const char *str, const char *ending) {
-	if (!str || str[0] == '\0')
-		return FALSE;
-	if (!ending || ending[0] == '\0')
-		return TRUE;
-	int ending_len = strlen(ending);
-	int str_len = strlen(str);
-	if (ending_len > str_len)
-		return FALSE;
-	return !strncasecmp(str + str_len - ending_len, ending, ending_len);
-}
-
-/**
  *  Searches for an extension '.something' in filename from the end
  *  @param filename input filename
  *  @return the index of the first '.' found
@@ -807,7 +790,7 @@ int update_sequences_list(const char *sequence_name_to_select) {
 	gtk_combo_box_text_remove_all(seqcombo);
 
 	if (sequence_name_to_select) {
-	       if (ends_with(sequence_name_to_select, ".seq"))
+	       if (g_str_has_suffix(sequence_name_to_select, ".seq"))
 		       seqname = strdup(sequence_name_to_select);
 	       else {
 		       seqname = malloc(strlen(sequence_name_to_select) + 5);
@@ -1047,38 +1030,11 @@ gchar *siril_truncate_str(gchar *str, gint size) {
 }
 
 /**
- * Create a popover with icon and text
- * @param widget is the parent widget where the popover arises from
- * @param text will be shown in the popover
- * @return the GtkWidget of popover
+ *
+ * @param list
+ * @param arg_count
+ * @return
  */
-GtkWidget* popover_new(GtkWidget *widget, const gchar *text) {
-	GtkWidget *popover, *box, *image, *label;
-
-	popover = gtk_popover_new(widget);
-	label = gtk_label_new(NULL);
-	box = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 6);
-	image = gtk_image_new_from_icon_name("dialog-information-symbolic",
-			GTK_ICON_SIZE_DIALOG);
-
-	gtk_label_set_markup(GTK_LABEL(label), text);
-	gtk_label_set_line_wrap(GTK_LABEL(label), TRUE);
-	gtk_label_set_max_width_chars(GTK_LABEL(label), 64);
-
-	gtk_box_pack_start(GTK_BOX(box), image, FALSE, FALSE, 0);
-	gtk_box_pack_start(GTK_BOX(box), label, FALSE, FALSE, 0);
-	gtk_container_add(GTK_CONTAINER(popover), box);
-
-	/* make all sensitive in case where parent is not */
-	gtk_widget_set_sensitive(label, TRUE);
-	gtk_widget_set_sensitive(box, TRUE);
-	gtk_widget_set_sensitive(popover, TRUE);
-
-	gtk_widget_show_all(box);
-
-	return popover;
-}
-
 char **glist_to_array(GList *list, int *arg_count) {
 	int count;
 	if (arg_count && *arg_count > 0)
@@ -1098,4 +1054,37 @@ char **glist_to_array(GList *list, int *arg_count) {
 		array[i] = g_strdup(list->data);
 	g_list_free_full(orig_list, g_free);
 	return array;
+}
+
+/**
+ *
+ * @param uri_string
+ * @return a new allocated string
+ */
+gchar* url_cleanup(const gchar *uri_string) {
+	GString *copy;
+	const gchar *end;
+
+	/* Skip leading whitespace */
+	while (g_ascii_isspace(*uri_string))
+		uri_string++;
+
+	/* Ignore trailing whitespace */
+	end = uri_string + strlen(uri_string);
+	while (end > uri_string && g_ascii_isspace(*(end - 1)))
+		end--;
+
+	/* Copy the rest, encoding unencoded spaces and stripping other whitespace */
+	copy = g_string_sized_new(end - uri_string);
+	while (uri_string < end) {
+		if (*uri_string == ' ')
+			g_string_append(copy, "%20");
+		else if (g_ascii_isspace(*uri_string))
+			; // @suppress("Suspicious semicolon")
+		else
+			g_string_append_c(copy, *uri_string);
+		uri_string++;
+	}
+
+	return g_string_free(copy, FALSE);
 }

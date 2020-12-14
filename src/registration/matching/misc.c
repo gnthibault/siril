@@ -46,7 +46,7 @@
 #include <stdarg.h>
 #include <string.h>
 #include <ctype.h>
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "algos/PSF.h"
 #include "registration/matching/misc.h"
 #include "registration/matching/atpmatch.h"

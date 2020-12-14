@@ -27,7 +27,7 @@
 #include "algos/photometry.h"
 #include "algos/star_finder.h"
 #include "io/sequence.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/progress_and_log.h"
 #include "stacking/stacking.h"
 
@@ -201,6 +201,9 @@ static int readinitfile() {
 		}
 		if (config_setting_lookup_float(misc_setting, "font_scale", &com.pref.font_scale) == CONFIG_FALSE) {
 			com.pref.font_scale = 100.0;
+		}
+		if (config_setting_lookup_bool(misc_setting, "rgb_aladin", &com.pref.rgb_aladin) == CONFIG_FALSE) {
+			com.pref.rgb_aladin = FALSE;
 		}
 		config_setting_lookup_int(misc_setting, "thumbnail_size", &com.pref.thumbnail_size);
 		config_setting_lookup_int(misc_setting, "theme", &com.pref.combo_theme);
@@ -477,6 +480,9 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 
 	misc_setting = config_setting_add(misc_group, "font_scale", CONFIG_TYPE_FLOAT);
 	config_setting_set_float(misc_setting, com.pref.font_scale);
+
+	misc_setting = config_setting_add(misc_group, "rgb_aladin", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(misc_setting, com.pref.rgb_aladin);
 
 	misc_setting = config_setting_add(misc_group, "lang", CONFIG_TYPE_STRING);
 	config_setting_set_string(misc_setting, com.pref.combo_lang);

@@ -4,8 +4,6 @@
 #include <sys/time.h>
 #include "core/siril.h"	// for sliders_mode
 
-GtkWidget* lookup_widget (const gchar *widget_name);
-
 void initialize_all_GUI(gchar *files);
 void siril_set_theme(int active);
 void load_prefered_theme();
@@ -17,8 +15,6 @@ void set_display_mode();
 void adjust_exclude(int n, gboolean changed);
 void adjust_sellabel();
 void set_GUI_CWD();
-void set_GUI_MEM(guint64 used, const gchar *label);
-void set_GUI_DiskSpace(gint64 mem, const gchar *label);
 void set_GUI_misc();
 void set_icon_entry(GtkEntry *entry, gchar *string);
 void update_MenuItem();
@@ -39,7 +35,7 @@ void set_layers_for_assign();
 void set_layers_for_registration();
 void show_dialog(const char *text, const char *title, const char *icon);
 void show_txt_and_data_dialog(const char *text, const char *data, const char *title, const char *icon);
-void show_data_dialog(char *text, char *title);
+void show_data_dialog(char *text, char *title, gchar *extra_button);
 GtkWindow *siril_get_active_window();
 void initialize_FITS_name_entries();
 
@@ -49,7 +45,6 @@ void scrollbars_vadjustment_changed_handler(GtkAdjustment *adjustment, gpointer 
 void set_output_filename_to_sequence_name();
 void close_tab();
 void activate_tab(int vport);
-void control_window_switch_to_tab(main_tabs tab);
 
 void update_prepro_interface();
 

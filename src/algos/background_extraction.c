@@ -37,6 +37,7 @@
 #include "algos/statistics.h"
 #include "algos/geometry.h"
 #include "algos/sorting.h"
+#include "gui/utils.h"
 #include "gui/callbacks.h"
 #include "gui/image_display.h"
 #include "gui/image_interactions.h"
