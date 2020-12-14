@@ -663,7 +663,7 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 
 		if (fit->type == DATA_USHORT) {
 			if (s_args->option == STATS_BASIC) {
-				s_args->list[new_index + layer] = g_strdup_printf("%d: %d\t%e\t%e\t%e\t%e\t%e\t%e\n",
+				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\n",
 						i + 1,
 						layer, stat->mean / USHRT_MAX_DOUBLE,
 						stat->median / USHRT_MAX_DOUBLE,
@@ -673,7 +673,7 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 						stat->max / USHRT_MAX_DOUBLE
 						);
 			} else {
-				s_args->list[new_index + layer] = g_strdup_printf("%d: %d\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\n",
+				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\n",
 						i + 1,
 						layer, stat->mean / USHRT_MAX_DOUBLE,
 						stat->median / USHRT_MAX_DOUBLE,
@@ -690,7 +690,7 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 			}
 		} else {
 			if (s_args->option == STATS_BASIC) {
-				s_args->list[new_index + layer] = g_strdup_printf("%d: %d\t%e\t%e\t%e\t%e\t%e\t%e\n",
+				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\n",
 						i + 1,
 						layer, stat->mean,
 						stat->median,
@@ -700,7 +700,7 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 						stat->max
 						);
 			} else {
-				s_args->list[new_index + layer] = g_strdup_printf("%d: %d\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\n",
+				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\n",
 						i + 1,
 						layer, stat->mean,
 						stat->median,
@@ -739,13 +739,14 @@ static int stat_finalize_hook(struct generic_seq_args *args) {
 		}
 		g_object_unref(file);
 		free_stat_list(s_args->list, size);
+		free(s_args);
 		return 1;
 	}
 	const gchar *header;
 	if (s_args->option == STATS_BASIC) {
-		header = "image: chan\tmean\tmedian\tsigma\tavgDev\tmin\tmax\n";
+		header = "image\tchan\tmean\tmedian\tsigma\tavgDev\tmin\tmax\n";
 	} else {
-		header = "image: chan\tmean\tmedian\tsigma\tavgDev\tmin\tmax\tmad\tsqrtbwmv\tlocation\tscale\tbgnoise\n";
+		header = "image\tchan\tmean\tmedian\tsigma\tavgDev\tmin\tmax\tmad\tsqrtbwmv\tlocation\tscale\tbgnoise\n";
 	}
 	if (!g_output_stream_write_all(output_stream, header, strlen(header), NULL, NULL, &error)) {
 		g_warning("%s\n", error->message);
@@ -753,6 +754,7 @@ static int stat_finalize_hook(struct generic_seq_args *args) {
 		g_object_unref(output_stream);
 		g_object_unref(file);
 		free_stat_list(s_args->list, size);
+		free(s_args);
 		return 1;
 	}
 
@@ -764,6 +766,7 @@ static int stat_finalize_hook(struct generic_seq_args *args) {
 			g_object_unref(output_stream);
 			g_object_unref(file);
 			free_stat_list(s_args->list, size);
+			free(s_args);
 			return 1;
 		}
 	}
@@ -771,6 +774,7 @@ static int stat_finalize_hook(struct generic_seq_args *args) {
 	g_object_unref(output_stream);
 	g_object_unref(file);
 	free_stat_list(s_args->list, size);
+	free(s_args);
 
 	return 0;
 }
