@@ -6,7 +6,7 @@
 #include "command.h"
 #include "command_def.h"
 
-#define MAX_COMMAND_WORDS 16		// max number of words to split in command line input
+#define MAX_COMMAND_WORDS 50		// max number of words to split in command line input
 
 extern char *word[MAX_COMMAND_WORDS];	// NULL terminated
 

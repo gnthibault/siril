@@ -1329,7 +1329,6 @@ int process_seq_crop(int nb) {
 	rectangle area;
 
 	int startoptargs = 5;
-	int nb_command_max = 6;
 
 	if ((!com.selection.h) || (!com.selection.w)) {
 		if (nb >= startoptargs) {
@@ -1367,7 +1366,7 @@ int process_seq_crop(int nb) {
 	args->prefix = "cropped_";
 	
 	if (nb > startoptargs) {
-		for (int i = startoptargs; i < nb_command_max; i++) {
+		for (int i = startoptargs; i < nb; i++) {
 			if (word[i]) {
 				if (g_str_has_prefix(word[i], "-prefix=")) {
 					char *current = word[i], *value;
@@ -2144,9 +2143,8 @@ int process_subsky(int nb) {
 		args->degree = (poly_order) (degree - 1);
 
 		int startoptargs = 3;
-		int nb_command_max = 4;
 		if (nb > startoptargs) {
-			for (int i = startoptargs; i < nb_command_max; i++) {
+			for (int i = startoptargs; i < nb; i++) {
 				if (word[i]) {
 					if (g_str_has_prefix(word[i], "-prefix=")) {
 						char *current = word[i], *value;
@@ -2553,9 +2551,8 @@ int process_seq_mtf(int nb) {
 	args->hi = g_ascii_strtod(word[4], NULL);
 
 	int startoptargs = 5;
-	int nb_command_max = 6;
 	if (nb > startoptargs) {
-		for (int i = startoptargs; i < nb_command_max; i++) {
+		for (int i = startoptargs; i < nb; i++) {
 			if (word[i]) {
 				if (g_str_has_prefix(word[i], "-prefix=")) {
 					char *current = word[i], *value;
@@ -2599,9 +2596,8 @@ int process_seq_split_cfa(int nb) {
 	args->seqEntry = "CFA_"; // propose to default to "CFA" for consistency of output names with single image split_cfa
 
 	int startoptargs = 2;
-	int nb_command_max = 3;
 	if (nb > startoptargs) {
-		for (int i = startoptargs; i < nb_command_max; i++) {
+		for (int i = startoptargs; i < nb; i++) {
 			if (word[i]) {
 				if (g_str_has_prefix(word[i], "-prefix=")) {
 					char *current = word[i], *value;
@@ -2644,9 +2640,8 @@ int process_seq_extractHa(int nb) {
 	args->seqEntry = "Ha_";
 
 	int startoptargs = 2;
-	int nb_command_max = 3;
 	if (nb > startoptargs) {
-		for (int i = startoptargs; i < nb_command_max; i++) {
+		for (int i = startoptargs; i < nb; i++) {
 			if (word[i]) {
 				if (g_str_has_prefix(word[i], "-prefix=")) {
 					char *current = word[i], *value;
@@ -2765,7 +2760,7 @@ int process_convertraw(int nb) {
 		return 1;
 	}
 
-	for (int i = 2; i < 6; i++) {
+	for (int i = 2; i < nb; i++) {
 		if (word[i]) {
 			char *current = word[i], *value;
 			if (!strcmp(current, "-debayer")) {
@@ -2868,7 +2863,7 @@ int process_link(int nb) {
 		return 1;
 	}
 
-	for (int i = 2; i < 4; i++) {
+	for (int i = 2; i < nb; i++) {
 		if (word[i]) {
 			char *current = word[i], *value;
 			if (g_str_has_prefix(current, "-start=")) {
@@ -2970,7 +2965,7 @@ int process_convert(int nb) {
 		return 1;
 	}
 
-	for (int i = 2; i < 6; i++) {
+	for (int i = 2; i < nb; i++) {
 		if (word[i]) {
 			char *current = word[i], *value;
 			if (!strcmp(current, "-debayer")) {
@@ -3106,7 +3101,7 @@ int process_register(int nb) {
 	reg_args->min_pairs = AT_MATCH_MINPAIRS;
 
 	/* check for options */
-	for (i = 2; i < 6; i++) {
+	for (i = 2; i < nb; i++) {
 		if (word[i]) {
 			if (!strcmp(word[i], "-drizzle")) {
 				reg_args->x2upscale = TRUE;
@@ -3599,7 +3594,6 @@ failure:
 
 int process_preprocess(int nb) {
 	struct preprocessing_data *args;
-	int nb_command_max = 12;
 	int i, retvalue = 0;
 
 	if (word[1][0] == '\0') {
@@ -3614,7 +3608,7 @@ int process_preprocess(int nb) {
 	args->ppprefix = "pp_";
 	
 	/* checking for options */
-	for (i = 2; i < nb_command_max; i++) {
+	for (i = 2; i < nb; i++) {
 		if (word[i]) {
 			if (g_str_has_prefix(word[i], "-bias=")) {
 				args->bias = calloc(1, sizeof(fits));
