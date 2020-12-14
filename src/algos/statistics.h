@@ -1,6 +1,16 @@
 #ifndef _SIRIL_STATS_H
 #define _SIRIL_STATS_H
 
+struct stat_data {
+	fits *fit;
+	int option;
+	gchar **list;
+	sequence *seq;
+	gchar *csv_name;
+	const gchar *seqEntry;	// not used for stats
+
+};
+
 #define STATS_MINMAX	(1 << 1)	// min, max
 #define STATS_NOISE (1 << 2) // noise
 #define STATS_BASIC	(1 << 3)	// median, mean, sigma, noise, min, max
@@ -32,6 +42,8 @@ void copy_seq_stats_to_fit(sequence *seq, int index, fits *fit);
 void save_stats_from_fit(fits *fit, sequence *seq, int index);
 void invalidate_stats_from_fit(fits *fit);
 void full_stats_invalidation_from_fit(fits *fit);
+
+void apply_stats_to_sequence(struct stat_data *stat_args);
 
 #endif
 

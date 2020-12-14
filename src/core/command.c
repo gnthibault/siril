@@ -2711,7 +2711,7 @@ int process_stat(int nb){
 
 		switch (layer) {
 			case 0:
-				if (gfit.naxes[2] == 1)
+				if (nplane == 1)
 					strcpy(layername, "B&W");
 				else
 					strcpy(layername, "Red");
@@ -2742,6 +2742,35 @@ int process_stat(int nb){
 		}
 		free_stats(stat);
 	}
+	return 0;
+}
+
+int process_seq_stat(int nb) {
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
+	sequence *seq = load_sequence(word[1], NULL);
+	if (!seq)
+		return 1;
+
+	struct stat_data *args = calloc(1, sizeof(struct stat_data));
+
+	args->seq = seq;
+	args->seqEntry = ""; // not used
+	args->csv_name = g_strdup(word[2]);
+
+	if (word[3] && !g_strcmp0(word[3], "extra")) {
+		args->option = STATS_EXTRA;
+	} else {
+		args->option = STATS_BASIC;
+	}
+
+	set_cursor_waiting(TRUE);
+
+	apply_stats_to_sequence(args);
+
 	return 0;
 }
 

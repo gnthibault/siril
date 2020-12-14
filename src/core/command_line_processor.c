@@ -358,6 +358,9 @@ int processcommand(const char *line) {
 		com.script_thread = g_thread_new("script", execute_script, input_stream);
 		g_object_unref(file);
 	} else {
+		/* Switch to console tab */
+		control_window_switch_to_tab(OUTPUT_LOGS);
+
 		myline = strdup(line);
 		int len = strlen(line);
 		parseLine(myline, len, &wordnb);

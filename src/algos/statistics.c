@@ -40,8 +40,10 @@
 #include <gsl/gsl_statistics.h>
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/processing.h"
 #include "gui/dialogs.h"
 #include "gui/progress_and_log.h"
+#include "io/image_format_fits.h"
 #include "sorting.h"
 #include "statistics.h"
 #include "statistics_float.h"
@@ -628,6 +630,169 @@ void clear_stats(sequence *seq, int layer) {
 			}
 		}
 	}
+}
+
+/** generic function for sequences */
+
+static void free_stat_list(gchar **list, int nb) {
+	for (int i = 0; i < nb; i++) {
+		g_free(list[i]);
+	}
+	free(list);
+}
+
+static int stat_prepare_hook(struct generic_seq_args *args) {
+	struct stat_data *s_args = (struct stat_data*) args->user;
+	s_args->list = calloc(args->nb_filtered_images * s_args->seq->nb_layers, sizeof(char*));
+
+	return 0;
+}
+
+static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
+		rectangle *_) {
+	struct stat_data *s_args = (struct stat_data*) args->user;
+
+	for (int layer = 0; layer < fit->naxes[2]; layer++) {
+		imstats* stat = statistics(NULL, -1, fit, layer, &com.selection, s_args->option, TRUE);
+		if (!stat) {
+			siril_log_message(_("Error: statistics computation failed.\n"));
+			return 1;
+		}
+
+		int new_index = i * s_args->seq->nb_layers;
+
+		if (fit->type == DATA_USHORT) {
+			if (s_args->option == STATS_BASIC) {
+				s_args->list[new_index + layer] = g_strdup_printf("%d: %d\t%e\t%e\t%e\t%e\t%e\t%e\n",
+						i,
+						layer, stat->mean / USHRT_MAX_DOUBLE,
+						stat->median / USHRT_MAX_DOUBLE,
+						stat->sigma / USHRT_MAX_DOUBLE,
+						stat->avgDev / USHRT_MAX_DOUBLE,
+						stat->min / USHRT_MAX_DOUBLE,
+						stat->max / USHRT_MAX_DOUBLE
+						);
+			} else {
+				s_args->list[new_index + layer] = g_strdup_printf("%d: %d\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\n",
+						i,
+						layer, stat->mean / USHRT_MAX_DOUBLE,
+						stat->median / USHRT_MAX_DOUBLE,
+						stat->sigma / USHRT_MAX_DOUBLE,
+						stat->avgDev / USHRT_MAX_DOUBLE,
+						stat->min / USHRT_MAX_DOUBLE,
+						stat->max / USHRT_MAX_DOUBLE,
+						stat->mad / USHRT_MAX_DOUBLE,
+						stat->sqrtbwmv / USHRT_MAX_DOUBLE,
+						stat->location / USHRT_MAX_DOUBLE,
+						stat->scale / USHRT_MAX_DOUBLE,
+						stat->bgnoise / USHRT_MAX_DOUBLE
+						);
+			}
+		} else {
+			if (s_args->option == STATS_BASIC) {
+				s_args->list[new_index + layer] = g_strdup_printf("%d: %d\t%e\t%e\t%e\t%e\t%e\t%e\n",
+						i,
+						layer, stat->mean,
+						stat->median,
+						stat->sigma,
+						stat->avgDev,
+						stat->min,
+						stat->max
+						);
+			} else {
+				s_args->list[new_index + layer] = g_strdup_printf("%d: %d\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\n",
+						i,
+						layer, stat->mean,
+						stat->median,
+						stat->sigma,
+						stat->avgDev,
+						stat->min,
+						stat->max,
+						stat->mad,
+						stat->sqrtbwmv,
+						stat->location,
+						stat->scale,
+						stat->bgnoise
+						);
+			}
+		}
+
+		free_stats(stat);
+	}
+	return 0;
+}
+
+static int stat_finalize_hook(struct generic_seq_args *args) {
+	GError *error = NULL;
+	struct stat_data *s_args = (struct stat_data*) args->user;
+
+	int size = s_args->seq->nb_layers * args->nb_filtered_images;
+	GFile *file = g_file_new_for_path(s_args->csv_name);
+	GOutputStream* output_stream = (GOutputStream*) g_file_replace(file, NULL, FALSE,
+			G_FILE_CREATE_NONE, NULL, &error);
+	g_free(s_args->csv_name);
+	if (output_stream == NULL) {
+		if (error != NULL) {
+			g_warning("%s\n", error->message);
+			g_clear_error(&error);
+			fprintf(stderr, "Cannot save histo\n");
+		}
+		g_object_unref(file);
+		free_stat_list(s_args->list, size);
+		return 1;
+	}
+	const gchar *header;
+	if (s_args->option == STATS_BASIC) {
+		header = "image: chan\tmean\tmedian\tsigma\tavgDev\tmin\tmax\n";
+	} else {
+		header = "image: chan\tmean\tmedian\tsigma\tavgDev\tmin\tmax\tmad\tsqrtbwmv\tlocation\tscale\tbgnoise\n";
+	}
+	if (!g_output_stream_write_all(output_stream, header, strlen(header), NULL, NULL, &error)) {
+		g_warning("%s\n", error->message);
+		g_clear_error(&error);
+		g_object_unref(output_stream);
+		g_object_unref(file);
+		free_stat_list(s_args->list, size);
+		return 1;
+	}
+
+	for (int i = 0; i < args->nb_filtered_images * s_args->seq->nb_layers; i++) {
+		if (!s_args->list[i]) continue; //stats can fail
+		if (!g_output_stream_write_all(output_stream, s_args->list[i], strlen(s_args->list[i]), NULL, NULL, &error)) {
+			g_warning("%s\n", error->message);
+			g_clear_error(&error);
+			g_object_unref(output_stream);
+			g_object_unref(file);
+			free_stat_list(s_args->list, size);
+			return 1;
+		}
+	}
+
+	g_object_unref(output_stream);
+	g_object_unref(file);
+	free_stat_list(s_args->list, size);
+
+	return 0;
+}
+
+void apply_stats_to_sequence(struct stat_data *stat_args) {
+	struct generic_seq_args *args = create_default_seqargs(stat_args->seq);
+	args->seq = stat_args->seq;
+	args->filtering_criterion = seq_filter_included;
+	args->nb_filtered_images = stat_args->seq->selnum;
+	args->prepare_hook = stat_prepare_hook;
+	args->finalize_hook = stat_finalize_hook;
+	args->image_hook = stat_image_hook;
+	args->description = _("Statistics");
+	args->has_output = FALSE;
+	args->output_type = get_data_type(args->seq->bitpix);
+	args->upscale_ratio = 1.23;	// sqrt(1.5), for memory management
+	args->new_seq_prefix = NULL;
+	args->user = stat_args;
+
+	stat_args->fit = NULL;	// not used here
+
+	start_in_new_thread(generic_sequence_worker, args);
 }
 
 /**** callbacks *****/
