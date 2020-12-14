@@ -6,6 +6,8 @@
 # List icons
 
 siril_icons = [
+  'astrometry.png',
+  'astrometry_dark.png',
   'b.png',
   'chain.png',
   'cm.png',

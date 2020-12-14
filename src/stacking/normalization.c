@@ -8,7 +8,7 @@
 #include "io/image_format_fits.h"
 #include "io/sequence.h"
 #include "gui/progress_and_log.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 
 static int compute_normalization(struct stacking_args *args);
 

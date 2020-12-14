@@ -103,6 +103,7 @@
 #include <string.h>
 #include <math.h>
 #include "core/siril.h"
+#include "core/siril_world_cs.h"
 #include "algos/PSF.h"
 #include "algos/plateSolver.h"
 #include "apply_match.h"
@@ -154,14 +155,18 @@ static int proc_star_file(image_solved *solved, TRANS *trans) {
 	double z, alpha, delta;
 	double delta_ra, delta_dec;
 	double rsquared;
-	double ra = solved->px_cat_center.x;
-	double dec = solved->px_cat_center.y;
+	SirilWorldCS *px_cat_center = get_image_solved_px_cat_center(solved);
+	double ra = siril_world_cs_get_alpha(px_cat_center);
+	double dec = siril_world_cs_get_delta(px_cat_center);
+
+	siril_world_cs_unref(px_cat_center);
 
 	r_dec = dec * DEGTORAD;
 
 //	while (s && s[i]) {
-	xval = solved->x; //s[i]->xpos;
-	yval = solved->y; //s[i]->ypos;
+	xval = get_image_solved_x(solved); //s[i]->xpos;
+	yval = get_image_solved_y(solved); //s[i]->ypos;
+
 	/*
 	 * let's transform from (x,y) to (delta_ra, delta_dec),
 	 * using either a linear, quadratic, or cubic transformation
@@ -243,8 +248,8 @@ static int proc_star_file(image_solved *solved, TRANS *trans) {
 #ifdef DEBUG
 	fprintf(stdout, "new RA = %10.5f, new dec = %10.5f\n", alpha, delta);
 #endif
-	solved->ra = alpha;
-	solved->dec = delta;
+
+	update_image_center_coord(solved, alpha, delta);
 
 //	i++;
 //	}

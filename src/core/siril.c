@@ -28,6 +28,7 @@
 #include "core/proto.h"
 #include "core/processing.h"
 #include "core/arithm.h"
+#include "gui/utils.h"
 #include "gui/callbacks.h"
 #include "gui/message_dialog.h"
 #include "gui/image_display.h"
@@ -358,7 +359,7 @@ double background(fits* fit, int reqlayer, rectangle *selection, gboolean multit
 
 void show_FITS_header(fits *fit) {
 	if (fit->header)
-		show_data_dialog(fit->header, "FITS Header");
+		show_data_dialog(fit->header, "FITS Header", NULL);
 }
 
 void compute_grey_flat(fits *fit) {

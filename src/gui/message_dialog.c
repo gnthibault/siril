@@ -23,6 +23,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/initfile.h"
+#include "gui/utils.h"
 #include "gui/callbacks.h"
 
 #include "message_dialog.h"

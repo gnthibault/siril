@@ -37,7 +37,7 @@
 #include "io/ser.h"
 #include "io/sequence.h"
 #include "core/proto.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/progress_and_log.h"
 #ifdef HAVE_FFMS2
 #include "io/films.h"
@@ -82,7 +82,7 @@ sequence * readseqfile(const char *name){
 	if (!name) return NULL;
 	fprintf(stdout, "Reading sequence file `%s'.\n", name);
 
-	if(!ends_with(name, ".seq")){
+	if(!g_str_has_suffix(name, ".seq")){
 		seqfilename = malloc(strlen(name) + 6);	/* 6 stands for a max length of 4 + '.' + '\0' */
 		sprintf(seqfilename, "%s.seq", name);
 	} else {

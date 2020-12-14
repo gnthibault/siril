@@ -29,14 +29,15 @@
 #include <gtk/gtk.h>
 
 #include "core/siril.h"
+#include "core/proto.h"
 #include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/image_display.h"
 #include "gui/image_interactions.h"
 #include "gui/message_dialog.h"
 #include "gui/plot.h"
 #include "gui/progress_and_log.h"
 #include "gui/sequence_list.h"
-#include "core/proto.h"
 #include "core/initfile.h"
 #include "core/OS_utils.h"
 #include "registration/registration.h"

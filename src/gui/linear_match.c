@@ -29,7 +29,7 @@
 #include "io/image_format_fits.h"
 #include "gui/message_dialog.h"
 #include "gui/image_display.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/dialogs.h"
 #include "gui/progress_and_log.h"
 

@@ -48,6 +48,7 @@ time, or their support won't be included.
  * **libpng** (>= 1.6) for PNG format support
  * **libavformat**, **libavutil** (>= 55.20), **libavcodec**, **libswscale** and **libswresample** for avi export (usually provided by ffmpeg)
  * **libcurl** for web interaction. Useless on GNU-Linux MUST be installed on macOS and Windows platform as GIO is broken
+ * **wcslib** for some astrometry utilities
  * **criterion** for unit testing
  * **gnuplot** for photometry graphs output
 

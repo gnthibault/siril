@@ -28,7 +28,7 @@
 #include "io/single_image.h"
 #include "gui/image_display.h"
 #include "gui/progress_and_log.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/histogram.h"
 #include "gui/dialogs.h"
 

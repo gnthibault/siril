@@ -18,17 +18,22 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
+
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/processing.h"
 #include "core/undo.h"
+#include "core/siril_world_cs.h"
 #include "algos/background_extraction.h"
+#include "algos/siril_wcs.h"
 #include "io/single_image.h"
 #include "io/sequence.h"
 #include "gui/open_dialog.h"
 #include "image_interactions.h"
 #include "image_display.h"
-#include "callbacks.h"
+#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "progress_and_log.h"
 #include "message_dialog.h"
 
@@ -271,7 +276,6 @@ static void do_popup_graymenu(GtkWidget *my_widget, GdkEventButton *event) {
 	gtk_menu_popup(GTK_MENU(menu), NULL, NULL, NULL, NULL, button, event_time);
 #endif
 }
-
 
 static void enforce_ratio_and_clamp() {
 	if (com.ratio > 0.0
@@ -655,47 +659,65 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 	pointi zoomed = { (int)(evpos.x), (int)(evpos.y) };
 	gboolean inside = clamp2image(&zoomed);
 
-	const char *suffix = untranslated_vport_number_to_name(com.cvport);
-	gchar *label = g_strdup_printf("labeldensity_%s", suffix);
+	static const gchar *label_density[] = { "labeldensity_red", "labeldensity_green", "labeldensity_blue", "labeldensity_rgb"};
+	static const gchar *label_wcs[] = { "labelwcs_red", "labelwcs_green", "labelwcs_blue", "labelwcs_rgb" };
 
-	if (inside && com.cvport < RGB_VPORT) {
-		char *buffer = NULL;
-		char *format = NULL;
-		int coords_width = 3;
+	if (com.cvport < RGB_VPORT) {
+		gtk_label_set_text(GTK_LABEL(lookup_widget(label_density[com.cvport])), "");
+		gtk_label_set_text(GTK_LABEL(lookup_widget(label_wcs[com.cvport])), "");
 
-		if (gfit.rx >= 1000 || gfit.ry >= 1000)
+		if (inside) {
+			static gchar buffer[256] = { 0 };
+			static gchar wcs_buffer[256] = { 0 };
+			static gchar format[256] = { 0 };
+			int coords_width = 3;
+
+			if (gfit.rx >= 1000 || gfit.ry >= 1000)
 			coords_width = 4;
-		if (gfit.type == DATA_USHORT && gfit.pdata[com.cvport] != NULL) {
-			int val_width = 3;
-			char *format_base_ushort = "x: %%.%dd y: %%.%dd = %%.%dd";
-			if (gfit.hi >= 1000)
-				val_width = 4;
-			if (gfit.hi >= 10000)
-				val_width = 5;
-			format = g_strdup_printf(format_base_ushort,
-					coords_width, coords_width, val_width);
-			buffer = g_strdup_printf(format, zoomed.x, zoomed.y,
-					gfit.pdata[com.cvport][gfit.rx * (gfit.ry - zoomed.y - 1)
-					+ zoomed.x]);
-		} else if (gfit.type == DATA_FLOAT  && gfit.fpdata[com.cvport] != NULL) {
-			char *format_base_float = "x: %%.%dd y: %%.%dd = %%f";
-			format = g_strdup_printf(format_base_float,
-					coords_width, coords_width);
-			buffer = g_strdup_printf(format, zoomed.x, zoomed.y,
-					gfit.fpdata[com.cvport][gfit.rx * (gfit.ry - zoomed.y - 1)
-					+ zoomed.x]);
-		}
+			if (gfit.type == DATA_USHORT && gfit.pdata[com.cvport] != NULL) {
+				int val_width = 3;
+				char *format_base_ushort = "x: %%.%dd y: %%.%dd (=%%.%dd)";
+				if (gfit.hi >= 1000)
+					val_width = 4;
+				if (gfit.hi >= 10000)
+					val_width = 5;
+				g_sprintf(format, format_base_ushort,
+						coords_width, coords_width, val_width);
+				g_sprintf(buffer, format, zoomed.x, zoomed.y,
+						gfit.pdata[com.cvport][gfit.rx * (gfit.ry - zoomed.y - 1)
+											   + zoomed.x]);
+			} else if (gfit.type == DATA_FLOAT  && gfit.fpdata[com.cvport] != NULL) {
+				char *format_base_float = "x: %%.%dd y: %%.%dd (=%%f)";
+				g_sprintf(format, format_base_float,
+						coords_width, coords_width);
+				g_sprintf(buffer, format, zoomed.x, zoomed.y,
+						gfit.fpdata[com.cvport][gfit.rx * (gfit.ry - zoomed.y - 1) + zoomed.x]);
+			}
+			if (has_wcs()) {
+				double world_x, world_y;
+				pix2wcs((double) zoomed.x, (double) (gfit.ry - zoomed.y - 1), &world_x, &world_y);
+				if (world_x >= 0.0 && !isnan(world_x) && !isnan(world_y)) {
+					SirilWorldCS *world_cs;
 
-		if (buffer) {
-			gtk_label_set_text(GTK_LABEL(lookup_widget(label)), buffer);
-			g_free(buffer);
-			g_free(format);
+					world_cs = siril_world_cs_new_from_a_d(world_x, world_y);
+
+					gchar *ra = siril_world_cs_alpha_format(world_cs, "%02dh%02dm%02ds");
+					gchar *dec = siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'%02d\"");
+					g_sprintf(wcs_buffer, "α: %s δ: %s", ra, dec);
+
+					gtk_label_set_text(GTK_LABEL(lookup_widget(label_wcs[com.cvport])), wcs_buffer);
+
+					g_free(ra);
+					g_free(dec);
+					siril_world_cs_unref(world_cs);
+				}
+			}
+
+			if (buffer[0] != '\0') {
+				gtk_label_set_text(GTK_LABEL(lookup_widget(label_density[com.cvport])), buffer);
+			}
 		}
-	} else if (widget != com.vport[RGB_VPORT]) {
-		gtk_label_set_text(GTK_LABEL(lookup_widget(label)), "");
 	}
-
-	g_free(label);
 
 	if (com.translating) {
 		update_zoom_fit_button();

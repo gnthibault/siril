@@ -5,6 +5,7 @@ export CC CFLAGS CPPFLAGS
 SUBDIRS = subprojects \
 	po \
 	src \
+	data \
 	pixmaps \
 	platform-specific
 

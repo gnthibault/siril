@@ -30,7 +30,7 @@
 #include "io/single_image.h"
 #include "io/sequence.h"
 #include "gui/image_display.h"
-#include "gui/callbacks.h"	// for lookup_widget()
+#include "gui/utils.h"	// for lookup_widget()
 #include "gui/progress_and_log.h"
 #include "gui/dialogs.h"
 #include "gui/siril_preview.h"

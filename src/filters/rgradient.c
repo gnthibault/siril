@@ -30,7 +30,7 @@
 #include "algos/PSF.h"
 #include "gui/image_display.h"
 #include "gui/histogram.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/dialogs.h"
 #include "gui/message_dialog.h"
 #include "opencv/opencv.h"

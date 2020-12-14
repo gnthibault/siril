@@ -54,6 +54,7 @@
 
 #define SQR(x) ((x)*(x))
 #endif
+#define RADCONV ((3600.0 * 180.0) / M_PI) / 1.0E3
 
 #define USHRT_MAX_DOUBLE ((double)USHRT_MAX)
 #define SHRT_MAX_DOUBLE ((double)SHRT_MAX)
@@ -224,16 +225,6 @@ typedef enum {
 } open_image_status;
 
 typedef enum {
-	FILE_CONVERSION,
-	IMAGE_SEQ,
-	PRE_PROC,
-	REGISTRATION,
-	PLOT,
-	STACKING,
-	OUTPUT_LOGS
-} main_tabs;
-
-typedef enum {
 	BAYER_BILINEAR,
 	BAYER_VNG,
 	BAYER_AHD,
@@ -368,13 +359,12 @@ struct single_image {
 };
 
 struct wcs_struct {
-	unsigned int equinox;
-	double crpix1, crpix2;
-	double crval1, crval2;
-	double cdelt1, cdelt2;
-	double cd1_1, cd1_2;
-	double cd2_1, cd2_2;
-	double crota1, crota2;
+	double equinox;
+	double crpix[2];
+	double crval[2];
+	double cdelt[2];
+	double cd[2][2];
+	double crota[2];
 	char objctra[FLEN_VALUE];
 	char objctdec[FLEN_VALUE];
 };
@@ -591,8 +581,9 @@ struct pref_struct {
 	struct debayer_config debayer;	// debayer settings
 	phot phot_set;          // photometry settings
 
-	stackconf stack;
-	compconf comp;
+	stackconf stack; // stacking option
+	compconf comp; // compression option
+	gboolean rgb_aladin; // Add CTYPE3='RGB' in the FITS header
 
 	gboolean force_to_16bit;
 
@@ -687,6 +678,7 @@ struct cominf {
 	double magOffset;		// offset to reduce the real magnitude, single image
 	
 	GSList *grad_samples;
+	GSList *found_object;
 
 	int max_thread;			// maximum of thread used for parallel execution
 

@@ -1,0 +1,14 @@
+--- wcslib-7.3.1/C/wcs.h
++++ wcslib-7.3.1/C/wcs.h
+@@ -1723,6 +1723,10 @@
+ #ifndef WCSLIB_WCS
+ #define WCSLIB_WCS
+ 
++#ifdef _WIN32
++#define wcsset wcs_set
++#endif
++
+ #include "lin.h"
+ #include "cel.h"
+ #include "spc.h"
+

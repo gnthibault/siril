@@ -24,20 +24,10 @@
 #include "core/command.h" // for process_clear()
 #include "core/OS_utils.h"
 #include "core/pipe.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
 
-
-static void replace_not_valid_char(gchar *str, gchar c, gchar n) {
-	gchar *s = str;
-	while (*s) {
-		if (*s == c) {
-			*s = n;
-		}
-		s++;
-	}
-}
 
 static void save_log_file(gchar *filename) {
 	GtkTextBuffer *log;
@@ -93,7 +83,6 @@ static void save_log_dialog() {
 	gchar *filename;
 
 	filename = build_timestamp_filename();
-	replace_not_valid_char(filename, ':', '.');
 	filename = str_append(&filename, ".log");
 
 	widgetdialog = siril_file_chooser_save(control_window, GTK_FILE_CHOOSER_ACTION_SAVE);

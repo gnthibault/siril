@@ -34,7 +34,7 @@
 #include "core/siril_date.h"
 #include "core/OS_utils.h"
 #include "core/processing.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/image_display.h"
 #include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"

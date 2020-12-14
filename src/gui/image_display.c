@@ -26,9 +26,12 @@
 #include "algos/colors.h"
 #include "algos/background_extraction.h"
 #include "algos/PSF.h"
+#include "algos/siril_wcs.h"
+#include "algos/annotate.h"
 #include "io/single_image.h"
 #include "io/sequence.h"
-#include "callbacks.h"
+#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "histogram.h"
 #include "git-version.h"
 
@@ -702,6 +705,60 @@ static void draw_brg_boxes(const draw_data_t* dd) {
 	}
 }
 
+static void draw_annotates(const draw_data_t* dd) {
+	if (!com.found_object) return;
+	cairo_t *cr = dd->cr;
+	cairo_set_dash(cr, NULL, 0, 0);
+	cairo_set_source_rgba(cr, 0.5, 1.0, 0.3, 0.9);
+	cairo_set_line_width(cr, 1.5 / dd->zoom);
+	GSList *list;
+	for (list = com.found_object; list; list = list->next) {
+		CatalogObjects *object = (CatalogObjects *)list->data;
+		gdouble radius = get_catalogue_object_radius(object);
+		gdouble world_x = get_catalogue_object_ra(object);
+		gdouble world_y = get_catalogue_object_dec(object);
+		gchar *code = get_catalogue_object_code(object);
+		gdouble resolution = get_wcs_image_resolution();
+		gdouble x, y;
+		gdouble size = 16;
+
+		if (resolution <= 0) return;
+
+		radius = radius / resolution / 60.0;
+
+		wcs2pix(world_x, world_y, &x, &y);
+		y = gfit.ry - y;
+
+		if (x > 0 && x < gfit.rx && y > 0 && y < gfit.ry) {
+			if (radius > 5) {
+				cairo_arc(cr, x, y, radius, 0., 2. * M_PI);
+				cairo_stroke(cr);
+			} else {
+				/* it is ponctual */
+				cairo_move_to(cr, x, y - 20);
+				cairo_line_to(cr, x, y - 10);
+				cairo_stroke(cr);
+				cairo_move_to(cr, x, y + 20);
+				cairo_line_to(cr, x, y + 10);
+				cairo_stroke(cr);
+				cairo_move_to(cr, x - 20, y);
+				cairo_line_to(cr, x - 10, y);
+				cairo_stroke(cr);
+				cairo_move_to(cr, x + 20, y);
+				cairo_line_to(cr, x + 10, y);
+				cairo_stroke(cr);
+			}
+			if (code) {
+				gdouble offset = radius > 5 ? radius * 0.8 : 10;
+				cairo_set_font_size(cr, size / dd->zoom);
+				cairo_move_to(cr, x + offset, y - offset);
+				cairo_show_text(cr, code);
+				cairo_stroke(cr);
+			}
+		}
+	}
+}
+
 static gboolean redraw_idle(gpointer p) {
 	redraw(com.cvport, GPOINTER_TO_INT(p)); // draw stars
 	return FALSE;
@@ -815,6 +872,15 @@ void queue_redraw(int doremap) {
 	siril_add_idle(redraw_idle, GINT_TO_POINTER(doremap));
 }
 
+static void update_zoom_label() {
+	static const gchar *label_zoom[] = { "labelzoom_red", "labelzoom_green", "labelzoom_blue", "labelzoom_rgb"};
+	static gchar zoom_buffer[256] = { 0 };
+	if (com.cvport < RGB_VPORT) {
+		g_sprintf(zoom_buffer, "%d%%", (int) (get_zoom_val() * 100.0));
+		set_label_text_from_main_thread (label_zoom[com.cvport], zoom_buffer);
+	}
+}
+
 /* callback for GtkDrawingArea, draw event
  * see http://developer.gnome.org/gtk3/3.2/GtkDrawingArea.html
  * http://developer.gnome.org/gdk-pixbuf/stable/gdk-pixbuf-Image-Data-in-Memory.html
@@ -853,8 +919,14 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	/* detected stars and highlight the selected star */
 	draw_stars(&dd);
 
+	/* detected objects */
+	draw_annotates(&dd);
+
 	/* background removal gradient selection boxes */
 	draw_brg_boxes(&dd);
+
+	/* update zoom label */
+	update_zoom_label();
 
 	cairo_restore(cr);
 
@@ -870,4 +942,24 @@ point get_center_of_vport() {
 	point center = { window_width / 2, window_height / 2 };
 
 	return center;
+}
+
+void add_image_and_label_to_cairo(cairo_t *cr, int vport) {
+	draw_data_t dd;
+
+	GtkWidget *widget = lookup_widget("drawingarear");
+
+	dd.vport = vport;
+	dd.cr = cr;
+	dd.window_width = gtk_widget_get_allocated_width(widget);
+	dd.window_height = gtk_widget_get_allocated_height(widget);
+	dd.zoom = get_zoom_val();
+	dd.image_width = gfit.rx;
+	dd.image_height = gfit.ry;
+	dd.filter = (dd.zoom < 1.0) ? CAIRO_FILTER_GOOD : CAIRO_FILTER_FAST;
+
+	/* RGB or gray images */
+	draw_main_image(&dd);
+	/* detected objects */
+	draw_annotates(&dd);
 }

@@ -30,6 +30,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <math.h>
+#include "core/siril_world_cs.h"
 #include "misc.h"
 #include "project_coords.h"
 #include "degtorad.h"
@@ -45,10 +46,10 @@ static int
 proc_star_file(const char *file, int racol, int deccol, double ra, double dec,
 		GFile *out_fp, int doASEC);
 
-int convert_catalog_coords(const char *fileA, point coord, GFile *out) {
+int convert_catalog_coords(const char *fileA, SirilWorldCS *world_cs, GFile *out) {
 	int doASEC = 1;
-	double ra = coord.x;
-	double dec = coord.y;
+	double ra = siril_world_cs_get_alpha(world_cs);
+	double dec = siril_world_cs_get_delta(world_cs);
 
 	/* now walk through the file and do the dirty work */
 	if (proc_star_file(fileA, RACOL, DECCOL, ra, dec, out, doASEC) != SH_SUCCESS) {

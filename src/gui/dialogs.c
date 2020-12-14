@@ -20,7 +20,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/histogram.h"
 #include "filters/asinh.h"
 #include "filters/deconv.h"

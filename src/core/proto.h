@@ -104,7 +104,6 @@ uint64_t cpu_to_be64(uint64_t x);
 uint64_t le64_to_cpu(uint64_t x);
 uint64_t be64_to_cpu(uint64_t x);
 gboolean isrgb(fits *fit);
-gboolean ends_with(const char *str, const char *ending);
 int get_extension_index(const char *filename);
 image_type get_type_from_filename(const gchar *filename);
 int is_readable_file(const char *filename);
@@ -125,8 +124,8 @@ char *format_basename(char *root, gboolean can_free);
 float compute_slope(WORD *lo, WORD *hi);
 gchar *siril_get_file_info(const gchar *filename, GdkPixbuf *pixbuf);
 gchar *siril_truncate_str(gchar *str, gint size);
-GtkWidget* popover_new(GtkWidget *widget, const gchar *text);
 char **glist_to_array(GList *list, int *arg_count);
+gchar* url_cleanup(const gchar *uri_string);
 
 /****************** quantize.h ***************/
 int siril_fits_img_stats_ushort(WORD *array, long nx, long ny, int nullcheck,

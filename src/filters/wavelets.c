@@ -27,7 +27,7 @@
 #include "core/processing.h"
 #include "core/OS_utils.h"
 #include "gui/image_display.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
 #include "gui/dialogs.h"

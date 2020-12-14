@@ -29,7 +29,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "algos/Def_Wavelet.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/message_dialog.h"
 #include "gui/image_display.h"
 #include "gui/progress_and_log.h"

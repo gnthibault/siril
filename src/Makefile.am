@@ -16,12 +16,15 @@ AM_CPPFLAGS = \
 	$(CFITSIO_CFLAGS) \
 	$(GSL_CFLAGS) \
 	$(FFMS2_CFLAGS) \
+	$(WCSLIB_CFLAGS) \
 	$(LIBCONFIG_CFLAGS) \
 	-I$(top_builddir)/subprojects/kplot
 
 siril_common_SOURCES = \
 	core/siril.h \
 	core/proto.h \
+	algos/annotate.c \
+	algos/annotate.h \
 	algos/background_extraction.c \
 	algos/background_extraction.h \
 	algos/colors.c \
@@ -60,6 +63,8 @@ siril_common_SOURCES = \
 	algos/statistics_float.c \
 	algos/statistics_float.h \
 	algos/transform.c \
+	algos/siril_wcs.h \
+	algos/siril_wcs.c \
 	compositing/align_rgb.c \
 	compositing/align_rgb.h \
 	compositing/compositing.c \
@@ -105,6 +110,8 @@ siril_common_SOURCES = \
 	core/siril_log.c \
 	core/siril_update.c \
 	core/siril_update.h \
+	core/siril_world_cs.c \
+	core/siril_world_cs.h \
 	core/sleef.h \
 	core/undo.c \
 	core/undo.h \
@@ -182,6 +189,8 @@ siril_common_SOURCES = \
 	gui/siril_preview.c \
 	gui/siril_preview.h \
 	gui/statistics_list.c \
+	gui/utils.c \
+	gui/utils.h \
 	io/conversion.c \
 	io/conversion.h \
 	io/films.c \
@@ -261,6 +270,7 @@ siril_common_LDADD = \
 	$(FFMS2_LIBS) \
 	$(LIBCONFIG_LIBS) \
 	$(LIBCURL) \
+	$(WCSLIB_LIBS) \
 	$(EXTRA_LIBS) \
 	$(LIBATOMIC_LIBS) \
 	$(libdbghelp) \

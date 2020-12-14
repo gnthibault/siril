@@ -30,7 +30,7 @@
 #include "algos/statistics.h"
 #include "algos/fix_xtrans_af.h"
 #include "filters/cosmetic_correction.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/histogram.h"
 #include "gui/progress_and_log.h"
 #include "io/single_image.h"

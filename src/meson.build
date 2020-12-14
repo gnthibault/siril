@@ -17,6 +17,7 @@ configure_file(output : 'config.h',
 # Generate Siril static library with all sources
 
 src_files = [ 
+  'algos/annotate.c',
   'algos/background_extraction.c',
   'algos/colors.c',
   'algos/demosaicing.c',
@@ -39,6 +40,7 @@ src_files = [
   'algos/statistics.c',
   'algos/statistics_float.c',
   'algos/transform.c',
+  'algos/siril_wcs.c',
   
   'compositing/align_rgb.c',
   'compositing/compositing.c',
@@ -65,6 +67,7 @@ src_files = [
   'core/siril_language.c',
   'core/siril_log.c',
   'core/siril_update.c',
+  'core/siril_world_cs.c',
   'core/undo.c',
   'core/utils.c',
   
@@ -144,6 +147,7 @@ src_files = [
   'gui/siril_intro.c',
   'gui/siril_preview.c',
   'gui/statistics_list.c',
+  'gui/utils.c',
   
   'registration/comet.c',
   'registration/global.c',

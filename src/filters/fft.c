@@ -28,7 +28,7 @@
 #include "core/siril.h"
 #include "gui/image_display.h"
 #include "gui/image_interactions.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/dialogs.h"
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"

@@ -18,25 +18,52 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
+#include <math.h>
 #include "core/siril.h"
 #include "core/proto.h"
 
 #include "algos/PSF.h"
 #include "core/command.h"
+#include "core/siril_world_cs.h"
 #include "io/sequence.h"
 #include "algos/star_finder.h"
-
+#include "algos/siril_wcs.h"
+#include "gui/utils.h"
 #include "gui/callbacks.h"
 #include "gui/dialogs.h"
 #include "gui/message_dialog.h"
 #include "gui/image_display.h"
 #include "gui/PSF_list.h"
 
+static gchar *build_wcs_url(gchar *ra, gchar *dec) {
+	if (!has_wcs()) return NULL;
+
+	double resolution = get_wcs_image_resolution();
+
+	gchar *tol = g_strdup_printf("%lf", resolution * 3600 * 15);
+
+	GString *url = g_string_new("https://simbad.u-strasbg.fr/simbad/sim-coo?Coord=");
+	url = g_string_append(url, ra);
+	url = g_string_append(url, dec);
+	url = g_string_append(url, "&Radius=");
+	url = g_string_append(url, tol);
+	url = g_string_append(url, "&Radius.unit=arcsec");
+	url = g_string_append(url, "#lab_basic");
+
+	gchar *simbad_url = g_string_free(url, FALSE);
+	gchar *cleaned_url = url_cleanup(simbad_url);
+
+	g_free(tol);
+	g_free(simbad_url);
+
+	return cleaned_url;
+}
+
 void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	gchar *msg;
+	gchar *msg, *coordinates, *url = NULL;
 	fitted_PSF *result = NULL;
 	int layer = match_drawing_area_widget(com.vport[com.cvport], FALSE);
-	char *str;
+	const char *str;
 
 	if (layer == -1)
 		return;
@@ -56,18 +83,49 @@ void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		str = "true reduced";
 	else
 		str = "relative";
-	msg = g_strdup_printf(_("Centroid Coordinates:\n\t\tx0=%.2fpx\n\t\ty0=%.2fpx\n\n"
+
+	double x = result->x0 + com.selection.x;
+	double y = com.selection.y + com.selection.h - result->y0;
+	if (has_wcs()) {
+		double world_x, world_y;
+		SirilWorldCS *world_cs;
+
+		pix2wcs(x, (double) gfit.ry - y, &world_x, &world_y);
+		world_cs = siril_world_cs_new_from_a_d(world_x, world_y);
+
+		gchar *ra = siril_world_cs_alpha_format(world_cs, "%02d %02d %.3lf");
+		gchar *dec = siril_world_cs_delta_format(world_cs, "%c%02d %02d %.3lf");
+
+		url = build_wcs_url(ra, dec);
+
+		g_free(ra);
+		g_free(dec);
+
+		ra = siril_world_cs_alpha_format(world_cs, " %02dh%02dm%02ds");
+		dec = siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'%02d\"");
+
+		coordinates = g_strdup_printf("x0=%.2fpx\t%s J2000\n\t\ty0=%.2fpx\t%s J2000", x, ra, y, dec);
+
+		g_free(ra);
+		g_free(dec);
+		siril_world_cs_unref(world_cs);
+	} else {
+		coordinates = g_strdup_printf("x0=%.2fpx\n\t\ty0=%.2fpx", x, y);
+	}
+
+	msg = g_strdup_printf(_("Centroid Coordinates:\n\t\t%s\n\n"
 				"Full Width Half Maximum:\n\t\tFWHMx=%.2f%s\n\t\tFWHMy=%.2f%s\n\n"
 				"Angle:\n\t\t%0.2fdeg\n\n"
 				"Background Value:\n\t\tB=%.6f\n\n"
 				"Maximal Intensity:\n\t\tA=%.6f\n\n"
 				"Magnitude (%s):\n\t\tm=%.4f\u00B1%.4f\n\n"
-				"RMSE:\n\t\tRMSE=%.3e"), result->x0 + com.selection.x,
-			com.selection.y + com.selection.h - result->y0, result->fwhmx,
+				"RMSE:\n\t\tRMSE=%.3e"), coordinates, result->fwhmx,
 			result->units, result->fwhmy, result->units, result->angle, result->B,
 			result->A, str, result->mag + com.magOffset, result->s_mag, result->rmse);
-	show_data_dialog(msg, "PSF Results");
+	show_data_dialog(msg, "PSF Results", url);
+	g_free(coordinates);
 	g_free(msg);
+	g_free(url);
 	free(result);
 }
 

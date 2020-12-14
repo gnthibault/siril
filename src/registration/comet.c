@@ -25,7 +25,7 @@
 #include "algos/PSF.h"
 #include "io/sequence.h"
 #include "io/image_format_fits.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/progress_and_log.h"
 #include "gui/message_dialog.h"
 #include "registration.h"

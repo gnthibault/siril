@@ -20,7 +20,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "git-version.h"
 
 #include "about_dialog.h"

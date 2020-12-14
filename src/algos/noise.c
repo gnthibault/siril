@@ -27,7 +27,7 @@
 #include "core/processing.h"
 #include "core/OS_utils.h"
 #include "algos/statistics.h"
-#include "gui/callbacks.h"
+#include "gui/utils.h"
 #include "gui/progress_and_log.h"
 #include "opencv/opencv.h"
 
