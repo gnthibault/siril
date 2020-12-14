@@ -664,7 +664,7 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 		if (fit->type == DATA_USHORT) {
 			if (s_args->option == STATS_BASIC) {
 				s_args->list[new_index + layer] = g_strdup_printf("%d: %d\t%e\t%e\t%e\t%e\t%e\t%e\n",
-						i,
+						i + 1,
 						layer, stat->mean / USHRT_MAX_DOUBLE,
 						stat->median / USHRT_MAX_DOUBLE,
 						stat->sigma / USHRT_MAX_DOUBLE,
@@ -674,7 +674,7 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 						);
 			} else {
 				s_args->list[new_index + layer] = g_strdup_printf("%d: %d\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\n",
-						i,
+						i + 1,
 						layer, stat->mean / USHRT_MAX_DOUBLE,
 						stat->median / USHRT_MAX_DOUBLE,
 						stat->sigma / USHRT_MAX_DOUBLE,
@@ -691,7 +691,7 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 		} else {
 			if (s_args->option == STATS_BASIC) {
 				s_args->list[new_index + layer] = g_strdup_printf("%d: %d\t%e\t%e\t%e\t%e\t%e\t%e\n",
-						i,
+						i + 1,
 						layer, stat->mean,
 						stat->median,
 						stat->sigma,
@@ -701,7 +701,7 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 						);
 			} else {
 				s_args->list[new_index + layer] = g_strdup_printf("%d: %d\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\n",
-						i,
+						i + 1,
 						layer, stat->mean,
 						stat->median,
 						stat->sigma,
