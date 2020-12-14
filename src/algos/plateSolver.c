@@ -765,8 +765,8 @@ static void update_gfit(image_solved image) {
 	gchar *ra = siril_world_cs_alpha_format(image.image_center, "%02d %02d %.3lf");
 	gchar *dec = siril_world_cs_delta_format(image.image_center, "%c%02d %02d %.3lf");
 
-	g_sprintf(gfit.wcs.objctra, ra);
-	g_sprintf(gfit.wcs.objctdec, dec);
+	g_sprintf(gfit.wcs.objctra, "%s", ra);
+	g_sprintf(gfit.wcs.objctdec, "%s", dec);
 
 	g_free(ra);
 	g_free(dec);
