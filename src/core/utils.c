@@ -714,7 +714,7 @@ gchar *get_locale_filename(const gchar *path) {
 #ifdef _WIN32
 	str = g_win32_locale_filename_from_utf8(path);
 	if (!str) {
-		siril_log_message_("Conversion of the filename to system codepage failed. Please consider removing all wide chars.\n");
+		siril_log_color_message("Conversion of the filename to system codepage failed. Please consider removing all wide chars.\n", "red");
 		return g_strdup(path);
 	}
 #else // _WIN32
