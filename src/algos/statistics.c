@@ -663,13 +663,12 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 
 		if (fit->type == DATA_USHORT) {
 			if (s_args->option == STATS_BASIC) {
-				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\n",
+				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\n",
 						i + 1,
 						layer,
 						stat->mean / USHRT_MAX_DOUBLE,
 						stat->median / USHRT_MAX_DOUBLE,
 						stat->sigma / USHRT_MAX_DOUBLE,
-						stat->avgDev / USHRT_MAX_DOUBLE,
 						stat->min / USHRT_MAX_DOUBLE,
 						stat->max / USHRT_MAX_DOUBLE
 				);
@@ -680,9 +679,9 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 						stat->mean / USHRT_MAX_DOUBLE,
 						stat->median / USHRT_MAX_DOUBLE,
 						stat->sigma / USHRT_MAX_DOUBLE,
-						stat->avgDev / USHRT_MAX_DOUBLE,
 						stat->min / USHRT_MAX_DOUBLE,
 						stat->max / USHRT_MAX_DOUBLE,
+						stat->avgDev / USHRT_MAX_DOUBLE,
 						stat->mad / USHRT_MAX_DOUBLE,
 						stat->sqrtbwmv / USHRT_MAX_DOUBLE,
 						stat->location / USHRT_MAX_DOUBLE,
@@ -692,13 +691,12 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 			}
 		} else {
 			if (s_args->option == STATS_BASIC) {
-				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\n",
+				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\n",
 						i + 1,
 						layer,
 						stat->mean,
 						stat->median,
 						stat->sigma,
-						stat->avgDev,
 						stat->min,
 						stat->max
 				);
@@ -709,9 +707,9 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 						stat->mean,
 						stat->median,
 						stat->sigma,
-						stat->avgDev,
 						stat->min,
 						stat->max,
+						stat->avgDev,
 						stat->mad,
 						stat->sqrtbwmv,
 						stat->location,
@@ -748,9 +746,9 @@ static int stat_finalize_hook(struct generic_seq_args *args) {
 	}
 	const gchar *header;
 	if (s_args->option == STATS_BASIC) {
-		header = "image\tchan\tmean\tmedian\tsigma\tavgDev\tmin\tmax\n";
+		header = "image\tchan\tmean\tmedian\tsigma\tmin\tmax\n";
 	} else {
-		header = "image\tchan\tmean\tmedian\tsigma\tavgDev\tmin\tmax\tmad\tsqrtbwmv\tlocation\tscale\tbgnoise\n";
+		header = "image\tchan\tmean\tmedian\tsigma\tmin\tmax\tavgDev\tmad\tsqrtbwmv\tlocation\tscale\tbgnoise\n";
 	}
 	if (!g_output_stream_write_all(output_stream, header, strlen(header), NULL, NULL, &error)) {
 		g_warning("%s\n", error->message);
@@ -794,7 +792,6 @@ void apply_stats_to_sequence(struct stat_data *stat_args) {
 	args->description = _("Statistics");
 	args->has_output = FALSE;
 	args->output_type = get_data_type(args->seq->bitpix);
-	args->upscale_ratio = 1.23;	// sqrt(1.5), for memory management
 	args->new_seq_prefix = NULL;
 	args->user = stat_args;
 
