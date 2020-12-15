@@ -40,7 +40,7 @@
 
 #include "command_line_processor.h"
 
-static void parseLine(char *myline, int len, int *nb) {
+static void parse_line(char *myline, int len, int *nb) {
 	int i = 0, wordnb = 0;
 	char string_starter = '\0';	// quotes don't split words on spaces
 	word[0] = NULL;
@@ -213,7 +213,7 @@ gpointer execute_script(gpointer p) {
 		remove_trailing_cr(buffer);
 
 		display_command_on_status_bar(line, buffer);
-		parseLine(buffer, length, &wordnb);
+		parse_line(buffer, length, &wordnb);
 		/* check for requires command */
 		if (!g_ascii_strcasecmp(word[0], "requires")) {
 			check_required = TRUE;
@@ -363,7 +363,7 @@ int processcommand(const char *line) {
 
 		myline = strdup(line);
 		int len = strlen(line);
-		parseLine(myline, len, &wordnb);
+		parse_line(myline, len, &wordnb);
 		if (execute_command(wordnb)) {
 			siril_log_color_message(_("Command execution failed.\n"), "red");
 			if (!com.script && !com.headless) {

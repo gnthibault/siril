@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: siril 0.9\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2020-12-15 10:37+0100\n"
-"PO-Revision-Date: 2020-12-15 10:46+0100\n"
+"POT-Creation-Date: 2020-12-15 16:10+0100\n"
+"PO-Revision-Date: 2020-12-15 16:10+0100\n"
 "Last-Translator: Cyril Richard\n"
 "Language-Team: French <cyril@free-astro.fr>\n"
 "Language: fr\n"
@@ -149,7 +149,7 @@ msgstr "PSF de la séquence"
 msgid "Pick a Star"
 msgstr "Pointer l'étoile"
 
-#: src/gui/siril3.glade:1322 src/gui/siril3.glade:9469 src/algos/statistics.c:790
+#: src/gui/siril3.glade:1322 src/gui/siril3.glade:9469 src/algos/statistics.c:791
 msgid "Statistics"
 msgstr "Statistiques"
 
@@ -4249,8 +4249,8 @@ msgstr "Activer la compatibilité Aladin (CTYPE3 = 'RGB ')"
 #: src/gui/siril3.glade:18136
 msgid ""
 "Aladin considers a 3D FITS cube as a RGB image (Red, Blue and Green "
-"components) if the FITS keywork CTYPE3 = 'RGB ' is specified in the header. In "
-"this case any BITPIX value are supported. Without the FITS keywork CTYPE3 = "
+"components) if the FITS keyword CTYPE3 = 'RGB ' is specified in the header. In "
+"this case any BITPIX value are supported. Without the FITS keyword CTYPE3 = "
 "'RGB ' set, only FITS cube with 3 frames sharing the same dimension and with a "
 "BITPIX=8 will be automatically detected as RGB FITS."
 msgstr ""
@@ -5708,6 +5708,11 @@ msgstr "Cette étoile a déjà été choisie !\n"
 #: src/algos/star_finder.c:514
 msgid "Peaker"
 msgstr "Pointage"
+
+#: src/algos/statistics.c:775
+#, c-format
+msgid "Statistic file %s was successfully created.\n"
+msgstr "Le fichier de statistique %s a été créé avec succès.\n"
 
 #: src/algos/transform.c:247
 msgid "wavelet_transform_data: bad plane number\n"
