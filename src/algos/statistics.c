@@ -663,17 +663,7 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 
 		if (fit->type == DATA_USHORT) {
 			if (s_args->option == STATS_BASIC) {
-				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\n",
-						i + 1,
-						layer,
-						stat->mean / USHRT_MAX_DOUBLE,
-						stat->median / USHRT_MAX_DOUBLE,
-						stat->sigma / USHRT_MAX_DOUBLE,
-						stat->min / USHRT_MAX_DOUBLE,
-						stat->max / USHRT_MAX_DOUBLE
-				);
-			} else {
-				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\n",
+				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\n",
 						i + 1,
 						layer,
 						stat->mean / USHRT_MAX_DOUBLE,
@@ -681,27 +671,26 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 						stat->sigma / USHRT_MAX_DOUBLE,
 						stat->min / USHRT_MAX_DOUBLE,
 						stat->max / USHRT_MAX_DOUBLE,
+						stat->bgnoise / USHRT_MAX_DOUBLE
+				);
+			} else {
+				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\n",
+						i + 1,
+						layer,
+						stat->mean / USHRT_MAX_DOUBLE,
+						stat->median / USHRT_MAX_DOUBLE,
+						stat->sigma / USHRT_MAX_DOUBLE,
+						stat->min / USHRT_MAX_DOUBLE,
+						stat->max / USHRT_MAX_DOUBLE,
+						stat->bgnoise / USHRT_MAX_DOUBLE,
 						stat->avgDev / USHRT_MAX_DOUBLE,
 						stat->mad / USHRT_MAX_DOUBLE,
-						stat->sqrtbwmv / USHRT_MAX_DOUBLE,
-						stat->location / USHRT_MAX_DOUBLE,
-						stat->scale / USHRT_MAX_DOUBLE,
-						stat->bgnoise / USHRT_MAX_DOUBLE
+						stat->sqrtbwmv / USHRT_MAX_DOUBLE
 				);
 			}
 		} else {
 			if (s_args->option == STATS_BASIC) {
-				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\n",
-						i + 1,
-						layer,
-						stat->mean,
-						stat->median,
-						stat->sigma,
-						stat->min,
-						stat->max
-				);
-			} else {
-				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\n",
+				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\n",
 						i + 1,
 						layer,
 						stat->mean,
@@ -709,12 +698,21 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 						stat->sigma,
 						stat->min,
 						stat->max,
+						stat->bgnoise
+				);
+			} else {
+				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\n",
+						i + 1,
+						layer,
+						stat->mean,
+						stat->median,
+						stat->sigma,
+						stat->min,
+						stat->max,
+						stat->bgnoise,
 						stat->avgDev,
 						stat->mad,
-						stat->sqrtbwmv,
-						stat->location,
-						stat->scale,
-						stat->bgnoise
+						stat->sqrtbwmv
 				);
 			}
 		}
@@ -746,9 +744,9 @@ static int stat_finalize_hook(struct generic_seq_args *args) {
 	}
 	const gchar *header;
 	if (s_args->option == STATS_BASIC) {
-		header = "image\tchan\tmean\tmedian\tsigma\tmin\tmax\n";
+		header = "image\tchan\tmean\tmedian\tsigma\tmin\tmax\tnoise\n";
 	} else {
-		header = "image\tchan\tmean\tmedian\tsigma\tmin\tmax\tavgDev\tmad\tsqrtbwmv\tlocation\tscale\tbgnoise\n";
+		header = "image\tchan\tmean\tmedian\tsigma\tmin\tmax\tnoise\tavgDev\tmad\tsqrtbwmv\n";
 	}
 	if (!g_output_stream_write_all(output_stream, header, strlen(header), NULL, NULL, &error)) {
 		g_warning("%s\n", error->message);

@@ -2761,8 +2761,8 @@ int process_seq_stat(int nb) {
 	args->seqEntry = ""; // not used
 	args->csv_name = g_strdup(word[2]);
 
-	if (word[3] && !g_strcmp0(word[3], "extra")) {
-		args->option = STATS_EXTRA;
+	if (word[3] && !g_strcmp0(word[3], "main")) {
+		args->option = STATS_MAIN;
 	} else {
 		args->option = STATS_BASIC;
 	}
