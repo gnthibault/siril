@@ -731,10 +731,7 @@ void on_header_snapshot_button_clicked() {
 	GdkPixbuf *pixbuf;
 	GFile *file;
 	GOutputStream *stream;
-	GtkWidget *widget;
-	const gchar *area[] = {"drawingarear", "drawingareag", "drawingareab", "drawingareargb" };
 
-	widget = lookup_widget(area[com.cvport]);
 	timestamp = build_timestamp_filename();
 	filename = g_strdup_printf("%s.png", timestamp);
 
@@ -748,10 +745,12 @@ void on_header_snapshot_button_clicked() {
 
 	cairo_destroy(cr);
 
-	guint w = gtk_widget_get_allocated_width(widget);
-	guint h = gtk_widget_get_allocated_height(widget);
+	double z = get_zoom_val();
 
-	pixbuf = gdk_pixbuf_get_from_surface(surface, 0, 0, w, h);
+	guint w = gfit.rx * z;//gtk_widget_get_allocated_width(widget);
+	guint h = gfit.ry * z;//gtk_widget_get_allocated_height(widget);
+
+	pixbuf = gdk_pixbuf_get_from_surface(surface, com.display_offset.x, com.display_offset.y, w, h);
 	if (pixbuf) {
 		file = g_file_new_build_filename(com.wd, filename, NULL);
 
@@ -761,6 +760,7 @@ void on_header_snapshot_button_clicked() {
 				g_warning("%s\n", error->message);
 				g_clear_error(&error);
 			}
+			cairo_surface_destroy(surface);
 			g_free(filename);
 			g_object_unref(pixbuf);
 			g_object_unref(file);

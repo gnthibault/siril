@@ -771,8 +771,8 @@ static int stat_finalize_hook(struct generic_seq_args *args) {
 		}
 	}
 
-	g_object_unref(output_stream);
 	siril_log_message(_("Statistic file %s was successfully created.\n"), g_file_peek_path(file));
+	g_object_unref(output_stream);
 	g_object_unref(file);
 	free_stat_list(s_args->list, size);
 	free(s_args);
