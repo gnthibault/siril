@@ -102,7 +102,7 @@
 #define STR_SEQMTF N_("Same command as MTF but for the sequence \"sequencename\".  The output sequence name starts with the prefix \"mtf_\" unless otherwise specified with \"-prefix=\" option")
 #define STR_SEQPSF N_("Same command as PSF but works for sequences. Results are dumped in the console in a form that can be used to produce brightness variation curves")
 #define STR_SEQSPLIT_CFA N_("Same command as SPLIT_CFA but for the sequence \"sequencename\". The output sequence name starts with the prefix \"CFA_\" unless otherwise specified with \"-prefix=\" option")
-#define STR_SEQSTAT N_("Same command as STAT bit for sequence \"sequencename\". The output is saved in a csv file given in second argument. The optional parameter can be \"basic\" or \"main\". The last gives much more information but will take more time to compute everything")
+#define STR_SEQSTAT N_("Same command as STAT bit for sequence \"sequencename\". The output is saved in a csv file given in second argument. The optional parameter can be \"basic\" or \"main\"")
 #define STR_SEQSUBSKY N_("Same command as SUBSKY but for the sequence \"sequencename\".  The output sequence name starts with the prefix \"bkg_\" unless otherwise specified with \"-prefix=\" option")
 #define STR_SET16 N_("Disallow images to be saved with 32 bits per channel on processing, use 16 instead")
 #define STR_SET32 N_("Allow images to be saved with 32 bits per channel on processing")
