@@ -750,13 +750,13 @@ void on_header_snapshot_button_clicked() {
 
 	double z = get_zoom_val();
 
-	gint x = max(0, (int) com.display_offset.x);
-	gint y = max(0, (int) com.display_offset.y);
+	gint x1 = max(0, (int) com.display_offset.x);
+	gint y1 = max(0, (int) com.display_offset.y);
 
-	gint w = min(gfit.rx * z, gtk_widget_get_allocated_width(widget));
-	gint h = min(gfit.ry * z, gtk_widget_get_allocated_height(widget));
+	gint x2 = min(gfit.rx * z + (int) com.display_offset.x, gtk_widget_get_allocated_width(widget));
+	gint y2 = min(gfit.ry * z + (int) com.display_offset.y, gtk_widget_get_allocated_height(widget));
 
-	pixbuf = gdk_pixbuf_get_from_surface(surface, x, y, w, h);
+	pixbuf = gdk_pixbuf_get_from_surface(surface, x1, y1, x2 - x1, y2 - y1);
 	if (pixbuf) {
 		file = g_file_new_build_filename(com.wd, filename, NULL);
 
