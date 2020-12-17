@@ -142,13 +142,13 @@ static void fits_rotate_pi(fits *fit) {
 	} else if (fit->type == DATA_FLOAT) {
 		fits_rotate_pi_float(fit);
 	}
-	invalidate_WCS_keywords(&gfit);
+	invalidate_WCS_keywords(fit);
 }
 
 static void mirrorx_gui(fits *fit) {
 	if (confirm_delete_wcs_keywords(fit)) {
 		set_cursor_waiting(TRUE);
-		undo_save_state(&gfit, _("Mirror X"));
+		undo_save_state(fit, _("Mirror X"));
 		mirrorx(fit, TRUE);
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
@@ -159,7 +159,7 @@ static void mirrorx_gui(fits *fit) {
 static void mirrory_gui(fits *fit) {
 	if (confirm_delete_wcs_keywords(fit)) {
 		set_cursor_waiting(TRUE);
-		undo_save_state(&gfit, _("Mirror Y"));
+		undo_save_state(fit, _("Mirror Y"));
 		mirrory(fit, TRUE);
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
@@ -183,7 +183,7 @@ static void rotate_gui(fits *fit) {
 		cropped = gtk_toggle_button_get_active(crop_rotation);
 
 		set_cursor_waiting(TRUE);
-		undo_save_state(&gfit, _("Rotation (%.1lfdeg, cropped=%s)"), angle,
+		undo_save_state(fit, _("Rotation (%.1lfdeg, cropped=%s)"), angle,
 				cropped ? "TRUE" : "FALSE");
 		verbose_rotate_image(fit, angle, interpolation, cropped);
 		
@@ -225,8 +225,8 @@ int verbose_resize_gaussian(fits *image, int toX, int toY, int interpolation) {
 
 	gettimeofday(&t_start, NULL);
 
-	retvalue = cvResizeGaussian(&gfit, toX, toY, interpolation);
-	invalidate_WCS_keywords(&gfit);
+	retvalue = cvResizeGaussian(image, toX, toY, interpolation);
+	invalidate_WCS_keywords(image);
 
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
@@ -266,13 +266,13 @@ int verbose_rotate_image(fits *image, double angle, int interpolation,
 			str_inter, angle);
 	gettimeofday(&t_start, NULL);
 
-	point center = {gfit.rx / 2.0, gfit.ry / 2.0};
-	cvRotateImage(&gfit, center, angle, interpolation, cropped);
+	point center = {image->rx / 2.0, image->ry / 2.0};
+	cvRotateImage(image, center, angle, interpolation, cropped);
 
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
 
-	invalidate_WCS_keywords(&gfit);
+	invalidate_WCS_keywords(image);
 
 	return 0;
 }
