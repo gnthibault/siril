@@ -402,7 +402,7 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("menuitem_asinh"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_fixbanding"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_cosmetic"), any_image_is_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_fft"), is_a_single_image_loaded);
+	gtk_widget_set_sensitive(lookup_widget("menuitem_fft"), TRUE);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_deconvolution"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_resample"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation"), is_a_single_image_loaded);
