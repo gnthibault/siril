@@ -266,7 +266,6 @@ void open_single_image_from_gfit() {
 	close_tab();
 	update_gfit_histogram_if_needed();
 	redraw(com.cvport, REMAP_ALL);
-	
 }
 
 /* searches the image for minimum and maximum pixel value, on each layer

@@ -816,23 +816,42 @@ void adjust_vport_size_to_image() {
 	cairo_matrix_invert(&com.image_matrix);
 }
 
+static const gchar *label_zoom[] = { "labelzoom_red", "labelzoom_green", "labelzoom_blue", "labelzoom_rgb"};
+
+static gboolean set_label_zoom_text_idle(gpointer p) {
+	const gchar *txt = (const gchar *) p;
+	GtkLabel *label = GTK_LABEL(lookup_widget(label_zoom[com.cvport]));
+
+	gtk_label_set_text(label, txt);
+	return FALSE;
+}
+
+static void update_zoom_label(gdouble zoom) {
+	static gchar zoom_buffer[256] = { 0 };
+	if ((single_image_is_loaded() || sequence_is_loaded()) && com.cvport < RGB_VPORT) {
+		if (zoom < 0) {
+			zoom = get_zoom_val();
+		}
+		g_sprintf(zoom_buffer, "%d%%", (int) (zoom * 100.0));
+		gdk_threads_add_idle(set_label_zoom_text_idle, zoom_buffer);
+	}
+}
+
 void redraw(int vport, int doremap) {
 	if (com.script) return;
-	GtkWidget *widget;
+
+	update_zoom_label(com.zoom_value);
 
 	if (vport >= MAXVPORT) {
 		siril_debug_print(_("redraw: maximum number of layers supported is %d"
 					" (current image has %d).\n"), MAXVPORT, vport);
 		return;
 	}
-	widget = com.vport[vport];
+	GtkWidget *widget = com.vport[vport];
 
 	if (doremap == REMAP_ALL) {
 		stfComputed = FALSE;
-		int i;
-		// probably causes crashes in HESTEQ_MODE
-		//#pragma omp parallel for num_threads(com.max_thread) private(i) schedule(static)
-		for (i = 0; i < gfit.naxes[2]; i++) {
+		for (int i = 0; i < gfit.naxes[2]; i++) {
 			remap(i);
 		}
 		if (gfit.naxis == 3)
@@ -872,14 +891,6 @@ void queue_redraw(int doremap) {
 	siril_add_idle(redraw_idle, GINT_TO_POINTER(doremap));
 }
 
-static void update_zoom_label() {
-	static const gchar *label_zoom[] = { "labelzoom_red", "labelzoom_green", "labelzoom_blue", "labelzoom_rgb"};
-	static gchar zoom_buffer[256] = { 0 };
-	if (com.cvport < RGB_VPORT) {
-		g_sprintf(zoom_buffer, "%d%%", (int) (get_zoom_val() * 100.0));
-		set_label_text_from_main_thread (label_zoom[com.cvport], zoom_buffer);
-	}
-}
 
 /* callback for GtkDrawingArea, draw event
  * see http://developer.gnome.org/gtk3/3.2/GtkDrawingArea.html
@@ -924,9 +935,6 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
 	/* background removal gradient selection boxes */
 	draw_brg_boxes(&dd);
-
-	/* update zoom label */
-	update_zoom_label();
 
 	cairo_restore(cr);
 
