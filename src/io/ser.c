@@ -1166,7 +1166,7 @@ static int ser_write_frame_from_fit_internal(struct ser_struct *ser_file, fits *
 #endif
 	ser_file->frame_count++;
 
-	if (!ser_alloc_ts(ser_file, frame_no)) {
+	if (fit->date_obs && !ser_alloc_ts(ser_file, frame_no)) {
 		guint64 utc;
 		utc = (guint64) g_date_time_to_unix(fit->date_obs);
 		ser_file->ts[frame_no] = utc;
