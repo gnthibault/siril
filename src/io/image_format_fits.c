@@ -2479,7 +2479,7 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 
 	float wd = max - min;
 	avr = (avr - min) / wd;	// normal average by preview
-	avr = -log(avr);		// scale factor
+	avr = -logf(avr);		// scale factor
 	if (avr > 1.) {
 		wd /= avr;
 	}
