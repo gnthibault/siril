@@ -720,7 +720,7 @@ static void draw_annotates(const draw_data_t* dd) {
 		gchar *code = get_catalogue_object_code(object);
 		gdouble resolution = get_wcs_image_resolution();
 		gdouble x, y;
-		gdouble size = 16;
+		gdouble size = 16 * (com.pref.font_scale / 100.0);
 
 		if (resolution <= 0) return;
 
