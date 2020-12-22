@@ -230,10 +230,9 @@ static gpointer export_sequence(gpointer ptr) {
 			retval = -1;
 			goto free_and_reset_progress_bar;
 		}
-		char *tmpmsg = strdup(_("Processing image "));
-		tmpmsg = str_append(&tmpmsg, filename);
+		gchar *tmpmsg = g_strdup_printf(_("Processing image %s"), filename);
 		set_progress_bar_data(tmpmsg, (double)cur_nb / (double)nb_frames);
-		free(tmpmsg);
+		g_free(tmpmsg);
 
 		if (seq_read_frame(args->seq, i, &fit, FALSE, -1)) {
 			siril_log_message(_("Export: could not read frame, aborting\n"));

@@ -49,7 +49,7 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 	double exposure = 0.0;
 	gboolean is_float = TRUE; // init only for warning
 	size_t nbdata = 0;
-	char *tmpmsg, filename[256];
+	char filename[256];
 	int retval = ST_OK, nb_frames, cur_nb = 0;
 	fits fit = { 0 };
 
@@ -80,10 +80,9 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 			retval = ST_GENERIC_ERROR;
 			goto free_and_reset_progress_bar;
 		}
-		tmpmsg = strdup(_("Processing image "));
-		tmpmsg = str_append(&tmpmsg, filename);
+		gchar *tmpmsg = g_strdup_printf(_("Processing image %s"), filename);
 		set_progress_bar_data(tmpmsg, (double) cur_nb / ((double) nb_frames + 1.));
-		free(tmpmsg);
+		g_free(tmpmsg);
 
 		cur_nb++;	// only used for progress bar
 
