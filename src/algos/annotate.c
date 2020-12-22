@@ -37,7 +37,8 @@ static GSList *siril_catalogue_list = NULL;
 static const gchar *cat[] = {
 		"messier.txt",
 		"ngc.txt",
-		"ic.txt"
+		"ic.txt",
+		"ldn.txt"
 };
 
 struct _CatalogObjects {
