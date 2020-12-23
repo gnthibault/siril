@@ -705,6 +705,14 @@ static void draw_brg_boxes(const draw_data_t* dd) {
 	}
 }
 
+static gdouble x_circle(gdouble x, gdouble radius) {
+	return x + radius * cos(315 * M_PI / 180);
+}
+
+static gdouble y_circle(gdouble y, gdouble radius) {
+	return y + radius * sin(315 * M_PI / 180);
+}
+
 static void draw_annotates(const draw_data_t* dd) {
 	if (!com.found_object) return;
 	cairo_t *cr = dd->cr;
@@ -730,11 +738,16 @@ static void draw_annotates(const draw_data_t* dd) {
 		y = gfit.ry - y;
 
 		if (x > 0 && x < gfit.rx && y > 0 && y < gfit.ry) {
+			point offset = {10, -10};
 			if (radius < 0) {
-				// objects we don't want a precise location
+				// objects we don't have an accurate location (LdN, Sh2)
 			} else if (radius > 5) {
 				cairo_arc(cr, x, y, radius, 0., 2. * M_PI);
 				cairo_stroke(cr);
+				cairo_move_to(cr, x_circle(x, radius), y_circle(y, radius));
+				offset.x = x_circle(x, radius * 1.3) - x;
+				offset.y = y_circle(y, radius * 1.3) - y;
+				cairo_line_to(cr, offset.x + x, offset.y + y);
 			} else {
 				/* it is ponctual */
 				cairo_move_to(cr, x, y - 20);
@@ -751,9 +764,8 @@ static void draw_annotates(const draw_data_t* dd) {
 				cairo_stroke(cr);
 			}
 			if (code) {
-				gdouble offset = radius > 5 ? radius * 0.8 : 10;
 				cairo_set_font_size(cr, size / dd->zoom);
-				cairo_move_to(cr, x + offset, y - offset);
+				cairo_move_to(cr, x + offset.x, y + offset.y);
 				cairo_show_text(cr, code);
 				cairo_stroke(cr);
 			}
