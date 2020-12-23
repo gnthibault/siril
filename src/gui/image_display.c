@@ -730,7 +730,9 @@ static void draw_annotates(const draw_data_t* dd) {
 		y = gfit.ry - y;
 
 		if (x > 0 && x < gfit.rx && y > 0 && y < gfit.ry) {
-			if (radius > 5) {
+			if (radius < 0) {
+				// objects we don't want a precise location
+			} else if (radius > 5) {
 				cairo_arc(cr, x, y, radius, 0., 2. * M_PI);
 				cairo_stroke(cr);
 			} else {
