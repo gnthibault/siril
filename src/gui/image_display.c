@@ -749,7 +749,7 @@ static void draw_annotates(const draw_data_t* dd) {
 				offset.y = y_circle(y, radius * 1.3) - y;
 				cairo_line_to(cr, offset.x + x, offset.y + y);
 			} else {
-				/* it is ponctual */
+				/* it is punctual */
 				cairo_move_to(cr, x, y - 20);
 				cairo_line_to(cr, x, y - 10);
 				cairo_stroke(cr);

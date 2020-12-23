@@ -39,7 +39,8 @@ static const gchar *cat[] = {
 		"ngc.txt",
 		"ic.txt",
 		"ldn.txt",
-		"sh2.txt"
+		"sh2.txt",
+		"stars.txt"
 };
 
 struct _CatalogObjects {
@@ -70,21 +71,27 @@ gboolean is_inside(int circle_x, int circle_y, int rad, int x, int y) {
 		return FALSE;
 }
 
-static gboolean already_exist(GSList *list, double ra, double dec) {
-	for (GSList *l = list; l; l = l->next) {
+static gboolean already_exist(GSList *list, CatalogObjects *obj) {
+	/* we exclude from the check the star catalogue */
+	if (g_str_has_prefix(obj->code, "NGC") ||
+			g_str_has_prefix(obj->code, "IC") ||
+			g_str_has_prefix(obj->code, "LdN") ||
+			g_str_has_prefix(obj->code, "Sh2")) {
+		for (GSList *l = list; l; l = l->next) {
 
-		gdouble cur_dec = ((CatalogObjects*) l->data)->dec;
-		gdouble cur_ra = ((CatalogObjects*) l->data)->ra;
+			gdouble cur_dec = ((CatalogObjects*) l->data)->dec;
+			gdouble cur_ra = ((CatalogObjects*) l->data)->ra;
 
-		double minDec = cur_dec - TOLERANCE;
-		double maxDec = cur_dec + TOLERANCE;
+			double minDec = cur_dec - TOLERANCE;
+			double maxDec = cur_dec + TOLERANCE;
 
-		double minRa = cur_ra - TOLERANCE;
-		double maxRa = cur_ra + TOLERANCE;
+			double minRa = cur_ra - TOLERANCE;
+			double maxRa = cur_ra + TOLERANCE;
 
-		/* compare */
-		if (dec > minDec && dec < maxDec && ra > minRa && ra < maxRa) {
-			return TRUE;
+			/* compare */
+			if (obj->dec > minDec && obj->dec < maxDec && obj->ra > minRa && obj->ra < maxRa) {
+				return TRUE;
+			}
 		}
 	}
 	return FALSE;
@@ -183,7 +190,7 @@ static GSList *find_objects(fits *fit) {
 		/* Search for objects in the circle of radius defined by the image */
 		if (is_inside(x1, y1, sqrt(pow((x2 - x1), 2) + pow((y2 - y1), 2)),
 				cur->ra, cur->dec)) {
-			if (!already_exist(targets, cur->ra, cur->dec)) {
+			if (!already_exist(targets, cur)) {
 				CatalogObjects *new_object = new_catalog_object(cur->code, cur->ra, cur->dec, cur->radius, cur->name);
 				targets = g_slist_prepend(targets, new_object);
 			}
