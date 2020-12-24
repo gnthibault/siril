@@ -740,7 +740,9 @@ void on_header_snapshot_button_clicked() {
 
 	g_free(timestamp);
 	/* create cr from the surface */
-	cairo_surface_t *surface = cairo_surface_create_similar(com.surface[com.cvport], CAIRO_CONTENT_COLOR_ALPHA, gfit.rx, gfit.ry);
+	int width = max(gfit.rx, gtk_widget_get_allocated_width(widget));
+	int height = max(gfit.ry, gtk_widget_get_allocated_height(widget));
+	cairo_surface_t *surface = cairo_surface_create_similar(com.surface[com.cvport], CAIRO_CONTENT_COLOR_ALPHA, width, height);
 	cairo_t *cr = cairo_create(surface);
 
 	/* add image and all annotations if available */
@@ -753,8 +755,8 @@ void on_header_snapshot_button_clicked() {
 	gint x1 = max(0, (int) com.display_offset.x);
 	gint y1 = max(0, (int) com.display_offset.y);
 
-	gint x2 = min(gfit.rx * z + (int) com.display_offset.x, gtk_widget_get_allocated_width(widget));
-	gint y2 = min(gfit.ry * z + (int) com.display_offset.y, gtk_widget_get_allocated_height(widget));
+	gint x2 = min(width* z + (int) com.display_offset.x, gtk_widget_get_allocated_width(widget));
+	gint y2 = min(height * z + (int) com.display_offset.y, gtk_widget_get_allocated_height(widget));
 
 	pixbuf = gdk_pixbuf_get_from_surface(surface, x1, y1, x2 - x1, y2 - y1);
 	if (pixbuf) {
