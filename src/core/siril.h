@@ -590,6 +590,8 @@ struct pref_struct {
 	gint selection_guides;	// number of elements of the grid guides (2 for a simple cross, 3 for the 3 thirds rule, etc.)
 
 	gchar *copyright;		// User copyright when saving image as TIFF
+
+	gboolean catalog[6]; // Yet 6 catalogs
 };
 /**
  * End of preference structure. Read above.

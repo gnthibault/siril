@@ -21,6 +21,7 @@
 #include <math.h>
 
 #include "core/siril.h"
+#include "core/proto.h"
 #include "core/siril_app_dirs.h"
 #include "core/siril_log.h"
 #include "gui/utils.h"
@@ -30,6 +31,7 @@
 #include "annotate.h"
 
 static GSList *siril_catalogue_list = NULL;
+static gboolean show_catalog(const gchar *catalog);
 
 /* set a tolerance for "same object" test, in degree */
 #define TOLERANCE 20.0 / 3600.0;
@@ -49,6 +51,7 @@ struct _CatalogObjects {
 	gdouble dec;
 	gdouble radius;
 	gchar *name;
+	const gchar *catalogue;
 };
 
 static CatalogObjects *new_catalog_object(gchar *code, gdouble ra, gdouble dec, gdouble radius, gchar *name) {
@@ -73,10 +76,7 @@ gboolean is_inside(int circle_x, int circle_y, int rad, int x, int y) {
 
 static gboolean already_exist(GSList *list, CatalogObjects *obj) {
 	/* we exclude from the check the star catalogue */
-	if (g_str_has_prefix(obj->code, "NGC") ||
-			g_str_has_prefix(obj->code, "IC") ||
-			g_str_has_prefix(obj->code, "LdN") ||
-			g_str_has_prefix(obj->code, "Sh2")) {
+	if (g_strcmp0(obj->catalogue, "stars.txt")) {
 		for (GSList *l = list; l; l = l->next) {
 
 			gdouble cur_dec = ((CatalogObjects*) l->data)->dec;
@@ -130,6 +130,7 @@ static GSList *load_catalog(const gchar *catalogue) {
 		object->dec = g_strcmp0(token[2], "-") ? g_ascii_strtod(token[3], NULL) : g_ascii_strtod(token[3], NULL) * -1.0;
 		object->radius = g_ascii_strtod(token[4], NULL) * 0.5;
 		object->name = g_strdup(token[6]);
+		object->catalogue = catalogue;
 
 		list = g_slist_prepend(list, (gpointer) object);
 
@@ -186,6 +187,7 @@ static GSList *find_objects(fits *fit) {
 
 	for (GSList *l = list; l; l = l->next) {
 		CatalogObjects *cur = (CatalogObjects *)l->data;
+		if (!show_catalog(cur->catalogue)) continue;
 
 		/* Search for objects in the circle of radius defined by the image */
 		if (is_inside(x1, y1, sqrt(pow((x2 - x1), 2) + pow((y2 - y1), 2)),
@@ -229,7 +231,19 @@ void free_object(CatalogObjects *object) {
 	g_free(object);
 }
 
-/*** UI callbacks **///
+/*** UI callbacks **/
+
+static gboolean show_catalog(const gchar *catalog) {
+	gchar *name = remove_ext_from_filename(catalog);
+	gchar *widget = g_strdup_printf("check_button_%s", name);
+	gboolean show = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(widget)));
+
+	g_free(name);
+	g_free(widget);
+
+	return show;
+}
+
 
 void on_annotate_button_toggled(GtkToggleToolButton *togglebutton,
 		gpointer user_data) {

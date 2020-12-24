@@ -37,7 +37,8 @@
 
 static const char *keywords[] = { "working-directory", "libraw-settings",
 		"debayer-settings", "prepro-settings", "registration-settings",
-		"stacking-settings", "photometry-settings", "misc-settings", "compression-settings" };
+		"stacking-settings", "astrometry-settings", "photometry-settings",
+		"misc-settings", "compression-settings" };
 
 static int readinitfile() {
 	config_t config;
@@ -160,6 +161,22 @@ static int readinitfile() {
 		config_setting_lookup_int(comp_setting, "fits_method", &com.pref.comp.fits_method);
 		config_setting_lookup_float(comp_setting, "fits_quantization", &com.pref.comp.fits_quantization);
 		config_setting_lookup_float(comp_setting, "fits_hcompress_scale", &com.pref.comp.fits_hcompress_scale);
+	}
+
+	/* Astrometry setting */
+	config_setting_t *astrometry_setting = config_lookup(&config, keywords[AST]);
+	if (astrometry_setting) {
+		config_setting_lookup_bool(astrometry_setting, "messier", &com.pref.catalog[0]);
+		config_setting_lookup_bool(astrometry_setting, "ngc", &com.pref.catalog[1]);
+		config_setting_lookup_bool(astrometry_setting, "ic", &com.pref.catalog[2]);
+		config_setting_lookup_bool(astrometry_setting, "ldn", &com.pref.catalog[3]);
+		config_setting_lookup_bool(astrometry_setting, "sh2", &com.pref.catalog[4]);
+		config_setting_lookup_bool(astrometry_setting, "stars", &com.pref.catalog[5]);
+
+	} else {
+		for (int i = 0; i < 6; i ++) {
+			com.pref.catalog[i] = TRUE;
+		}
 	}
 
 	/* Photometry setting */
@@ -419,6 +436,25 @@ static void _save_comp(config_t *config, config_setting_t *root) {
 
 }
 
+static void _save_astrometry(config_t *config, config_setting_t *root) {
+	config_setting_t *astrometry_group, *astrometry_setting;
+
+	astrometry_group = config_setting_add(root, keywords[AST], CONFIG_TYPE_GROUP);
+
+	astrometry_setting = config_setting_add(astrometry_group, "messier", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(astrometry_setting, com.pref.catalog[0]);
+	astrometry_setting = config_setting_add(astrometry_group, "ngc", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(astrometry_setting, com.pref.catalog[1]);
+	astrometry_setting = config_setting_add(astrometry_group, "ic", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(astrometry_setting, com.pref.catalog[2]);
+	astrometry_setting = config_setting_add(astrometry_group, "ldn", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(astrometry_setting, com.pref.catalog[3]);
+	astrometry_setting = config_setting_add(astrometry_group, "sh2", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(astrometry_setting, com.pref.catalog[4]);
+	astrometry_setting = config_setting_add(astrometry_group, "stars", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(astrometry_setting, com.pref.catalog[5]);
+}
+
 static void _save_photometry(config_t *config, config_setting_t *root) {
 	config_setting_t *photometry_group, *photometry_setting;
 
@@ -533,6 +569,7 @@ int writeinitfile() {
 	_save_registration(&config, root);
 	_save_stacking(&config, root);
 	_save_comp(&config, root);
+	_save_astrometry(&config, root);
 	_save_photometry(&config, root);
 	_save_misc(&config, root);
 
