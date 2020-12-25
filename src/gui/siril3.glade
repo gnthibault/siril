@@ -78,12 +78,12 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
   <object class="GtkImage" id="addfilter1">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="stock">gtk-add</property>
+    <property name="icon-name">list-add-symbolic</property>
   </object>
   <object class="GtkImage" id="addfilter2">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="stock">gtk-add</property>
+    <property name="icon-name">list-add-symbolic</property>
   </object>
   <object class="GtkAdjustment" id="adjCPU">
     <property name="lower">1</property>
@@ -758,7 +758,7 @@ enter a visible wavelength in nm</property>
   <object class="GtkImage" id="imageHelp">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="stock">gtk-help</property>
+    <property name="icon-name">help-browser</property>
   </object>
   <object class="GtkImage" id="image_chain">
     <property name="visible">True</property>
@@ -812,6 +812,11 @@ enter a visible wavelength in nm</property>
     <property name="can-focus">False</property>
     <property name="tooltip-text" translatable="yes">Average PSF parameters for selected stars</property>
     <property name="pixbuf">pixmaps/sum.png</property>
+  </object>
+  <object class="GtkImage" id="imagestop">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">gtk-cancel</property>
   </object>
   <object class="GtkListStore" id="liststore1">
     <columns>
@@ -2033,12 +2038,12 @@ enter a visible wavelength in nm</property>
   <object class="GtkImage" id="removefilter2">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="stock">gtk-remove</property>
+    <property name="icon-name">list-remove-symbolic</property>
   </object>
   <object class="GtkImage" id="removefilter3">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
-    <property name="stock">gtk-remove</property>
+    <property name="icon-name">list-remove-symbolic</property>
   </object>
   <object class="GtkAdjustment" id="resample_X">
     <property name="lower">0.01</property>
@@ -2972,7 +2977,7 @@ enter a visible wavelength in nm</property>
                                             <property name="valign">center</property>
                                             <property name="label" translatable="yes">Add</property>
                                             <property name="use-underline">True</property>
-                                            <property name="stock-id">gtk-add</property>
+                                            <property name="icon-name">list-add-symbolic</property>
                                             <signal name="clicked" handler="on_select_convert_button_clicked" swapped="no"/>
                                           </object>
                                           <packing>
@@ -2988,7 +2993,7 @@ enter a visible wavelength in nm</property>
                                             <property name="valign">center</property>
                                             <property name="label" translatable="yes">Remove</property>
                                             <property name="use-underline">True</property>
-                                            <property name="stock-id">gtk-remove</property>
+                                            <property name="icon-name">list-remove-symbolic</property>
                                             <signal name="clicked" handler="on_remove_convert_button_clicked" swapped="no"/>
                                           </object>
                                           <packing>
@@ -3004,7 +3009,7 @@ enter a visible wavelength in nm</property>
                                             <property name="valign">center</property>
                                             <property name="label" translatable="yes">Clear</property>
                                             <property name="use-underline">True</property>
-                                            <property name="stock-id">gtk-clear</property>
+                                            <property name="icon-name">edit-clear-symbolic</property>
                                             <signal name="clicked" handler="on_clear_convert_button_clicked" swapped="no"/>
                                           </object>
                                           <packing>
@@ -6560,7 +6565,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                                             <property name="can-focus">False</property>
                                             <property name="tooltip-text" translatable="yes">Export the log</property>
                                             <property name="use-underline">True</property>
-                                            <property name="stock-id">gtk-save-as</property>
+                                            <property name="icon-name">document-save-as</property>
                                             <signal name="clicked" handler="on_export_log_button_clicked" swapped="no"/>
                                           </object>
                                           <packing>
@@ -6574,7 +6579,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                                             <property name="can-focus">False</property>
                                             <property name="tooltip-text" translatable="yes">Clear the log</property>
                                             <property name="use-underline">True</property>
-                                            <property name="stock-id">gtk-clear</property>
+                                            <property name="icon-name">edit-clear</property>
                                             <signal name="clicked" handler="on_clear_log_button_clicked" swapped="no"/>
                                           </object>
                                           <packing>
@@ -6682,14 +6687,14 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="processes_button_cancel">
-                                    <property name="label">gtk-stop</property>
+                                    <property name="label">Stop</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
                                     <property name="tooltip-text" translatable="yes">Stop running processes</property>
                                     <property name="halign">center</property>
                                     <property name="valign">center</property>
-                                    <property name="use-stock">True</property>
+                                    <property name="image">imagestop</property>
                                     <property name="always-show-image">True</property>
                                     <signal name="clicked" handler="on_processes_button_cancel_clicked" swapped="no"/>
                                     <style>
@@ -7904,11 +7909,10 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
             </child>
             <child>
               <object class="GtkButton" id="clahe_cancel">
-                <property name="label">gtk-cancel</property>
+                <property name="label">Cancel</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_clahe_cancel_clicked" swapped="no"/>
               </object>
               <packing>
@@ -7919,11 +7923,10 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
             </child>
             <child>
               <object class="GtkButton" id="clahe_Apply">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_clahe_Apply_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -8117,12 +8120,11 @@ artifacts may appear.</property>
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="buttonIPS_close">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Close the window.</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_buttonIPS_close_clicked" swapped="no"/>
               </object>
               <packing>
@@ -8133,12 +8135,11 @@ artifacts may appear.</property>
             </child>
             <child>
               <object class="GtkButton" id="buttonIPS_ok">
-                <property name="label">gtk-ok</property>
+                <property name="label">OK</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Start the plate solving algorithm.</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_buttonIPS_ok_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -8152,12 +8153,11 @@ artifacts may appear.</property>
             </child>
             <child>
               <object class="GtkButton" id="button_cc_ok">
-                <property name="label">gtk-ok</property>
+                <property name="label">OK</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Start the photometric color calibration algorithm.</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_cc_ok_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -9045,11 +9045,10 @@ artifacts may appear.</property>
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="Median_cancel">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_Median_cancel_clicked" swapped="no"/>
               </object>
               <packing>
@@ -9060,12 +9059,11 @@ artifacts may appear.</property>
             </child>
             <child>
               <object class="GtkButton" id="Median_Apply">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_Median_Apply_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -9308,11 +9306,10 @@ If the parameters is null, so no filter is apply at all.</property>
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="SCNR_cancel">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_SCNR_cancel_clicked" swapped="no"/>
               </object>
               <packing>
@@ -9323,12 +9320,11 @@ If the parameters is null, so no filter is apply at all.</property>
             </child>
             <child>
               <object class="GtkButton" id="SCNR_Apply">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_SCNR_Apply_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -9495,12 +9491,11 @@ If the parameters is null, so no filter is apply at all.</property>
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="statButtonRun">
-                <property name="label">gtk-execute</property>
+                <property name="label">Execute</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Run statistic calculation</property>
-                <property name="use-stock">True</property>
                 <property name="always-show-image">True</property>
                 <signal name="clicked" handler="on_statButtonRun_clicked" swapped="no"/>
               </object>
@@ -9512,13 +9507,12 @@ If the parameters is null, so no filter is apply at all.</property>
             </child>
             <child>
               <object class="GtkButton" id="statButtonClose">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Close the window</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_statButtonClose_clicked" swapped="no"/>
               </object>
               <packing>
@@ -9690,11 +9684,10 @@ If the parameters is null, so no filter is apply at all.</property>
             </child>
             <child>
               <object class="GtkButton" id="asinh_cancel">
-                <property name="label">gtk-cancel</property>
+                <property name="label">Cancel</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_asinh_cancel_clicked" swapped="no"/>
               </object>
               <packing>
@@ -9705,11 +9698,10 @@ If the parameters is null, so no filter is apply at all.</property>
             </child>
             <child>
               <object class="GtkButton" id="asinh_Apply">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_asinh_ok_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -9911,12 +9903,11 @@ If the parameters is null, so no filter is apply at all.</property>
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="background_close_button">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Close the window.</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_background_close_button_clicked" swapped="no"/>
               </object>
               <packing>
@@ -9927,12 +9918,11 @@ If the parameters is null, so no filter is apply at all.</property>
             </child>
             <child>
               <object class="GtkButton" id="background_ok_button">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">This will compute the synthetic background and will apply the selected correction.</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_background_ok_button_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -10175,14 +10165,13 @@ Dither is an intentionally applied form of noise used to randomize quantization 
                         </child>
                         <child>
                           <object class="GtkButton" id="background_clear_all">
-                            <property name="label">gtk-clear</property>
+                            <property name="label">Clear</property>
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="receives-default">True</property>
                             <property name="tooltip-text" translatable="yes">Click here to clear all the samples.</property>
                             <property name="halign">center</property>
                             <property name="valign">center</property>
-                            <property name="use-stock">True</property>
                             <signal name="clicked" handler="on_background_clear_all_clicked" swapped="no"/>
                           </object>
                           <packing>
@@ -10383,11 +10372,10 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="button_ok_fixbanding">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_ok_fixbanding_clicked" swapped="no"/>
               </object>
               <packing>
@@ -10398,12 +10386,11 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
             </child>
             <child>
               <object class="GtkButton" id="button_apply_fixbanding">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_apply_fixbanding_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -10644,11 +10631,10 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="compositing_reset">
-                <property name="label">gtk-clear</property>
+                <property name="label">Clear</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_compositing_reset_clicked" swapped="no"/>
               </object>
               <packing>
@@ -10659,11 +10645,10 @@ Division: it is mainly used to correct multiplicative phenomena, such as vignett
             </child>
             <child>
               <object class="GtkButton" id="compositing_cancel">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_compositing_cancel_clicked" swapped="no"/>
               </object>
               <packing>
@@ -11027,12 +11012,11 @@ Modifying parameters in this windows afterward will void the colour balance, and
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="button_cosmetic_close">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Close current window</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_cosmetic_close_clicked" swapped="no"/>
               </object>
               <packing>
@@ -11043,13 +11027,12 @@ Modifying parameters in this windows afterward will void the colour balance, and
             </child>
             <child>
               <object class="GtkButton" id="button_cosmetic_ok">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Apply Cosmetic Correction</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_cosmetic_ok_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -11366,11 +11349,10 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="crop_close">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_crop_close_clicked" swapped="no"/>
               </object>
               <packing>
@@ -11381,12 +11363,11 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="crop_Apply">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_crop_Apply_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -11487,12 +11468,11 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="button_data_ok">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_data_ok_clicked" swapped="no"/>
               </object>
               <packing>
@@ -11581,11 +11561,10 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="deconvolution_cancel">
-                <property name="label">gtk-cancel</property>
+                <property name="label">Cancel</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_deconvolution_cancel_clicked" swapped="no"/>
               </object>
               <packing>
@@ -11596,11 +11575,10 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="deconvolution_Apply">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_deconvolution_Apply_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -11937,11 +11915,10 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="button_fft_close">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_fft_close_clicked" swapped="no"/>
               </object>
               <packing>
@@ -11952,12 +11929,11 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="button_fft_apply">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_fft_apply_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -12204,12 +12180,11 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="extract_channel_button_ok">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_extract_channel_button_ok_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -12393,12 +12368,11 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="button_extract_w_close">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Close</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_extract_w_close_clicked" swapped="no"/>
               </object>
               <packing>
@@ -12532,11 +12506,10 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="file_information_close">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_file_information_close_clicked" swapped="no"/>
               </object>
               <packing>
@@ -12586,13 +12559,12 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="button_clear_sample">
-                <property name="label">gtk-clear</property>
+                <property name="label">Clear</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Clear all the fields. If you save your image after, the header will not contain any data about the focal or sensor size.</property>
                 <property name="halign">start</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_clear_sample_clicked" swapped="no"/>
               </object>
               <packing>
@@ -12784,12 +12756,11 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="button_histo_close">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Close</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_histo_close_clicked" swapped="no"/>
               </object>
               <packing>
@@ -12800,12 +12771,11 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="button_histo_apply">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Apply histogram transformation</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_histo_apply_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -13289,12 +13259,11 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="linearmatch_close">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Close the dialog.</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_linearmatch_close_clicked" swapped="no"/>
               </object>
               <packing>
@@ -13305,12 +13274,11 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="linearmatch_apply">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Computes a linear function between a reference image and a target.</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_linearmatch_apply_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -13524,11 +13492,10 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="button_resample_close">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_resample_close_clicked" swapped="no"/>
               </object>
               <packing>
@@ -13539,12 +13506,11 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="button_resample_ok">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_resample_ok_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -13730,11 +13696,10 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="rgradient_cancel">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_rgradient_cancel_clicked" swapped="no"/>
               </object>
               <packing>
@@ -13745,12 +13710,11 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="rgradient_Apply">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">The rotational gradient will be applied.</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_rgradient_Apply_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -13999,11 +13963,10 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="button_rotation_close">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_rotation_close_clicked" swapped="no"/>
               </object>
               <packing>
@@ -14014,12 +13977,11 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="button_rotation_ok">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_rotation_ok_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -14205,11 +14167,10 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="satu_cancel">
-                <property name="label">gtk-cancel</property>
+                <property name="label">Cancel</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_satu_cancel_clicked" swapped="no"/>
               </object>
               <packing>
@@ -14220,12 +14181,11 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="satu_close">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_satu_apply_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -14451,11 +14411,10 @@ Uncheck if images come from a monochrome sensor.</property>
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="button_cancelpopup">
-                <property name="label">gtk-cancel</property>
+                <property name="label">Cancel</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_cancelpopup_clicked" swapped="no"/>
               </object>
               <packing>
@@ -14466,7 +14425,7 @@ Uncheck if images come from a monochrome sensor.</property>
             </child>
             <child>
               <object class="GtkButton" id="button_savepopup">
-                <property name="label">gtk-save</property>
+                <property name="label">Save</property>
                 <property name="visible">True</property>
                 <property name="sensitive">False</property>
                 <property name="can-focus">True</property>
@@ -14475,7 +14434,6 @@ Uncheck if images come from a monochrome sensor.</property>
                 <property name="can-default">True</property>
                 <property name="has-default">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_savepopup_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -15510,12 +15468,11 @@ If not set manually, the first image of the sequence is taken as reference.</pro
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="split_cfa_close">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Close current window</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_split_cfa_close_clicked" swapped="no"/>
               </object>
               <packing>
@@ -15526,12 +15483,11 @@ If not set manually, the first image of the sequence is taken as reference.</pro
             </child>
             <child>
               <object class="GtkButton" id="split_cfa_apply">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Apply Split CFA</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_split_cfa_apply_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -15666,12 +15622,11 @@ If not set manually, the first image of the sequence is taken as reference.</pro
             </child>
             <child>
               <object class="GtkButton" id="button_stars_list_ok">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_stars_list_ok_clicked" swapped="no"/>
               </object>
               <packing>
@@ -16152,7 +16107,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                     <property name="can-focus">False</property>
                     <property name="tooltip-text" translatable="yes">Remove selected star from the list</property>
                     <property name="use-underline">True</property>
-                    <property name="stock-id">gtk-remove</property>
+                    <property name="icon-name">list-remove</property>
                     <signal name="clicked" handler="on_remove_button_clicked" swapped="no"/>
                   </object>
                   <packing>
@@ -16166,7 +16121,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                     <property name="can-focus">False</property>
                     <property name="tooltip-text" translatable="yes">Remove all stars from the list</property>
                     <property name="use-underline">True</property>
-                    <property name="stock-id">gtk-clear</property>
+                    <property name="icon-name">gtk-clear</property>
                     <signal name="clicked" handler="on_remove_all_button_clicked" swapped="no"/>
                   </object>
                   <packing>
@@ -16234,12 +16189,11 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
             </child>
             <child>
               <object class="GtkButton" id="button_close_w">
-                <property name="label">gtk-cancel</property>
+                <property name="label">Cancel</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Cancel all changes applied</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_cancel_w_clicked" swapped="no"/>
               </object>
               <packing>
@@ -16250,12 +16204,11 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
             </child>
             <child>
               <object class="GtkButton" id="button_ok_w">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_button_ok_w_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -16365,13 +16318,12 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                         </child>
                         <child>
                           <object class="GtkButton" id="button_compute_w">
-                            <property name="label">gtk-execute</property>
+                            <property name="label">Execute</property>
                             <property name="visible">True</property>
                             <property name="can-focus">True</property>
                             <property name="receives-default">True</property>
                             <property name="tooltip-text" translatable="yes">Compute wavelets</property>
                             <property name="halign">center</property>
-                            <property name="use-stock">True</property>
                             <property name="always-show-image">True</property>
                             <signal name="clicked" handler="on_button_compute_w_clicked" swapped="no"/>
                             <style>
@@ -16914,11 +16866,10 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
             <property name="layout-style">end</property>
             <child>
               <object class="GtkButton" id="calibration_close_button">
-                <property name="label">gtk-close</property>
+                <property name="label">Close</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_calibration_close_button_clicked" swapped="no"/>
               </object>
               <packing>
@@ -16929,14 +16880,13 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
             </child>
             <child>
               <object class="GtkButton" id="calibration_apply_button">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="has-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">A set of three color calibration factors will be computed and multiplied with every color channel.
 The Background Neutralization should be applied before this operation.</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_calibration_apply_button_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
@@ -17637,11 +17587,10 @@ If the selection is empty, the whole image will be used as reference.</property>
             </child>
             <child>
               <object class="GtkButton" id="cancel_settings_button">
-                <property name="label">gtk-cancel</property>
+                <property name="label">Cancel</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_cancel_settings_button_clicked" swapped="no"/>
               </object>
               <packing>
@@ -17652,11 +17601,10 @@ If the selection is empty, the whole image will be used as reference.</property>
             </child>
             <child>
               <object class="GtkButton" id="apply_settings_button">
-                <property name="label">gtk-apply</property>
+                <property name="label">Apply</property>
                 <property name="visible">True</property>
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
-                <property name="use-stock">True</property>
                 <signal name="clicked" handler="on_apply_settings_button_clicked" swapped="no"/>
                 <style>
                   <class name="suggested-action"/>
