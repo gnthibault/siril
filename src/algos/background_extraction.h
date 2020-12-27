@@ -11,15 +11,6 @@ typedef enum {
 	BACKGROUND_POLY_4,
 } poly_order;
 
-typedef struct sample {
-	double median[3]; // median of each channel of the sample (if color)
-	double mean; // mean of the 3 channel of the sample (if color)
-	double min, max;
-	size_t size;
-	point position;
-	gboolean valid;
-} background_sample;
-
 struct background_data {
 	int nb_of_samples;
 	double tolerance;
@@ -30,6 +21,8 @@ struct background_data {
 	const gchar *seqEntry;
 };
 
+typedef struct sample background_sample;
+
 int get_sample_radius();
 void free_background_sample_list(GSList *list);
 GSList* add_background_sample(GSList *list, fits *fit, point pt);
@@ -37,5 +30,9 @@ GSList* remove_background_sample(GSList *orig, fits *fit, point pt);
 void generate_background_samples(int nb_of_samples, double tolerance);
 gboolean remove_gradient_from_image(int correction, poly_order degree);
 void apply_background_extraction_to_sequence(struct background_data *background_args);
+
+gboolean sample_is_valid(background_sample *sample);
+gdouble sample_get_size(background_sample *sample);
+point sample_get_position(background_sample *sample);
 
 #endif /* SRC_ALGOS_BACKGROUND_EXTRACTION_H_ */

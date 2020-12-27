@@ -55,6 +55,15 @@
 
 #define SAMPLE_SIZE 25
 
+struct sample {
+	double median[3]; // median of each channel of the sample (if color)
+	double mean; // mean of the 3 channel of the sample (if color)
+	double min, max;
+	size_t size;
+	point position;
+	gboolean valid;
+};
+
 //C contains background function
 #define C(i) (gsl_vector_get(c,(i)))
 
@@ -720,6 +729,20 @@ void apply_background_extraction_to_sequence(struct background_data *background_
 	background_args->fit = NULL;	// not used here
 
 	start_in_new_thread(generic_sequence_worker, args);
+}
+
+/**** getter and setter ***/
+
+gboolean sample_is_valid(background_sample *sample) {
+	return sample->valid;
+}
+
+gdouble sample_get_size(background_sample *sample) {
+	return sample->size;
+}
+
+point sample_get_position(background_sample *sample) {
+	return sample->position;
 }
 
 /************* CALLBACKS *************/
