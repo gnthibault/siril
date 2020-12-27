@@ -593,7 +593,7 @@ static int cvTransformImage_ushort(fits *image, long width, long height, Homogra
 	return 0;
 }
 
-int cvTransformImage_float(fits *image, long width, long height, Homography Hom, int interpolation) {
+static int cvTransformImage_float(fits *image, long width, long height, Homography Hom, int interpolation) {
 	// preparing data
 	Mat in, out;
 	float *bgrbgr = NULL;

@@ -755,7 +755,7 @@ void on_header_snapshot_button_clicked() {
 	gint x1 = max(0, (int) com.display_offset.x);
 	gint y1 = max(0, (int) com.display_offset.y);
 
-	gint x2 = min(width* z + (int) com.display_offset.x, gtk_widget_get_allocated_width(widget));
+	gint x2 = min(width * z + (int) com.display_offset.x, gtk_widget_get_allocated_width(widget));
 	gint y2 = min(height * z + (int) com.display_offset.y, gtk_widget_get_allocated_height(widget));
 
 	pixbuf = gdk_pixbuf_get_from_surface(surface, x1, y1, x2 - x1, y2 - y1);

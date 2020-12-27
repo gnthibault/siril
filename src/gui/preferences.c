@@ -116,6 +116,13 @@ static preferences pref_init = {
 				.minval = 0,
 				.maxval = 60000,
 		},
+		/* catalogs for astrometry */
+		.catalog[0] = TRUE,
+		.catalog[1] = TRUE,
+		.catalog[2] = TRUE,
+		.catalog[3] = TRUE,
+		.catalog[4] = TRUE,
+		.catalog[5] = TRUE,
 		{ // stack_config
 				.method = 0,
 				.normalisation_method = ADDITIVE_SCALING,
@@ -136,14 +143,7 @@ static preferences pref_init = {
 		.rgb_aladin = FALSE,
 		.force_to_16bit = FALSE,
 		.selection_guides = 0,
-		.copyright = NULL,
-		/* catalogs for astrometry */
-		.catalog[0] = TRUE,
-		.catalog[1] = TRUE,
-		.catalog[2] = TRUE,
-		.catalog[3] = TRUE,
-		.catalog[4] = TRUE,
-		.catalog[5] = TRUE,
+		.copyright = NULL
 };
 
 static void reset_swapdir() {

@@ -504,26 +504,11 @@ struct pointi_struct {
 	int x, y;
 };
 
-struct gradient_struct {
-	point centre;
-	double boxvalue[3];
-};
-
 struct historic_struct {
 	char *filename;
 	char history[FLEN_VALUE];
 	int rx, ry;
 	data_type type;
-};
-
-struct dateTime_struct {
-	int year;
-	int month;
-	int day;
-	int hour;
-	int min;
-	int sec;
-	int ms;
 };
 
 struct star_finder_struct {
@@ -580,6 +565,7 @@ struct pref_struct {
 	libraw raw_set;			// the libraw settings
 	struct debayer_config debayer;	// debayer settings
 	phot phot_set;          // photometry settings
+	gboolean catalog[6]; // Yet 6 catalogs
 
 	stackconf stack; // stacking option
 	compconf comp; // compression option
@@ -590,8 +576,6 @@ struct pref_struct {
 	gint selection_guides;	// number of elements of the grid guides (2 for a simple cross, 3 for the 3 thirds rule, etc.)
 
 	gchar *copyright;		// User copyright when saving image as TIFF
-
-	gboolean catalog[6]; // Yet 6 catalogs
 };
 /**
  * End of preference structure. Read above.
