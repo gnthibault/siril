@@ -527,7 +527,12 @@ void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data)
 }
 
 void on_export_button_clicked(GtkButton *button, gpointer user_data) {
-	save_stars_dialog();
+	if (com.stars) {
+		save_stars_dialog();
+	} else {
+		siril_message_dialog(GTK_MESSAGE_WARNING, _("Nothing to export"),
+				_("There are no stars in the list."));
+	}
 }
 
 void on_stars_list_window_show(GtkWidget *widget, gpointer user_data) {

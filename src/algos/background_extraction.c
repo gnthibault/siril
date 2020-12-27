@@ -733,15 +733,15 @@ void apply_background_extraction_to_sequence(struct background_data *background_
 
 /**** getter and setter ***/
 
-gboolean sample_is_valid(background_sample *sample) {
+gboolean background_sample_is_valid(background_sample *sample) {
 	return sample->valid;
 }
 
-gdouble sample_get_size(background_sample *sample) {
+gdouble background_sample_get_size(background_sample *sample) {
 	return sample->size;
 }
 
-point sample_get_position(background_sample *sample) {
+point background_sample_get_position(background_sample *sample) {
 	return sample->position;
 }
 

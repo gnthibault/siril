@@ -31,8 +31,8 @@ void generate_background_samples(int nb_of_samples, double tolerance);
 gboolean remove_gradient_from_image(int correction, poly_order degree);
 void apply_background_extraction_to_sequence(struct background_data *background_args);
 
-gboolean sample_is_valid(background_sample *sample);
-gdouble sample_get_size(background_sample *sample);
-point sample_get_position(background_sample *sample);
+gboolean background_sample_is_valid(background_sample *sample);
+gdouble background_sample_get_size(background_sample *sample);
+point background_sample_get_position(background_sample *sample);
 
 #endif /* SRC_ALGOS_BACKGROUND_EXTRACTION_H_ */

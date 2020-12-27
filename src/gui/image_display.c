@@ -694,9 +694,9 @@ static void draw_brg_boxes(const draw_data_t* dd) {
 	GSList *list;
 	for (list = com.grad_samples; list; list = list->next) {
 		background_sample *sample = (background_sample *)list->data;
-		if (sample_is_valid(sample)) {
-			int radius = (int) (sample_get_size(sample) / 2);
-			point position = sample_get_position(sample);
+		if (background_sample_is_valid(sample)) {
+			int radius = (int) (background_sample_get_size(sample) / 2);
+			point position = background_sample_get_position(sample);
 			cairo_set_line_width(dd->cr, 1.5 / dd->zoom);
 			cairo_set_source_rgba(dd->cr, 0.2, 1.0, 0.3, 1.0);
 			cairo_rectangle(dd->cr, position.x - radius - 1, position.y - radius,
