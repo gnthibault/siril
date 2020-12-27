@@ -38,7 +38,10 @@
         {
             "name": "wcslib",
             "config-opts": [
-                "LIBS=\"-pthread -lcurl -lm\" --without-pgplot --without-cfitsio --disable-fortran"
+                "LIBS=-pthread -lcurl -lm",
+                "--without-pgplot",
+                "--without-cfitsio",  
+                "--disable-fortran"
             ],
             "cleanup": [
                 "/include",
