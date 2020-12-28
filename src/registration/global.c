@@ -454,7 +454,14 @@ int register_star_alignment(struct registration_args *regargs) {
 	if (args->max_thread > com.max_thread)
 		args->max_thread = com.max_thread;
 	if (args->max_thread == 0) {
-		siril_log_color_message(_("Not enough memory to do this operation (%u required per image, %d considered available)\n"), "red", MB_per_image, MB_avail);
+		gchar *mem_per_image = g_format_size_full(MB_per_image * BYTES_IN_A_MB, G_FORMAT_SIZE_IEC_UNITS);
+		gchar *mem_available = g_format_size_full(MB_avail * BYTES_IN_A_MB, G_FORMAT_SIZE_IEC_UNITS);
+
+		siril_log_color_message(_("Not enough memory to do this operation (%s required per image, %s considered available)\n"),
+				"red", mem_per_image, mem_available);
+
+		g_free(mem_per_image);
+		g_free(mem_available);
 		free(args);
 		return -1;
 	}
