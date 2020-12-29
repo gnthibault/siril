@@ -686,7 +686,7 @@ int siril_change_dir(const char *dir, gchar **err) {
 #if GLIB_CHECK_VERSION(2,58,0)
 				new_dir = g_canonicalize_filename(dir, com.wd);
 #else
-    			new_dir = g_build_filename(dir, com.wd, NULL);
+    			new_dir = g_build_filename(com.wd, dir, NULL);
 #endif
 				g_free(com.wd);
 				com.wd = new_dir;
