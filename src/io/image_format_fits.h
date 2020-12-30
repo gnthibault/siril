@@ -38,6 +38,7 @@ void fits_flip_top_to_bottom(fits *fit);
 void extract_region_from_fits(fits *from, int layer, fits *to,
 		const rectangle *area);
 int new_fit_image(fits **fit, int width, int height, int nblayer, data_type type);
+int new_fit_image_with_data(fits **fit, int width, int height, int nblayer, data_type type, void *data);
 void fit_replace_buffer(fits *fit, void *newbuf, data_type newtype);
 void fit_debayer_buffer(fits *fit, void *newbuf);
 

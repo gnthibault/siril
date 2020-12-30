@@ -2188,11 +2188,15 @@ void extract_region_from_fits(fits *from, int layer, fits *to,
 		extract_region_from_fits_float(from, layer, to, area);
 }
 
-/* creates a new fit image from scratch (NULL fit) or into a fits * previously
- * allocated, with non-cleared (random) data. */
 int new_fit_image(fits **fit, int width, int height, int nblayer, data_type type) {
+	return new_fit_image_with_data(fit, width, height, nblayer, type, NULL);
+}
+
+/* creates a new fit image from scratch (NULL fit) or into a fits * previously
+ * allocated, with provided or non-cleared (random) data. */
+int new_fit_image_with_data(fits **fit, int width, int height, int nblayer, data_type type, void *data) {
 	size_t npixels, data_size;
-	void *data;
+	gboolean data_is_local = FALSE;
 	g_assert(width > 0);
 	g_assert(height > 0);
 	g_assert(nblayer == 1 || nblayer == 3);
@@ -2200,10 +2204,13 @@ int new_fit_image(fits **fit, int width, int height, int nblayer, data_type type
 	npixels = width * height;
 	data_size = type == DATA_USHORT ? sizeof(WORD) : sizeof(float);
 	
-	data = malloc(npixels * nblayer * data_size);
-	if (data == NULL) {
-		PRINT_ALLOC_ERR;
-		return -1;
+	if (!data) {
+		data = malloc(npixels * nblayer * data_size);
+		if (!data) {
+			PRINT_ALLOC_ERR;
+			return -1;
+		}
+		data_is_local = TRUE;
 	}
 
 	if (*fit)
@@ -2212,7 +2219,8 @@ int new_fit_image(fits **fit, int width, int height, int nblayer, data_type type
 		*fit = calloc(1, sizeof(fits));
 		if (!*fit) {
 			PRINT_ALLOC_ERR;
-			free(data);
+			if (data_is_local)
+				free(data);
 			return -1;
 		}
 	}
