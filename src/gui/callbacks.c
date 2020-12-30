@@ -664,9 +664,9 @@ void update_display_fwhm() {
 			double fwhm_val = psf_get_fwhm(&gfit, com.cvport, &roundness);
 			g_sprintf(fwhm_buffer, _("fwhm: %.2f, r: %.2f"), fwhm_val, roundness);
 		} else
-			g_sprintf(fwhm_buffer, _("fwhm: selection is too large"));
+			g_sprintf(fwhm_buffer, _("fwhm: N/A"));
 	} else {
-		g_sprintf(fwhm_buffer, _("fwhm: no selection"));
+		g_sprintf(fwhm_buffer, _("fwhm: N/A"));
 	}
 	gtk_label_set_text(GTK_LABEL(lookup_widget(label_fwhm[com.cvport])), fwhm_buffer);
 }
