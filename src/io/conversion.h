@@ -32,9 +32,10 @@ struct _convert_data {
 
 extern supported_raw_list supported_raw[];	//supported raw extensions
 extern char *supported_extensions[MAX_EXTENSIONS];
-extern char *filter_pattern[];
+extern const char *filter_pattern[];
 
 int retrieveBayerPatternFromChar(char *bayer);
+const gchar *get_bayer_pattern_from_preferences();
 int get_nb_raw_supported();
 
 void list_format_available();

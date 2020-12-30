@@ -722,15 +722,23 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 	/* If opening images debayered is not activated, read the image as CFA monochrome */
 	ser_color type_ser = ser_file->color_id;
 	if (!com.pref.debayer.open_debayer && type_ser != SER_RGB && type_ser != SER_BGR) {
+		const gchar *pattern = NULL;
 		type_ser = SER_MONO;
-		if (ser_file->color_id == SER_BAYER_RGGB)
-			strcpy(fit->bayer_pattern, "RGGB");
-		else if (ser_file->color_id == SER_BAYER_BGGR)
-			strcpy(fit->bayer_pattern, "BGGR");
-		else if (ser_file->color_id == SER_BAYER_GBRG)
-			strcpy(fit->bayer_pattern, "GBRG");
-		else if (ser_file->color_id == SER_BAYER_GRBG)
-			strcpy(fit->bayer_pattern, "GRBG");
+
+		if (com.pref.debayer.use_bayer_header) {
+			if (ser_file->color_id == SER_BAYER_RGGB)
+				pattern = "RGGB";
+			else if (ser_file->color_id == SER_BAYER_BGGR)
+				pattern = "BGGR";
+			else if (ser_file->color_id == SER_BAYER_GBRG)
+				pattern = "GBRG";
+			else if (ser_file->color_id == SER_BAYER_GRBG)
+				pattern = "GRBG";
+		} else {
+			pattern = filter_pattern[com.pref.debayer.bayer_pattern];
+		}
+		if (pattern)
+			strcpy(fit->bayer_pattern, pattern);
 		g_snprintf(fit->row_order, FLEN_VALUE, "%s", "BOTTOM-UP");
 	}
 

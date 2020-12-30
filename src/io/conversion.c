@@ -90,7 +90,7 @@ supported_raw_list supported_raw[] = {
 	{"arw",	"Sony"}
 };
 
-char *filter_pattern[] = {
+const char *filter_pattern[] = {
 	"RGGB",
 	"BGGR",
 	"GBRG",
