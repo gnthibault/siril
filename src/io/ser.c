@@ -719,12 +719,19 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 	fit->orig_bitpix = fit->bitpix;
 	fit->binning_x = fit->binning_y = 1;
 
-	/* If the user checks the SER CFA box, the video is opened in B&W
-	 * RGB and BGR are not coming from raw data. In consequence CFA does
-	 * not exist for these kind of cam */
+	/* If opening images debayered is not activated, read the image as CFA monochrome */
 	ser_color type_ser = ser_file->color_id;
-	if (!com.pref.debayer.open_debayer && type_ser != SER_RGB && type_ser != SER_BGR)
+	if (!com.pref.debayer.open_debayer && type_ser != SER_RGB && type_ser != SER_BGR) {
 		type_ser = SER_MONO;
+		if (ser_file->color_id == SER_BAYER_RGGB)
+			strcpy(fit->bayer_pattern, "RGGB");
+		else if (ser_file->color_id == SER_BAYER_BGGR)
+			strcpy(fit->bayer_pattern, "BGGR");
+		else if (ser_file->color_id == SER_BAYER_GBRG)
+			strcpy(fit->bayer_pattern, "GBRG");
+		else if (ser_file->color_id == SER_BAYER_GRBG)
+			strcpy(fit->bayer_pattern, "GRBG");
+	}
 
 	switch (type_ser) {
 	case SER_MONO:
