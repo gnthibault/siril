@@ -68,7 +68,7 @@ static int initialize_internal_rgb_sequence() {
 	seq = create_internal_sequence(3);
 	for (int i = 0; i < 3; i++) {
 		fits *fit = calloc(1, sizeof(fits));
-		if (copyfits(&gfit, fit, CP_ALLOC | CP_EXTRACT, i)) {
+		if (extract_fits(&gfit, fit, i, FALSE)) {
 			free(fit);
 			free_sequence(seq, TRUE);
 			return -1;

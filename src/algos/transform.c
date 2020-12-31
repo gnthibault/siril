@@ -138,7 +138,7 @@ float *f_vector_alloc(Nbr_Elem)
 	int Nbr_Elem; {
 	float *Vector;
 
-	Vector = (float*) calloc((unsigned) Nbr_Elem * sizeof(float), 1);
+	Vector = (float*) calloc(Nbr_Elem, sizeof(float));
 	if (Vector == NULL) {
 		PRINT_ALLOC_ERR;
 	}
@@ -263,7 +263,6 @@ int wavelet_transform_data(float *Imag, int Nl, int Nc,
 	default:
 		printf("wavelet_transform_data: wrong transform type\n");
 		return 1;
-		break;
 	}
 	return 0;
 }

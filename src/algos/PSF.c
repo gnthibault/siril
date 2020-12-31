@@ -292,8 +292,7 @@ static int psf_Gaussian_fdf_an(const gsl_vector * x, void *PSF_data,
 /* The function returns the fitted parameters without angle. However it
  * returns NULL if the number of parameters is => to the pixel number.
  */
-static fitted_PSF *psf_minimiz_no_angle(gsl_matrix* z, double background,
-		int layer) {
+static fitted_PSF *psf_minimiz_no_angle(gsl_matrix* z, double background) {
 	size_t i, j;
 	size_t NbRows = z->size1; //characteristics of the selection : height and width
 	size_t NbCols = z->size2;
@@ -389,8 +388,6 @@ static fitted_PSF *psf_minimiz_no_angle(gsl_matrix* z, double background,
 	// Magnitude
 	psf->mag = psf_get_mag(z, psf->B);
 	psf->phot_is_valid = FALSE;
-	// Layer: not fitted
-	psf->layer = layer;
 	// RMSE
 	psf->rmse = d.rmse;
 	// absolute uncertainties
@@ -531,8 +528,6 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf, gboolean fo
 		psf_angle->s_mag = 9.999;
 		psf_angle->phot_is_valid = FALSE;
 	}
-	//Layer: not fitted
-	psf_angle->layer = psf->layer;
 	//RMSE
 	psf_angle->rmse = d.rmse;
 	// absolute uncertainties
@@ -616,9 +611,11 @@ fitted_PSF *psf_get_minimisation(fits *fit, int layer, rectangle *area,
 		return NULL;
 	}
 
-	result = psf_global_minimisation(z, bg, layer, TRUE, for_photometry, verbose);
-	if (result)
+	result = psf_global_minimisation(z, bg, TRUE, for_photometry, verbose);
+	if (result) {
 		fwhm_to_arcsec_if_needed(fit, result);
+		result->layer = layer;
+	}
 	gsl_matrix_free(z);
 	return result;
 }
@@ -633,12 +630,12 @@ fitted_PSF *psf_get_minimisation(fits *fit, int layer, rectangle *area,
  * of the star_finder algorithm), no angle parameter is fitted.
  * The function returns NULL if values look bizarre.
  */
-fitted_PSF *psf_global_minimisation(gsl_matrix* z, double bg, int layer,
+fitted_PSF *psf_global_minimisation(gsl_matrix* z, double bg,
 		gboolean fit_angle, gboolean for_photometry, gboolean verbose) {
 	fitted_PSF *psf;
 
 	// To compute good starting values, we first compute with no angle
-	if ((psf = psf_minimiz_no_angle(z, bg, layer)) != NULL) {
+	if ((psf = psf_minimiz_no_angle(z, bg)) != NULL) {
 		if (fit_angle) {
 			/* This next check is to avoid possible angle divergence
 			 * when sx and sy are too close (star is quite round).

@@ -247,6 +247,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		if (args->seq->type == SEQ_SER || args->seq->type == SEQ_FITSEQ) {
 			siril_log_color_message(_("Frame %d:\n"), "bold", filenum);
 		}
+
 		if (regargs->matchSelection && regargs->selection.w > 0 && regargs->selection.h > 0) {
 			stars = peaker(fit, regargs->layer, &com.starfinder_conf, &nb_stars, &regargs->selection, FALSE);
 		}
@@ -440,18 +441,39 @@ int register_star_alignment(struct registration_args *regargs) {
 	args->already_in_a_thread = TRUE;
 	unsigned int MB_per_image; int MB_avail;
 	int nb_images = compute_nb_images_fit_memory(regargs->seq, args->upscale_ratio, FALSE, &MB_per_image, &MB_avail);
-	// cvTransformImage is O(n) in mem for monochrome and O(2n) for color, so we need to account for in + out images
-	if (args->has_output) {
-		if (regargs->seq->nb_layers == -1) {
-			fprintf(stderr, "init sequence first\n");
-			return -1;
+	if (nb_images > 0) {
+		/* The registration memory consumption, n is image size and m channel size.
+		 * First, a threshold is computed for star pixel value, using statistics:
+		 *	ushort data: O(m), data is duplicated for median
+		 *		computation if there are nil values, O(1) otherwise
+		 *	float data: O(1)
+		 * Then, still in peaker(), image is filtered using wavelets, duplicating the
+		 * image channel to act as input and output of the filter (O(m)) and
+		 * wavelet_transform then allocates 3 times the size of the channel in float,
+		 * because we request 3 planes of wavelets, and pave_2d allocates it once more
+		 * for its working copy, so that makes O(5m as float).
+		 * Then, in the image is written by the generic function if rotation is enabled:
+		 * cvTransformImage is O(n) in mem for monochrome and O(2n) for color.
+		 * Since these three operations are in sequence, we need room only for the
+		 * biggest. In case of float color image, it's the rotation that takes more
+		 * memory, with O(2n) = O(6m). In other cases it's the wavelets with O(5m) or
+		 * O(10m) when it's ushort.
+		 * Don't forget that this is in addition to the image being already read.
+		 */
+		unsigned int required;
+		if (args->has_output && regargs->seq->nb_layers == 3 &&
+				get_data_type(regargs->seq->bitpix) == DATA_FLOAT)
+			required = MB_per_image * 3;
+		else {
+			unsigned int MB_per_channel = regargs->seq->nb_layers == 1 ? MB_per_image : MB_per_image / 3;
+			unsigned int float_multiplier = get_data_type(regargs->seq->bitpix) == DATA_FLOAT ? 1 : 2;
+			required = MB_per_image + 5 * MB_per_channel * float_multiplier;
 		}
-		if (regargs->seq->nb_layers == 3)
-			args->max_thread = nb_images / 3;
-		else args->max_thread = nb_images / 2;
+		args->max_thread = MB_avail / required;
+		siril_debug_print("Memory required per thread: %u MB, limiting to %d threads\n", required, args->max_thread);
 	}
-	else args->max_thread = nb_images;
-	if (args->max_thread > com.max_thread)
+
+	if (args->max_thread > com.max_thread || args->max_thread < 0)
 		args->max_thread = com.max_thread;
 	if (args->max_thread == 0) {
 		gchar *mem_per_image = g_format_size_full(MB_per_image * BYTES_IN_A_MB, G_FORMAT_SIZE_IEC_UNITS);

@@ -47,6 +47,7 @@
 #include "sorting.h"
 #include "statistics.h"
 #include "statistics_float.h"
+#include "core/OS_utils.h"
 
 /* Activating nullcheck will treat pixels with 0 value as null and remove them
  * from stats computation. This can be useful when a large area is black, but
@@ -154,7 +155,7 @@ static WORD* reassign_to_non_null_data_ushort(WORD *data, size_t inputlen, size_
 }
 
 static void siril_stats_ushort_minmax(WORD *min_out, WORD *max_out,
-		const WORD data[], const size_t n) {
+		const WORD data[], const size_t n, gboolean multithread) {
 	/* finds the smallest and largest members of a dataset */
 
 	if (n > 0 && data) {
@@ -163,7 +164,7 @@ static void siril_stats_ushort_minmax(WORD *min_out, WORD *max_out,
 		size_t i;
 
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) schedule(static) if(n > 10000) reduction(max:max) reduction(min:min)
+#pragma omp parallel for num_threads(com.max_thread) schedule(static) if(multithread && n > 10000) reduction(max:max) reduction(min:min)
 #endif
 		for (i = 0; i < n; i++) {
 			WORD xi = data[i];
@@ -224,14 +225,13 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 
 	/* Calculation of min and max */
 	if ((option & (STATS_MINMAX | STATS_BASIC)) && (stat->min < 0. || stat->max < 0.)) {
-		// TODO 1.0: change to double
 		WORD min = 0, max = 0, norm = 0;
 		if (!data) {
 			if (stat_is_local) free(stat);
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing minmax\n", stat, fit, layer);
-		siril_stats_ushort_minmax(&min, &max, data, stat->total);
+		siril_stats_ushort_minmax(&min, &max, data, stat->total, multithread);
 		if (fit->bitpix == BYTE_IMG)
 			norm = UCHAR_MAX;
 		else norm = USHRT_MAX;
