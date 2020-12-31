@@ -42,7 +42,7 @@ struct PSF_data {
 
 double psf_get_fwhm(fits *, int, double *);
 fitted_PSF *psf_get_minimisation(fits *, int, rectangle *, gboolean, gboolean, gboolean);
-fitted_PSF *psf_global_minimisation(gsl_matrix *, double, int, gboolean, gboolean, gboolean);
+fitted_PSF *psf_global_minimisation(gsl_matrix *, double, gboolean, gboolean, gboolean);
 void psf_display_result(fitted_PSF *, rectangle *);
 void fwhm_to_arcsec_if_needed(fits*, fitted_PSF*);
 void fwhm_to_pixels(fitted_PSF *result);

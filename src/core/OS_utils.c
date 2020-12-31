@@ -577,3 +577,11 @@ int ReconnectIO(int OpenNewConsole) {
 	return MadeConsole;
 }
 #endif
+
+// for debug purposes
+void log_used_mem(gchar *when) {
+	int used = update_used_RAM_memory();
+	gchar *mem = g_format_size_full(used, G_FORMAT_SIZE_IEC_UNITS);
+	siril_debug_print("Used memory %s: %s\n", when, mem);
+	g_free(mem);
+}

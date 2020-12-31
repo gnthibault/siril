@@ -1230,14 +1230,8 @@ int *status) /* error status */
 	}
 
 	/* allocate arrays used to compute the median and noise estimates */
-//	differences = calloc(nx, sizeof(int));
-//	if (!differences) {
-//		*status = MEMORY_ALLOCATION;
-//		return (*status);
-//	}
 	diffs = calloc(ny, sizeof(double));
 	if (!diffs) {
-//		free(differences);
 		*status = MEMORY_ALLOCATION;
 		return (*status);
 	}
@@ -1251,7 +1245,7 @@ int *status) /* error status */
 		double mean, stdev;
 		int *differences;
 		differences = calloc(nx, sizeof(int)); // no check here at the moment, allocation is small, should be no problem
-	    
+
 #ifdef _OPENMP
 #pragma omp for schedule (dynamic, 16)
 #endif

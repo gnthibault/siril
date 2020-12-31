@@ -36,6 +36,7 @@
 #include "io/single_image.h"
 #include "algos/Def_Wavelet.h"
 #include "wavelets.h"
+#include "core/OS_utils.h"
 
 static float wavelet_value[6];
 static gboolean wavelet_show_preview;
@@ -101,7 +102,7 @@ int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer
 	size_t n = fit->naxes[0] * fit->naxes[1];
 	if (fit->type == DATA_USHORT) {
 		Imag = f_vector_alloc(n);
-		if (Imag == NULL) {
+		if (!Imag) {
 			PRINT_ALLOC_ERR;
 			return 1;
 		}
@@ -120,6 +121,7 @@ int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer
 		int Nl, Nc;
 
 		if (fit->type == DATA_USHORT) {
+			/* float wavelet of data [0, 65535] */
 			if (wavelet_transform(Imag, fit->ry, fit->rx, &wavelet[chan],
 						Type, Nbr_Plan, fit->pdata[chan])) {
 				retval = 1;
@@ -127,6 +129,7 @@ int get_wavelet_layers(fits *fit, int Nbr_Plan, int Plan, int Type, int reqlayer
 			}
 		}
 		else if (fit->type == DATA_FLOAT) {
+			/* float wavelet of data [0, 1] */
 			Imag = fit->fpdata[chan];
 			if (wavelet_transform_float(Imag, fit->ry, fit->rx, &wavelet[chan],
 						Type, Nbr_Plan)) {

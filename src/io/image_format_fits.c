@@ -1770,9 +1770,6 @@ int save_opened_fits(fits *f) {
  * - CP_COPYA: copies the actual data, from->data to to->data on all layers,
  *   but no other information from the source. Should not be used with CP_INIT
  * - CP_FORMAT: copy all metadata and leaves data to null
- * - CP_EXTRACT: same as CP_FORMAT | CP_COPYA, but only for layer number passed
- *   as argument and sets layer number information to 1, without allocating
- *   data to one layer only
  * - CP_EXPAND: forces the destination number of layers to be taken as 3, but
  *   the other operations have no modifications, meaning that if the source
  *   image has one layer, the output image will have only one actual layer
@@ -1789,8 +1786,6 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 
 	if ((oper & CP_EXPAND))
 		depth = 3;
-	else if ((oper & CP_EXTRACT))
-		depth = 1;
 	else depth = from->naxes[2];
 
 	if ((oper & CP_FORMAT)) {
@@ -1893,32 +1888,67 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 		}
 	}
 
-	if ((oper & CP_EXTRACT)) {
-		to->rx = from->rx;
-		to->ry = from->ry;
-		to->lo = from->lo;
-		to->hi = from->hi;
-		to->bitpix = from->bitpix;
-		to->naxis = 2;
-		to->naxes[0] = from->naxes[0];
-		to->naxes[1] = from->naxes[1];
-		to->naxes[2] = 1;
-		if (depth != from->naxes[2]) {
-			to->maxi = -1.0;
+	return 0;
+}
+
+int extract_fits(fits *from, fits *to, int channel, gboolean to_float) {
+	size_t nbdata = from->naxes[0] * from->naxes[1];
+	// copying metadata, not data or stats which are kept null
+	memcpy(to, from, sizeof(fits));
+	to->naxis = 2;
+	to->naxes[2] = 1L;
+	to->maxi = -1.0;
+	to->stats = NULL;
+	to->fptr = NULL;
+	to->header = NULL;
+	to->history = NULL;
+	to->date = NULL;
+	to->date_obs = NULL;
+
+	if (from->type == DATA_USHORT)
+		if (to_float) {
+			/*if (from->bitpix == BYTE_IMG)
+				to->fdata = ushort8_buffer_to_float(from->pdata[channel], nbdata);
+			else to->fdata = ushort_buffer_to_float(from->pdata[channel], nbdata); */
+			to->fdata = malloc(nbdata * sizeof(float));
+			if (!to->fdata) {
+				PRINT_ALLOC_ERR;
+				return -1;
+			}
+			for (int i = 0; i < nbdata; i++)
+				to->fdata[i] = (float)from->pdata[channel][i];
+			to->type = DATA_FLOAT;
+			to->bitpix = FLOAT_IMG;
+			to->data = NULL;
+			to->pdata[0] = NULL;
+			to->pdata[1] = NULL;
+			to->pdata[2] = NULL;
+			to->fpdata[0] = to->fdata;
+			to->fpdata[1] = to->fdata;
+			to->fpdata[2] = to->fdata;
 		}
-		if (to->type == DATA_USHORT)
-			memcpy(to->data, from->pdata[layer], nbdata * sizeof(WORD));
-		else if (to->type == DATA_FLOAT)
-			memcpy(to->fdata, from->fpdata[layer], nbdata * sizeof(float));
 		else {
-			fprintf(stderr, "unsupported copy\n");
+			to->data = malloc(nbdata * sizeof(WORD));
+			if (!to->data) {
+				PRINT_ALLOC_ERR;
+				return -1;
+			}
+			memcpy(to->data, from->pdata[channel], nbdata * sizeof(WORD));
+			to->pdata[0] = to->data;
+			to->pdata[1] = to->data;
+			to->pdata[2] = to->data;
+		}
+	else if (from->type == DATA_FLOAT) {
+		to->fdata = malloc(nbdata * sizeof(float));
+		if (!to->fdata) {
+			PRINT_ALLOC_ERR;
 			return -1;
 		}
-
-		if (from->stats && from->stats[layer])
-			add_stats_to_fit(to, 0, from->stats[layer]);
+		memcpy(to->fdata, from->fpdata[channel], nbdata * sizeof(float));
+		to->fpdata[0] = to->fdata;
+		to->fpdata[1] = to->fdata;
+		to->fpdata[2] = to->fdata;
 	}
-	
 	return 0;
 }
 
@@ -2518,3 +2548,4 @@ GdkPixbuf* get_thumbnail_from_fits(char *filename, gchar **descr) {
 	*descr = description;
 	return pixbuf;
 }
+
