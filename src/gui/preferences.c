@@ -83,6 +83,7 @@ static preferences pref_init = {
 		.script_check_requires = TRUE,
 		.combo_theme = 0,
 		.font_scale = 100,
+		.icon_symbolic = FALSE,
 		.combo_lang = 0,
 		.ext = NULL,
 		.swap_dir = NULL,
@@ -260,6 +261,7 @@ static void update_user_interface_preferences() {
 		siril_set_theme(theme);
 	}
 	com.pref.font_scale = gtk_spin_button_get_value(GTK_SPIN_BUTTON(lookup_widget("pref_fontsize")));
+	com.pref.icon_symbolic = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("pref_iconstyle")));
 	com.pref.remember_windows = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("rememberWindowsCheck")));
 	com.pref.show_thumbnails = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("show_preview_button")));
 	com.pref.thumbnail_size = gtk_combo_box_get_active(GTK_COMBO_BOX(lookup_widget("thumbnails_box_size"))) == 1 ? 256 : 128;
@@ -655,6 +657,7 @@ static void set_preferences_ui(preferences *pref) {
 	siril_language_fill_combo(pref->combo_lang);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget("combo_theme")), pref->combo_theme);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("pref_fontsize")), pref->font_scale);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("pref_iconstyle")), pref->icon_symbolic);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("rememberWindowsCheck")), pref->remember_windows);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("show_preview_button")), pref->show_thumbnails);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget("thumbnails_box_size")), pref->thumbnail_size == 256 ? 1 : 0);

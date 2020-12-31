@@ -1073,6 +1073,8 @@ void set_GUI_misc() {
 	gtk_toggle_button_set_active(ToggleButton, com.pref.remember_windows);
 	font_size = GTK_SPIN_BUTTON(lookup_widget("pref_fontsize"));
 	gtk_spin_button_set_value(font_size, com.pref.font_scale);
+	ToggleButton = GTK_TOGGLE_BUTTON(lookup_widget("pref_iconstyle"));
+	gtk_toggle_button_set_active(ToggleButton, com.pref.icon_symbolic);
 
 	memory_percent = GTK_SPIN_BUTTON(lookup_widget("spinbutton_mem_ratio"));
 	gtk_spin_button_set_value(memory_percent, com.pref.stack.memory_ratio);

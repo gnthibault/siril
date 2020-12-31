@@ -554,6 +554,7 @@ struct pref_struct {
 
 	gint combo_theme;           // value of the combobox theme
 	gdouble font_scale;           // font scale
+	gboolean icon_symbolic;		// icon style
 	gchar *combo_lang;           // string value of the combobox lang
 
 	gchar *ext;		// FITS extension used in SIRIL

@@ -223,7 +223,7 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="page-increment">10</property>
   </object>
   <object class="GtkAdjustment" id="adj_fontsize">
-    <property name="lower">90</property>
+    <property name="lower">70</property>
     <property name="upper">150</property>
     <property name="value">100</property>
     <property name="step-increment">10</property>
@@ -754,6 +754,11 @@ enter a visible wavelength in nm</property>
     <property name="visible">True</property>
     <property name="can-focus">False</property>
     <property name="pixbuf">pixmaps/r.png</property>
+  </object>
+  <object class="GtkImage" id="image1">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="icon-name">edit-find</property>
   </object>
   <object class="GtkImage" id="imageHelp">
     <property name="visible">True</property>
@@ -2849,7 +2854,7 @@ enter a visible wavelength in nm</property>
                                             <property name="valign">center</property>
                                             <property name="label" translatable="yes">Add</property>
                                             <property name="use-underline">True</property>
-                                            <property name="icon-name">list-add-symbolic</property>
+                                            <property name="icon-name">list-add</property>
                                             <signal name="clicked" handler="on_select_convert_button_clicked" swapped="no"/>
                                           </object>
                                           <packing>
@@ -2865,7 +2870,7 @@ enter a visible wavelength in nm</property>
                                             <property name="valign">center</property>
                                             <property name="label" translatable="yes">Remove</property>
                                             <property name="use-underline">True</property>
-                                            <property name="icon-name">list-remove-symbolic</property>
+                                            <property name="icon-name">list-remove</property>
                                             <signal name="clicked" handler="on_remove_convert_button_clicked" swapped="no"/>
                                           </object>
                                           <packing>
@@ -2881,7 +2886,7 @@ enter a visible wavelength in nm</property>
                                             <property name="valign">center</property>
                                             <property name="label" translatable="yes">Clear</property>
                                             <property name="use-underline">True</property>
-                                            <property name="icon-name">edit-clear-symbolic</property>
+                                            <property name="icon-name">edit-clear</property>
                                             <signal name="clicked" handler="on_clear_convert_button_clicked" swapped="no"/>
                                           </object>
                                           <packing>
@@ -7384,7 +7389,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
               <object class="GtkImage">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
-                <property name="icon-name">open-menu-symbolic</property>
+                <property name="icon-name">open-menu</property>
               </object>
             </child>
             <accelerator key="F10" signal="clicked"/>
@@ -8218,7 +8223,7 @@ artifacts may appear.</property>
                         <property name="can-focus">True</property>
                         <property name="tooltip-text" translatable="yes">Enter the identifier or the name of the object which must be in the image.</property>
                         <property name="valign">center</property>
-                        <property name="primary-icon-name">edit-find-symbolic</property>
+                        <property name="primary-icon-name">edit-find</property>
                         <property name="primary-icon-activatable">False</property>
                         <property name="primary-icon-sensitive">False</property>
                         <signal name="activate" handler="on_GtkSearchIPS_activate" swapped="no"/>
@@ -8230,12 +8235,12 @@ artifacts may appear.</property>
                     </child>
                     <child>
                       <object class="GtkButton" id="GtkButtonIPS">
-                        <property name="label">gtk-find</property>
+                        <property name="label">Find</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
                         <property name="tooltip-text" translatable="yes">Start searching.</property>
-                        <property name="use-stock">True</property>
+                        <property name="image">image1</property>
                         <property name="always-show-image">True</property>
                         <signal name="clicked" handler="on_GtkButtonIPS_clicked" swapped="no"/>
                       </object>
@@ -15222,7 +15227,7 @@ Uncheck if images come from a monochrome sensor.</property>
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="icon-name">list-remove-all-symbolic</property>
+                    <property name="icon-name">list-remove-all</property>
                   </object>
                 </child>
               </object>
@@ -15244,7 +15249,7 @@ Uncheck if images come from a monochrome sensor.</property>
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="icon-name">edit-select-all-symbolic</property>
+                    <property name="icon-name">edit-select-all</property>
                   </object>
                 </child>
               </object>
@@ -15266,7 +15271,7 @@ Uncheck if images come from a monochrome sensor.</property>
                   <object class="GtkImage">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
-                    <property name="icon-name">emblem-ok-symbolic</property>
+                    <property name="icon-name">emblem-ok</property>
                   </object>
                 </child>
                 <accelerator key="space" signal="clicked"/>
@@ -15305,7 +15310,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="tooltip-text" translatable="yes">Enter the number of the image you want to reach.</property>
-            <property name="primary-icon-name">edit-find-symbolic</property>
+            <property name="primary-icon-name">edit-find</property>
             <property name="primary-icon-activatable">False</property>
             <property name="primary-icon-sensitive">False</property>
             <property name="input-purpose">digits</property>
@@ -19020,7 +19025,7 @@ The technique gives very good compression for astronomical images and is relativ
                                       <object class="GtkImage">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="icon-name">edit-delete-symbolic</property>
+                                        <property name="icon-name">edit-delete</property>
                                       </object>
                                     </child>
                                   </object>
@@ -19041,7 +19046,7 @@ The technique gives very good compression for astronomical images and is relativ
                                       <object class="GtkImage">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="icon-name">edit-delete-symbolic</property>
+                                        <property name="icon-name">edit-delete</property>
                                       </object>
                                     </child>
                                   </object>
@@ -19062,7 +19067,7 @@ The technique gives very good compression for astronomical images and is relativ
                                       <object class="GtkImage">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="icon-name">edit-delete-symbolic</property>
+                                        <property name="icon-name">edit-delete</property>
                                       </object>
                                     </child>
                                   </object>
@@ -20064,7 +20069,7 @@ The technique gives very good compression for astronomical images and is relativ
                             <property name="can-focus">False</property>
                             <property name="left-padding">12</property>
                             <child>
-                              <!-- n-columns=2 n-rows=2 -->
+                              <!-- n-columns=2 n-rows=3 -->
                               <object class="GtkGrid">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
@@ -20115,6 +20120,23 @@ The technique gives very good compression for astronomical images and is relativ
                                     <property name="top-attach">0</property>
                                     <property name="width">2</property>
                                   </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="pref_iconstyle">
+                                    <property name="label" translatable="yes">Symbolic icons</property>
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="halign">start</property>
+                                    <property name="draw-indicator">True</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">0</property>
+                                    <property name="top-attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <placeholder/>
                                 </child>
                               </object>
                             </child>

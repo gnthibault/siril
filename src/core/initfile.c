@@ -219,6 +219,9 @@ static int readinitfile() {
 		if (config_setting_lookup_float(misc_setting, "font_scale", &com.pref.font_scale) == CONFIG_FALSE) {
 			com.pref.font_scale = 100.0;
 		}
+		if (config_setting_lookup_bool(misc_setting, "icon_symbolic", &com.pref.icon_symbolic) == CONFIG_FALSE) {
+			com.pref.icon_symbolic = FALSE;
+		}
 		if (config_setting_lookup_bool(misc_setting, "rgb_aladin", &com.pref.rgb_aladin) == CONFIG_FALSE) {
 			com.pref.rgb_aladin = FALSE;
 		}
@@ -516,6 +519,9 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 
 	misc_setting = config_setting_add(misc_group, "font_scale", CONFIG_TYPE_FLOAT);
 	config_setting_set_float(misc_setting, com.pref.font_scale);
+
+	misc_setting = config_setting_add(misc_group, "icon_symbolic", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(misc_setting, com.pref.icon_symbolic);
 
 	misc_setting = config_setting_add(misc_group, "rgb_aladin", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.pref.rgb_aladin);
