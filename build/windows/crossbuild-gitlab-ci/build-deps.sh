@@ -7,7 +7,7 @@ crossroad install fftw \
                   libconfig \
                   gsl \
                   opencv \
-                  libheif \
+#                  libheif \
                   ffms2 \
                   cfitsio
 
