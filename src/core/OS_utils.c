@@ -25,6 +25,7 @@
 #  include <config.h>
 #endif
 
+#include <gtk/gtk.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -62,6 +63,9 @@
 #include <sys/param.h>
 #endif
 #include <sys/mount.h>
+#endif
+#ifdef G_OS_UNIX
+#include <gio/gunixinputstream.h>
 #endif
 
 #include "core/siril.h"
@@ -533,6 +537,14 @@ gint siril_dialog_run(SirilWidget *widgetdialog) {
 
 void siril_widget_destroy(SirilWidget *widgetdialog) {
 	gtk_widget_destroy(widgetdialog);
+}
+
+GInputStream *siril_input_stream_from_stdin() {
+	GInputStream *input_stream = NULL;
+#if defined(G_OS_UNIX) && defined(HAVE_GIO_UNIX)
+	input_stream = g_unix_input_stream_new(fileno(stdin), FALSE);
+#endif
+	return input_stream;
 }
 
 #ifdef _WIN32

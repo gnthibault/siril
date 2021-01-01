@@ -213,6 +213,7 @@ no_dep = dependency('', required: false)
 ## Core dependencies
 dbghelp = platform_windows ? cc.find_library('dbghelp') : no_dep
 glib_dep = dependency('glib-2.0', required : true, version: '>= 2.56.0')
+gio_dep = dependency('gio-2.0', required : true, version: '>= 2.56.0')
 gtk_dep = dependency('gtk+-3.0', required : true, version: '>= 3.20.0')
 gsl_dep = dependency('gsl', required : true)
 libconfig_dep = dependency('libconfig', required : true)
@@ -249,6 +250,8 @@ else
 endif
 
 ## Optionnal dependencies
+
+gio_unix_dep = dependency('gio-unix-2.0', required : false, version: '>= 2.56.0')
 
 openmp_dep = []
 if enable_openmp
@@ -319,6 +322,13 @@ foreach header : [
 endforeach
 
 ## Dependencies configuration
+if gio_unix_dep.found()
+  conf_data.set('HAVE_GIO_UNIX', true, description : 'Using GIO_UNIX API.')
+else 
+  conf_data.set('HAVE_GIO_UNIX', false, description : 'Using GIO_UNIX API.')
+  warning('gio-unix not found. Not using GIO_UNIX API.')
+endif
+
 if gsl_dep.found()
   if gsl_dep.version().version_compare('>=2.0')
     conf_data.set('HAVE_GSL_1', 0, description : 'Use GSL 1.')
