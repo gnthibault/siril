@@ -39,8 +39,10 @@
 #include <tchar.h>
 #include <io.h>
 #include <fcntl.h>
+#include <gio/gwin32inputstream.h>
 #else
 #include <sys/resource.h>
+#include <gio/gunixinputstream.h>
 #endif
 #if defined(__unix__) || defined(OS_OSX)
 #include <sys/param.h>		// define or not BSD macro
@@ -63,9 +65,6 @@
 #include <sys/param.h>
 #endif
 #include <sys/mount.h>
-#endif
-#ifdef G_OS_UNIX
-#include <gio/gunixinputstream.h>
 #endif
 
 #include "core/siril.h"
@@ -541,7 +540,17 @@ void siril_widget_destroy(SirilWidget *widgetdialog) {
 
 GInputStream *siril_input_stream_from_stdin() {
 	GInputStream *input_stream = NULL;
-#if defined(G_OS_UNIX) && defined(HAVE_GIO_UNIX)
+#ifdef _WIN32
+	HANDLE handle = GetStdHandle(STD_INPUT_HANDLE);
+
+	if (handle == INVALID_HANDLE_VALUE) {
+		gchar *emsg = g_win32_error_message(GetLastError());
+		g_printerr(_("Unable to acquire HANDLE for STDIN: %s\n"), emsg);
+		g_free(emsg);
+		return NULL;
+	}
+	input_stream = g_win32_input_stream_new(handle, FALSE);
+#else
 	input_stream = g_unix_input_stream_new(fileno(stdin), FALSE);
 #endif
 	return input_stream;
