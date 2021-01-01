@@ -119,7 +119,7 @@ AC_CHECK_LIB(m, log, LIBS="$LIBS -lm")
 dnl check GLIB version
 PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.56.0)
 case "$host_os" in
-  *-*-mingw*)
+  mingw*)
     PKG_CHECK_MODULES([GIO],[gio-2.0 >= 2.56.0 gio-windows-2.0 >= 2.56.0])
     ;;
   *)

@@ -215,9 +215,9 @@ dbghelp = platform_windows ? cc.find_library('dbghelp') : no_dep
 glib_dep = dependency('glib-2.0', required : true, version: '>= 2.56.0')
 gio_dep = dependency('gio-2.0', required : true, version: '>= 2.56.0')
 if platform_windows
-  gio_dep = dependency('gio-windows-2.0', required : true, version: '>= 2.56.0')
+  gio_platform_dep = dependency('gio-windows-2.0', required : true, version: '>= 2.56.0')
 else
-  gio_dep = dependency('gio-unix-2.0', required : true, version: '>= 2.56.0')
+  gio_platform_dep = dependency('gio-unix-2.0', required : true, version: '>= 2.56.0')
 endif
 gtk_dep = dependency('gtk+-3.0', required : true, version: '>= 3.20.0')
 gsl_dep = dependency('gsl', required : true)
@@ -255,8 +255,6 @@ else
 endif
 
 ## Optionnal dependencies
-
-gio_unix_dep = dependency('gio-unix-2.0', required : false, version: '>= 2.56.0')
 
 openmp_dep = []
 if enable_openmp
@@ -422,6 +420,8 @@ externals_dep = declare_dependency(
     dbghelp,
     m_dep,
     glib_dep,
+    gio_dep,
+    gio_platform_dep,
     gtk_dep,
     libcurl_dep,
     gsl_dep,
