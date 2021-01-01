@@ -38,6 +38,7 @@
 #elif _WIN32
 #include <windows.h>
 #endif
+#include <gio/gunixinputstream.h>
 
 #include "git-version.h"
 #include "core/siril.h"
@@ -264,7 +265,7 @@ static void siril_app_activate(GApplication *application) {
 			GInputStream *input_stream;
 
 			if (g_strcmp0(main_option_script, "-") == 0) {
-				input_stream = (GInputStream *)stdin;
+				input_stream = g_unix_input_stream_new(fileno(stdin), FALSE);
 			} else {
 				GError *error;
 				GFile *file = g_file_new_for_path(main_option_script);
