@@ -8,6 +8,7 @@ AM_CPPFLAGS = \
 	-DLOCALEDIR='"${localedir}"' \
 	${OPENCV_CFLAGS} \
 	$(FFMPEG_CFLAGS) \
+	$(GIO_CFLAGS) \
 	$(GTK_CFLAGS) \
 	${GTK_MAC_CFLAGS} \
 	$(LIBTIFF_CFLAGS) \
