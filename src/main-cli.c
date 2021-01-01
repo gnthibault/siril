@@ -218,8 +218,10 @@ static void siril_app_activate(GApplication *application) {
 		read_pipe(NULL);
 	}
 
-	if (siril_change_dir(com.wd, NULL))
+	if (siril_change_dir(com.wd, NULL)) {
 		com.wd = g_strdup(siril_get_startup_dir());
+		siril_change_dir(com.wd, NULL);
+	}
 
 	g_free(supported_files);
 }

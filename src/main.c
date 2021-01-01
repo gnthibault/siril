@@ -324,8 +324,10 @@ static void siril_app_activate(GApplication *application) {
 #endif
 	}
 
-	if (siril_change_dir(com.wd, NULL))
+	if (siril_change_dir(com.wd, NULL)) {
 		com.wd = g_strdup(siril_get_startup_dir());
+		siril_change_dir(com.wd, NULL);
+	}
 
 	if (!com.headless) {
 		gtk_builder_connect_signals (builder, NULL);

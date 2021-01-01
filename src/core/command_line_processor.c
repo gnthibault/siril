@@ -18,10 +18,6 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef _GNU_SOURCE
-#define _GNU_SOURCE // for getline
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
