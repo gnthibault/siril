@@ -17,16 +17,16 @@ meson ${BUILDDIR} \
     --prefix=${PREFIX} \
     --buildtype=release \
     -Drelocatable-bundle=yes \
-    -Denable-libcurl=yes 
+    -Denable-libcurl=yes
 
 
 ninja -C ${BUILDDIR} -j$(nproc)
 DESTDIR=$PWD/${BUILDDIR}/appdir ninja -C ${BUILDDIR} -j$(nproc) install; find ${BUILDDIR}/appdir/
 cd ${BUILDDIR}
 cp ../AppRun appdir/AppRun ; chmod +x appdir/AppRun
-cp ./appdir/usr/share/icons/hicolor/256x256/apps/siril.png ./appdir/org.free_astro.siril.png
+cp ./appdir/usr/share/icons/hicolor/scalable/apps/org.free_astro.siril.svg ./appdir/org.free_astro.siril.svg
 
-sed -i -e 's|^Icon=.*|Icon=org.free_astro.siril|g' ./appdir/usr/share/applications/org.free_astro.siril.desktop # FIXME
+#sed -i -e 's|^Icon=.*|Icon=org.free_astro.siril|g' ./appdir/usr/share/applications/org.free_astro.siril.desktop # FIXME
 cd appdir/
 
 ########################################################################
