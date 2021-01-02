@@ -25,9 +25,6 @@
 
 #include "about_dialog.h"
 
-//static const gchar* copyright = ("Copyright © 2004-2011 François Meyer\n"
-//		"Copyright © 2012-2020 team free-astro");
-
 static gchar **authors = (gchar *[] ) { "Vincent Hourdin <vh@free-astro.vinvin.tf>",
 				"Cyril Richard <cyril@free-astro.org>", "François Meyer", NULL };
 

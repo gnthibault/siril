@@ -1,6 +1,6 @@
 # This file is part of Siril, an astronomy image processor.
 # Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
-# Copyright (C) 2012-2020 team free-astro (see more in AUTHORS file)
+# Copyright (C) 2012-2021 team free-astro (see more in AUTHORS file)
 # Reference site is https://free-astro.org/index.php/Siril
 #
 # Siril is free software: you can redistribute it and/or modify
