@@ -1274,6 +1274,15 @@ void initialize_all_GUI(gchar *supported_files) {
 		g_free(ver);
 	}
 
+#ifdef OS_OSX
+	GdkMonitor *monitor = gdk_display_get_primary_monitor(gdk_display_get_default());
+	if (gdk_monitor_get_scale_factor(monitor) == 2) {
+		siril_message_dialog(GTK_MESSAGE_WARNING, _("HiDPI detected on macOS system"),
+				_("Siril is known to be quite unresponsive on macOS system using HiDPI. "
+						"Please disable the HiDPI to fully get advantage of Siril speed."));
+	}
+#endif
+
 	/* every 0.5sec update memory display */
 	g_timeout_add(500, update_displayed_memory, NULL);
 
