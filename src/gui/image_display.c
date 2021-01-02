@@ -790,7 +790,7 @@ void initialize_image_display() {
 
 	/* Create pixbuf from siril.svg file */
 	gchar *image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "siril.svg", NULL);
-	com.siril_pix = gdk_pixbuf_new_from_file(image, NULL);
+	com.siril_pix = gdk_pixbuf_new_from_file_at_size(image, 256, 256, NULL);
 	g_free(image);
 
 	cairo_matrix_init_identity(&com.display_matrix);
