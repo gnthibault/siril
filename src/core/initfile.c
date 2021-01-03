@@ -484,7 +484,7 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 	misc_setting = config_setting_add(misc_group, "swap_directory", CONFIG_TYPE_STRING);
 	config_setting_set_string(misc_setting, com.pref.swap_dir);
 
-	misc_setting = config_setting_add(misc_group, "first_start_0_99_6", CONFIG_TYPE_BOOL);
+	misc_setting = config_setting_add(misc_group, "first_start_0_99_8", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.pref.first_start);
 
 	misc_setting = config_setting_add(misc_group, "extension", CONFIG_TYPE_STRING);
