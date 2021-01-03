@@ -1261,15 +1261,6 @@ void initialize_all_GUI(gchar *supported_files) {
 		com.pref.first_start = FALSE;
 		writeinitfile();
 
-#ifdef OS_OSX
-	GdkMonitor *monitor = gdk_display_get_primary_monitor(gdk_display_get_default());
-	if (gdk_monitor_get_scale_factor(monitor) == 2) {
-		siril_message_dialog(GTK_MESSAGE_WARNING, _("HiDPI detected on macOS system"),
-				_("Siril is known to be quite unresponsive on macOS system using HiDPI. "
-						"Please disable the HiDPI to fully get advantage of Siril speed."));
-	}
-#endif
-
 		gchar *ver = g_strdup_printf(_("Welcome to %s"), PACKAGE_STRING);
 
 		int ret = siril_confirm_dialog(ver,

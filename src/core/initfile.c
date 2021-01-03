@@ -195,7 +195,7 @@ static int readinitfile() {
 		int type;
 		const char *swap_dir = NULL, *extension = NULL, *lang = NULL, *copyright = NULL;
 
-		if (config_setting_lookup_bool(misc_setting, "first_start_0_99_6", &com.pref.first_start) == CONFIG_FALSE) {
+		if (config_setting_lookup_bool(misc_setting, "first_start_0_99_8", &com.pref.first_start) == CONFIG_FALSE) {
 			com.pref.first_start = TRUE;
 		}
 		if (config_setting_lookup_bool(misc_setting, "confirm_quit", &com.pref.save.quit) == CONFIG_FALSE) {

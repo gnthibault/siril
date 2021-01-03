@@ -47,6 +47,7 @@ const SirilTipIntro intro_tips[] = {
 		{"header_precision_button", N_("Siril now works in 32-bit per channel precision by default. You can change it in Preferences and you can change the currently loaded image precision with this selector"), 11},
 		{"header_save_as_button", N_("Save your work as many times as needed by choosing a new name ..."), 6},
 		{"header_save_button", N_("... or save the current FITS image with the same name"), 6},
+		{"header_snapshot_button", N_("Take a snapshot of your image at any time, with false color, in negative view or with annotation"), 8},
 		{"command", N_("As usual you can enter Siril commands. To have an overview of all commands, type \"help\""), 7},
 		{"GtkToolMainBar", N_("Basic viewing operations are available in the main toolbar. Zooming is now available with Ctrl-Scroll up and down"), 8},
 		{"GtkToolMainBar", N_("To pan your image you can now use Ctrl-Click (and drag)"), 6},

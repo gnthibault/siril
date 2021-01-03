@@ -545,7 +545,7 @@ GInputStream *siril_input_stream_from_stdin() {
 
 	if (handle == INVALID_HANDLE_VALUE) {
 		gchar *emsg = g_win32_error_message(GetLastError());
-		g_printerr(_("Unable to acquire HANDLE for STDIN: %s\n"), emsg);
+		g_printerr("Unable to acquire HANDLE for STDIN: %s\n", emsg);
 		g_free(emsg);
 		return NULL;
 	}
