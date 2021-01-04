@@ -192,6 +192,7 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 			siril_log_message(_("Super-pixel is not handled yet for on the fly SER stacking\n"));
 			return ST_GENERIC_ERROR;
 		}
+		import_metadata_from_serfile(args->seq->ser_file, fit);
 		for (unsigned int frame = 0; frame < args->seq->number; frame++) {
 			fits fit = { 0 };
 			if (ser_read_frame(args->seq->ser_file, frame, &fit)) {

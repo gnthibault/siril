@@ -1204,6 +1204,13 @@ gint64 ser_compute_file_size(struct ser_struct *ser_file, int nb_frames) {
 	return size;
 }
 
+int import_metadata_from_serfile(struct ser_struct *ser_file, fits *to) {
+	strncpy(to->instrume, ser_file->instrument, FLEN_VALUE);
+	strncpy(to->observer, ser_file->observer, FLEN_VALUE);
+	strncpy(to->telescop, ser_file->telescope, FLEN_VALUE);
+	return 0;
+}
+
 static GdkPixbufDestroyNotify free_preview_data(guchar *pixels, gpointer data) {
 	free(pixels);
 	free(data);
