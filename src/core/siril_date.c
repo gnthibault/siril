@@ -140,6 +140,15 @@ GDateTime *ser_timestamp_to_date_time(guint64 timestamp) {
 }
 
 /**
+ * GDateTime are converted to SER timestamp
+ * @param dt
+ * @return a SER timestamp
+ */
+guint64 date_time_to_ser_timestamp(GDateTime *dt) {
+	return (guint64) (g_date_time_to_unix(dt) * 10000000) + SER_TIME_1970;
+}
+
+/**
  * From a char * in FITS format to a GDateTime
  * @param date
  * @return a GDateTime or NULL if date is not in the right format

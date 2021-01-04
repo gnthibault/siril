@@ -393,7 +393,7 @@ static int ser_write_header_from_fit(struct ser_struct *ser_file, fits *fit) {
 	}
 
 	if (fit->date_obs)
-		ser_file->date = (guint64) g_date_time_to_unix(fit->date_obs);
+		ser_file->date = date_time_to_ser_timestamp(fit->date_obs);
 	return 0;
 }
 
@@ -1184,7 +1184,7 @@ static int ser_write_frame_from_fit_internal(struct ser_struct *ser_file, fits *
 
 	if (fit->date_obs && !ser_alloc_ts(ser_file, frame_no)) {
 		guint64 utc;
-		utc = (guint64) g_date_time_to_unix(fit->date_obs);
+		utc = date_time_to_ser_timestamp(fit->date_obs);
 		ser_file->ts[frame_no] = utc;
 	}
 

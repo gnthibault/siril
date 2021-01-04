@@ -24,6 +24,7 @@
 
 gchar *build_timestamp_filename();
 GDateTime *ser_timestamp_to_date_time(guint64 timestamp);
+guint64 date_time_to_ser_timestamp(GDateTime *dt);
 double date_time_to_Julian(GDateTime *dt);
 GDateTime *FITS_date_to_date_time(gchar *date);
 gchar *date_time_to_FITS_date(GDateTime *date);
