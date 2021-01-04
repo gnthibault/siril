@@ -25,6 +25,7 @@
 #include "core/proto.h"
 #include "core/processing.h"
 #include "io/sequence.h"
+#include "io/ser.h"
 #include "io/image_format_fits.h"
 #include "stacking.h"
 #include "gui/progress_and_log.h"
