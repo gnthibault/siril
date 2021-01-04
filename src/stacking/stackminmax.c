@@ -214,6 +214,10 @@ static int stack_addminmax(struct stacking_args *args, gboolean ismax) {
 			import_metadata_from_fitsfile(args->seq->fptr[ref], &gfit);
 			seq_close_image(args->seq, ref);
 		}
+	} else if (args->seq->type == SEQ_FITSEQ) {
+		import_metadata_from_fitsfile(args->seq->fitseq_file->fptr, &gfit);
+	} else if (args->seq->type == SEQ_SER) {
+		// TODO
 	}
 
 free_and_reset_progress_bar:

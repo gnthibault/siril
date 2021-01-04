@@ -56,8 +56,8 @@ static int display_date(guint64 timestamp, char *txt) {
 		gchar *str = date_time_to_FITS_date(date);
 		fprintf(stdout, "%s%s\n", txt, str);
 		free(str);
+		g_date_time_unref(date);
 	}
-	g_date_time_unref(date);
 	return 0;
 }
 

@@ -177,7 +177,6 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 			naxes[2] = 1;
 		g_assert(naxes[2] <= 3);
 	}
-
 	else if (args->seq->type == SEQ_SER) {
 		g_assert(args->seq->ser_file);
 		naxes[0] = args->seq->ser_file->image_width;
@@ -193,6 +192,22 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 			siril_log_message(_("Super-pixel is not handled yet for on the fly SER stacking\n"));
 			return ST_GENERIC_ERROR;
 		}
+		for (unsigned int frame = 0; frame < args->seq->number; frame++) {
+			fits fit = { 0 };
+			if (ser_read_frame(args->seq->ser_file, frame, &fit)) {
+				siril_log_message(_("Could not load frame %d from SER sequence %s\n"), frame, args->seq->seqname);
+				continue;
+			}
+			gdouble current_exp;
+			GDateTime *dt = NULL;
+
+			current_exp = fit.exposure;
+			dt = g_date_time_ref(fit.date_obs);
+			if (dt) {
+				*list_date = g_list_prepend(*list_date,	new_item(dt, current_exp));
+			}
+			clearfits(&fit);
+		}
 	}
 	else if (args->seq->type == SEQ_FITSEQ) {
 		g_assert(args->seq->fitseq_file);
@@ -200,6 +215,23 @@ int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, lo
 		*naxis = naxes[2] == 3 ? 3 : 2;
 		*bitpix = args->seq->fitseq_file->bitpix;
 		import_metadata_from_fitsfile(args->seq->fitseq_file->fptr, fit);
+
+		for (unsigned int frame = 0; frame < args->seq->number; frame++) {
+			fits fit = { 0 };
+			if (fitseq_read_frame(args->seq->fitseq_file, frame, &fit, FALSE, -1)) {
+				siril_log_message(_("Could not load frame %d from FITS sequence %s\n"), frame, args->seq->seqname);
+				continue;
+			}
+			gdouble current_exp;
+			GDateTime *dt = NULL;
+
+			current_exp = fit.exposure;
+			dt = g_date_time_ref(fit.date_obs);
+			if (dt) {
+				*list_date = g_list_prepend(*list_date,	new_item(dt, current_exp));
+			}
+			clearfits(&fit);
+		}
 	} else {
 		siril_log_message(_("Rejection stacking is only supported for FITS images/sequences and SER sequences.\nUse \"Sum Stacking\" instead.\n"));
 		return ST_SEQUENCE_ERROR;
