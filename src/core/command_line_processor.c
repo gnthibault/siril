@@ -487,12 +487,14 @@ void init_completion_command() {
 	GtkTreeIter iter;
 	GtkEntry *entry = GTK_ENTRY(lookup_widget("command"));
 
+	gtk_entry_completion_set_model(completion, GTK_TREE_MODEL(model));
 	gtk_entry_completion_set_text_column(completion, COMPLETION_COLUMN);
-	gtk_entry_set_completion(entry, completion);
+	gtk_entry_completion_set_minimum_key_length(completion, 2);
+	gtk_entry_completion_set_popup_completion(completion, TRUE);
 	gtk_entry_completion_set_inline_completion(completion, TRUE);
 	gtk_entry_completion_set_popup_single_match(completion, FALSE);
-	gtk_entry_completion_set_minimum_key_length(completion, 2);
 	gtk_entry_completion_set_match_func(completion, completion_match_func, NULL, NULL);
+	gtk_entry_set_completion(entry, completion);
 	g_signal_connect(G_OBJECT(completion), "match-selected", G_CALLBACK(on_match_selected), NULL);
 
 	/* Populate the completion database. */
@@ -503,7 +505,6 @@ void init_completion_command() {
 		gtk_list_store_set(model, &iter, COMPLETION_COLUMN, current->name, -1);
 		current++;
 	}
-	gtk_entry_completion_set_model(completion, GTK_TREE_MODEL(model));
 	g_object_unref(model);
 }
 
@@ -536,10 +537,18 @@ static void history_add_line(char *line) {
 	com.cmd_hist_display = com.cmd_hist_current;
 }
 
+void on_command_activate(GtkEntry *entry, gpointer user_data) {
+	const gchar *text = gtk_entry_get_text(entry);
+	history_add_line(strdup(text));
+	if (!(processcommand(text))) {
+		gtk_entry_set_text(entry, "");
+		set_precision_switch();
+	}
+}
+
 /* handler for the single-line console */
 gboolean on_command_key_press_event(GtkWidget *widget, GdkEventKey *event,
 		gpointer user_data) {
-	const gchar *text;
 	int handled = 0;
 	static GtkEntry *entry = NULL;
 	if (!entry)
@@ -548,16 +557,6 @@ gboolean on_command_key_press_event(GtkWidget *widget, GdkEventKey *event,
 	int entrylength = 0;
 
 	switch (event->keyval) {
-	case GDK_KEY_Return:
-	case GDK_KEY_KP_Enter:
-		handled = 1;
-		text = gtk_entry_get_text(entry);
-		history_add_line(strdup(text));
-		if (!(processcommand(text))) {
-			gtk_entry_set_text(entry, "");
-			set_precision_switch();
-		}
-		break;
 	case GDK_KEY_Up:
 		handled = 1;
 		if (!com.cmd_history)
