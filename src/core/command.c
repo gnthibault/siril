@@ -1156,30 +1156,23 @@ int process_set_mag(int nb) {
 }
 
 int process_set_ref(int nb) {
-	if (!sequence_is_loaded()) {
-		PRINT_NOT_FOR_SINGLE;
+	sequence *seq = load_sequence(word[1], NULL);
+	if (!seq)
+		return 1;
+
+	int n = g_ascii_strtoull(word[2], NULL, 10) - 1;
+	if (n < 0 || n > seq->number) {
+		siril_log_message(_("The reference image must be set between 1 and %d\n"), seq->number);
 		return 1;
 	}
 
-	int n = g_ascii_strtoull(word[1], NULL, 10) - 1;
-	if (n < 0 || n > com.seq.number) {
-		siril_log_message(_("The reference image must be set between 1 and %d\n"), com.seq.number);
-		return 1;
+	seq->reference_image = n;
+	// a reference image should not be excluded to avoid confusion
+	if (!seq->imgparam[seq->current].incl) {
+		seq->imgparam[seq->current].incl = TRUE;
 	}
-	if (sequence_is_loaded()) {
-		free_reference_image();
 
-		com.seq.reference_image = n;
-		test_and_allocate_reference_image(-1);
-		// a reference image should not be excluded to avoid confusion
-		if (!com.seq.imgparam[com.seq.current].incl) {
-			toggle_image_selection(com.seq.current, com.seq.current);
-		}
-		if (!com.script) {
-			sequence_list_change_reference();
-		}
-		writeseqfile(&com.seq);
-	}
+	writeseqfile(seq);
 
 	return 0;
 }
