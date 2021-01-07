@@ -106,31 +106,31 @@ static void update_theme_button(const gchar *button_name, const gchar *path) {
 static void update_icons_to_theme(gboolean is_dark) {
 	siril_debug_print("Loading %s theme...\n", is_dark ? "dark" : "light");
 	if (is_dark) {
-		update_theme_button("annotate_button", "astrometry_dark.png");
+		update_theme_button("annotate_button", "astrometry_dark.svg");
 
-		update_theme_button("rotate90_anticlock_button", "rotate-acw_dark.png");
-		update_theme_button("rotate90_clock_button", "rotate-cw_dark.png");
-		update_theme_button("mirrorx_button", "mirrorx_dark.png");
-		update_theme_button("mirrory_button", "mirrory_dark.png");
+		update_theme_button("rotate90_anticlock_button", "rotate-acw_dark.svg");
+		update_theme_button("rotate90_clock_button", "rotate-cw_dark.svg");
+		update_theme_button("mirrorx_button", "mirrorx_dark.svg");
+		update_theme_button("mirrory_button", "mirrory_dark.svg");
 
-		update_theme_button("process_starfinder_button", "starfinder_dark.png");
-		update_theme_button("sum_button", "sum_dark.png");
-		update_theme_button("export_button", "export_dark.png");
+		update_theme_button("process_starfinder_button", "starfinder_dark.svg");
+		update_theme_button("sum_button", "sum_dark.svg");
+		update_theme_button("export_button", "export_dark.svg");
 
-		update_theme_button("histoToolAutoStretch", "mtf_dark.png");
+		update_theme_button("histoToolAutoStretch", "mtf_dark.svg");
 	} else {
-		update_theme_button("annotate_button", "astrometry.png");
+		update_theme_button("annotate_button", "astrometry.svg");
 
-		update_theme_button("rotate90_anticlock_button", "rotate-acw.png");
-		update_theme_button("rotate90_clock_button", "rotate-cw.png");
-		update_theme_button("mirrorx_button", "mirrorx.png");
-		update_theme_button("mirrory_button", "mirrory.png");
+		update_theme_button("rotate90_anticlock_button", "rotate-acw.svg");
+		update_theme_button("rotate90_clock_button", "rotate-cw.svg");
+		update_theme_button("mirrorx_button", "mirrorx.svg");
+		update_theme_button("mirrory_button", "mirrory.svg");
 
-		update_theme_button("process_starfinder_button", "starfinder.png");
-		update_theme_button("sum_button", "sum.png");
-		update_theme_button("export_button", "export.png");
+		update_theme_button("process_starfinder_button", "starfinder.svg");
+		update_theme_button("sum_button", "sum.svg");
+		update_theme_button("export_button", "export.svg");
 
-		update_theme_button("histoToolAutoStretch", "mtf.png");
+		update_theme_button("histoToolAutoStretch", "mtf.svg");
 	}
 }
 

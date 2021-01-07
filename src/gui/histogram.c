@@ -207,10 +207,10 @@ static void set_histo_toggles_names() {
 		gtk_widget_set_tooltip_text(GTK_WIDGET(toggles[0]), _("Gray channel"));
 		GtkWidget *w;
 		if (com.pref.combo_theme == 0) {
-			image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "monochrome_dark.png", NULL);
+			image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "monochrome_dark.svg", NULL);
 			w = gtk_image_new_from_file(image);
 		} else {
-			image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "monochrome.png", NULL);
+			image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "monochrome.svg", NULL);
 			w = gtk_image_new_from_file(image);
 		}
 		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(toggles[0]), w);
@@ -227,7 +227,7 @@ static void set_histo_toggles_names() {
 			gtk_widget_set_visible(GTK_WIDGET(toggles[3]), FALSE);
 
 	} else {
-		image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "r.png", NULL);
+		image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "r.svg", NULL);
 		gtk_widget_set_tooltip_text(GTK_WIDGET(toggles[0]), _("Red channel"));
 		GtkWidget *w = gtk_image_new_from_file(image);
 		gtk_tool_button_set_icon_widget(GTK_TOOL_BUTTON(toggles[0]), w);
