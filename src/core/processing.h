@@ -106,6 +106,7 @@ gpointer generic_sequence_worker(gpointer p);
 gboolean end_generic_sequence(gpointer p);
 
 int seq_prepare_hook(struct generic_seq_args *args);
+int seq_prepare_writer(struct generic_seq_args *args);
 int seq_finalize_hook(struct generic_seq_args *args);
 int generic_save(struct generic_seq_args *, int, int, fits *);
 

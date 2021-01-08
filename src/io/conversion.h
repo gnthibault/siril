@@ -15,29 +15,26 @@ typedef struct {
 struct _convert_data {
 	struct timeval t_start;
 	gchar **list;
-	int start;
-	int total;
-	int nb_converted_files;
+	int total;	// length of list
+	int start;	// offset in output number
 	gboolean input_has_a_seq;
+	gboolean input_has_a_film;
 	gboolean make_link;
 	gchar *destroot;
-	int retval;
-
 	gboolean debayer;
 	sequence_type output_type;
 	gboolean multiple_output;	// multiple SER output
+
+	int retval;
+	int nb_converted_files;
 };
 
 #define MAX_EXTENSIONS 50	// actual size of supported_extensions
 
 extern supported_raw_list supported_raw[];	//supported raw extensions
 extern char *supported_extensions[MAX_EXTENSIONS];
-extern const char *filter_pattern[];
 
-int retrieveBayerPatternFromChar(char *bayer);
-const gchar *get_bayer_pattern_from_preferences();
 int get_nb_raw_supported();
-
 void list_format_available();
 image_type get_type_for_extension(const char *extension);
 gchar *initialize_converters();

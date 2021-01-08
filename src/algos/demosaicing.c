@@ -41,6 +41,42 @@
 
 #define USE_SIRIL_DEBAYER FALSE
 
+const char *filter_pattern[] = {
+	"RGGB",
+	"BGGR",
+	"GBRG",
+	"GRBG",
+
+/* XTRANS */
+	"GGRGGB" // ----> XTRANS_1
+	"GGBGGR"
+	"BRGRBG"
+	"GGBGGR"
+	"GGRGGB"
+	"RBGBRG",
+
+	"RBGBRG" // ----> XTRANS_2
+	"GGRGGB"
+	"GGBGGR"
+	"BRGRBG"
+	"GGBGGR"
+	"GGRGGB",
+
+	"GRGGBG"
+	"BGBRGR"
+	"GRGGBG"
+	"GBGGRG"
+	"RGTBGB"
+	"GBGGRG",
+
+	"GBGGRG"
+	"RGRBGB"
+	"GBGGRG"
+	"GRGGBG"
+	"BGBRGR"
+	"GRGGBG"
+};
+
 /** Calculate the bayer pattern color from the row and column **/
 static inline int FC(const size_t row, const size_t col, const uint32_t filters) {
 	return filters >> (((row << 1 & 14) + (col & 1)) << 1) & 3;
@@ -1134,6 +1170,69 @@ int debayer(fits *fit, interpolation_method interpolation, sensor_pattern patter
 	else if (fit->type == DATA_FLOAT)
 		return debayer_float(fit, interpolation, pattern);
 	else return -1;
+}
+
+int retrieveBayerPatternFromChar(char *bayer) {
+	for (int i = 0; i < G_N_ELEMENTS(filter_pattern); i++) {
+		if (g_ascii_strcasecmp(bayer, filter_pattern[i]) == 0) {
+			return i;
+		}
+	}
+	return BAYER_FILTER_NONE;
+}
+
+// debayers the image if it's a FITS image and if debayer is activated globally
+// or if the force argument is passed
+int debayer_if_needed(image_type imagetype, fits *fit, gboolean force_debayer) {
+	if (imagetype != TYPEFITS || (!com.pref.debayer.open_debayer && !force_debayer))
+		return 0;
+
+	/* Siril's FITS are stored bottom-up, debayering will give wrong results.
+	 * So before demosacaing we need to flip the image with fits_flip_top_to_bottom().
+	 * But sometimes FITS are created by acquisition software top-down, in that case
+	 * the user can indicate it ('compatibility') and we don't flip for debayer.
+	 */
+	if (fit->naxes[2] != 1) {
+		siril_log_message(_("Cannot perform debayering on image with more than one channel\n"));
+		return 0;
+	}
+
+	/* Get Bayer informations from header if available */
+	sensor_pattern tmp_pattern = com.pref.debayer.bayer_pattern;
+	interpolation_method tmp_algo = com.pref.debayer.bayer_inter;
+	if (com.pref.debayer.use_bayer_header) {
+		sensor_pattern bayer;
+		bayer = retrieveBayerPatternFromChar(fit->bayer_pattern);
+
+		if (bayer <= BAYER_FILTER_MAX) {
+			if (bayer != tmp_pattern) {
+				if (bayer == BAYER_FILTER_NONE) {
+					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
+				}
+				else {
+					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
+								" from Bayer pattern in settings (%s). Overriding settings.\n"),
+							"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
+					tmp_pattern = bayer;
+				}
+			}
+		} else {
+			tmp_pattern = bayer;
+			tmp_algo = XTRANS;
+			siril_log_color_message(_("XTRANS Sensor detected. Using special algorithm.\n"), "green");
+		}
+	}
+	if (tmp_pattern >= BAYER_FILTER_MIN && tmp_pattern <= BAYER_FILTER_MAX) {
+		siril_log_message(_("Filter Pattern: %s\n"),
+				filter_pattern[tmp_pattern]);
+	}
+
+	int retval = 0;
+	if (debayer(fit, tmp_algo, tmp_pattern)) {
+		siril_log_message(_("Cannot perform debayering\n"));
+		retval = -1;
+	}
+	return retval;
 }
 
 int extractHa_ushort(fits *in, fits *Ha, sensor_pattern pattern) {

@@ -3,9 +3,6 @@
 
 #include <fitsio.h>
 #include <glib.h>
-#ifdef _OPENMP
-#include <omp.h>
-#endif
 #include "core/siril.h"
 #include "io/seqwriter.h"
 
@@ -20,9 +17,9 @@ struct fits_sequence {
 	fitsfile *fptr;		// cfitsio file descriptor.
 
 	gboolean is_mt_capable;	// cfitsio has the option to use multi-threading
-#ifdef _OPENMP
 	fitsfile **thread_fptr;	// cfitsio file descriptor for each thread read only
-#endif
+	guint num_threads;	// size of thread_fptr
+
 	struct seqwriter_data *writer;
 };
 

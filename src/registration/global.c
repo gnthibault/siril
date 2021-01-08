@@ -205,6 +205,9 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 				args->new_ser = NULL;
 				return 1;
 			}
+
+			if (seq_prepare_writer(args))
+				return 1;
 		}
 		else if (args->seq->type == SEQ_FITSEQ) {
 			if (seq_prepare_hook(args))
