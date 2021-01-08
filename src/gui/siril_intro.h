@@ -25,7 +25,6 @@
 typedef struct {
 	GtkWidget *popover;
 	GtkWidget *widget;
-	GtkStyleContext *context;
 } SirilUIIntro;
 
 typedef struct {
