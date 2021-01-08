@@ -159,17 +159,25 @@ void start_writer(struct seqwriter_data *writer, int frame_count) {
 	writer->write_thread = g_thread_new("writer", write_worker, writer);
 }
 
-int stop_writer(struct seqwriter_data *writer) {
+/* Stopping the writer does not unblock the threads waiting for a memory slot.
+ * It's the responsability of the caller to release its slot, which will
+ * unblock a thread, which must check for a cancel condition before processing,
+ * and itself release the slot if not processing.
+ */
+int stop_writer(struct seqwriter_data *writer, gboolean aborting) {
 	int retval = 0;
 	if (writer->write_thread) {
-		g_async_queue_push(writer->writes_queue, ABORT_TASK);
+		if (aborting) {
+			// it aborts on next message instead of writing everything
+			g_async_queue_push_front(writer->writes_queue, ABORT_TASK);
+		}
+		else g_async_queue_push(writer->writes_queue, ABORT_TASK);
 		siril_debug_print("writer thread notified, waiting for exit...\n");
 		gpointer ret = g_thread_join(writer->write_thread);
 		writer->write_thread = NULL;
 		g_async_queue_unref(writer->writes_queue);
 		retval = GPOINTER_TO_INT(ret);
 		siril_debug_print("writer thread joined (retval: %d)\n", retval);
-		seqwriter_set_max_active_blocks(0); // wake-up the callers
 	}
 	return retval;
 }
@@ -205,8 +213,16 @@ struct _outputs_struct {
 };
 static struct _outputs_struct *outputs;
 
+// 0 or less means no limit
 void seqwriter_set_max_active_blocks(int max) {
 	siril_log_message(_("Number of images allowed in the FITS write queue: %d (zero or less is unlimited)\n"), max);
+	if (configured_max_active_blocks > 0 && max > configured_max_active_blocks) {
+		int more = max - configured_max_active_blocks;
+		configured_max_active_blocks = max;
+		// unblock now for dynamic scaling
+		for (int i = 0; i < more; i++)
+			seqwriter_release_memory();
+	}
 	configured_max_active_blocks = max;
 	nb_blocks_active = 0;
 }
@@ -250,6 +266,15 @@ static gboolean all_outputs_to_index(int index) {
 	return TRUE;
 }
 
+// in case of error, release the slot
+void seqwriter_release_memory() {
+	g_mutex_lock(&pool_mutex);
+	nb_blocks_active--;
+	g_cond_signal(&pool_cond);
+	g_mutex_unlock(&pool_mutex);
+}
+
+// same as seqwriter_release_memory() but handles the multiple output
 static void notify_data_freed(struct seqwriter_data *writer, int index) {
 	g_mutex_lock(&pool_mutex);
 	if (nb_outputs > 1) {

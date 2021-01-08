@@ -128,9 +128,8 @@ void fitseq_init_struct(fitseq *fitseq) {
 	fitseq->hdu_index = NULL;
 	fitseq->fptr = NULL;
 	fitseq->is_mt_capable = FALSE;
-#ifdef _OPENMP
 	fitseq->thread_fptr = NULL;
-#endif
+	fitseq->num_threads = 0;
 	fitseq->writer = NULL;
 }
 
@@ -181,22 +180,21 @@ int fitseq_open(const char *filename, fitseq *fitseq) {
 	}
 
 	fitseq->filename = strdup(filename);
-	fitseq->is_mt_capable = FALSE;
 	siril_debug_print("fitseq_open: sequence %s has %d frames, bitpix = %d, naxis = %d, naxes = { %ld, %ld, %ld }\n",
 			filename, fitseq->frame_count, fitseq->bitpix, naxis,
 			fitseq->naxes[0], fitseq->naxes[1], fitseq->naxes[2]);
 
-#ifdef _OPENMP
 	if (fits_is_reentrant()) {
 		fitseq->is_mt_capable = TRUE;
 		fprintf(stdout, "cfitsio was compiled with multi-thread support,"
 				" parallel read of images will be possible\n");
 	} else {
+		fitseq->is_mt_capable = FALSE;
 		fprintf(stdout, "cfitsio was compiled without multi-thread support,"
 				" parallel read of images will be impossible\n");
 		siril_log_message(_("Your version of cfitsio does not support multi-threading\n"));
 	}
-#endif
+
 	return 0;
 }
 
@@ -232,12 +230,10 @@ static int fitseq_read_frame_internal(fitseq *fitseq, int index, fits *dest, gbo
 
 int fitseq_read_frame(fitseq *fitseq, int index, fits *dest, gboolean force_float, int thread) {
 	fitsfile *fptr = fitseq->fptr;
-#ifdef _OPENMP
-	if (thread >= 0 && fitseq->thread_fptr) {
+	if (thread >= 0 && thread < fitseq->num_threads && fitseq->thread_fptr) {
 		fptr = fitseq->thread_fptr[thread];
 		siril_debug_print("fitseq: thread %d reading FITS image\n", thread);
 	}
-#endif
 	return fitseq_read_frame_internal(fitseq, index, dest, force_float, fptr);
 }
 
@@ -251,10 +247,8 @@ int fitseq_read_partial_fits(fitseq *fitseq, int layer, int index, fits *dest, c
 	if (new_fit_image(&dest, area->w, area->h, 1, dest->type))
 		return -1;
 	fitsfile *fptr = fitseq->fptr;
-#ifdef _OPENMP
-	if (thread >= 0 && fitseq->thread_fptr)
+	if (thread >= 0 && thread < fitseq->num_threads && fitseq->thread_fptr)
 		fptr = fitseq->thread_fptr[thread];
-#endif
 	dest->fptr = fptr;
 	dest->bitpix = fitseq->bitpix;
 	dest->orig_bitpix = fitseq->orig_bitpix;
@@ -284,10 +278,8 @@ int fitseq_read_partial(fitseq *fitseq, int layer, int index, void *buffer, cons
 	}
 
 	fitsfile *fptr = fitseq->fptr;
-#ifdef _OPENMP
-	if (thread >= 0 && fitseq->thread_fptr)
+	if (thread >= 0 && thread < fitseq->num_threads && fitseq->thread_fptr)
 		fptr = fitseq->thread_fptr[thread];
-#endif
 
 	int status = 0;
 	if (fits_movabs_hdu(fptr, fitseq->hdu_index[index], NULL, &status)) {
@@ -359,10 +351,10 @@ int fitseq_write_image(fitseq *fitseq, fits *image, int index) {
 	return seqwriter_append_write(fitseq->writer, image, index);
 }
 
-static int fitseq_destroy(fitseq *fitseq) {
+static int fitseq_destroy(fitseq *fitseq, gboolean abort) {
 	int retval = 0;
 	if (fitseq->writer) {
-		retval = stop_writer(fitseq->writer);
+		retval = stop_writer(fitseq->writer, abort);
 		free(fitseq->writer);
 		fitseq->writer = NULL;
 	}
@@ -376,40 +368,36 @@ static int fitseq_destroy(fitseq *fitseq) {
 void fitseq_close_and_delete_file(fitseq *fitseq) {
 	char *filename = fitseq->filename;
 	fitseq->filename = NULL;
-	fitseq_destroy(fitseq);
+	fitseq_destroy(fitseq, TRUE);
 	siril_log_message(_("Removing failed FITS sequence file: %s\n"), filename);
 	g_unlink(filename);
 }
 
 int fitseq_close_file(fitseq *fitseq) {
-	return fitseq_destroy(fitseq);
+	return fitseq_destroy(fitseq, FALSE);
 }
 
 // to call after open to read with several threads in the file
 int fitseq_prepare_for_multiple_read(fitseq *fitseq) {
-#ifdef _OPENMP
 	if (fitseq->thread_fptr) return 0;
 	if (!fitseq->is_mt_capable) return 0;
-	guint num_proc = g_get_num_processors();
-	fitseq->thread_fptr = malloc(num_proc * sizeof(fitsfile *));
-	for (guint i = 0; i < num_proc; i++) {
+	fitseq->num_threads = g_get_num_processors();
+	fitseq->thread_fptr = malloc(fitseq->num_threads * sizeof(fitsfile *));
+	for (guint i = 0; i < fitseq->num_threads; i++) {
 		int status = 0;
 		if (siril_fits_open_diskfile(&fitseq->thread_fptr[i], fitseq->filename, READONLY, &status)) {
 			report_fits_error(status);
 			return -1;
 		}
 	}
-	siril_debug_print("initialized FITS sequence fd for %d threads reading\n", num_proc);
-#endif
+	siril_debug_print("initialized FITS sequence fd for %d threads reading\n", fitseq->num_threads);
 	return 0;
 }
 
 int fitseq_multiple_close(fitseq *fitseq) {
 	int retval = 0;
-#ifdef _OPENMP
 	if (!fitseq->thread_fptr) return 0;
-	guint num_proc = g_get_num_processors();
-	for (guint i = 0; i < num_proc; i++) {
+	for (guint i = 0; i < fitseq->num_threads; i++) {
 		int status = 0;
 		fits_close_file(fitseq->thread_fptr[i], &status);
 		if (status)
@@ -417,8 +405,7 @@ int fitseq_multiple_close(fitseq *fitseq) {
 	}
 	free(fitseq->thread_fptr);
 	fitseq->thread_fptr = NULL;
-	siril_debug_print("closing FITS sequence fd for %d threads\n", num_proc);
-#endif
+	siril_debug_print("closing FITS sequence fd for %d threads\n", fitseq->num_threads);
 	return retval;
 }
 

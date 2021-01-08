@@ -376,7 +376,7 @@ static int ser_write_header_from_fit(struct ser_struct *ser_file, fits *fit) {
 		ser_file->byte_pixel_depth = SER_PIXEL_DEPTH_16;
 		ser_file->bit_pixel_depth = 16;
 	} else {
-		siril_log_message(_("Writing to SER files from larger than 16-bit FITS images is not yet implemented\n"));
+		siril_log_message(_("Writing a 32-bit image to SER files is not supported.\n"));
 		return 1;
 	}
 	if (fit->instrume[0] != 0) {
@@ -510,10 +510,10 @@ void ser_display_info(struct ser_struct *ser_file) {
 	fprintf(stdout, "========================================\n");
 }
 
-static int ser_end_write(struct ser_struct *ser_file) {
+static int ser_end_write(struct ser_struct *ser_file, gboolean abort) {
 	int retval = 0;
 	if (ser_file->writer) {
-		retval = stop_writer(ser_file->writer);
+		retval = stop_writer(ser_file->writer, abort);
 		ser_file->frame_count = ser_file->writer->frame_count;
 		free(ser_file->writer);
 		ser_file->writer = NULL;
@@ -523,7 +523,7 @@ static int ser_end_write(struct ser_struct *ser_file) {
 
 int ser_close_and_delete_file(struct ser_struct *ser_file) {
 	if (ser_file == NULL) return -1;
-	int retval = ser_end_write(ser_file);
+	int retval = ser_end_write(ser_file, TRUE);
 	char *filename = ser_file->filename;
 	ser_file->filename = NULL;
 	ser_close_file(ser_file); // closes, frees and zeroes
@@ -535,7 +535,7 @@ int ser_close_and_delete_file(struct ser_struct *ser_file) {
 
 int ser_write_and_close(struct ser_struct *ser_file) {
 	if (ser_file == NULL) return -1;
-	int retval = ser_end_write(ser_file);
+	int retval = ser_end_write(ser_file, FALSE);
 	if (!ser_file->frame_count) {
 		siril_log_color_message(_("The SER sequence is being created with no image in it.\n"), "red");
 		ser_close_and_delete_file(ser_file);

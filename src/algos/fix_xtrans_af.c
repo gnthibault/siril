@@ -88,6 +88,7 @@ static void set_af_matrix(gchar *pattern, af_pixel_matrix af_matrix) {
 			}
 
 			// Print the matrix if debug is enabled.
+			siril_debug_print("XTRANS matrix:\n");
 			siril_debug_print("  %.6s\n", af_matrix[0]);
 			siril_debug_print("  %.6s\n", af_matrix[1]);
 			siril_debug_print("  %.6s\n", af_matrix[2]);

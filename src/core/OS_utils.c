@@ -597,6 +597,45 @@ int ReconnectIO(int OpenNewConsole) {
 
 	return MadeConsole;
 }
+
+char* siril_real_path(const char *source) {
+	HANDLE hFile;
+	DWORD maxchar = 2048;
+
+	wchar_t *wsource = g_utf8_to_utf16(source, -1, NULL, NULL, NULL);
+	if ( wsource == NULL ) {
+		return NULL ;
+	}
+
+	if (!(GetFileAttributesW(wsource) & FILE_ATTRIBUTE_REPARSE_POINT)) { /* Ce n'est pas un lien symbolique , je sors */
+		g_free(wsource);
+		return NULL;
+	}
+
+	wchar_t *wFilePath = g_new(wchar_t, maxchar + 1);
+	if (!wFilePath) {
+		PRINT_ALLOC_ERR;
+		g_free(wsource);
+		return NULL;
+	}
+	wFilePath[0] = 0;
+
+	hFile = CreateFileW(wsource, GENERIC_READ, FILE_SHARE_READ, NULL,
+			OPEN_EXISTING, 0, NULL);
+	if (hFile == INVALID_HANDLE_VALUE) {
+		g_free(wFilePath);
+		g_free(wsource);
+		return NULL;
+	}
+
+	GetFinalPathNameByHandleW(hFile, wFilePath, maxchar, 0);
+
+	gchar *gFilePath = g_utf16_to_utf8(wFilePath + 4, -1, NULL, NULL, NULL); // +4 = enleve les 4 caracteres du prefixe "//?/"
+	g_free(wsource);
+	g_free(wFilePath);
+	CloseHandle(hFile);
+	return gFilePath;
+}
 #endif
 
 // for debug purposes

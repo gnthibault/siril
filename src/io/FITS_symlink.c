@@ -22,6 +22,9 @@
 #undef _WIN32_WINNT
 #define _WIN32_WINNT _WIN32_WINNT_WIN10
 #include <windows.h>
+#else
+#include <string.h>
+#include <errno.h>
 #endif
 #include <stdio.h>
 
@@ -82,9 +85,11 @@ gboolean test_if_symlink_is_ok() {
 #endif
 }
 
-gboolean symlink_uniq_file(gchar *src_filename, gchar *dest_filename, gboolean allow_symlink) {
-	gboolean symlink_is_ok = TRUE;
-	/* remove symlink already existing to avoid error */
+int symlink_uniq_file(gchar *src_filename, gchar *dest_filename, gboolean allow_symlink) {
+	static gboolean warned = FALSE;
+	int retval = 0;
+
+	/* remove already existing file to avoid error */
 	GStatBuf dest_stat;
 	if (g_lstat(dest_filename, &dest_stat) == 0) {
 		g_unlink(dest_filename);
@@ -98,22 +103,24 @@ gboolean symlink_uniq_file(gchar *src_filename, gchar *dest_filename, gboolean a
 		wdst = g_utf8_to_utf16(dest_filename, -1, NULL, NULL, NULL);
 
 		if (CreateSymbolicLinkW(wdst, wsrc, SYMBOLIC_LINK_FLAG_ALLOW_UNPRIVILEGED_CREATE) == 0) {
-			copy_fits_from_file(src_filename, dest_filename);
-			symlink_is_ok = FALSE;
+			retval = copy_fits_from_file(src_filename, dest_filename);
 		}
 
 		g_free(wsrc);
 		g_free(wdst);
 	} else {
-		copy_fits_from_file(src_filename, dest_filename);
-		symlink_is_ok = FALSE;
+		retval = copy_fits_from_file(src_filename, dest_filename);
 	}
 #else
-	if (symlink(src_filename, dest_filename) != 0) {
-		copy_fits_from_file(src_filename, dest_filename);
-		symlink_is_ok = FALSE;
+	if (symlink(src_filename, dest_filename)) {
+		char err[150];
+		strerror_r(errno, err, 150);
+		if (!warned) {
+			siril_log_color_message(_("Symbolic link could not be made, copying the file. Error: %s\n"), "salmon", err);
+			warned = TRUE;
+		}
+		retval = copy_fits_from_file(src_filename, dest_filename);
 	}
 #endif
-
-	return symlink_is_ok;
+	return retval;
 }

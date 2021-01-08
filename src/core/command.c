@@ -905,9 +905,10 @@ int process_merge(int nb) {
 			args->list = glist_to_array(list, &args->total);
 			args->destroot = format_basename(word[nb - 1], FALSE);
 			args->input_has_a_seq = FALSE;
+			args->input_has_a_film = FALSE;
 			args->debayer = FALSE;
 			args->multiple_output = FALSE;
-			args->output_type = SEQ_REGULAR; // fallback if symlink does not work
+			args->output_type = SEQ_REGULAR;
 			args->make_link = TRUE;
 			gettimeofday(&(args->t_start), NULL);
 			start_in_new_thread(convert_thread_worker, args);
@@ -932,6 +933,7 @@ int process_merge(int nb) {
 					if (ser_read_frame(seqs[i]->ser_file, frame, fit)) {
 						siril_log_message(_("Failed to read frame %d from input sequence `%s'\n"), frame, word[i + 1]);
 						retval = 1;
+						seqwriter_release_memory();
 						ser_close_and_delete_file(&out_ser);
 						goto merge_clean_up;
 					}
@@ -939,6 +941,7 @@ int process_merge(int nb) {
 					if (ser_write_frame_from_fit(&out_ser, fit, written_frames)) {
 						siril_log_message(_("Failed to write frame %d in merged sequence\n"), written_frames);
 						retval = 1;
+						seqwriter_release_memory();
 						ser_close_and_delete_file(&out_ser);
 						goto merge_clean_up;
 					}
@@ -970,6 +973,7 @@ int process_merge(int nb) {
 					if (fitseq_read_frame(seqs[i]->fitseq_file, frame, fit, FALSE, -1)) {
 						siril_log_message(_("Failed to read frame %d from input sequence `%s'\n"), frame, word[i + 1]);
 						retval = 1;
+						seqwriter_release_memory();
 						fitseq_close_and_delete_file(&out_fitseq);
 						goto merge_clean_up;
 					}
@@ -977,6 +981,7 @@ int process_merge(int nb) {
 					if (fitseq_write_image(&out_fitseq, fit, written_frames)) {
 						siril_log_message(_("Failed to write frame %d in merged sequence\n"), written_frames);
 						retval = 1;
+						seqwriter_release_memory();
 						fitseq_close_and_delete_file(&out_fitseq);
 						goto merge_clean_up;
 					}
@@ -2782,34 +2787,41 @@ int process_convertraw(int nb) {
 		return 1;
 	}
 
+	if (!com.wd) {
+		siril_log_message(_("Conversion: no working directory set.\n"));
+		return 1;
+	}
+
 	for (int i = 2; i < nb; i++) {
-		if (word[i]) {
-			char *current = word[i], *value;
-			if (!strcmp(current, "-debayer")) {
-				debayer = TRUE;
-			} else if (!strcmp(current, "-fitseq")) {
-				output = SEQ_FITSEQ;
-				if (!g_str_has_suffix(destroot, com.pref.ext))
-					str_append(&destroot, com.pref.ext);
-			} else if (g_str_has_prefix(current, "-start=")) {
-				value = current + 7;
-				idx = (g_ascii_strtoull(value, NULL, 10) <= 0 || g_ascii_strtoull(value, NULL, 10) >= INDEX_MAX) ? 1 : g_ascii_strtoull(value, NULL, 10);
-			} else if (g_str_has_prefix(current, "-out=")) {
-				value = current + 5;
-				if (value[0] == '\0') {
-					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+		char *current = word[i], *value;
+		if (!strcmp(current, "-debayer")) {
+			debayer = TRUE;
+		} else if (!strcmp(current, "-fitseq")) {
+			output = SEQ_FITSEQ;
+			if (!g_str_has_suffix(destroot, com.pref.ext))
+				str_append(&destroot, com.pref.ext);
+		} else if (!strcmp(current, "-ser")) {
+			output = SEQ_SER;
+			if (!g_str_has_suffix(destroot, ".ser"))
+				str_append(&destroot, ".ser");
+		} else if (g_str_has_prefix(current, "-start=")) {
+			value = current + 7;
+			idx = (g_ascii_strtoull(value, NULL, 10) <= 0 || g_ascii_strtoull(value, NULL, 10) >= INDEX_MAX) ? 1 : g_ascii_strtoull(value, NULL, 10);
+		} else if (g_str_has_prefix(current, "-out=")) {
+			value = current + 5;
+			if (value[0] == '\0') {
+				siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+				return 1;
+			}
+			if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
+				if (g_mkdir_with_parents(value, 0755) < 0) {
+					siril_log_color_message(_("Cannot create output folder: %s\n"), "red", value);
 					return 1;
 				}
-				if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
-					if (g_mkdir_with_parents(value, 0755) < 0) {
-						siril_log_color_message(_("Cannot create output folder: %s\n"), "red", value);
-						return 1;
-					}
-				}
-				gchar *filename = g_build_filename(value, destroot, NULL);
-				g_free(destroot);
-				destroot = filename;
 			}
+			gchar *filename = g_build_filename(value, destroot, NULL);
+			g_free(destroot);
+			destroot = filename;
 		}
 	}
 
@@ -2817,7 +2829,6 @@ int process_convertraw(int nb) {
 		siril_log_message(_("Conversion: error opening working directory %s.\n"), com.wd);
 		fprintf (stderr, "Conversion: %s\n", error->message);
 		g_clear_error(&error);
-		set_cursor_waiting(FALSE);
 		return 1;
 	}
 
@@ -2828,6 +2839,11 @@ int process_convertraw(int nb) {
 			continue;
 		image_type type = get_type_for_extension(ext);
 		if (type == TYPERAW) {
+			if (output == SEQ_SER && !g_ascii_strcasecmp(ext, "raf") && !debayer) {
+				siril_log_message(_("FujiFilm XTRANS sensors are not supported by SER v2 (CFA-style) standard. You may use FITS sequences instead."));
+				g_list_free_full(list, g_free);
+				return 1;
+			}
 			list = g_list_append(list, g_build_filename(com.wd, file, NULL));
 			count++;
 		}
@@ -2835,6 +2851,7 @@ int process_convertraw(int nb) {
 	g_dir_close(dir);
 	if (!count) {
 		siril_log_message(_("No RAW files were found for conversion\n"));
+		g_list_free_full(list, g_free);
 		return 1;
 	}
 	/* sort list */
@@ -2848,12 +2865,6 @@ int process_convertraw(int nb) {
 	if (!com.script)
 		control_window_switch_to_tab(OUTPUT_LOGS);
 
-	if (!com.wd) {
-		siril_log_message(_("Conversion: no working directory set.\n"));
-		set_cursor_waiting(FALSE);
-		return 1;
-	}
-
 	struct _convert_data *args = malloc(sizeof(struct _convert_data));
 	args->start = idx;
 	args->list = files_to_convert;
@@ -2863,6 +2874,7 @@ int process_convertraw(int nb) {
 	else
 		args->destroot = destroot;
 	args->input_has_a_seq = FALSE;
+	args->input_has_a_film = FALSE;
 	args->debayer = debayer;
 	args->output_type = output;
 	args->multiple_output = FALSE;
@@ -2886,28 +2898,27 @@ int process_link(int nb) {
 	}
 
 	for (int i = 2; i < nb; i++) {
-		if (word[i]) {
-			char *current = word[i], *value;
-			if (g_str_has_prefix(current, "-start=")) {
-				value = current + 7;
-				idx = (g_ascii_strtoull(value, NULL, 10) <= 0 || g_ascii_strtoull(value, NULL, 10) >= INDEX_MAX) ?
-						1 : g_ascii_strtoull(value, NULL, 10);
-			} else if (g_str_has_prefix(current, "-out=")) {
-				value = current + 5;
-				if (value[0] == '\0') {
-					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+		char *current = word[i], *value;
+		if (g_str_has_prefix(current, "-start=")) {
+			value = current + 7;
+			idx = (g_ascii_strtoull(value, NULL, 10) <= 0 ||
+					g_ascii_strtoull(value, NULL, 10) >= INDEX_MAX) ?
+				1 : g_ascii_strtoull(value, NULL, 10);
+		} else if (g_str_has_prefix(current, "-out=")) {
+			value = current + 5;
+			if (value[0] == '\0') {
+				siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+				return 1;
+			}
+			if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
+				if (g_mkdir_with_parents(value, 0755) < 0) {
+					siril_log_color_message(_("Cannot create output folder: %s\n"), "red", value);
 					return 1;
 				}
-				if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
-					if (g_mkdir_with_parents(value, 0755) < 0) {
-						siril_log_color_message(_("Cannot create output folder: %s\n"), "red", value);
-						return 1;
-					}
-				}
-				gchar *filename = g_build_filename(value, destroot, NULL);
-				g_free(destroot);
-				destroot = filename;
 			}
+			gchar *filename = g_build_filename(value, destroot, NULL);
+			g_free(destroot);
+			destroot = filename;
 		}
 	}
 
@@ -2961,6 +2972,7 @@ int process_link(int nb) {
 	args->total = count;
 	args->destroot = format_basename(destroot, TRUE);
 	args->input_has_a_seq = FALSE;
+	args->input_has_a_film = FALSE;
 	args->debayer = FALSE;
 	args->multiple_output = FALSE;
 	args->output_type = SEQ_REGULAR; // fallback if symlink does not work
@@ -2988,35 +3000,37 @@ int process_convert(int nb) {
 	}
 
 	for (int i = 2; i < nb; i++) {
-		if (word[i]) {
-			char *current = word[i], *value;
-			if (!strcmp(current, "-debayer")) {
-				debayer = TRUE;
-				make_link = FALSE;
-			} else if (!strcmp(current, "-fitseq")) {
-				output = SEQ_FITSEQ;
-				if (!g_str_has_suffix(destroot, com.pref.ext))
-					str_append(&destroot, com.pref.ext);
-			} else if (g_str_has_prefix(current, "-start=")) {
-				value = current + 7;
-				idx = (g_ascii_strtoull(value, NULL, 10) <= 0 || g_ascii_strtoull(value, NULL, 10) >= INDEX_MAX) ?
-						1 : g_ascii_strtoull(value, NULL, 10);
-			} else if (g_str_has_prefix(current, "-out=")) {
-				value = current + 5;
-				if (value[0] == '\0') {
-					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+		char *current = word[i], *value;
+		if (!strcmp(current, "-debayer")) {
+			debayer = TRUE;
+			make_link = FALSE;
+		} else if (!strcmp(current, "-fitseq")) {
+			output = SEQ_FITSEQ;
+			if (!g_str_has_suffix(destroot, com.pref.ext))
+				str_append(&destroot, com.pref.ext);
+		} else if (!strcmp(current, "-ser")) {
+			output = SEQ_SER;
+			if (!g_str_has_suffix(destroot, ".ser"))
+				str_append(&destroot, ".ser");
+		} else if (g_str_has_prefix(current, "-start=")) {
+			value = current + 7;
+			idx = (g_ascii_strtoull(value, NULL, 10) <= 0 || g_ascii_strtoull(value, NULL, 10) >= INDEX_MAX) ?
+				1 : g_ascii_strtoull(value, NULL, 10);
+		} else if (g_str_has_prefix(current, "-out=")) {
+			value = current + 5;
+			if (value[0] == '\0') {
+				siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+				return 1;
+			}
+			if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
+				if (g_mkdir_with_parents(value, 0755) < 0) {
+					siril_log_color_message(_("Cannot create output folder: %s\n"), "red", value);
 					return 1;
 				}
-				if (!g_file_test(value, G_FILE_TEST_EXISTS)) {
-					if (g_mkdir_with_parents(value, 0755) < 0) {
-						siril_log_color_message(_("Cannot create output folder: %s\n"), "red", value);
-						return 1;
-					}
-				}
-				gchar *filename = g_build_filename(value, destroot, NULL);
-				g_free(destroot);
-				destroot = filename;
 			}
+			gchar *filename = g_build_filename(value, destroot, NULL);
+			g_free(destroot);
+			destroot = filename;
 		}
 	}
 
@@ -3034,8 +3048,7 @@ int process_convert(int nb) {
 		if (!ext)
 			continue;
 		image_type type = get_type_for_extension(ext);
-		if (type != TYPEUNDEF && type != TYPEAVI && type != TYPEMP4
-				&& type != TYPEWEBM && type != TYPESER) {
+		if (type != TYPEUNDEF && type != TYPEAVI && type != TYPESER) {
 			list = g_list_append(list, g_build_filename(com.wd, file, NULL));
 			count++;
 		}
@@ -3074,6 +3087,7 @@ int process_convert(int nb) {
 	else
 		args->destroot = destroot;
 	args->input_has_a_seq = FALSE;
+	args->input_has_a_film = FALSE;
 	args->debayer = debayer;
 	args->multiple_output = FALSE;
 	args->output_type = output;

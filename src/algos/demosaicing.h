@@ -19,6 +19,9 @@ struct split_cfa_data {
 	GList *processed_images;
 };
 
+extern const char *filter_pattern[];
+int retrieveBayerPatternFromChar(char *bayer);
+
 WORD *debayer_buffer(WORD *buf, int *width, int *height,
 		interpolation_method interpolation, sensor_pattern pattern, int bit_depth);
 int debayer(fits*, interpolation_method, sensor_pattern pattern);

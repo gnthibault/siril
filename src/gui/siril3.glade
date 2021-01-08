@@ -3043,11 +3043,12 @@ Note: FITS images will have no effect when the pre-processed sequence is SER or 
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <child>
-                                      <object class="GtkCheckButton" id="multipleSER">
-                                        <property name="label" translatable="yes">Multiple SER</property>
+                                      <object class="GtkCheckButton" id="multiple_seq">
+                                        <property name="visible">False</property>
+                                        <property name="label" translatable="yes">Multiple sequences</property>
                                         <property name="can-focus">True</property>
                                         <property name="receives-default">False</property>
-                                        <property name="tooltip-text" translatable="yes">Tick this to create several SER files instead of a single SER file for all input elements. Use this if input elements (films) don't share the same image size or must not be processed together.</property>
+                                        <property name="tooltip_text" translatable="yes">Tick this to create several sequence files instead of a single SER or FITS file for all input elements. Use this if input elements (sequence files such as films, SER or FITS cubes) don't share the same image size or must not be processed together.</property>
                                         <property name="halign">start</property>
                                         <property name="draw-indicator">True</property>
                                       </object>
