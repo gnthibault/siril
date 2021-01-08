@@ -70,7 +70,7 @@ static gboolean intro_popover_close(gpointer user_data) {
 	SirilUIIntro *ui = (SirilUIIntro *) user_data;
 
 	gtk_widget_hide(ui->popover);
-#ifdef OS_OSX // very slow on macOS
+#ifndef OS_OSX // very slow on macOS
 	gtk_style_context_remove_class(gtk_widget_get_style_context(ui->widget), "siril-intro-highlight");
 #endif
 	g_free(ui);
@@ -82,7 +82,7 @@ static gboolean intro_popover_update(gpointer user_data) {
 	if (go_next) {
 		SirilUIIntro *ui = g_new(SirilUIIntro, 1);
 		ui->widget = lookup_widget(intro_tips[tip_index].widget);
-#ifdef OS_OSX // very slow on macOS
+#ifndef OS_OSX // very slow on macOS
 		gtk_style_context_add_class(gtk_widget_get_style_context(ui->widget), "siril-intro-highlight");
 #endif
 		ui->popover = intro_popover(ui->widget, _(intro_tips[tip_index].tip));
