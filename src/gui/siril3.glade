@@ -3044,11 +3044,10 @@ Note: FITS images will have no effect when the pre-processed sequence is SER or 
                                     <property name="can-focus">False</property>
                                     <child>
                                       <object class="GtkCheckButton" id="multiple_seq">
-                                        <property name="visible">False</property>
                                         <property name="label" translatable="yes">Multiple sequences</property>
                                         <property name="can-focus">True</property>
                                         <property name="receives-default">False</property>
-                                        <property name="tooltip_text" translatable="yes">Tick this to create several sequence files instead of a single SER or FITS file for all input elements. Use this if input elements (sequence files such as films, SER or FITS cubes) don't share the same image size or must not be processed together.</property>
+                                        <property name="tooltip-text" translatable="yes">Tick this to create several sequence files instead of a single SER or FITS file for all input elements. Use this if input elements (sequence files such as films, SER or FITS cubes) don't share the same image size or must not be processed together.</property>
                                         <property name="halign">start</property>
                                         <property name="draw-indicator">True</property>
                                       </object>
@@ -6981,7 +6980,9 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
-                        <property name="tooltip-text" translatable="yes">Display mode</property>
+                        <property name="tooltip-markup" translatable="yes">Display mode: this list presents all the vizual modes available in Siril.
+
+&lt;b&gt;WARNING: only Linear mode shows the real pixel values (when vizualisation sliders are at min and max positions). Other modes are only conveniant way to display your data. Stretch your histogram before to work on an external tool.&lt;/b&gt;</property>
                         <property name="popup">menu_display</property>
                         <property name="use-popover">False</property>
                         <child>
