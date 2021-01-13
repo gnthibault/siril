@@ -21,7 +21,6 @@ variables:
   INSTALL_PREFIX: "${CI_PROJECT_DIR}/${INSTALL_DIR}"
   CROSSROAD_OUT: "crossroad-out"
   APT_CACHE: "$CI_PROJECT_DIR/apt-cache"
-  CRITERION_GIT_SHA1: "e258c4787d91b26c3466f117d678ec7103392607"
 
 ################################################################################
 # Prepare Dockers images
@@ -46,7 +45,6 @@ build-image:
     - echo "at-spi2-core build-essential desktop-file-utils cmake hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev libopencv-dev librsvg2-dev libraw-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev libcurl4-gnutls-dev wcslib-dev python3 ninja-build meson" >> Dockerfile
     - echo "RUN git clone --recurse-submodules --depth=1 -b bleeding https://github.com/Snaipe/Criterion.git \\" >> Dockerfile
     - echo " && cd Criterion \\" >> Dockerfile
-    - echo " && git checkout $CRITERION_GIT_SHA1 \\" >> Dockerfile
     - echo " && meson build --prefix /usr \\" >> Dockerfile
     - echo " && ninja -C build install \\" >> Dockerfile
     - echo " && cd .. \\" >> Dockerfile
