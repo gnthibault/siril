@@ -152,10 +152,15 @@ static void add_image_to_sequence_list(sequence *seq, int index, int layer) {
 		shiftx = roundf_to_int(seq->regparam[layer][index].shiftx);
 		shifty = roundf_to_int(seq->regparam[layer][index].shifty);
 
-		if (seq->regparam[layer][index].fwhm > 0.0f)
+		if (seq->regparam[layer][index].fwhm > 0.0f) {
 			fwhm = seq->regparam[layer][index].fwhm;
-		else if (seq->regparam[layer][index].quality >= 0.0)
+			gtk_tree_view_column_set_title(GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, "treeviewcolumn5")), _("FWHM"));
+		} else if (seq->regparam[layer][index].quality >= 0.0) {
 			fwhm = seq->regparam[layer][index].quality;
+			gtk_tree_view_column_set_title (GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, "treeviewcolumn5")), _("Quality"));
+		}
+	} else {
+		gtk_tree_view_column_set_title (GTK_TREE_VIEW_COLUMN(gtk_builder_get_object(builder, "treeviewcolumn5")), _("Quality"));
 	}
 
 	color = (com.pref.combo_theme == 0) ? 1 : 0;
