@@ -392,6 +392,31 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest,
 	return retval;
 }
 
+int convert_single_film_to_ser(sequence *seq) {
+	char **files_to_convert = malloc(1 * sizeof(char *));
+
+	if (!files_to_convert) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
+	files_to_convert[0] = g_strdup(seq->film_file->filename);
+
+	struct _convert_data *args = malloc(sizeof(struct _convert_data));
+	args->start = 1;
+	args->list = files_to_convert;
+	args->total = 1;
+	args->destroot = g_strdup_printf("%s_converted.ser", seq->film_file->filename);
+	args->input_has_a_seq = TRUE;
+	args->input_has_a_film = TRUE;
+	args->debayer = FALSE;
+	args->output_type = SEQ_SER;
+	args->multiple_output = FALSE;
+	args->make_link = FALSE;
+	gettimeofday(&(args->t_start), NULL);
+	start_in_new_thread(convert_thread_worker, args);
+	return 0;
+}
+
 typedef enum {
 	/* for the reader data provider */
 	GOT_READ_ERROR,
@@ -1258,4 +1283,3 @@ static void print_writer(struct writer_data *writer) {
 				writer->seq_count->close_sequence_after_write ? " (close after write)" : "");
 	else siril_debug_print("O> writer: %s\n", writer->filename);
 }
-

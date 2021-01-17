@@ -42,8 +42,10 @@
 #include "core/OS_utils.h"
 #include "core/initfile.h"
 #include "core/undo.h"
+#include "io/conversion.h"
 #include "gui/utils.h"
 #include "gui/callbacks.h"
+#include "gui/message_dialog.h"
 #include "gui/plot.h"
 #include "ser.h"
 #include "fits_sequence.h"
@@ -417,6 +419,7 @@ static void free_cbbt_layers() {
 int set_seq(const char *name){
 	sequence *seq = NULL;
 	char *basename;
+	int convert = 0;
 
 	if ((seq = readseqfile(name)) == NULL) {
 		fprintf(stderr, "could not load sequence %s\n", name);
@@ -424,65 +427,78 @@ int set_seq(const char *name){
 	}
 	free_image_data();
 
-	int retval = seq_check_basic_data(seq, TRUE);
-	if (retval == -1) {
-		free(seq);
-		return 1;
+	if (seq->type == SEQ_AVI) {
+		convert = siril_confirm_dialog(_("Deprecated sequence"),
+				_("Film sequences are now deprecated in Siril: some features are disabled and others may crash."
+						" We strongly encourage you to convert this sequence into a SER file."
+						" SER file format is a simple image sequence format, similar to uncompressed films.\n"
+						" Do you want to proceed?"));
 	}
-	if (retval == 0) {
-		int image_to_load = sequence_find_refimage(seq);
-		if (seq_read_frame(seq, image_to_load, &gfit, FALSE, -1)) {
-			fprintf(stderr, "could not load first image from sequence\n");
+
+	if (convert) {
+		close_sequence(FALSE);
+		convert_single_film_to_ser(seq);
+	} else {
+		int retval = seq_check_basic_data(seq, TRUE);
+		if (retval == -1) {
 			free(seq);
 			return 1;
 		}
-		seq->current = image_to_load;
+		if (retval == 0) {
+			int image_to_load = sequence_find_refimage(seq);
+			if (seq_read_frame(seq, image_to_load, &gfit, FALSE, -1)) {
+				fprintf(stderr, "could not load first image from sequence\n");
+				free(seq);
+				return 1;
+			}
+			seq->current = image_to_load;
+		}
+
+		basename = g_path_get_basename(seq->seqname);
+		siril_log_message(_("Sequence loaded: %s (%d->%d)\n"),
+				basename, seq->beg, seq->end);
+		g_free(basename);
+
+		/* Sequence is stored in com.seq for now */
+		close_sequence(TRUE);
+		memcpy(&com.seq, seq, sizeof(sequence));
+
+		init_layers_hi_and_lo_values(MIPSLOHI); // set some hi and lo values in seq->layers,
+		set_cutoff_sliders_max_values();// update min and max values for contrast sliders
+		set_cutoff_sliders_values();	// update values for contrast sliders for this image
+		set_layers_for_assign();	// set default layers assign and populate combo box
+		set_layers_for_registration();	// set layers in the combo box for registration
+		update_seqlist();
+		fill_sequence_list(seq, RLAYER, FALSE);// display list of files in the sequence
+		set_output_filename_to_sequence_name();
+		sliders_mode_set_state(com.sliders);
+		initialize_display_mode();
+		reset_plot(); // reset all plots
+
+		/* initialize image-related runtime data */
+		set_display_mode();		// display the display mode in the combo box
+		display_filename();		// display filename in gray window
+		set_precision_switch(); // set precision on screen
+		adjust_refimage(seq->current);	// check or uncheck reference image checkbox
+		update_prepro_interface(seq->type == SEQ_REGULAR || seq->type == SEQ_FITSEQ); // enable or not the preprobutton
+		update_reg_interface(FALSE);	// change the registration prereq message
+	//	update_stack_interface(FALSE);	// get stacking info and enable the Go button, already done in set_layers_for_registration
+		adjust_reginfo();		// change registration displayed/editable values
+		update_gfit_histogram_if_needed();
+		adjust_sellabel();
+		fillSeqAviExport();	// fill GtkEntry of export box
+
+		/* update menus */
+		update_MenuItem();
+		/* update parameters */
+		set_GUI_CAMERA();
+		set_GUI_photometry();
+
+		/* redraw and display image */
+		close_tab();	//close Green and Blue Tab if a 1-layer sequence is loaded
+		redraw(com.cvport, REMAP_ALL);
+		drawPlot();
 	}
-
-	basename = g_path_get_basename(seq->seqname);
-	siril_log_message(_("Sequence loaded: %s (%d->%d)\n"),
-			basename, seq->beg, seq->end);
-	g_free(basename);
-
-	/* Sequence is stored in com.seq for now */
-	close_sequence(TRUE);
-	memcpy(&com.seq, seq, sizeof(sequence));
-
-	init_layers_hi_and_lo_values(MIPSLOHI); // set some hi and lo values in seq->layers,
-	set_cutoff_sliders_max_values();// update min and max values for contrast sliders
-	set_cutoff_sliders_values();	// update values for contrast sliders for this image
-	set_layers_for_assign();	// set default layers assign and populate combo box
-	set_layers_for_registration();	// set layers in the combo box for registration
-	update_seqlist();
-	fill_sequence_list(seq, RLAYER, FALSE);// display list of files in the sequence
-	set_output_filename_to_sequence_name();
-	sliders_mode_set_state(com.sliders);
-	initialize_display_mode();
-	reset_plot(); // reset all plots
-
-	/* initialize image-related runtime data */
-	set_display_mode();		// display the display mode in the combo box
-	display_filename();		// display filename in gray window
-	set_precision_switch(); // set precision on screen
-	adjust_refimage(seq->current);	// check or uncheck reference image checkbox
-	update_prepro_interface(seq->type == SEQ_REGULAR || seq->type == SEQ_FITSEQ); // enable or not the preprobutton
-	update_reg_interface(FALSE);	// change the registration prereq message
-//	update_stack_interface(FALSE);	// get stacking info and enable the Go button, already done in set_layers_for_registration
-	adjust_reginfo();		// change registration displayed/editable values
-	update_gfit_histogram_if_needed();
-	adjust_sellabel();
-	fillSeqAviExport();	// fill GtkEntry of export box
-
-	/* update menus */
-	update_MenuItem();
-	/* update parameters */
-	set_GUI_CAMERA();
-	set_GUI_photometry();
-
-	/* redraw and display image */
-	close_tab();	//close Green and Blue Tab if a 1-layer sequence is loaded
-	redraw(com.cvport, REMAP_ALL);
-	drawPlot();
 
 	return 0;
 }

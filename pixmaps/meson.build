@@ -36,7 +36,6 @@ siril_icons = [
   'starfinder.svg',
   'sum_dark.svg',
   'sum.svg',
-  'siril_logo.svg',
   'siril.svg',
 ]
 

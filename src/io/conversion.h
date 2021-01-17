@@ -41,5 +41,6 @@ gchar *initialize_converters();
 gpointer convert_thread_worker(gpointer p);
 int debayer_if_needed(image_type imagetype, fits *fit, gboolean force_debayer);
 int any_to_fits(image_type imagetype, const char *source, fits *dest, gboolean interactive, gboolean force_float, gboolean debayer);
+int convert_single_film_to_ser(sequence *seq);
 
 #endif

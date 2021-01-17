@@ -25,7 +25,6 @@ pixmaps = \
 	rotate-acw.svg \
 	rotate-cw_dark.svg \
 	rotate-cw.svg \
-	siril_logo.svg \
 	siril.svg \
 	starfinder.svg \
 	starfinder_dark.svg \
