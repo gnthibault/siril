@@ -432,7 +432,7 @@ int set_seq(const char *name){
 				_("Film sequences are now deprecated in Siril: some features are disabled and others may crash."
 						" We strongly encourage you to convert this sequence into a SER file."
 						" SER file format is a simple image sequence format, similar to uncompressed films.\n"
-						" Do you want to proceed?"));
+						" Hit OK to convert the file, Cancel to continue."));
 	}
 
 	if (convert) {

@@ -1267,7 +1267,7 @@ void initialize_all_GUI(gchar *supported_files) {
 				_("Hello, this is the first time you use this new version of Siril. Please, have a seat and take the time "
 						"to watch the short introduction we have prepared for you. "
 						"Be aware you can replay this introduction at any times in the Miscellaneous tab of the preferences dialog box.\n"
-						"Do you want to continue?"));
+						"Hit OK to see the introduction Cancel to skip it."));
 		if (ret)
 			start_intro_script();
 
