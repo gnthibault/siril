@@ -183,7 +183,8 @@ static int compute_normalization(struct stacking_args *args) {
 	set_progress_bar_data(NULL, 1.0 / (double)args->nb_images_to_stack);
 
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(nb_threads) private(i) schedule(guided) if (args->seq->type == SEQ_SER || fits_is_reentrant())
+#pragma omp parallel for num_threads(nb_threads) private(i) schedule(guided) \
+	if (args->seq->type != SEQ_AVI && (args->seq->type == SEQ_SER || fits_is_reentrant()))
 #endif
 	for (i = 0; i < args->nb_images_to_stack; ++i) {
 		if (!retval && i != ref_image_filtred_idx) {

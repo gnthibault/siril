@@ -20,6 +20,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/siril_app_dirs.h"
 #include "gui/utils.h"
 #include "git-version.h"
 
@@ -48,7 +49,11 @@ void siril_show_about_dialog() {
 			"Copyright © 2012-%s team free-astro", SIRIL_GIT_LAST_COMMIT_YEAR);
 
 	parent = GTK_WINDOW(lookup_widget("control_window"));
-	icon = gtk_image_get_pixbuf(GTK_IMAGE(lookup_widget("pixmap1")));
+	/* Create pixbuf from siril.svg file */
+	gchar *image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "siril.svg", NULL);
+	icon = gdk_pixbuf_new_from_file_at_size(image, 256, 256, NULL);
+	g_free(image);
+
 	gtk_show_about_dialog(parent,
 			"program-name", PACKAGE,
 			"title", _("About Siril"),
