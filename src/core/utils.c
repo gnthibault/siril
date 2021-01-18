@@ -121,6 +121,18 @@ WORD roundf_to_WORD(float f) {
 }
 
 /**
+ * Compute a ceiling factor
+ * @param x the number to test
+ * @param factor the factor
+ * @return x if it is a factor of factor or the next factor
+ */
+int round_to_ceiling_multiple(int x, int factor) {
+	if (x % factor == 0)
+		return x;
+	return (x / factor + 1) * factor;
+}
+
+/**
  * convert double value to a BYTE
  * @param x value to convert
  * @return a BYTE

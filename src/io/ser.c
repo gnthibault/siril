@@ -670,6 +670,36 @@ void ser_init_struct(struct ser_struct *ser_file) {
 	memset(ser_file, 0, sizeof(struct ser_struct));
 }
 
+int ser_metadata_as_fits(struct ser_struct *ser_file, fits *fit) {
+	ser_color type_ser = ser_file->color_id;
+	if (!com.pref.debayer.open_debayer && type_ser != SER_RGB && type_ser != SER_BGR) {
+		type_ser = SER_MONO;
+	}
+	switch (type_ser) {
+	case SER_MONO:
+		fit->naxis = 2;
+		fit->naxes[2] = 1;
+		break;
+	case SER_BAYER_RGGB:
+	case SER_BAYER_BGGR:
+	case SER_BAYER_GBRG:
+	case SER_BAYER_GRBG:
+	case SER_BGR:
+	case SER_RGB:
+		fit->naxis = 3;
+		fit->naxes[2] = 3;
+		break;
+	default:
+		return 1;
+	}
+	fit->naxes[0] = fit->rx = ser_file->image_width;
+	fit->naxes[1] = fit->ry = ser_file->image_height;
+	fit->bitpix = (ser_file->byte_pixel_depth == SER_PIXEL_DEPTH_8) ? BYTE_IMG : USHORT_IMG;
+	fit->orig_bitpix = fit->bitpix;
+	fit->binning_x = fit->binning_y = 1;
+	return 0;
+}
+
 /* reads a frame on an already opened SER sequence.
  * frame number starts at 0 */
 int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
@@ -1346,3 +1376,10 @@ GdkPixbuf* get_thumbnail_from_ser(char *filename, gchar **descr) {
 	*descr = description;
 	return pixbuf;
 }
+
+GDateTime *ser_read_frame_date(struct ser_struct *ser_file, int frame_no) {
+	if (ser_file->ts)
+		return ser_timestamp_to_date_time(ser_file->ts[frame_no]);
+	return NULL;
+}
+

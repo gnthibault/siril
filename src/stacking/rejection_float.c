@@ -26,20 +26,7 @@
 #include "stacking/siril_fit_linear.h"
 #include "stacking/stacking.h"
 #include "algos/sorting.h"
-
-// in this case, N is the number of frames, so int is fine
-static float siril_stats_float_sd(const float data[], int N) {
-	double accumulator = 0.0; // accumulating in double precision is important for accuracy
-	for (int i = 0; i < N; ++i) {
-		accumulator += data[i];
-	}
-	float mean = (float)(accumulator / N);
-	accumulator = 0.0;
-	for (int i = 0; i < N; ++i)
-		accumulator += (data[i] - mean) * (data[i] - mean);
-
-	return sqrtf((float)(accumulator / (N - 1)));
-}
+#include "algos/statistics.h"
 
 static int percentile_clipping(float pixel, float sig[], float median,
 		guint64 rej[]) {

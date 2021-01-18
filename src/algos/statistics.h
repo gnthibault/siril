@@ -45,5 +45,9 @@ void full_stats_invalidation_from_fit(fits *fit);
 
 void apply_stats_to_sequence(struct stat_data *stat_args);
 
+float siril_stats_ushort_sd_64(const WORD data[], const int N);
+float siril_stats_ushort_sd_32(const WORD data[], const int N);
+float siril_stats_float_sd(const float data[], const int N);
+
 #endif
 

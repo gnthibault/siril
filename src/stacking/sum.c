@@ -158,14 +158,15 @@ static int sum_stacking_finalize_hook(struct generic_seq_args *args) {
 		return ST_GENERIC_ERROR;
 
 	/* We copy metadata from reference to the final fit */
+	int ref = ssdata->ref_image;
 	if (args->seq->type == SEQ_REGULAR) {
-		int ref = ssdata->ref_image;
 		if (!seq_open_image(args->seq, ref)) {
 			import_metadata_from_fitsfile(args->seq->fptr[ref], &gfit);
 			seq_close_image(args->seq, ref);
 		}
 	} else if (args->seq->type == SEQ_FITSEQ) {
-		import_metadata_from_fitsfile(args->seq->fitseq_file->fptr, &gfit);
+		if (!fitseq_set_current_frame(args->seq->fitseq_file, ref))
+			import_metadata_from_fitsfile(args->seq->fitseq_file->fptr, &gfit);
 	} else if (args->seq->type == SEQ_SER) {
 		import_metadata_from_serfile(args->seq->ser_file, &gfit);
 	}

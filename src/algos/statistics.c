@@ -76,6 +76,37 @@ static void select_area_ushort(fits *fit, WORD *data, int layer, rectangle *boun
 	}
 }
 
+// sd computation for stacking.
+// In this case, N is the number of frames, so int is fine
+float siril_stats_ushort_sd_64(const WORD data[], const int N) {
+	guint64 intsum = 0;
+	for (int i = 0; i < N; ++i) {
+		intsum += data[i];
+	}
+	float mean = (float)(((double)intsum) / ((double)N));
+	double accumulator = 0.0;
+	for (int i = 0; i < N; ++i) {
+		float pixel = (float)data[i];
+		accumulator += (pixel - mean) * (pixel - mean);
+	}
+	return sqrtf((float) (accumulator / (N - 1)));
+}
+
+// 32 bits sum version, enough if there are less than 64k images
+float siril_stats_ushort_sd_32(const WORD data[], const int N) {
+	guint32 intsum = 0;
+	for (int i = 0; i < N; ++i) {
+		intsum += data[i];
+	}
+	float mean = (float)(((double)intsum) / ((double)N));
+	double accumulator = 0.0;
+	for (int i = 0; i < N; ++i) {
+		float pixel = (float)data[i];
+		accumulator += (pixel - mean) * (pixel - mean);
+	}
+	return sqrtf((float) (accumulator / (N - 1)));
+}
+
 /* For a univariate data set X1, X2, ..., Xn, the MAD is defined as the median
  * of the absolute deviations from the data's median:
  *  MAD = median (| Xi − median(X) |)

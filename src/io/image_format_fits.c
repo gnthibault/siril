@@ -230,9 +230,6 @@ void read_fits_header(fits *fit) {
 	/* about the status argument: http://heasarc.gsfc.nasa.gov/fitsio/c/c_user/node28.html */
 	int status = 0;
 	double scale, zero;
-	float mini, maxi;
-
-	fit_stats(fit, &mini, &maxi);
 
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSLO, &fit->lo);
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSHI, &fit->hi);
@@ -267,6 +264,8 @@ void read_fits_header(fits *fit) {
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "DATAMAX", &(fit->data_max), NULL, &status);
 	if (status == KEY_NO_EXIST) {
+		float mini, maxi;
+		fit_stats(fit, &mini, &maxi);
 		fit->data_max = (double) maxi;
 	}
 
@@ -1247,7 +1246,7 @@ void manage_bitpix(fitsfile *fptr, int *bitpix, int *orig_bitpix) {
 
 // return 0 on success, fills realname if not NULL with the opened file's name
 int readfits(const char *filename, fits *fit, char *realname, gboolean force_float) {
-	int status, retval;
+	int status, retval = 1;
 	char *name = NULL;
 	gchar *basename;
 	image_type imagetype;
@@ -1280,47 +1279,12 @@ int readfits(const char *filename, fits *fit, char *realname, gboolean force_flo
 
 	if (siril_fits_move_first_image(fit->fptr)) {
 		siril_log_message(_("Selecting the primary header failed, is the FITS file '%s' malformed?\n"), filename);
-		return -1;
+		goto close_readfits;
 	}
 
-	status = 0;
-	fit->naxes[2] = 1;
-	fits_get_img_param(fit->fptr, 3, &(fit->bitpix), &(fit->naxis), fit->naxes, &status);
-	if (status) {
-		siril_log_message(
-				_("FITSIO error getting image parameters, file %s.\n"), filename);
-		report_fits_error(status);
-		status = 0;
-		fits_close_file(fit->fptr, &status);
-		return 1;
-	}
-
-	manage_bitpix(fit->fptr, &(fit->bitpix), &(fit->orig_bitpix));
-
-	fit->rx = fit->naxes[0];
-	fit->ry = fit->naxes[1];
-
-	if (fit->naxis == 3 && fit->naxes[2] != 3) {
-		siril_log_color_message(_("The FITS image contains more than 3 channels (%ld). Opening only the three first.\n"), "salmon", fit->naxes[2]);
-		if (fit->naxis == 3) fit->naxes[2] = 3;
-	}
-
-	if (fit->naxis == 2 && fit->naxes[2] == 0) {
-		fit->naxes[2] = 1;
-		/* naxes[2] is set to 1 because:
-		 * - it doesn't matter, since naxis is 2, it's not used
-		 * - it's very convenient to use it in multiplications as the number of layers
-		 */
-	}
-	if (fit->bitpix == LONGLONG_IMG) {
-		siril_log_message(
-				_("FITS images with 64 bits signed integer per pixel.channel are not supported.\n"));
-		status = 0;
-		fits_close_file(fit->fptr, &status);
-		return -1;
-	}
-
-	read_fits_header(fit);	// stores useful header data in fit
+	status = read_fits_metadata(fit);
+	if (status)
+		goto close_readfits;
 
 	retval = read_fits_with_convert(fit, filename, force_float);
 	fit->top_down = FALSE;
@@ -1337,6 +1301,7 @@ int readfits(const char *filename, fits *fit, char *realname, gboolean force_flo
 		g_free(basename);
 	}
 
+close_readfits:
 	status = 0;
 	fits_close_file(fit->fptr, &status);
 	return retval;
@@ -1385,7 +1350,6 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	int status;
 	size_t nbdata;
 	double data_max = 0.0;
-	float mini, maxi;
 
 	status = 0;
 	if (siril_fits_open_diskfile(&(fit->fptr), filename, READONLY, &status)) {
@@ -1407,8 +1371,6 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 		fits_close_file(fit->fptr, &status);
 		return status;
 	}
-
-	fit_stats(fit, &mini, &maxi);
 
 	manage_bitpix(fit->fptr, &(fit->bitpix), &(fit->orig_bitpix));
 
@@ -1463,7 +1425,9 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 			status = 0;
 			fits_read_key(fit->fptr, TDOUBLE, "DATAMAX", &data_max, NULL, &status);
 			if (status == KEY_NO_EXIST) {
-				data_max = (double) maxi;
+				float mini, maxi;
+				fit_stats(fit, &mini, &maxi);
+				fit->data_max = (double) maxi;
 			}
 		}
 
@@ -1503,6 +1467,67 @@ int readfits_partial(const char *filename, int layer, fits *fit,
 	fits_close_file(fit->fptr, &status);
 	fprintf(stdout, _("Loaded partial FITS file %s\n"), filename);
 	return 0;
+}
+
+int read_fits_metadata(fits *fit) {
+	int status = 0;
+	fit->naxes[2] = 1;
+	fits_get_img_param(fit->fptr, 3, &(fit->bitpix), &(fit->naxis), fit->naxes, &status);
+	if (status) {
+		siril_log_message(_("FITSIO error getting image parameters.\n"));
+		report_fits_error(status);
+		status = 0;
+		fits_close_file(fit->fptr, &status);
+		return 1;
+	}
+
+	manage_bitpix(fit->fptr, &(fit->bitpix), &(fit->orig_bitpix));
+
+	fit->rx = fit->naxes[0];
+	fit->ry = fit->naxes[1];
+
+	if (fit->naxis == 3 && fit->naxes[2] != 3) {
+		siril_log_color_message(_("The FITS image contains more than 3 channels (%ld). Opening only the three first.\n"), "salmon", fit->naxes[2]);
+		if (fit->naxis == 3) fit->naxes[2] = 3;
+	}
+
+	if (fit->naxis == 2 && fit->naxes[2] == 0) {
+		fit->naxes[2] = 1;
+		/* naxes[2] is set to 1 because:
+		 * - it doesn't matter, since naxis is 2, it's not used
+		 * - it's very convenient to use it in multiplications as the number of layers
+		 */
+	}
+	if (fit->bitpix == LONGLONG_IMG) {
+		siril_log_message(
+				_("FITS images with 64 bits signed integer per pixel.channel are not supported.\n"));
+		status = 0;
+		fits_close_file(fit->fptr, &status);
+		return -1;
+	}
+
+	read_fits_header(fit);	// stores useful header data in fit
+	return 0;
+}
+
+int read_fits_metadata_from_path(const char *filename, fits *fit) {
+	int status = 0;
+	siril_fits_open_diskfile(&(fit->fptr), filename, READONLY, &status);
+	if (status) {
+		report_fits_error(status);
+		return status;
+	}
+
+	if (siril_fits_move_first_image(fit->fptr)) {
+		siril_log_message(_("Selecting the primary header failed, is the FITS file '%s' malformed?\n"), filename);
+		return -1;
+	}
+
+	read_fits_metadata(fit);
+
+	status = 0;
+	fits_close_file(fit->fptr, &status);
+	return status;
 }
 
 void flip_buffer(int bitpix, void *buffer, const rectangle *area) {

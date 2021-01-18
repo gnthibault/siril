@@ -200,9 +200,8 @@ int fitseq_open(const char *filename, fitseq *fitseq) {
 
 /* dest must be filled with zeros */
 static int fitseq_read_frame_internal(fitseq *fitseq, int index, fits *dest, gboolean force_float, fitsfile *fptr) {
-	if (!fptr) {
+	if (!fptr)
 		return -1;
-	}
 
 	memcpy(dest->naxes, fitseq->naxes, sizeof fitseq->naxes);
 	dest->naxis = fitseq->naxes[2] == 3 ? 3 : 2;
@@ -409,4 +408,13 @@ int fitseq_multiple_close(fitseq *fitseq) {
 	return retval;
 }
 
+int fitseq_set_current_frame(fitseq *fitseq, int frame) {
+	if (frame < 0 || frame >= fitseq->frame_count)
+		return -1;
+	siril_debug_print("moving to HDU %d (of %s)\n", fitseq->hdu_index[frame], fitseq->filename);
+	int status = 0;
+	if (fits_movabs_hdu(fitseq->fptr, fitseq->hdu_index[frame], NULL, &status))
+		report_fits_error(status);
+	return status;
+}
 
