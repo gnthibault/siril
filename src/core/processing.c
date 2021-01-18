@@ -131,7 +131,7 @@ gpointer generic_sequence_worker(gpointer p) {
 	omp_init_lock(&args->lock);
 	if (have_seqwriter)
 		omp_set_schedule(omp_sched_dynamic, 1);
-	else omp_set_schedule(omp_sched_static, 0);
+	else omp_set_schedule(omp_sched_guided, 0);
 	if (args->max_thread <= 0)
 		args->max_thread = com.max_thread;
 #ifdef HAVE_FFMS2

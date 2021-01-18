@@ -105,3 +105,46 @@ void full_stats_invalidation_from_fit(fits *fit) {
         fprintf(stderr, "ERROR: calling undefined function full_stats_invalidation_from_fit\n");
 }
 
+gboolean load_WCS_from_file(fits* fit) {
+        fprintf(stderr, "ERROR: calling undefined function load_WCS_from_file\n");
+	return FALSE;
+}
+
+SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction action) {
+        fprintf(stderr, "ERROR: calling undefined function siril_file_chooser_save\n");
+	return NULL;
+}
+
+gint siril_dialog_run(SirilWidget *widgetdialog) {
+        fprintf(stderr, "ERROR: calling undefined function siril_dialog_run\n");
+	return 0;
+}
+
+gboolean siril_confirm_dialog(gchar *title, gchar *msg) {
+        fprintf(stderr, "ERROR: calling undefined function siril_confirm_dialog\n");
+	return FALSE;
+}
+
+int process_clear(int nb) {
+        fprintf(stderr, "ERROR: calling undefined function process_clear\n");
+	return 0;
+}
+
+void siril_widget_destroy(SirilWidget *widgetdialog) {
+        fprintf(stderr, "ERROR: calling undefined function siril_widget_destroy\n");
+}
+
+void gui_log_message(const char* msg, const char* color) {
+        fprintf(stderr, "ERROR: calling undefined function gui_log_message\n");
+}
+
+#ifdef DUMMY_LOG
+char* siril_log_message(const char* format, ...) {
+	va_list args;
+	va_start(args, format);
+	printf("\t");
+	vprintf(format, args);
+	va_end(args);
+	return "";
+}
+#endif

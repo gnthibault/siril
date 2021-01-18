@@ -61,6 +61,20 @@ static void select_area_float(fits *fit, float *data, int layer, rectangle *boun
 	}
 }
 
+// in this case, N is the number of frames, so int is fine
+float siril_stats_float_sd(const float data[], const int N) {
+	double accumulator = 0.0; // accumulating in double precision is important for accuracy
+	for (int i = 0; i < N; ++i) {
+		accumulator += data[i];
+	}
+	float mean = (float)(accumulator / N);
+	accumulator = 0.0;
+	for (int i = 0; i < N; ++i)
+		accumulator += (data[i] - mean) * (data[i] - mean);
+
+	return sqrtf((float)(accumulator / (N - 1)));
+}
+
 /* For a univariate data set X1, X2, ..., Xn, the MAD is defined as the median
  * of the absolute deviations from the data's median:
  *  MAD = median (| Xi − median(X) |)

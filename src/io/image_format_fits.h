@@ -15,6 +15,8 @@ int import_metadata_from_fitsfile(fitsfile *fptr, fits *to);
 void clearfits(fits*);
 int readfits_partial(const char *filename, int layer, fits *fit,
 		const rectangle *area, gboolean read_date);
+int read_fits_metadata(fits *fit);
+int read_fits_metadata_from_path(const char *filename, fits *fit);
 void flip_buffer(int bitpix, void *buffer, const rectangle *area);
 int read_opened_fits_partial(sequence *seq, int layer, int index, void *buffer,
 		const rectangle *area);

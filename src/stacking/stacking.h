@@ -74,8 +74,6 @@ struct stacking_args {
 	gboolean output_overwrite;	// used in the idle function only
 	struct timeval t_start;
 	int retval;
-	int max_number_of_rows;	/* number of rows that can be processed simultaneously,
-				   function of max memory, image size and nb_images_to_stack */
 	float sig[2];		/* low and high sigma rejection */
 	rejection type_of_rejection;	/* type of rejection */
 	normalization normalize;	/* type of normalization */
@@ -84,6 +82,8 @@ struct stacking_args {
 	gboolean output_norm;		/* normalize final image to the [0, 1] range */
 	gboolean use_32bit_output;	/* output to 32 bit float */
 	int reglayer;		/* layer used for registration data */
+
+	float (*sd_calculator)(const WORD *, const int); // internal, for ushort
 };
 
 /* configuration from the command line */
@@ -107,8 +107,6 @@ void initialize_stacking_methods();
 gboolean evaluate_stacking_should_output_32bits(stack_method method,
 		sequence *seq, int nb_img_to_stack, gchar **err);
 
-int stack_get_max_number_of_rows(sequence *seq, int nb_images_to_stack);
-
 int stack_median(struct stacking_args *args);
 int stack_mean_with_rejection(struct stacking_args *args);
 int stack_addmax(struct stacking_args *args);
@@ -130,8 +128,11 @@ int do_normalization(struct stacking_args *args);
 	/* median and mean functions */
 
 struct _image_block {
-	unsigned long channel, start_row, end_row, height;
+	long channel, start_row, end_row, height; // long matches naxes type
 };
+
+int stack_compute_parallel_blocks(struct _image_block **blocksptr, long max_number_of_rows,
+		long naxes[3], int nb_threads, long *largest_block_height, int *nb_blocks);
 
 /* pool of memory blocks for parallel processing */
 struct _data_block {
@@ -144,9 +145,6 @@ struct _data_block {
 };
 
 int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, long *naxes, GList **date_time, fits *fit);
-int stack_compute_parallel_blocks(struct _image_block **blocks, int max_number_of_rows,
-		int nb_channels, long *naxes, size_t *largest_block_height,
-		int *nb_parallel_stacks, int nb_threads);
 int find_refimage_in_indices(int *indices, int nb, int ref);
 
 	/* up-scaling functions */

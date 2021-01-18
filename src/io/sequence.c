@@ -111,6 +111,7 @@ static void fillSeqAviExport() {
 }
 
 static sequence *check_seq_one_file(const char* name);
+static int seq_read_frame_metadata(sequence *seq, int index, fits *dest);
 
 /* when opening a file outside the main sequence loading system and that file
  * is a sequence (SER/AVI), this function is called to load this sequence. */
@@ -377,14 +378,21 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 			memset(fit, 0, sizeof(fits));
 		}
 
-		/* TODO: we could only read the header if !load_ref_into_gfit */
-		if (seq_read_frame(seq, image_to_load, fit, FALSE, -1)) {
-			fprintf(stderr, "could not load first image from sequence\n");
-			return -1;
+		if (load_ref_into_gfit) {
+			if (seq_read_frame(seq, image_to_load, fit, FALSE, -1)) {
+				fprintf(stderr, "could not load first image from sequence\n");
+				return -1;
+			}
+		} else {
+			if (seq_read_frame_metadata(seq, image_to_load, fit)) {
+				fprintf(stderr, "could not load first image from sequence\n");
+				return -1;
+			}
 		}
 
 		/* initialize sequence-related runtime data */
-		seq->rx = fit->rx; seq->ry = fit->ry;
+		seq->rx = fit->rx;
+		seq->ry = fit->ry;
 		seq->bitpix = fit->orig_bitpix;	// for partial read
 		seq->data_max = fit->data_max; // for partial read
 		fprintf(stdout, "bitpix for the sequence is set as %d\n", seq->bitpix);
@@ -788,6 +796,59 @@ int seq_read_frame_part(sequence *seq, int layer, int index, fits *dest, const r
 			break;
 	}
 
+	return 0;
+}
+
+// not thread-safe
+// gets image naxes and bitpix
+static int seq_read_frame_metadata(sequence *seq, int index, fits *dest) {
+	assert(index < seq->number);
+	char filename[256];
+	switch (seq->type) {
+		case SEQ_REGULAR:
+			fit_sequence_get_image_filename(seq, index, filename, TRUE);
+			if (read_fits_metadata_from_path(filename, dest)) {
+				siril_log_message(_("Could not load image %d from sequence %s\n"),
+						index, seq->seqname);
+				return 1;
+			}
+			break;
+		case SEQ_SER:
+			assert(seq->ser_file);
+			if (ser_metadata_as_fits(seq->ser_file, dest)) {
+				siril_log_message(_("Could not load frame %d from SER sequence %s\n"),
+						index, seq->seqname);
+				return 1;
+			}
+			break;
+		case SEQ_FITSEQ:
+			assert(seq->fitseq_file);
+			dest->fptr = seq->fitseq_file->fptr;
+			if (fitseq_set_current_frame(seq->fitseq_file, index) ||
+					read_fits_metadata(dest)) {
+				siril_log_message(_("Could not load frame %d from FITS sequence %s\n"),
+						index, seq->seqname);
+				return 1;
+			}
+			break;
+
+#ifdef HAVE_FFMS2
+		case SEQ_AVI:
+			assert(seq->film_file);
+			// TODO: do a metadata-only read in films
+			if (film_read_frame(seq->film_file, index, dest)) {
+				siril_log_message(_("Could not load frame %d from AVI sequence %s\n"),
+						index, seq->seqname);
+				return 1;
+			}
+			// should dest->maxi be set to 255 here?
+			break;
+#endif
+		case SEQ_INTERNAL:
+			assert(seq->internal_fits);
+			copyfits(seq->internal_fits[index], dest, CP_FORMAT, -1);
+			break;
+	}
 	return 0;
 }
 

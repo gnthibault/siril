@@ -46,7 +46,7 @@
 #include "stacking.h"
 
 static struct stacking_args stackparam = {	// parameters passed to stacking
-	NULL, NULL, -1, NULL, -1.0, 0, NULL, NULL, NULL, FALSE, { 0, 0 }, -1, 0,
+	NULL, NULL, -1, NULL, -1.0, 0, NULL, NULL, NULL, FALSE, { 0, 0 }, -1,
 	{ 0, 0 }, NO_REJEC, NO_NORM, { NULL, NULL, NULL}, FALSE, -1
 };
 
@@ -158,7 +158,6 @@ void main_stack(struct stacking_args *args) {
 	if (upscale_sequence(args)) // does nothing if args->seq->upscale_at_stacking <= 1.05
 		return;
 	// 3. stack
-	args->max_number_of_rows = stack_get_max_number_of_rows(args->seq, args->nb_images_to_stack);
 	args->retval = args->method(args);
 }
 
@@ -580,27 +579,6 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 
 	com.pref.stack.rej_method = gtk_combo_box_get_active(box);
 	writeinitfile();
-}
-
-int stack_get_max_number_of_rows(sequence *seq, int nb_images_to_stack) {
-	int max_memory = get_max_memory_in_MB();
-	if (max_memory > 0) {
-		siril_log_message(_("Using %d MB memory maximum for stacking\n"), max_memory);
-		int elem_size = get_data_type(seq->bitpix) == DATA_FLOAT ? sizeof(float) : sizeof(WORD);
-		guint64 number_of_rows = (guint64)max_memory * BYTES_IN_A_MB /
-			((guint64)seq->rx * nb_images_to_stack * elem_size * com.max_thread);
-		// this is how many rows we can load in parallel from all images of the
-		// sequence and be under the limit defined in config in megabytes.
-		// We want to avoid having blocks larger than the half or they will decrease parallelism
-		if (number_of_rows > seq->ry)
-			return seq->ry;
-		if (number_of_rows * 2 > seq->ry)
-			return seq->ry / 2;
-		return truncate_to_int32(number_of_rows);
-	} else {
-		siril_log_message(_("Not using limits on maximum memory for stacking\n"));
-		return (seq->ry / 4) + 1;
-	}
 }
 
 int find_refimage_in_indices(int *indices, int nb, int ref) {
