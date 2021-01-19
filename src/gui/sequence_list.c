@@ -450,14 +450,16 @@ void on_selected_frames_select(GtkButton *button, gpointer user_data) {
 
 void on_seqexcludeall_button_clicked(GtkButton *button, gpointer user_data) {
 	gboolean exclude_all = siril_confirm_dialog(_("Exclude all images?"),
-			_("This erases previous image selection and there's no possible undo."));
+			_("This erases previous image selection and there's no possible undo."),
+			_("Exclude All"));
 	if (exclude_all)
 		sequence_setselect_all(FALSE);
 }
 
 void on_seqselectall_button_clicked(GtkButton *button, gpointer user_data) {
 	gboolean select_all = siril_confirm_dialog(_("Include all images?"),
-			_("This erases previous image selection and there's no possible undo."));
+			_("This erases previous image selection and there's no possible undo."),
+			_("Include All"));
 	if (select_all)
 		sequence_setselect_all(TRUE);
 }

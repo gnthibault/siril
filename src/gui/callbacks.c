@@ -713,7 +713,7 @@ void on_precision_item_toggled(GtkCheckMenuItem *checkmenuitem, gpointer user_da
 			gboolean convert = siril_confirm_dialog(_("Precision loss"),
 					_("Converting the image from 32 bits to 16 bits may lead to a loss of numerical accuracy. "
 							"Getting back to 32 bits will not recover this loss.\n"
-							"Are you sure you want to convert your data?"));
+							"Are you sure you want to convert your data?"), _("Convert to 16 bits"));
 			if (convert) {
 				if (is_preview_active())
 					fit_replace_buffer(get_preview_gfit_backup(), float_buffer_to_ushort(gfit.fdata, ndata), DATA_USHORT);
@@ -1283,8 +1283,8 @@ void initialize_all_GUI(gchar *supported_files) {
 		int ret = siril_confirm_dialog(ver,
 				_("Hello, this is the first time you use this new version of Siril. Please, have a seat and take the time "
 						"to watch the short introduction we have prepared for you. "
-						"Be aware you can replay this introduction at any times in the Miscellaneous tab of the preferences dialog box.\n"
-						"Hit OK to see the introduction Cancel to skip it."));
+						"Be aware you can replay this introduction at any times in the Miscellaneous tab of the preferences dialog box."),
+						_("See Introduction"));
 		if (ret)
 			start_intro_script();
 
@@ -1548,7 +1548,7 @@ void siril_quit() {
 		gtk_main_quit();
 	}
 	gboolean quit = siril_confirm_dialog_and_remember(_("Closing application"),
-			_("Are you sure you want to quit?"), &com.pref.save.quit);
+			_("Are you sure you want to quit?"), _("Exit"), &com.pref.save.quit);
 	if (quit) {
 		set_GUI_misc();
 		writeinitfile();

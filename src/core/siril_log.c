@@ -160,7 +160,7 @@ char* siril_log_color_message(const char* format, const char* color, ...) {
 
 void on_clear_log_button_clicked(GtkButton *button, gpointer user_data) {
 	gboolean ret = siril_confirm_dialog(_("Clear the log"),
-			_("Are you sure you want to clear the log? There is no possible undo."));
+			_("Are you sure you want to clear the log? There is no possible undo."), _("Clear the Log"));
 	if (ret) {
 		process_clear(0);
 	}

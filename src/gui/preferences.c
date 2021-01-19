@@ -741,7 +741,9 @@ void on_cancel_settings_button_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_reset_settings_button_clicked(GtkButton *button, gpointer user_data) {
-	int confirm = siril_confirm_dialog(_("Reset all preferences"), _("Do you really want to reset all preferences to default value?"));
+	int confirm = siril_confirm_dialog(_("Reset all preferences"),
+			_("Do you really want to reset all preferences to default value?"),
+			_("Reset Preferences"));
 	if (confirm) {
 		set_preferences_ui(&pref_init);
 	}

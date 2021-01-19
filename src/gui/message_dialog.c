@@ -161,7 +161,7 @@ void siril_data_dialog(GtkMessageType type, char *title, char *text, gchar *data
 	show_modal_dialog(args);
 }
 
-static gboolean siril_confirm_dialog_internal(gchar *title, gchar *msg, gboolean checkbutton, gboolean *user_data) {
+static gboolean siril_confirm_dialog_internal(gchar *title, gchar *msg, gchar *button_accept, gboolean checkbutton, gboolean *user_data) {
 	GtkWindow *parent;
 	GtkWidget *dialog, *check = NULL;
 	gint res;
@@ -182,8 +182,12 @@ static gboolean siril_confirm_dialog_internal(gchar *title, gchar *msg, gboolean
 	strip_last_ret_char(msg);
 
 	dialog = gtk_message_dialog_new(parent, GTK_DIALOG_MODAL,
-			GTK_MESSAGE_QUESTION, GTK_BUTTONS_OK_CANCEL, "%s", title);
+			GTK_MESSAGE_QUESTION, GTK_BUTTONS_CANCEL, "%s", title);
 	gtk_message_dialog_format_secondary_text(GTK_MESSAGE_DIALOG(dialog), "%s", msg);
+
+	gtk_dialog_add_button(GTK_DIALOG(dialog), button_accept, GTK_RESPONSE_ACCEPT);
+	gtk_dialog_set_default_response (GTK_DIALOG (dialog), GTK_RESPONSE_ACCEPT);
+
 	if (checkbutton) {
 		check = gtk_check_button_new_with_mnemonic(_("_Do not show this dialog again"));
 		gtk_box_pack_end(GTK_BOX(gtk_dialog_get_content_area(GTK_DIALOG (dialog))),
@@ -193,7 +197,7 @@ static gboolean siril_confirm_dialog_internal(gchar *title, gchar *msg, gboolean
 		gtk_widget_show(check);
 	}
 	res = gtk_dialog_run(GTK_DIALOG(dialog));
-	if (res == GTK_RESPONSE_OK) {
+	if (res == GTK_RESPONSE_ACCEPT) {
 		ok = TRUE;
 		if (check) {
 			var_to_return = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(check));
@@ -208,10 +212,10 @@ static gboolean siril_confirm_dialog_internal(gchar *title, gchar *msg, gboolean
 	return ok;
 }
 
-gboolean siril_confirm_dialog(gchar *title, gchar *msg) {
-	return siril_confirm_dialog_internal(title, msg, FALSE, NULL);
+gboolean siril_confirm_dialog(gchar *title, gchar *msg, gchar *button_accept) {
+	return siril_confirm_dialog_internal(title, msg, button_accept, FALSE, NULL);
 }
 
-gboolean siril_confirm_dialog_and_remember(gchar *title, gchar *msg, gboolean *user_data) {
-	return siril_confirm_dialog_internal(title, msg, TRUE, user_data);
+gboolean siril_confirm_dialog_and_remember(gchar *title, gchar *msg, gchar *button_accept, gboolean *user_data) {
+	return siril_confirm_dialog_internal(title, msg, button_accept, TRUE, user_data);
 }

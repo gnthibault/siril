@@ -43,7 +43,7 @@
 #include "script_menu.h"
 
 #define SCRIPT_EXT ".ssf"
-#define CONFIRM_RUN_SCRIPTS _("You are about to use scripts. Running automatic scripts is something that is easy and generally it provides a nice image. However you have to keep in mind that scripts are not magic; automatic choices are made where human decision would probably be better. Also, every commands used in a script are available on the interface with a better parameter control.\n\nAre you sure you want to continue?")
+#define CONFIRM_RUN_SCRIPTS _("You are about to use scripts. Running automatic scripts is something that is easy and generally it provides a nice image. However you have to keep in mind that scripts are not magic; automatic choices are made where human decision would probably be better. Also, every commands used in a script are available on the interface with a better parameter control.")
 
 static GSList *initialize_script_paths(){
 	GSList *list = NULL;
@@ -130,7 +130,7 @@ static void on_script_execution(GtkMenuItem *menuitem, gpointer user_data) {
 	if (com.pref.save.warn_script) {
 		gboolean dont_show_again;
 		gboolean confirm = siril_confirm_dialog_and_remember(
-				_("Please read me before using scripts"), CONFIRM_RUN_SCRIPTS, &dont_show_again);
+				_("Please read me before using scripts"), CONFIRM_RUN_SCRIPTS, _("Run Script"), &dont_show_again);
 		com.pref.save.warn_script = !dont_show_again;
 		/* We do not use set_GUI_misc because some button state can be in an unsaved state if the
 		 * preference dialog is opened

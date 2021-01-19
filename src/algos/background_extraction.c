@@ -788,8 +788,7 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 					_("You are about to process a sequence of preprocessed files with "
 							"a polynomial degree greater than 1. This is unlikely because such "
 							"gradients are often linear and a correction with a polynomial "
-							"function of degree 1 is probably enough. Click OK to confirm or "
-							"Cancel to change your mind."));
+							"function of degree 1 is probably enough."), _("Extract Background"));
 			if (!confirm) {
 				free(args);
 				set_cursor_waiting(FALSE);
