@@ -963,40 +963,57 @@ void update_spinCPU(int max) {
  *             I N I T I A L I S A T I O N      F U N C T I O N S            *
  ****************************************************************************/
 
-static void add_accelerator(GtkApplication *app, const gchar *action_name,
-		const gchar *accel) {
-	const gchar *vaccels[] = { accel, NULL };
+#define MAX_ACCELS 5
+static void add_accelerator_va(GtkApplication *app, const gchar *action_name,
+		const gchar *first_accel, va_list *args) {
+	const gchar *vaccels[MAX_ACCELS];
 
+	const gchar *next_element = first_accel;
+	int i = 0;
+	while (next_element && i < MAX_ACCELS - 1) {
+		vaccels[i++] = next_element;
+		next_element = va_arg(*args, gchar*);
+	}
+	vaccels[i] = NULL;
 	gtk_application_set_accels_for_action(app, action_name, vaccels);
+}
+
+static void add_accelerator(GtkApplication *app, const gchar *action_name,
+		const gchar *first_accel, ...) {
+	va_list args;
+
+	va_start(args, first_accel);
+	add_accelerator_va(app, action_name, first_accel, &args);
+	va_end(args);
 }
 
 static void load_accels() {
 	GApplication *application = g_application_get_default();
 
-	add_accelerator(GTK_APPLICATION(application), "app.quit", "<Primary>Q");
-	add_accelerator(GTK_APPLICATION(application), "app.preferences", "<Primary>P");
-	add_accelerator(GTK_APPLICATION(application), "app.open", "<Primary>O");
-	add_accelerator(GTK_APPLICATION(application), "app.undo", "<Primary>Z");
-	add_accelerator(GTK_APPLICATION(application), "app.redo", "<Primary><Shift>Z");
-	add_accelerator(GTK_APPLICATION(application), "app.save", "<Primary>S");
-	add_accelerator(GTK_APPLICATION(application), "app.save_as", "<Primary><Shift>S");
-	add_accelerator(GTK_APPLICATION(application), "app.close", "<Primary>W");
-	add_accelerator(GTK_APPLICATION(application), "app.cwd", "<Primary>D");
-	add_accelerator(GTK_APPLICATION(application), "app.full_screen", "<Primary>F");
+	add_accelerator(GTK_APPLICATION(application), "app.quit", "<Primary>Q", (const char *)NULL );
+	add_accelerator(GTK_APPLICATION(application), "app.preferences", "<Primary>P", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.open", "<Primary>O", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.undo", "<Primary>Z", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.redo", "<Primary><Shift>Z", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.save", "<Primary>S", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.save_as", "<Primary><Shift>S", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.close", "<Primary>W", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.cwd", "<Primary>D", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.full_screen", "<Primary>F", (const char *)NULL);
 
-	add_accelerator(GTK_APPLICATION(application), "app.conversion", "F1");
-	add_accelerator(GTK_APPLICATION(application), "app.sequence", "F2");
-	add_accelerator(GTK_APPLICATION(application), "app.prepro", "F3");
-	add_accelerator(GTK_APPLICATION(application), "app.registration", "F4");
-	add_accelerator(GTK_APPLICATION(application), "app.plot", "F5");
-	add_accelerator(GTK_APPLICATION(application), "app.stacking", "F6");
-	add_accelerator(GTK_APPLICATION(application), "app.logs", "F7");
+	add_accelerator(GTK_APPLICATION(application), "app.conversion", "F1", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.sequence", "F2", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.prepro", "F3", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.registration", "F4", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.plot", "F5", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.stacking", "F6", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.logs", "F7", (const char *)NULL);
 
-	add_accelerator(GTK_APPLICATION(application), "app.hide_show_toolbar", "<Primary>T");
+	add_accelerator(GTK_APPLICATION(application), "app.hide_show_toolbar", "<Primary>T", (const char *)NULL);
 
-	add_accelerator(GTK_APPLICATION(application), "app.zoom_out", "<Primary>minus");
-	add_accelerator(GTK_APPLICATION(application), "app.zoom_in", "<Primary>plus");
-	add_accelerator(GTK_APPLICATION(application), "app.zoom_fit", "<Primary>0");
+	add_accelerator(GTK_APPLICATION(application), "app.zoom_out", "<Primary>minus", "<Primary>KP_Subtract", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.zoom_in", "<Primary>plus", "<Primary>KP_Add", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.zoom_fit", "<Primary>0", (const char *)NULL);
 }
 
 /* Initialize the combobox when loading new single_image */
