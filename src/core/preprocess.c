@@ -563,6 +563,8 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 
 	struct preprocessing_data *args = calloc(1, sizeof(struct preprocessing_data));
 	test_for_master_files(args);	// sets most properties
+	if (!args->use_bias && !args->use_dark && !args->use_flat)
+		return;
 
 	siril_log_color_message(_("Preprocessing...\n"), "green");
 	gettimeofday(&args->t_start, NULL);
