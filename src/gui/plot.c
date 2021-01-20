@@ -674,7 +674,6 @@ void on_clearLatestPhotometry_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_clearAllPhotometry_clicked(GtkButton *button, gpointer user_data) {
-	clear_stars_list();
 	for (int i = 0; i < MAX_SEQPSF && com.seq.photometry[i]; i++) {
 		free_photometry_set(&com.seq, i);
 	}

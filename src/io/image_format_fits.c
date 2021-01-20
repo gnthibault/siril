@@ -230,6 +230,7 @@ void read_fits_header(fits *fit) {
 	/* about the status argument: http://heasarc.gsfc.nasa.gov/fitsio/c/c_user/node28.html */
 	int status = 0;
 	double scale, zero;
+	char str[FLEN_VALUE];
 
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSLO, &fit->lo);
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSHI, &fit->hi);
@@ -261,12 +262,22 @@ void read_fits_header(fits *fit) {
 		fits_set_bscale(fit->fptr, 1.0, 0.0, &status);
 	}
 
+	/* check if file is created by Siril. If so, and if the file is FLOAT_IMG
+	 * Then we are confident enough that the range is [0, 1]. So, no need to
+	 * compute fit_stats
+	 */
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "DATAMAX", &(fit->data_max), NULL, &status);
-	if (status == KEY_NO_EXIST) {
-		float mini, maxi;
-		fit_stats(fit, &mini, &maxi);
-		fit->data_max = (double) maxi;
+	fits_read_key(fit->fptr, TSTRING, "PROGRAM", &str, NULL, &status);
+	gboolean not_from_siril = g_ascii_strncasecmp(str, PACKAGE, strlen(PACKAGE));
+
+	if (fit->bitpix == FLOAT_IMG && not_from_siril) {
+		status = 0;
+		fits_read_key(fit->fptr, TDOUBLE, "DATAMAX", &(fit->data_max), NULL, &status);
+		if (status == KEY_NO_EXIST) {
+			float mini, maxi;
+			fit_stats(fit, &mini, &maxi);
+			fit->data_max = (double) maxi;
+		}
 	}
 
 	status = 0;
@@ -814,8 +825,10 @@ int read_fits_with_convert(fits* fit, const char* filename, gboolean force_float
 		/* we assume we are in the range [0, 1]. But, for some images
 		 * some values can be negative
 		 */
-		fits_read_img(fit->fptr, TFLOAT, 1, nbdata, &zero, fit->fdata, &zero, &status);
-		if (fit->data_max > 2.0) { // needed for some FLOAT_IMG
+		fits_read_img(fit->fptr, TFLOAT, 1, nbdata, &zero, fit->fdata, &zero,
+				&status);
+		if ((fit->bitpix == USHORT_IMG || fit->bitpix == SHORT_IMG
+				|| fit->bitpix == BYTE_IMG) || fit->data_max > 2.0) { // needed for some FLOAT_IMG
 			convert_floats(fit->bitpix, fit->fdata, nbdata);
 		}
 		fit->bitpix = FLOAT_IMG;

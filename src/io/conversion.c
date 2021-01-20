@@ -837,7 +837,7 @@ static fits *any_to_new_fits(image_type imagetype, const char *source, gboolean 
 
 	if (!retval) {
 		if (!allow_32bits && tmpfit->type == DATA_FLOAT) {
-			siril_log_message(_("Converting 32 bits images (from %s) to 16 bits is not supported, ignoring file.\n"), source);
+			siril_log_color_message(_("Converting 32 bits images (from %s) to 16 bits is not supported, ignoring file.\n"), "salmon", source);
 			retval = 1;
 		}
 		else retval = debayer_if_needed(imagetype, tmpfit, debayer);
@@ -1160,7 +1160,7 @@ static seqread_status open_next_input_sequence(const char *src_filename, convert
 			return OPEN_ERROR;
 		}
 		if (!convert->allow_32bits && get_data_type(convert->current_fitseq->bitpix) == DATA_FLOAT) {
-			siril_log_message(_("Converting 32 bits images (from %s) to 16 bits is not supported, ignoring file.\n"), src_filename);
+			siril_log_color_message(_("Converting 32 bits images (from %s) to 16 bits is not supported, ignoring file.\n"), "salmon", src_filename);
 			fitseq_close_file(convert->current_fitseq);
 			free(convert->current_fitseq);
 			convert->current_fitseq = NULL;
