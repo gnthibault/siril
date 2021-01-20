@@ -43,11 +43,14 @@ struct _pending_write {
 static void notify_data_freed(struct seqwriter_data *writer, int index);
 
 int seqwriter_append_write(struct seqwriter_data *writer, fits *image, int index) {
+	if (g_atomic_int_get(&writer->failed))
+		return -1;
 	struct _pending_write *newtask = malloc(sizeof(struct _pending_write));
 	if (!newtask)
 		return -1;
 	newtask->image = image;
 	newtask->index = index;
+
 	g_async_queue_push(writer->writes_queue, newtask);
 	return 0;
 }
@@ -144,6 +147,7 @@ static void *write_worker(void *a) {
 	}
 
 	siril_debug_print("writer exits with retval %d (0: ok, 1: error, 2: incomplete)\n", retval);
+	g_atomic_int_set(&writer->failed, retval);
 	return GINT_TO_POINTER(retval);
 }
 
@@ -152,6 +156,7 @@ static void *write_worker(void *a) {
 void start_writer(struct seqwriter_data *writer, int frame_count) {
 	g_assert(writer->write_image_hook);
 	g_assert(writer->sequence);
+	writer->failed = 0;
 	writer->bitpix = 0;
 	writer->naxes[0] = 0;
 	writer->frame_count = frame_count;

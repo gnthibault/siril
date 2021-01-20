@@ -11,6 +11,7 @@ struct seqwriter_data {
 
 	GThread *write_thread;		// reads a script and executes its commands
 	GAsyncQueue *writes_queue;	// the write tasks queue
+	gint failed;
 
 	int (*write_image_hook)(struct seqwriter_data *writer, fits *image, int index);
 	void *sequence;

@@ -3388,11 +3388,15 @@ WARNING: it will erase all registration and statistics data.</property>
                                   <object class="GtkComboBoxText" id="comboExport">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="tooltip-text" translatable="yes">Export sequence format. MP4 and WEBM replaces GIF for modern Web publication, AVI is not compressed.</property>
+                                    <property name="tooltip-text" translatable="yes">Export sequence format.
+MP4 and WEBM replace GIF for Web publication, AVI is uncompressed 8 bits. To create the 8 bit image for these 3 formats, a linear scale is created from the low and high cut-off value cursors.
+FITS images is a sequence of FITS files, one per image, FITS cube is a sequence of images in a single FITS file.
+For SER and TIFF, if input images are 32 bits, they are converted to 16, with a loss of precision.</property>
                                     <property name="active">0</property>
                                     <items>
-                                      <item>FITS</item>
-                                      <item translatable="yes">TIFF</item>
+                                      <item translatable="yes">FITS images</item>
+                                      <item translatable="yes">FITS cube</item>
+                                      <item>16-bit TIFF</item>
                                       <item>SER</item>
                                       <item>AVI</item>
                                       <item>MP4</item>

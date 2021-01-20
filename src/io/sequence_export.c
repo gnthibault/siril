@@ -1,5 +1,24 @@
-#include <string.h>
+/*
+ * This file is part of Siril, an astronomy image processor.
+ * Copyright (C) 2005-2011 Francois Meyer (dulle at free.fr)
+ * Copyright (C) 2012-2021 team free-astro (see more in AUTHORS file)
+ * Reference site is https://free-astro.org/index.php/Siril
+ *
+ * Siril is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * Siril is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with Siril. If not, see <http://www.gnu.org/licenses/>.
+ */
 
+#include <string.h>
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/siril_date.h"
@@ -9,6 +28,7 @@
 #include "registration/registration.h"
 #include "gui/utils.h"
 #include "gui/callbacks.h"
+#include "gui/message_dialog.h"
 #include "gui/progress_and_log.h"
 #include "io/image_format_fits.h"
 #ifdef HAVE_FFMS2
@@ -21,31 +41,36 @@
 #endif
 #include "algos/geometry.h"
 
-
-struct exportseq_args {
-	sequence *seq;
-	char *basename;
-	int convflags;
-	gboolean normalize;
-//	int gif_delay, gif_loops;
-	double avi_fps;
-	int quality;	// [1, 5], for mp4 and webm
-	gboolean resize;
-	int32_t dest_width, dest_height;
-	gboolean crop;
-	rectangle crop_area;
-	seq_image_filter filtering_criterion;
-	double filtering_parameter;
-};
-
-enum {
+/* same order as in the combo box 'comboExport' */
+typedef enum {
 	EXPORT_FITS,
+	EXPORT_FITSEQ,
 	EXPORT_TIFF,
 	EXPORT_SER,
 	EXPORT_AVI,
 	EXPORT_MP4,
 	EXPORT_WEBM
+} export_format;
+
+struct exportseq_args {
+	sequence *seq;
+	seq_image_filter filtering_criterion;
+	double filtering_parameter;
+
+	char *basename;
+	export_format output;
+	gboolean normalize;
+
+	int film_fps;		// has to be int for avi or ffmpeg
+	int film_quality;	// [1, 5], for mp4 and webm
+
+	gboolean resample;
+	int32_t dest_width, dest_height;
+
+	gboolean crop;
+	rectangle crop_area;
 };
+
 
 /* Used for avi exporter */
 static uint8_t *fits_to_uint8(fits *fit) {
@@ -71,15 +96,13 @@ static uint8_t *fits_to_uint8(fits *fit) {
 }
 
 static gpointer export_sequence(gpointer ptr) {
-	int nb_layers = -1;
 	int retval = 0, cur_nb = 0;
 	unsigned int out_width, out_height, in_width, in_height;
-	size_t nbdata = 0;
 	uint8_t *data;
-	fits fit = { 0 };
-	fits destfit = { 0 };
+	fits *destfit = NULL;	// must be declared before any goto!
 	char filename[256], dest[256];
 	struct ser_struct *ser_file = NULL;
+	fitseq *fitseq_file = NULL;
 	GSList *timestamp = NULL;
 	char *filter_descr;
 	GDateTime *strTime;
@@ -99,27 +122,63 @@ static gpointer export_sequence(gpointer ptr) {
 		in_height = args->seq->ry;
 	}
 
-	if (args->resize) {
+	if (args->resample) {
 		out_width = args->dest_width;
 		out_height = args->dest_height;
 		if (out_width == in_width && out_height == in_height)
-			args->resize = FALSE;
+			args->resample = FALSE;
 	} else {
 		out_width = in_width;
 		out_height = in_height;
 	}
 
-	switch (args->convflags) {
-		case TYPESER:
-			/* image size is not known here, no problem for crop or resize */
-			ser_file = malloc(sizeof(struct ser_struct));
-			snprintf(dest, 256, "%s.ser", args->basename);
-			if (ser_create_file(dest, ser_file, TRUE, args->seq->ser_file))
-				siril_log_message(_("Creating the SER file failed, aborting.\n"));
+	gboolean have_seqwriter = args->output == EXPORT_FITSEQ || args->output == EXPORT_SER;
+	if (have_seqwriter)
+		seqwriter_set_max_active_blocks(3);
+
+	int output_bitpix = USHORT_IMG;
+
+	/* possible output formats: FITS images, FITS cube, TIFF, SER, AVI, MP4, WEBM */
+	// create the sequence file for single-file sequence formats
+	switch (args->output) {
+		case EXPORT_FITS:
+			output_bitpix = args->seq->bitpix;
+			break;
+		case EXPORT_FITSEQ:
+			fitseq_file = malloc(sizeof(fitseq));
+			snprintf(dest, 256, "%s%s", args->basename, com.pref.ext);
+			if (fitseq_create_file(dest, fitseq_file, -1)) {
+				free(fitseq_file);
+				fitseq_file = NULL;
+				retval = -1;
+				goto free_and_reset_progress_bar;
+			}
+			output_bitpix = args->seq->bitpix;
+			break;
+		case EXPORT_TIFF:
+			output_bitpix = args->seq->bitpix;
+			// limit to 16 bits for TIFF
+			if (output_bitpix == FLOAT_IMG)
+				output_bitpix = USHORT_IMG;
 			break;
 
-		case TYPEAVI:
-			/* image size is set here, resize is managed by opencv when
+		case EXPORT_SER:
+			/* image size is not known here, no problem for crop or resample */
+			ser_file = malloc(sizeof(struct ser_struct));
+			snprintf(dest, 256, "%s.ser", args->basename);
+			if (ser_create_file(dest, ser_file, TRUE, args->seq->ser_file)) {
+				free(ser_file);
+				ser_file = NULL;
+				retval = -1;
+				goto free_and_reset_progress_bar;
+			}
+			output_bitpix = args->seq->bitpix;
+			if (output_bitpix == FLOAT_IMG)
+				output_bitpix = USHORT_IMG;
+			break;
+
+		case EXPORT_AVI:
+			/* image size is set here, resample is managed by opencv when
 			 * writing frames, we don't need crop size here */
 			snprintf(dest, 256, "%s.avi", args->basename);
 			int32_t avi_format;
@@ -128,22 +187,27 @@ static gpointer export_sequence(gpointer ptr) {
 				avi_format = AVI_WRITER_INPUT_FORMAT_MONOCHROME;
 			else avi_format = AVI_WRITER_INPUT_FORMAT_COLOUR;
 
-			avi_file_create(dest, out_width, out_height, avi_format,
-					AVI_WRITER_CODEC_DIB, args->avi_fps);
+			if (avi_file_create(dest, out_width, out_height, avi_format,
+					AVI_WRITER_CODEC_DIB, args->film_fps)) {
+				siril_log_color_message(_("AVI file `%s' could not be created\n"), "red", dest);
+				retval = -1;
+				goto free_and_reset_progress_bar;
+			}
+
+			output_bitpix = BYTE_IMG;
 			break;
 
-		case TYPEMP4:
-		case TYPEWEBM:
+		case EXPORT_MP4:
+		case EXPORT_WEBM:
 #ifndef HAVE_FFMPEG
 			siril_log_message(_("MP4 output is not supported because siril was not compiled with ffmpeg support.\n"));
 			retval = -1;
 			goto free_and_reset_progress_bar;
 #else
-			/* image size is set here, resize is managed by ffmpeg so it also
+			/* image size is set here, resample is managed by ffmpeg so it also
 			 * needs to know the input image size after crop */
 			snprintf(dest, 256, "%s.%s", args->basename,
-					args->convflags == TYPEMP4 ? "mp4" : "webm");
-			if (args->avi_fps <= 0) args->avi_fps = 25;
+					args->output == EXPORT_MP4 ? "mp4" : "webm");
 
 			if (in_width % 32 || out_height % 2 || out_width % 2) {
 				siril_log_message(_("Film output needs to have a width that is a multiple of 32 and an even height, resizing selection.\n"));
@@ -166,7 +230,7 @@ static gpointer export_sequence(gpointer ptr) {
 						args->crop_area.w, args->crop_area.h);
 				in_width = args->crop_area.w;
 				in_height = args->crop_area.h;
-				if (!args->resize) {
+				if (!args->resample) {
 					out_width = in_width;
 					out_height = in_height;
 				} else {
@@ -175,14 +239,18 @@ static gpointer export_sequence(gpointer ptr) {
 				}
 			}
 
-			mp4_file = mp4_create(dest, out_width, out_height, args->avi_fps, args->seq->nb_layers, args->quality, in_width, in_height);
+			mp4_file = mp4_create(dest, out_width, out_height, args->film_fps, args->seq->nb_layers, args->film_quality, in_width, in_height);
 			if (!mp4_file) {
 				retval = -1;
 				goto free_and_reset_progress_bar;
 			}
-#endif
+			output_bitpix = BYTE_IMG;
 			break;
+#endif
 	}
+
+	if (output_bitpix == FLOAT_IMG)
+		output_bitpix = com.pref.force_to_16bit ? USHORT_IMG : FLOAT_IMG;
 
 	int nb_frames = compute_nb_filtered_images(args->seq,
 			args->filtering_criterion, args->filtering_parameter);
@@ -214,7 +282,10 @@ static gpointer export_sequence(gpointer ptr) {
 		free(stackargs.image_indices);
 	}
 
+	long naxes[3];
+	size_t nbpix = 0;
 	set_progress_bar_data(NULL, PROGRESS_RESET);
+
 	for (int i = 0, skipped = 0; i < args->seq->number; ++i) {
 		if (!get_thread_run()) {
 			retval = -1;
@@ -226,7 +297,11 @@ static gpointer export_sequence(gpointer ptr) {
 			continue;
 		}
 
+		if (have_seqwriter)
+			seqwriter_wait_for_memory();
+
 		if (!seq_get_image_filename(args->seq, i, filename)) {
+			seqwriter_release_memory();
 			retval = -1;
 			goto free_and_reset_progress_bar;
 		}
@@ -234,100 +309,79 @@ static gpointer export_sequence(gpointer ptr) {
 		set_progress_bar_data(tmpmsg, (double)cur_nb / (double)nb_frames);
 		g_free(tmpmsg);
 
+		/* we read the full frame */
+		fits fit = { 0 };
 		if (seq_read_frame(args->seq, i, &fit, FALSE, -1)) {
+			seqwriter_release_memory();
 			siril_log_message(_("Export: could not read frame, aborting\n"));
 			retval = -3;
 			goto free_and_reset_progress_bar;
 		}
 
-		if (fit.type == DATA_USHORT && !com.pref.force_to_16bit) {
-			const long n = fit.naxes[0] * fit.naxes[1] * fit.naxes[2];
-			float *newbuf = ushort_buffer_to_float(fit.data, n);
-			if (!newbuf) { retval = 1; goto free_and_reset_progress_bar; }
-			fit_replace_buffer(&fit, newbuf, DATA_FLOAT);
-		}
-
-		if (!nbdata) {
-			/* destfit is allocated to the real size because of the possible
-			 * shifts and of the inplace cropping. FITS data is copied from
-			 * fit, image buffers are duplicated. */
-			memcpy(&destfit, &fit, sizeof(fits));
-			destfit.header = NULL;
-			destfit.fptr = NULL;
-			nbdata = fit.rx * fit.ry;
-			if ((args->convflags == TYPEFITS) && (fit.type == DATA_FLOAT)) {
-				destfit.fdata = calloc(nbdata * fit.naxes[2], sizeof(float));
-				destfit.type = DATA_FLOAT;
-				destfit.stats = NULL;
-				if (!destfit.fdata) {
-					PRINT_ALLOC_ERR;
-					retval = -1;
-					goto free_and_reset_progress_bar;
-				}
-				destfit.fpdata[0] = destfit.fdata;
-				if (fit.naxes[2] == 1) {
-					destfit.fpdata[1] = destfit.fdata;
-					destfit.fpdata[2] = destfit.fdata;
-				} else {
-					destfit.fpdata[1] = destfit.fdata + nbdata;
-					destfit.fpdata[2] = destfit.fdata + nbdata * 2;
-				}
-				nb_layers = fit.naxes[2];
-			} else {
-				destfit.data = calloc(nbdata * fit.naxes[2], sizeof(WORD));
-				destfit.type = DATA_USHORT;
-				destfit.stats = NULL;
-				if (!destfit.data) {
-					PRINT_ALLOC_ERR;
-					retval = -1;
-					goto free_and_reset_progress_bar;
-				}
-				destfit.pdata[0] = destfit.data;
-				if (fit.naxes[2] == 1) {
-					destfit.pdata[1] = destfit.data;
-					destfit.pdata[2] = destfit.data;
-				} else {
-					destfit.pdata[1] = destfit.data + nbdata;
-					destfit.pdata[2] = destfit.data + nbdata * 2;
-				}
-				nb_layers = fit.naxes[2];
+		/* destfit is allocated to the full size. Data will be copied from fit,
+		 * image buffers are duplicated. It will be cropped after the copy if
+		 * needed */
+		if (!nbpix || have_seqwriter) {
+			if (!nbpix) {
+				memcpy(naxes, fit.naxes, sizeof naxes);
+				nbpix = fit.naxes[0] * fit.naxes[1];
 			}
+			else {
+				if (memcmp(naxes, fit.naxes, sizeof naxes)) {
+					fprintf(stderr, "An image of the sequence doesn't have the same dimensions\n");
+					retval = -3;
+					clearfits(&fit);
+					seqwriter_release_memory();
+					goto free_and_reset_progress_bar;
+				}
+			}
+			data_type dest_type = output_bitpix == FLOAT_IMG ? DATA_FLOAT : DATA_USHORT;
+			destfit = NULL;	// otherwise it's overwritten
+			if (new_fit_image(&destfit, fit.rx, fit.ry, fit.naxes[2], dest_type)) {
+				retval = -1;
+				clearfits(&fit);
+				seqwriter_release_memory();
+				goto free_and_reset_progress_bar;
+			}
+			destfit->bitpix = output_bitpix;
+			destfit->orig_bitpix = output_bitpix;
 		}
-		else if (fit.ry * fit.rx != nbdata || nb_layers != fit.naxes[2]) {
+		else if (memcmp(naxes, fit.naxes, sizeof naxes)) {
 			fprintf(stderr, "An image of the sequence doesn't have the same dimensions\n");
 			retval = -3;
+			clearfits(&fit);
+			seqwriter_release_memory();
 			goto free_and_reset_progress_bar;
 		}
 		else {
-			/* we want copy the header */
-			// TODO: why not use copyfits here?
-			copy_fits_metadata(&fit, &destfit);
-			if ((fit.type == DATA_FLOAT) && (args->convflags == TYPEFITS)) {
-				memset(destfit.fdata, 0, nbdata * fit.naxes[2] * sizeof(float));
-				destfit.type = DATA_FLOAT;
+			/* we copy the header and clear the data */
+			copy_fits_metadata(&fit, destfit);
+
+			if (destfit->type == DATA_FLOAT) {
+				memset(destfit->fdata, 0, nbpix * fit.naxes[2] * sizeof(float));
 				if (args->crop) {
 					/* reset destfit damaged by the crop function */
 					if (fit.naxes[2] == 3) {
-						destfit.fpdata[1] = destfit.fdata + nbdata;
-						destfit.fpdata[2] = destfit.fdata + nbdata * 2;
+						destfit->fpdata[1] = destfit->fdata + nbpix;
+						destfit->fpdata[2] = destfit->fdata + nbpix * 2;
 					}
-					destfit.rx = destfit.naxes[0] = fit.rx;
-					destfit.ry = destfit.naxes[1] = fit.ry;
+					destfit->rx = destfit->naxes[0] = fit.rx;
+					destfit->ry = destfit->naxes[1] = fit.ry;
 				}
 			} else {
-				destfit.type = DATA_USHORT;
-				memset(destfit.data, 0, nbdata * fit.naxes[2] * sizeof(WORD));
+				memset(destfit->data, 0, nbpix * fit.naxes[2] * sizeof(WORD));
 				if (args->crop) {
 					/* reset destfit damaged by the crop function */
 					if (fit.naxes[2] == 3) {
-						destfit.pdata[1] = destfit.data + nbdata;
-						destfit.pdata[2] = destfit.data + nbdata * 2;
+						destfit->pdata[1] = destfit->data + nbpix;
+						destfit->pdata[2] = destfit->data + nbpix * 2;
 					}
-					destfit.rx = destfit.naxes[0] = fit.rx;
-					destfit.ry = destfit.naxes[1] = fit.ry;
+					destfit->rx = destfit->naxes[0] = fit.rx;
+					destfit->ry = destfit->naxes[1] = fit.ry;
 				}
 			}
 		}
+
 		int shiftx, shifty;
 		/* load registration data for current image */
 		if (reglayer != -1 && args->seq->regparam[reglayer]) {
@@ -338,7 +392,7 @@ static gpointer export_sequence(gpointer ptr) {
 			shifty = 0;
 		}
 
-		/* fill the image with shift data and normalization */
+		/* fill the image with shifted data and normalization */
 		for (int layer = 0; layer < fit.naxes[2]; ++layer) {
 			for (int y = 0; y < fit.ry; ++y) {
 				for (int x = 0; x < fit.rx; ++x) {
@@ -346,125 +400,122 @@ static gpointer export_sequence(gpointer ptr) {
 					int ny = y + shifty;
 					if (nx >= 0 && nx < fit.rx && ny >= 0 && ny < fit.ry) {
 						if (fit.type == DATA_USHORT) {
+							WORD pixel = fit.pdata[layer][x + y * fit.rx];
 							if (args->normalize) {
-								float tmp = fit.pdata[layer][x + y * fit.rx];
-								tmp *= (float) coeff.scale[i];
-								tmp -= (float) coeff.offset[i];
-								destfit.pdata[layer][nx + ny * fit.rx] = roundf_to_WORD(tmp);
-							} else {
-								destfit.pdata[layer][nx + ny * fit.rx] = fit.pdata[layer][x + y * fit.rx];
+								double tmp = (double) pixel;
+								tmp *= coeff.scale[i];
+								tmp -= coeff.offset[i];
+								pixel = round_to_WORD(tmp);
 							}
-						} else if (fit.type == DATA_FLOAT) {
-							destfit.bitpix = com.pref.force_to_16bit ? USHORT_IMG : FLOAT_IMG;
-							if (args->convflags == TYPEFITS) {
-								if (args->normalize) {
-									float tmp =	fit.fpdata[layer][x + y * fit.rx];
-									tmp *= (float) coeff.scale[i];
-									tmp -= (float) coeff.offset[i];
-									destfit.fpdata[layer][nx + ny * fit.rx] = tmp;
-								} else {
-									destfit.fpdata[layer][nx + ny * fit.rx] = fit.fpdata[layer][x + y * fit.rx];
-								}
+							destfit->pdata[layer][nx + ny * fit.rx] = pixel;
+						}
+						else if (fit.type == DATA_FLOAT) {
+							float pixel = fit.fpdata[layer][x + y * fit.rx];
+							if (args->normalize) {
+								pixel *= (float) coeff.scale[i];
+								pixel -= (float) coeff.offset[i];
+							}
+							if (destfit->type == DATA_FLOAT) {
+								destfit->fpdata[layer][nx + ny * fit.rx] = pixel;
 							} else {
-								if (args->normalize) {
-									float tmp =	fit.fpdata[layer][x + y * fit.rx];
-									tmp *= (float) coeff.scale[i];
-									tmp -= (float) coeff.offset[i];
-									destfit.pdata[layer][nx + ny * fit.rx] = roundf_to_WORD(tmp * USHRT_MAX_SINGLE);
-								} else {
-									float tmp = fit.fpdata[layer][x + y * fit.rx] * USHRT_MAX_SINGLE;
-									destfit.pdata[layer][nx + ny * fit.rx] = roundf_to_WORD(tmp);
-								}
+								destfit->pdata[layer][nx + ny * fit.rx] = roundf_to_WORD(pixel * USHRT_MAX_SINGLE);
 							}
 						} else {
 							retval = -1;
+							clearfits(&fit);
+							seqwriter_release_memory();
 							goto free_and_reset_progress_bar;
 						}
+						// for 8 bit output, destfit will be transformed later with a linear scale
 					}
 				}
 			}
 		}
+		clearfits(&fit);
 
 		if (args->crop) {
-			crop(&destfit, &args->crop_area);
+			crop(destfit, &args->crop_area);
 		}
 
-		switch (args->convflags) {
-			case TYPEFITS:
-				snprintf(dest, 255, "%s%05d%s", args->basename, i, com.pref.ext);
-				if (savefits(dest, &destfit)) {
-					retval = -1;
-					goto free_and_reset_progress_bar;
-				}
+		switch (args->output) {
+			case EXPORT_FITS:
+				snprintf(dest, 255, "%s%05d%s", args->basename, i + 1, com.pref.ext);
+				retval = savefits(dest, destfit);
+				break;
+			case EXPORT_FITSEQ:
+				retval = fitseq_write_image(fitseq_file, destfit, i - skipped);
 				break;
 #ifdef HAVE_LIBTIFF
-			case TYPETIFF:
-				snprintf(dest, 255, "%s%05d", args->basename, i);
-				if (savetif(dest, &destfit, 16)) {
-					retval = -1;
-					goto free_and_reset_progress_bar;
-				}
-
+			case EXPORT_TIFF:
+				snprintf(dest, 255, "%s%05d", args->basename, i + 1);
+				retval = savetif(dest, destfit, 16);
 				break;
 #endif
-			case TYPESER:
-				strTime = g_date_time_ref(destfit.date_obs);
-				timestamp = g_slist_append (timestamp, strTime);
-				if (ser_write_frame_from_fit(ser_file, &destfit, i - skipped))
-					siril_log_message(
-							_("Error while converting to SER (no space left?)\n"));
-				break;
-			case TYPEAVI:
-				data = fits_to_uint8(&destfit);
-
-				if (args->resize) {
-					uint8_t *newdata = malloc(out_width * out_height * destfit.naxes[2]);
-					cvResizeGaussian_uchar(data, destfit.rx, destfit.ry, newdata,
-							out_width, out_height, destfit.naxes[2], OPENCV_CUBIC);
-					avi_file_write_frame(0, newdata);
-					free(newdata);
+			case EXPORT_SER:
+				if (destfit->date_obs) {
+					strTime = g_date_time_ref(destfit->date_obs);
+					timestamp = g_slist_append (timestamp, strTime);
 				}
-				else
-					avi_file_write_frame(0, data);
-				free(data);
+				retval = ser_write_frame_from_fit(ser_file, destfit, i - skipped);
+				break;
+			case EXPORT_AVI:
+				data = fits_to_uint8(destfit);
+				retval = avi_file_write_frame(0, data);
 				break;
 #ifdef HAVE_FFMPEG
-			case TYPEMP4:
-			case TYPEWEBM:
-				mp4_add_frame(mp4_file, &destfit);
+			case EXPORT_MP4:
+			case EXPORT_WEBM:
+				// an equivalent to fits_to_uint8 is called in there (fill_rgb_image)...
+				retval = mp4_add_frame(mp4_file, destfit);
 				break;
 #endif
 		}
+		if (retval) {
+			seqwriter_release_memory();
+			goto free_and_reset_progress_bar;
+		}
 		cur_nb++;
-		clearfits(&fit);
 	}
 
 free_and_reset_progress_bar:
-	clearfits(&fit);	// in case of goto
-	if ((fit.type == DATA_FLOAT) && (args->convflags == TYPEFITS)) {
-		free(destfit.fdata);
-	} else {
-		free(destfit.data);
-	}
+	if (destfit && !have_seqwriter)
+		clearfits(destfit);
 	if (args->normalize) {
 		free(coeff.offset);
 		free(coeff.scale);
 	}
-	if (args->convflags == TYPESER) {
-		ser_convertTimeStamp(ser_file, timestamp);
-		ser_write_and_close(ser_file);
-		free(ser_file);
-		g_slist_free_full(timestamp, (GDestroyNotify) g_date_time_unref);
-	}
-	else if (args->convflags == TYPEAVI) {
-		avi_file_close(0);
-	}
+	// close the sequence file for single-file sequence formats
+	switch (args->output) {
+		case EXPORT_FITSEQ:
+			if (fitseq_file) {
+				fitseq_close_file(fitseq_file);
+				free(fitseq_file);
+			}
+			break;
+		case EXPORT_SER:
+			if (ser_file) {
+				if (timestamp)
+					ser_convertTimeStamp(ser_file, timestamp);
+				ser_write_and_close(ser_file);
+				free(ser_file);
+			}
+			g_slist_free_full(timestamp, (GDestroyNotify) g_date_time_unref);
+			break;
+		case EXPORT_AVI:
+			avi_file_close(0);
+			break;
+		case EXPORT_MP4:
+		case EXPORT_WEBM:
 #ifdef HAVE_FFMPEG
-	else if (mp4_file && (args->convflags == TYPEMP4 || args->convflags == TYPEWEBM)) {
-		mp4_close(mp4_file);
-		free(mp4_file);
-	}
+			if (mp4_file) {
+				mp4_close(mp4_file);
+				free(mp4_file);
+			}
 #endif
+			break;
+		default:
+			break;
+	}
 
 	if (retval) {
 		set_progress_bar_data(_("Sequence export failed. Check the log."), PROGRESS_RESET);
@@ -485,73 +536,60 @@ free_and_reset_progress_bar:
 void on_buttonExportSeq_clicked(GtkButton *button, gpointer user_data) {
 	int selected = gtk_combo_box_get_active(GTK_COMBO_BOX(lookup_widget("comboExport")));
 	const char *bname = gtk_entry_get_text(GTK_ENTRY(lookup_widget("entryExportSeq")));
+	gboolean normalize = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("exportNormalize")));
 	struct exportseq_args *args;
-	GtkToggleButton *exportNormalize, *checkResize;
-	GtkEntry *fpsEntry, *widthEntry, *heightEntry;
-	GtkAdjustment *adjQual;
 
 	if (bname[0] == '\0') return;
 	if (selected == -1) return;
 
 	args = malloc(sizeof(struct exportseq_args));
-	args->basename = g_str_to_ascii(bname, NULL);
 	args->seq = &com.seq;
-	exportNormalize = GTK_TOGGLE_BUTTON(lookup_widget("exportNormalize"));
-	args->normalize = gtk_toggle_button_get_active(exportNormalize);
+	get_sequence_filtering_from_gui(&args->filtering_criterion, &args->filtering_parameter);
+	args->basename = g_str_to_ascii(bname, NULL);
+	args->output = (export_format)selected;
+	args->normalize = normalize;
+	args->resample = FALSE;
 	args->crop = com.selection.w && com.selection.h;
-	args->resize = FALSE;
 	if (args->crop)
 		memcpy(&args->crop_area, &com.selection, sizeof(rectangle));
 
-	// filtering
-	get_sequence_filtering_from_gui(&args->filtering_criterion, &args->filtering_parameter);
-
-	// format
-	switch (selected) {
-	case EXPORT_FITS:
-		args->convflags = TYPEFITS;
-		args->basename = format_basename(args->basename, TRUE);
-		break;
-	case EXPORT_TIFF:
-		args->convflags = TYPETIFF;
-		args->basename = format_basename(args->basename, TRUE);
-		break;
-	case EXPORT_SER:
-		args->convflags = TYPESER;
-		break;
-	case EXPORT_AVI:
-	case EXPORT_MP4:
-	case EXPORT_WEBM:
-		fpsEntry = GTK_ENTRY(lookup_widget("entryAviFps"));
-		args->avi_fps = g_ascii_strtod(gtk_entry_get_text(fpsEntry), NULL);
-		widthEntry = GTK_ENTRY(lookup_widget("entryAviWidth"));
-		args->dest_width = g_ascii_strtoll(gtk_entry_get_text(widthEntry), NULL, 10);
-		heightEntry = GTK_ENTRY(lookup_widget("entryAviHeight"));
-		args->dest_height = g_ascii_strtoll(gtk_entry_get_text(heightEntry), NULL, 10);
-		checkResize = GTK_TOGGLE_BUTTON(lookup_widget("checkAviResize"));
-		adjQual = GTK_ADJUSTMENT(gtk_builder_get_object(builder,"adjustment3"));
-		args->quality = (int)gtk_adjustment_get_value(adjQual);
-
-		if (args->dest_height == 0 || args->dest_width == 0) {
-			siril_log_message(_("Width or height cannot be null. Not resizing.\n"));
-			args->resize = FALSE;
-			gtk_toggle_button_set_active(checkResize, FALSE);
-		} else if (args->dest_height == args->seq->ry && args->dest_width == args->seq->rx) {
-			args->resize = FALSE;
-			gtk_toggle_button_set_active(checkResize, FALSE);
-		} else {
-			args->resize = gtk_toggle_button_get_active(checkResize);
-		}
-		args->convflags = TYPEAVI;
-		if (selected == EXPORT_MP4)
-			args->convflags = TYPEMP4;
-		else if (selected == EXPORT_WEBM)
-			args->convflags = TYPEWEBM;
-		break;
-	default:
-		free(args);
-		return;
+	if (args->output == EXPORT_AVI || args->output == EXPORT_MP4 || args->output == EXPORT_WEBM) {
+		GtkEntry *fpsEntry = GTK_ENTRY(lookup_widget("entryAviFps"));
+		args->film_fps = round_to_int(g_ascii_strtod(gtk_entry_get_text(fpsEntry), NULL));
+		if (args->film_fps <= 0) args->film_fps = 1;
 	}
+	if (args->output == EXPORT_MP4 || args->output == EXPORT_WEBM) {
+		GtkAdjustment *adjQual = GTK_ADJUSTMENT(gtk_builder_get_object(builder,"adjustment3"));
+		GtkToggleButton *checkResize = GTK_TOGGLE_BUTTON(lookup_widget("checkAviResize"));
+		args->film_quality = (int)gtk_adjustment_get_value(adjQual);
+		args->resample = gtk_toggle_button_get_active(checkResize);
+		if (args->resample) {
+			GtkEntry *widthEntry = GTK_ENTRY(lookup_widget("entryAviWidth"));
+			GtkEntry *heightEntry = GTK_ENTRY(lookup_widget("entryAviHeight"));
+			args->dest_width = g_ascii_strtoll(gtk_entry_get_text(widthEntry), NULL, 10);
+			args->dest_height = g_ascii_strtoll(gtk_entry_get_text(heightEntry), NULL, 10);
+			if (args->dest_height == 0 || args->dest_width == 0) {
+				siril_log_message(_("Width or height cannot be null. Not resizing.\n"));
+				gtk_toggle_button_set_active(checkResize, FALSE);
+				args->resample = FALSE;
+			} else if (args->dest_height == args->seq->ry && args->dest_width == args->seq->rx) {
+				gtk_toggle_button_set_active(checkResize, FALSE);
+				args->resample = FALSE;
+			}
+		}
+	}
+	else if (args->output == EXPORT_FITS || args->output == EXPORT_TIFF) {
+		// add a trailing '_' for multiple-files sequences
+		args->basename = format_basename(args->basename, TRUE);
+	}
+	// Display a useful warning because I always forget to remove selection
+	if (args->crop) {
+		gboolean confirm = siril_confirm_dialog(_("Export cropped sequence?"),
+				_("An active selection was detected. The exported sequence will only contain data within the drawn selection. You can confirm the crop or cancel it. "
+						"If you choose to click on cancel, the exported sequence will contain all data."), _("Confirm Crop"));
+		args->crop = confirm;
+	}
+
 	set_cursor_waiting(TRUE);
 	start_in_new_thread(export_sequence, args);
 }
@@ -560,10 +598,10 @@ void on_comboExport_changed(GtkComboBox *box, gpointer user_data) {
 	GtkWidget *avi_options = lookup_widget("boxAviOptions");
 	GtkWidget *checkAviResize = lookup_widget("checkAviResize");
 	GtkWidget *quality = lookup_widget("exportQualScale");
-	gtk_widget_set_visible(avi_options, gtk_combo_box_get_active(box) >= 3);
-	gtk_widget_set_visible(quality, gtk_combo_box_get_active(box) >= 4);
-	gtk_widget_set_sensitive(checkAviResize, TRUE);
-
+	int output_type = gtk_combo_box_get_active(box);
+	gtk_widget_set_visible(avi_options, output_type >= EXPORT_AVI);
+	gtk_widget_set_visible(quality, output_type >= EXPORT_MP4);
+	gtk_widget_set_sensitive(checkAviResize, output_type >= EXPORT_MP4);
 }
 
 void on_checkAviResize_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
