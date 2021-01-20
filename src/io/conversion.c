@@ -1198,21 +1198,21 @@ static seqwrite_status write_image(fits *fit, struct writer_data *writer) {
 	seqwrite_status retval = WRITE_FAILED;
 	if (writer->ser) {
 		if (ser_write_frame_from_fit(writer->ser, fit, writer->index)) {
-			siril_log_message(_("Error while converting to SER (no space left?)\n"));
+			siril_log_color_message(_("Error while converting to SER (no space left?)\n"), "red");
 		}
 		else retval = WRITE_OK;
 		finish_write_seq(writer, retval == WRITE_OK);
 	}
 	else if (writer->fitseq) {
 		if (fitseq_write_image(writer->fitseq, fit, writer->index)) {
-			siril_log_message(_("Error while converting to FITSEQ (no space left?)\n"));
+			siril_log_color_message(_("Error while converting to FITSEQ (no space left?)\n"), "red");
 		}
 		else retval = WRITE_OK;
 		finish_write_seq(writer, retval == WRITE_OK);
 	}
 	else if (writer->filename) {
 		if (savefits(writer->filename, fit)) {
-			siril_log_message(_("Error while converting to FITS (no space left?)\n"));
+			siril_log_color_message(_("Error while converting to FITS (no space left?)\n"), "red");
 		}
 		else {
 			retval = WRITE_OK;
@@ -1223,7 +1223,7 @@ static seqwrite_status write_image(fits *fit, struct writer_data *writer) {
 		free(writer->filename);
 	}
 	else {
-		siril_log_message(_("Error while converting, unknown output\n"));
+		siril_log_color_message(_("Error while converting, unknown output\n"), "red");
 	}
 
 	free(writer);
