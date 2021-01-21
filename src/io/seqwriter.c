@@ -139,7 +139,7 @@ static void *write_worker(void *a) {
 		if (writer->frame_count <= 0) {
 			writer->frame_count = nb_frames_written;
 			retval = SEQ_OK;
-			siril_log_message(_("Saved %d images in the sequence\n"), nb_frames_written);
+			siril_log_message(ngettext("Saved %d image in the sequence\n", "Saved %d images in the sequence\n", nb_frames_written), nb_frames_written);
 		} else {
 			siril_debug_print("writer: write aborted, expected %d images, got %d.\n",
 					writer->frame_count, nb_frames_written);

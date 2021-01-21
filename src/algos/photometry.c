@@ -261,7 +261,11 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 
 	r1 = getInnerRadius();
 	r2 = getOuterRadius();
-	appRadius = psf->sx / 2.0;
+	appRadius = psf->fwhmx * 2;
+	if (psf->units[0] == '\"') {
+		appRadius = convert_single_fwhm_to_pixels(psf->fwhmx, psf->sx);
+	}
+	appRadius *= 2; // in order to be sure to contain star
 	if (appRadius >= r1) {
 		if (verbose) {
 			/* Translator note: radii is plural for radius */
