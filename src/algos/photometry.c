@@ -269,7 +269,7 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 	if (appRadius >= r1) {
 		if (verbose) {
 			/* Translator note: radii is plural for radius */
-			siril_log_message(_("Inner and outer radii are too small. Please update values in setting box.\n"));
+			siril_log_message(_("Inner and outer radii are too small. Please update values in preferences.\n"));
 		}
 		return NULL;
 	}

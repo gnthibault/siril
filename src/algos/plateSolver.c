@@ -749,7 +749,7 @@ static void cd_x(wcs_info *wcs) {
 	wcs->cd[1][1] = wcs->cdelt[1] * cosrot;
 }
 
-static void update_gfit(image_solved image) {
+static void update_gfit(image_solved image, double det, gboolean ask_for_flip) {
 	gfit.focal_length = image.focal;
 	gfit.pixel_size_x = gfit.pixel_size_y = image.pixel_size;
 	gfit.wcs.crpix[0] = image.x;
@@ -759,6 +759,8 @@ static void update_gfit(image_solved image) {
 	gfit.wcs.equinox = 2000.0;
 	gfit.wcs.cdelt[0] = image.resolution / 3600.0;
 	gfit.wcs.cdelt[1] = -gfit.wcs.cdelt[0];
+	if (det < 0&& !ask_for_flip)
+		gfit.wcs.cdelt[0] = -gfit.wcs.cdelt[0];
 	gfit.wcs.crota[0] = gfit.wcs.crota[1] = -image.crota;
 	cd_x(&gfit.wcs);
 
@@ -837,12 +839,13 @@ static void print_platesolving_results(Homography H, image_solved image, gboolea
 	delta = siril_world_cs_delta_format(image.image_center, "%c%02d°%02d\'%02d\"");
 	siril_log_message(_("Image center: alpha: %s, delta: %s\n"), alpha, delta);
 
-	*flip_image = *flip_image && det < 0;
-
 	g_free(alpha);
 	g_free(delta);
 
-   	update_gfit(image);
+   	update_gfit(image, det, *flip_image);
+
+	*flip_image = *flip_image && det < 0;
+
 }
 
 static int read_NOMAD_catalog(GInputStream *stream, fitted_PSF **cstars) {

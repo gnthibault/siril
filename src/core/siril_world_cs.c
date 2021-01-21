@@ -62,9 +62,25 @@ void siril_world_cs_unref(SirilWorldCS *world_cs) {
 
 SirilWorldCS* siril_world_cs_new_from_a_d(gdouble alpha, gdouble delta) {
 	SirilWorldCS *world_cs;
+	/*
+	 * make sure new RA lies in range  0 < RA < 360
+	 */
+	if (alpha < 0) {
+		alpha += 360.0;
+	}
+	if (alpha >= 360.0) {
+		alpha -= 360.0;
+	}
 
-	if ((alpha >= 360.0) || (alpha < 0.0) || (delta < -90.0) || (delta > 90.0))
-		return NULL;
+	/*
+	 * make sure Dec lies in range  -90 < Dec < +90
+	 */
+	if (delta < -90) {
+		delta += 180;
+	}
+	if (delta > 90) {
+		delta -= 180;
+	}
 
 	world_cs = siril_world_cs_alloc();
 	world_cs->alpha = alpha;
