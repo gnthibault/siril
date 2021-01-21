@@ -226,8 +226,6 @@ static double getMagErr(double intensity, double area, int nsky, double skysig) 
 	err2 = intensity / phpadu;
 	err3 = sigsq * area * area;
 
-	siril_log_message("%lf, %lf, %lf\n", err1, err2, err3);
-
 	return fmin(9.999, 1.0857 * sqrt(err1 + err2 + err3) / intensity);
 }
 
