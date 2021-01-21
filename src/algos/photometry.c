@@ -261,7 +261,7 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 
 	r1 = getInnerRadius();
 	r2 = getOuterRadius();
-	appRadius = psf->fwhmx * 2;
+	appRadius = psf->fwhmx;
 	if (psf->units[0] == '\"') {
 		appRadius = convert_single_fwhm_to_pixels(psf->fwhmx, psf->sx);
 	}

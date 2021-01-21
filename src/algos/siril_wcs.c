@@ -282,8 +282,8 @@ double *get_wcs_crval() {
 void free_wcs() {
 	// Clean up.
 #ifdef HAVE_WCSLIB
-	wcsfree(wcs);
-	free(wcs);
+	if (!wcsfree(wcs))
+		free(wcs);
 	wcs = NULL;
 #endif
 }
