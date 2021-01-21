@@ -704,13 +704,17 @@ void psf_display_result(fitted_PSF *result, rectangle *area) {
 		SirilWorldCS *world_cs;
 		pix2wcs(x, (double) gfit.ry - y, &world_x, &world_y);
 		world_cs = siril_world_cs_new_from_a_d(world_x, world_y);
-		gchar *ra = siril_world_cs_alpha_format(world_cs, "%02dh%02dm%02ds");
-		gchar *dec = siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'%02d\"");
-		coordinates = g_strdup_printf("x0=%0.2f px, y0=%0.2f px (%s , %s)", x, y, ra, dec);
+		if (world_cs) {
+			gchar *ra = siril_world_cs_alpha_format(world_cs, "%02dh%02dm%02ds");
+			gchar *dec = siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'%02d\"");
+			coordinates = g_strdup_printf("x0=%0.2f px, y0=%0.2f px (%s , %s)", x, y, ra, dec);
 
-		siril_world_cs_unref(world_cs);
-		g_free(ra);
-		g_free(dec);
+			siril_world_cs_unref(world_cs);
+			g_free(ra);
+			g_free(dec);
+		} else {
+			coordinates = g_strdup_printf("x0=%0.2f px, y0=%0.2f px", x, y);
+		}
 	} else {
 		coordinates = g_strdup_printf("x0=%0.2f px, y0=%0.2f px", x, y);
 	}

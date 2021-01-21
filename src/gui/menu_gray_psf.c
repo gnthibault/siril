@@ -92,23 +92,26 @@ void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 		pix2wcs(x, (double) gfit.ry - y, &world_x, &world_y);
 		world_cs = siril_world_cs_new_from_a_d(world_x, world_y);
+		if (world_cs) {
+			gchar *ra = siril_world_cs_alpha_format(world_cs, "%02d %02d %.3lf");
+			gchar *dec = siril_world_cs_delta_format(world_cs, "%c%02d %02d %.3lf");
 
-		gchar *ra = siril_world_cs_alpha_format(world_cs, "%02d %02d %.3lf");
-		gchar *dec = siril_world_cs_delta_format(world_cs, "%c%02d %02d %.3lf");
+			url = build_wcs_url(ra, dec);
 
-		url = build_wcs_url(ra, dec);
+			g_free(ra);
+			g_free(dec);
 
-		g_free(ra);
-		g_free(dec);
+			ra = siril_world_cs_alpha_format(world_cs, " %02dh%02dm%02ds");
+			dec = siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'%02d\"");
 
-		ra = siril_world_cs_alpha_format(world_cs, " %02dh%02dm%02ds");
-		dec = siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'%02d\"");
+			coordinates = g_strdup_printf("x0=%.2fpx\t%s J2000\n\t\ty0=%.2fpx\t%s J2000", x, ra, y, dec);
 
-		coordinates = g_strdup_printf("x0=%.2fpx\t%s J2000\n\t\ty0=%.2fpx\t%s J2000", x, ra, y, dec);
-
-		g_free(ra);
-		g_free(dec);
-		siril_world_cs_unref(world_cs);
+			g_free(ra);
+			g_free(dec);
+			siril_world_cs_unref(world_cs);
+		} else {
+			coordinates = g_strdup_printf("x0=%.2fpx\n\t\ty0=%.2fpx", x, y);
+		}
 	} else {
 		coordinates = g_strdup_printf("x0=%.2fpx\n\t\ty0=%.2fpx", x, y);
 	}

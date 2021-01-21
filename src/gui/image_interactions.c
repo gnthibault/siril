@@ -700,16 +700,17 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 					SirilWorldCS *world_cs;
 
 					world_cs = siril_world_cs_new_from_a_d(world_x, world_y);
+					if (world_cs) {
+						gchar *ra = siril_world_cs_alpha_format(world_cs, "%02dh%02dm%02ds");
+						gchar *dec = siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'%02d\"");
+						g_sprintf(wcs_buffer, "α: %s δ: %s", ra, dec);
 
-					gchar *ra = siril_world_cs_alpha_format(world_cs, "%02dh%02dm%02ds");
-					gchar *dec = siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'%02d\"");
-					g_sprintf(wcs_buffer, "α: %s δ: %s", ra, dec);
+						gtk_label_set_text(GTK_LABEL(lookup_widget(label_wcs[com.cvport])), wcs_buffer);
 
-					gtk_label_set_text(GTK_LABEL(lookup_widget(label_wcs[com.cvport])), wcs_buffer);
-
-					g_free(ra);
-					g_free(dec);
-					siril_world_cs_unref(world_cs);
+						g_free(ra);
+						g_free(dec);
+						siril_world_cs_unref(world_cs);
+					}
 				}
 			}
 
