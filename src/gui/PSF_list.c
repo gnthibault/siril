@@ -431,8 +431,10 @@ void refresh_star_list(fitted_PSF **star){
 }
 
 void clear_stars_list() {
-	get_stars_list_store();
-	gtk_list_store_clear(liststore_stars);
+	if (!com.headless) {
+		get_stars_list_store();
+		gtk_list_store_clear(liststore_stars);
+	}
 	if (com.stars) {
 		if (com.stars[0]) {
 			/* freeing found stars. It must not be done when the only star in

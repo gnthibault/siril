@@ -399,6 +399,7 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 	if (sadata->success) free(sadata->success);
 	free(sadata);
 	args->user = NULL;
+	clear_stars_list();
 
 	if (!args->retval) {
 		siril_log_message(_("Registration finished.\n"));

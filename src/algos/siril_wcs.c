@@ -154,6 +154,11 @@ gboolean load_WCS_from_file(fits* fit) {
 	struct wcsprm *data = NULL;
 	int nkeyrec, nreject, nwcs;
 
+	/* sanity check to avoid error in some creep files */
+	if ((fit->wcs.crpix[0] == 0) && (fit->wcs.crpix[1] == 0)) {
+		return FALSE;
+	}
+
 	if (has_wcs()) {
 		free_wcs();
 	}
