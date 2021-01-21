@@ -199,7 +199,11 @@ static double getMagnitude(double intensity) {
 }
 
 static double getCameraGain() {
-	return com.pref.phot_set.gain;
+	if (gfit.type == DATA_FLOAT) {
+		return com.pref.phot_set.gain * USHRT_MAX_DOUBLE;
+	} else {
+		return com.pref.phot_set.gain;
+	}
 }
 
 static double getInnerRadius() {
@@ -221,6 +225,8 @@ static double getMagErr(double intensity, double area, int nsky, double skysig) 
 	err1 = area * skyvar;
 	err2 = intensity / phpadu;
 	err3 = sigsq * area * area;
+
+	siril_log_message("%lf, %lf, %lf\n", err1, err2, err3);
 
 	return fmin(9.999, 1.0857 * sqrt(err1 + err2 + err3) / intensity);
 }
