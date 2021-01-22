@@ -1715,3 +1715,17 @@ int compute_nb_images_fit_memory(sequence *seq, double factor, gboolean force_fl
 		*max_mem_MB = max_memory_MB;
 	return max_memory_MB / memory_per_image_MB;
 }
+
+void fix_selnum(sequence *seq, gboolean warn) {
+	int nbsel = 0;
+	for (int i = 0; i < seq->number; i++)
+		if (seq->imgparam[i].incl)
+			nbsel++;
+
+	if (nbsel != seq->selnum) {
+		if (warn)
+			siril_log_message(_("Fixing the selection number in the .seq file (%d) to the actual value (%d) (not saved)\n"), seq->selnum, nbsel);
+		seq->selnum = nbsel;
+	}
+}
+

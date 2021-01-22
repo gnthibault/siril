@@ -354,6 +354,9 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 	struct registration_args *regargs = sadata->regargs;
 	int i, failed = 0;
 
+	// images may have been excluded but selnum wasn't updated
+	fix_selnum(args->seq, FALSE);
+
 	free_fitted_stars(sadata->refstars);
 
 	if (!args->retval) {

@@ -55,4 +55,6 @@ void	update_export_crop_label();
 
 int compute_nb_images_fit_memory(sequence *seq, double factor, gboolean force_float, unsigned int *MB_per_image, int *max_mem_MB);
 
+void fix_selnum(sequence *seq, gboolean warn);
+
 #endif

@@ -72,7 +72,7 @@
 sequence * readseqfile(const char *name){
 	char line[512], *scanformat;
 	char filename[512], *seqfilename;
-	int i, nbsel, nb_tokens, allocated = 0, current_layer = -1, image;
+	int i, nb_tokens, allocated = 0, current_layer = -1, image;
 	int to_backup = 0, version = -1;
 	FILE *seqfile;
 	sequence *seq;
@@ -496,13 +496,7 @@ sequence * readseqfile(const char *name){
 	fclose(seqfile);
 	seq->end = seq->imgparam[seq->number-1].filenum;
 	seq->current = -1;
-	for (i=0, nbsel=0; i<seq->number; i++)
-		if (seq->imgparam[i].incl)
-			nbsel++;
-	if (nbsel != seq->selnum) {
-		siril_log_message(_("Fixing the selection number in the .seq file (%d) to the actual value (%d) (not saved)\n"), seq->selnum, nbsel);
-		seq->selnum = nbsel;
-	}
+	fix_selnum(seq, TRUE);
 	
 	// copy some regparam_bkp to regparam if it applies
 	if (ser_is_cfa(seq->ser_file) && com.pref.debayer.open_debayer &&
