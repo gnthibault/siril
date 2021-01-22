@@ -426,7 +426,6 @@ static void free_cbbt_layers() {
 int set_seq(const char *name){
 	sequence *seq = NULL;
 	char *basename;
-	int convert = 0;
 
 	if ((seq = readseqfile(name)) == NULL) {
 		fprintf(stderr, "could not load sequence %s\n", name);
@@ -434,6 +433,8 @@ int set_seq(const char *name){
 	}
 	free_image_data();
 
+#ifdef HAVE_FFMS2
+	int convert = 0;
 	if (seq->type == SEQ_AVI) {
 		convert = siril_confirm_dialog(_("Deprecated sequence"),
 				_("Film sequences are now deprecated in Siril: some features are disabled and others may crash."
@@ -444,7 +445,9 @@ int set_seq(const char *name){
 	if (convert) {
 		close_sequence(FALSE);
 		convert_single_film_to_ser(seq);
-	} else {
+	} else
+#endif
+	{
 		int retval = seq_check_basic_data(seq, TRUE);
 		if (retval == -1) {
 			free(seq);

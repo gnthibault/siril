@@ -392,6 +392,7 @@ int any_to_fits(image_type imagetype, const char *source, fits *dest,
 	return retval;
 }
 
+#ifdef HAVE_FFMS2
 int convert_single_film_to_ser(sequence *seq) {
 	char **files_to_convert = malloc(1 * sizeof(char *));
 
@@ -416,6 +417,7 @@ int convert_single_film_to_ser(sequence *seq) {
 	start_in_new_thread(convert_thread_worker, args);
 	return 0;
 }
+#endif
 
 typedef enum {
 	/* for the reader data provider */
