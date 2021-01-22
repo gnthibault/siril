@@ -230,7 +230,7 @@ void read_fits_header(fits *fit) {
 	/* about the status argument: http://heasarc.gsfc.nasa.gov/fitsio/c/c_user/node28.html */
 	int status = 0;
 	double scale, zero;
-	char str[FLEN_VALUE];
+	char str[FLEN_VALUE] = { 0 };
 
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSLO, &fit->lo);
 	__tryToFindKeywords(fit->fptr, TUSHORT, MIPSHI, &fit->hi);
