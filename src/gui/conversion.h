@@ -5,6 +5,7 @@
 
 enum {
 	COLUMN_FILENAME,	// string
+	COLUMN_SIZE,		// string
 	COLUMN_DATE,		// string
 	N_COLUMNS_CONVERT
 };

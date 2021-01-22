@@ -303,7 +303,7 @@ int register_shift_dft(struct registration_args *args) {
 
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(guided) \
-	if(args->seq->type != SEQ_AVI && (args->seq->type == SEQ_SER || fits_is_reentrant()))
+	if (args->seq->type == SEQ_SER || ((args->seq->type == SEQ_REGULAR || args->seq->type == SEQ_FITSEQ) && fits_is_reentrant()))
 #endif
 	for (frame = 0; frame < args->seq->number; ++frame) {
 		if (abort) continue;
@@ -570,7 +570,7 @@ int register_ecc(struct registration_args *args) {
 	cur_nb = 0.f;
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) schedule(guided) \
-	if(args->seq->type != SEQ_AVI && (args->seq->type == SEQ_SER || fits_is_reentrant()))
+	if (args->seq->type == SEQ_SER || ((args->seq->type == SEQ_REGULAR || args->seq->type == SEQ_FITSEQ) && fits_is_reentrant()))
 #endif
 	for (frame = 0; frame < args->seq->number; frame++) {
 		if (!abort) continue;

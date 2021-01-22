@@ -229,16 +229,29 @@ void on_convert_button_clicked(GtkButton *button, gpointer user_data) {
 	initialize_convert();
 }
 
-static void add_convert_to_list(char *filename, GStatBuf st) {
+static void add_file_to_list(GFile *file) {
 	GtkTreeIter iter;
-	char *date;
 
-	date = ctime(&st.st_mtime);
-	date[strlen(date) - 1] = 0;	// removing '\n' at the end of the string
+	GFileInfo *info = g_file_query_info(file, G_FILE_ATTRIBUTE_TIME_MODIFIED ","
+			G_FILE_ATTRIBUTE_STANDARD_SIZE, 0, NULL, NULL);
+	guint64 mtime = g_file_info_get_attribute_uint64(info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+	GDateTime *dt = g_date_time_new_from_unix_local(mtime);
+	gchar *date = g_date_time_format(dt, "%c");
+	gchar *filename = g_file_get_basename(file);
+	gchar *size = g_format_size(g_file_info_get_size(info));
 
 	gtk_list_store_append(liststore_convert, &iter);
-	gtk_list_store_set(liststore_convert, &iter, COLUMN_FILENAME, filename,	// copied in the store
-			COLUMN_DATE, date, -1);
+	gtk_list_store_set(liststore_convert, &iter,
+			COLUMN_FILENAME, filename,
+			COLUMN_SIZE, size,
+			COLUMN_DATE, date,
+			-1);
+
+	g_object_unref(info);
+	g_date_time_unref(dt);
+	g_free(date);
+	g_free(filename);
+	g_free(size);
 }
 
 static GList *get_row_references_of_selected_rows(GtkTreeSelection *selection,
@@ -300,7 +313,6 @@ static gint sort_conv_tree(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b,
 }
 
 void fill_convert_list(GSList *list) {
-	GStatBuf st;
 	GSList *l;
 	init_widgets();
 
@@ -308,9 +320,9 @@ void fill_convert_list(GSList *list) {
 		char *filename;
 
 		filename = (char *) l->data;
-		if (g_stat(filename, &st) == 0) {
-			add_convert_to_list(filename, st);
-		}
+		GFile *file = g_file_new_for_path(filename);
+
+		add_file_to_list(file);
 		g_free(filename);
 	}
 	check_for_conversion_form_completeness();
