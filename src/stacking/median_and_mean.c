@@ -835,10 +835,12 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 			siril_log_message(_("Your version of cfitsio does not support multi-threading\n"));
 		}
 	}
+#ifdef HAVE_FFMS2
 	if (args->seq->type == SEQ_AVI) {
 		siril_log_color_message(_("Stacking a film will work only on one core and will be slower than if you convert it to SER\n"), "salmon");
 		nb_threads = 1;
 	}
+#endif // HAVE_FFMS2
 #else
 	nb_threads = 1;
 #endif
