@@ -184,7 +184,7 @@ static int compute_normalization(struct stacking_args *args) {
 
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(nb_threads) private(i) schedule(guided) \
-	if (args->seq->type != SEQ_AVI && (args->seq->type == SEQ_SER || fits_is_reentrant()))
+	if (args->seq->type == SEQ_SER || ((args->seq->type == SEQ_REGULAR || args->seq->type == SEQ_FITSEQ) && fits_is_reentrant()))
 #endif
 	for (i = 0; i < args->nb_images_to_stack; ++i) {
 		if (!retval && i != ref_image_filtred_idx) {

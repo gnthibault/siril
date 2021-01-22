@@ -877,6 +877,8 @@ enter a visible wavelength in nm</property>
     <columns>
       <!-- column-name Filename -->
       <column type="gchararray"/>
+      <!-- column-name Size -->
+      <column type="gchararray"/>
       <!-- column-name Date -->
       <column type="gchararray"/>
     </columns>
@@ -2803,16 +2805,28 @@ enter a visible wavelength in nm</property>
                                         </child>
                                         <child>
                                           <object class="GtkTreeViewColumn" id="treeviewcolumn18">
-                                            <property name="resizable">True</property>
-                                            <property name="title" translatable="yes">Date</property>
-                                            <property name="clickable">True</property>
-                                            <property name="reorderable">True</property>
-                                            <property name="sort-indicator">True</property>
+                                            <property name="title" translatable="yes">Size</property>
                                             <property name="sort-column-id">1</property>
                                             <child>
                                               <object class="GtkCellRendererText" id="cellrenderertext7"/>
                                               <attributes>
                                                 <attribute name="text">1</attribute>
+                                              </attributes>
+                                            </child>
+                                          </object>
+                                        </child>
+                                        <child>
+                                          <object class="GtkTreeViewColumn" id="treeviewcolumn23">
+                                            <property name="resizable">True</property>
+                                            <property name="title" translatable="yes">Date</property>
+                                            <property name="clickable">True</property>
+                                            <property name="reorderable">True</property>
+                                            <property name="sort-indicator">True</property>
+                                            <property name="sort-column-id">2</property>
+                                            <child>
+                                              <object class="GtkCellRendererText" id="cellrenderer_size"/>
+                                              <attributes>
+                                                <attribute name="text">2</attribute>
                                               </attributes>
                                             </child>
                                           </object>
