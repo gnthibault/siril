@@ -145,7 +145,9 @@ GDateTime *ser_timestamp_to_date_time(guint64 timestamp) {
  * @return a SER timestamp
  */
 guint64 date_time_to_ser_timestamp(GDateTime *dt) {
-	return (guint64) (g_date_time_to_unix(dt) * 10000000) + SER_TIME_1970;
+	guint64 ts = (guint64) (g_date_time_to_unix(dt) * 10000000) + SER_TIME_1970;
+	ts += (g_date_time_get_microsecond(dt) * 10);
+	return ts;
 }
 
 /**
