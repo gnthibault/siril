@@ -336,7 +336,7 @@ static gpointer export_sequence(gpointer ptr) {
 				}
 			}
 			data_type dest_type = output_bitpix == FLOAT_IMG ? DATA_FLOAT : DATA_USHORT;
-			destfit = NULL;	// otherwise it's overwritten
+			destfit = NULL;	// otherwise it's overwritten by new_fit_image()
 			if (new_fit_image(&destfit, fit.rx, fit.ry, fit.naxes[2], dest_type)) {
 				retval = -1;
 				clearfits(&fit);
@@ -354,9 +354,7 @@ static gpointer export_sequence(gpointer ptr) {
 			goto free_and_reset_progress_bar;
 		}
 		else {
-			/* we copy the header and clear the data */
-			copy_fits_metadata(&fit, destfit);
-
+			/* we don't have a seq writer or it's not the first frame, we can reuse destfit */
 			if (destfit->type == DATA_FLOAT) {
 				memset(destfit->fdata, 0, nbpix * fit.naxes[2] * sizeof(float));
 				if (args->crop) {
@@ -381,6 +379,8 @@ static gpointer export_sequence(gpointer ptr) {
 				}
 			}
 		}
+		/* we copy the header and clear the data */
+		copy_fits_metadata(&fit, destfit);
 
 		int shiftx, shifty;
 		/* load registration data for current image */
