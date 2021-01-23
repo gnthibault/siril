@@ -879,8 +879,12 @@ enter a visible wavelength in nm</property>
       <column type="gchararray"/>
       <!-- column-name Size -->
       <column type="gchararray"/>
+      <!-- column-name Size_int64 -->
+      <column type="gint64"/>
       <!-- column-name Date -->
       <column type="gchararray"/>
+      <!-- column-name Date_Unix -->
+      <column type="guint64"/>
     </columns>
   </object>
   <object class="GtkListStore" id="liststore_scripts">
@@ -2826,7 +2830,7 @@ enter a visible wavelength in nm</property>
                                             <child>
                                               <object class="GtkCellRendererText" id="cellrenderer_size"/>
                                               <attributes>
-                                                <attribute name="text">2</attribute>
+                                                <attribute name="text">3</attribute>
                                               </attributes>
                                             </child>
                                           </object>

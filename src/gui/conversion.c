@@ -244,7 +244,9 @@ static void add_file_to_list(GFile *file) {
 	gtk_list_store_set(liststore_convert, &iter,
 			COLUMN_FILENAME, filename,
 			COLUMN_SIZE, size,
+			COLUMN_SIZE_INT64, g_file_info_get_size(info),
 			COLUMN_DATE, date,
+			COLUMN_DATE_UNIX, mtime,
 			-1);
 
 	g_object_unref(info);
@@ -312,35 +314,24 @@ static gint name_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b,
 	return ret;
 }
 
-static const gchar *tab[] = {"k", "M", "G", "T", "P", "E"};
-
-/* Sort callback for the size column */
 static gint size_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b,
 		gpointer user_data) {
-	int i, j;
-	gchar *size_a, *size_b;
-	gfloat d_a, d_b;
-	gchar s_a[10] = { 0 }, s_b[10] = { 0 };
+	gint64 *size_a, *size_b;
 
-	gtk_tree_model_get(model, a, COLUMN_SIZE, &size_a, -1);
-	gtk_tree_model_get(model, b, COLUMN_SIZE, &size_b, -1);
+	gtk_tree_model_get(model, a, COLUMN_SIZE_INT64, &size_a, -1);
+	gtk_tree_model_get(model, b, COLUMN_SIZE_INT64, &size_b, -1);
 
-	sscanf(size_a, "%f %s", &d_a, s_a);
-	sscanf(size_b, "%f %s", &d_b, s_b);
+	return size_a < size_b ? -1 : (size_a == size_b ? 0 : 1);
+}
 
-	if (s_a[0] == s_b[0]) {
-		return d_a < d_b ? -1 : (d_a == d_b ? 0 : 1);
-	}
+static gint date_sort_func(GtkTreeModel *model, GtkTreeIter *a, GtkTreeIter *b,
+		gpointer user_data) {
+	guint64 *date_a, *date_b;
 
-	for (i = 0; i < G_N_ELEMENTS(tab); i++) {
-		if (tab[i][0] == s_a[0]) break;
-	}
+	gtk_tree_model_get(model, a, COLUMN_DATE_UNIX, &date_a, -1);
+	gtk_tree_model_get(model, b, COLUMN_DATE_UNIX, &date_b, -1);
 
-	for (j = 0; j < G_N_ELEMENTS(tab); j++) {
-		if (tab[j][0] == s_b[0]) break;
-	}
-
-	return i < j ? -1 : (i == j ? 0 : 1);
+	return date_a < date_b ? -1 : (date_a == date_b ? 0 : 1);
 }
 
 void fill_convert_list(GSList *list) {
@@ -453,6 +444,7 @@ static void on_input_files_change() {
 	/* we override the sort function in order to provide natural sort order */
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(model), COLUMN_FILENAME, (GtkTreeIterCompareFunc) name_sort_func, NULL, NULL);
 	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(model), COLUMN_SIZE, (GtkTreeIterCompareFunc) size_sort_func, NULL, NULL);
+	gtk_tree_sortable_set_sort_func(GTK_TREE_SORTABLE(model), COLUMN_DATE_UNIX, (GtkTreeIterCompareFunc) date_sort_func, NULL, NULL);
 
 	update_statusbar_convert();
 }
