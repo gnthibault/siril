@@ -74,10 +74,6 @@ gpointer generic_sequence_worker(gpointer p) {
 		goto the_end;
 	}
 
-	if (args->seq->type == SEQ_FITSEQ) {
-		fitseq_prepare_for_multiple_read(args->seq->fitseq_file);
-	}
-
 	/* We have a sequence in which images can be filtered out. In order to
 	 * distribute the workload fairly among all threads, the main iteration
 	 * should not be on the list of images of the sequence, but on the
@@ -298,12 +294,6 @@ the_end:
 	if (args->finalize_hook && args->finalize_hook(args)) {
 		siril_log_message(_("Finalizing sequence processing failed.\n"));
 		args->retval = 1;
-	}
-
-	if (args->seq->type == SEQ_FITSEQ) {
-		int ret = fitseq_multiple_close(args->seq->fitseq_file);
-		if (!args->retval)
-			args->retval = ret;
 	}
 
 	if (args->already_in_a_thread) {

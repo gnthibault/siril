@@ -3385,8 +3385,6 @@ static int stack_one_seq(struct stacking_configuration *arg) {
 
 		main_stack(&args);
 
-		if (seq->type == SEQ_FITSEQ)
-			fitseq_multiple_close(seq->fitseq_file);
 		retval = args.retval;
 		clean_end_stacking(&args);
 		free_sequence(seq, TRUE);

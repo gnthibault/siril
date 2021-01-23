@@ -33,6 +33,8 @@
 #include "fits_sequence.h"
 
 static int fitseq_write_image_for_writer(struct seqwriter_data *writer, fits *image, int index);
+static int fitseq_prepare_for_multiple_read(fitseq *fitseq);
+static int fitseq_multiple_close(fitseq *fitseq);
 
 static int _find_hdus(fitsfile *fptr, int **hdus, int *nb_im) {
 	int status = 0;
@@ -188,6 +190,7 @@ int fitseq_open(const char *filename, fitseq *fitseq) {
 		fitseq->is_mt_capable = TRUE;
 		fprintf(stdout, "cfitsio was compiled with multi-thread support,"
 				" parallel read of images will be possible\n");
+		fitseq_prepare_for_multiple_read(fitseq);
 	} else {
 		fitseq->is_mt_capable = FALSE;
 		fprintf(stdout, "cfitsio was compiled without multi-thread support,"
@@ -357,6 +360,7 @@ static int fitseq_destroy(fitseq *fitseq, gboolean abort) {
 		free(fitseq->writer);
 		fitseq->writer = NULL;
 	}
+	retval |= fitseq_multiple_close(fitseq);
 	int status = 0;
 	fits_close_file(fitseq->fptr, &status);
 	if (fitseq->filename)
@@ -377,7 +381,7 @@ int fitseq_close_file(fitseq *fitseq) {
 }
 
 // to call after open to read with several threads in the file
-int fitseq_prepare_for_multiple_read(fitseq *fitseq) {
+static int fitseq_prepare_for_multiple_read(fitseq *fitseq) {
 	if (fitseq->thread_fptr) return 0;
 	if (!fitseq->is_mt_capable) return 0;
 	fitseq->num_threads = g_get_num_processors();
@@ -393,7 +397,7 @@ int fitseq_prepare_for_multiple_read(fitseq *fitseq) {
 	return 0;
 }
 
-int fitseq_multiple_close(fitseq *fitseq) {
+static int fitseq_multiple_close(fitseq *fitseq) {
 	int retval = 0;
 	if (!fitseq->thread_fptr) return 0;
 	for (guint i = 0; i < fitseq->num_threads; i++) {

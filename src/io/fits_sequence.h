@@ -38,9 +38,6 @@ int fitseq_write_image(fitseq *fitseq, fits *image, int index);
 void fitseq_close_and_delete_file(fitseq *fitseq);
 int fitseq_close_file(fitseq *fitseq);
 
-int fitseq_prepare_for_multiple_read(fitseq *fitseq);
-int fitseq_multiple_close(fitseq *fitseq);
-
 int fitseq_set_current_frame(fitseq *fitseq, int frame);
 
 #endif

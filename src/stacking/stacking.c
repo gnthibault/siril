@@ -144,9 +144,6 @@ void main_stack(struct stacking_args *args) {
 		}
 	}
 
-	if (args->seq->type == SEQ_FITSEQ)
-		fitseq_prepare_for_multiple_read(args->seq->fitseq_file);
-
 	siril_log_message(args->description);
 	if (args->use_32bit_output)
 		siril_log_message(_("Stacking result will be stored as a 32-bit image\n"));
@@ -354,8 +351,6 @@ static gboolean end_stacking(gpointer p) {
 	struct stacking_args *args = (struct stacking_args *)p;
 	fprintf(stdout, "Ending stacking idle function, retval=%d\n", args->retval);
 	stop_processing_thread();	// can it be done here in case there is no thread?
-	if (args->seq->type == SEQ_FITSEQ)
-		fitseq_multiple_close(args->seq->fitseq_file);
 
 	if (args->retval == ST_OK) {
 		clear_stars_list();
