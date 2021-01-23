@@ -124,14 +124,14 @@ gchar* build_timestamp_filename() {
  */
 GDateTime *ser_timestamp_to_date_time(guint64 timestamp) {
 	GDateTime *dt, *new_dt = NULL;
-	guint64 t1970_ms = (timestamp - SER_TIME_1970) / 10000;
-	gint64 secs = t1970_ms / 1000;
-	gint ms = t1970_ms % 1000;
+	guint64 t1970_us = (timestamp - SER_TIME_1970);
+	gint64 secs = t1970_us / 10000000;
+	gint us = t1970_us % 10000000;
 
 	dt = g_date_time_new_from_unix_utc(secs);
 	if (dt) {
 		/* add milliseconds */
-		new_dt = g_date_time_add_seconds(dt, (gdouble) ms * 0.001);
+		new_dt = g_date_time_add_seconds(dt, (gdouble) us / 10000000.0);
 
 		g_date_time_unref(dt);
 	}
