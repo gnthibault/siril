@@ -483,7 +483,7 @@ void ser_convertTimeStamp(struct ser_struct *ser_file, GSList *timestamp) {
 
 	GSList *t = timestamp;
 	while (t && i < ser_file->frame_count) {
-		guint64 utc = (guint64) g_date_time_to_unix((GDateTime *)t->data);
+		guint64 utc = date_time_to_ser_timestamp((GDateTime *)t->data);
 		t = t->next;
 		memcpy(&ser_file->ts[i], &utc, sizeof(guint64));
 		i++;
