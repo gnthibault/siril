@@ -3006,13 +3006,12 @@ enter a visible wavelength in nm</property>
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="convert_button">
-                                    <property name="label">gtk-convert</property>
+                                    <property name="label" translatable="yes">Convert</property>
                                     <property name="visible">True</property>
                                     <property name="sensitive">False</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
                                     <property name="tooltip-text" translatable="yes">Start conversion of all source files into the configured output files, FITS or SER, with colour processing or not.</property>
-                                    <property name="use-stock">True</property>
                                     <property name="always-show-image">True</property>
                                     <signal name="clicked" handler="on_convert_button_clicked" swapped="no"/>
                                     <style>
@@ -6580,7 +6579,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                                 </child>
                                 <child>
                                   <object class="GtkButton" id="processes_button_cancel">
-                                    <property name="label">Stop</property>
+                                    <property name="label" translatable="yes">Stop</property>
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">True</property>
@@ -8253,7 +8252,7 @@ artifacts may appear.</property>
                     </child>
                     <child>
                       <object class="GtkButton" id="GtkButtonIPS">
-                        <property name="label">Find</property>
+                        <property name="label" translatable="yes">Find</property>
                         <property name="visible">True</property>
                         <property name="can-focus">True</property>
                         <property name="receives-default">True</property>
@@ -18623,7 +18622,7 @@ The technique gives very good compression for astronomical images and is relativ
                                         <property name="can-focus">False</property>
                                         <property name="left-padding">12</property>
                                         <child>
-                                          <!-- n-columns=2 n-rows=3 -->
+                                          <!-- n-columns=2 n-rows=1 -->
                                           <object class="GtkGrid">
                                             <property name="visible">True</property>
                                             <property name="can-focus">False</property>
@@ -18660,18 +18659,6 @@ The technique gives very good compression for astronomical images and is relativ
                                                 <property name="left-attach">0</property>
                                                 <property name="top-attach">0</property>
                                               </packing>
-                                            </child>
-                                            <child>
-                                              <placeholder/>
-                                            </child>
-                                            <child>
-                                              <placeholder/>
-                                            </child>
-                                            <child>
-                                              <placeholder/>
-                                            </child>
-                                            <child>
-                                              <placeholder/>
                                             </child>
                                           </object>
                                         </child>

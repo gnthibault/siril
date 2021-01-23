@@ -379,7 +379,7 @@ static gpointer export_sequence(gpointer ptr) {
 				}
 			}
 		}
-		/* we copy the header and clear the data */
+		/* we copy the header */
 		copy_fits_metadata(&fit, destfit);
 
 		int shiftx, shifty;
@@ -454,7 +454,7 @@ static gpointer export_sequence(gpointer ptr) {
 			case EXPORT_SER:
 				if (destfit->date_obs) {
 					strTime = g_date_time_ref(destfit->date_obs);
-					timestamp = g_slist_append (timestamp, strTime);
+					timestamp = g_slist_append(timestamp, strTime);
 				}
 				retval = ser_write_frame_from_fit(ser_file, destfit, i - skipped);
 				break;
