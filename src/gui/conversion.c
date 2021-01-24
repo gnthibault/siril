@@ -78,7 +78,7 @@ int count_selected_files() {
 }
 
 static void initialize_convert() {
-	gchar *file_data, *file_date;
+	const gchar *file_data;
 	GtkTreeIter iter;
 	GList *list = NULL;
 	
@@ -112,9 +112,11 @@ static void initialize_convert() {
 	gboolean there_is_a_film = FALSE;
 	int count = 0;
 	while (valid) {
-		gtk_tree_model_get(model, &iter, COLUMN_FILENAME, &file_data,
-				COLUMN_DATE, &file_date, -1);
-		list = g_list_prepend(list, file_data);
+		GValue g_data = G_VALUE_INIT;
+		gtk_tree_model_get_value(model, &iter, COLUMN_FILENAME, &g_data);
+		file_data = g_value_get_string(&g_data);
+
+		list = g_list_prepend(list, (gchar *)file_data);
 
 		const char *src_ext = get_filename_ext(file_data);
 		image_type type = get_type_for_extension(src_ext);
@@ -237,7 +239,7 @@ static void add_file_to_list(GFile *file) {
 	guint64 mtime = g_file_info_get_attribute_uint64(info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
 	GDateTime *dt = g_date_time_new_from_unix_local(mtime);
 	gchar *date = g_date_time_format(dt, "%c");
-	gchar *filename = g_file_get_basename(file);
+	const gchar *filename = g_file_peek_path(file);
 	gchar *size = g_format_size(g_file_info_get_size(info));
 
 	gtk_list_store_append(liststore_convert, &iter);
@@ -252,7 +254,6 @@ static void add_file_to_list(GFile *file) {
 	g_object_unref(info);
 	g_date_time_unref(dt);
 	g_free(date);
-	g_free(filename);
 	g_free(size);
 }
 
