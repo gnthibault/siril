@@ -647,7 +647,7 @@ gpointer convert_thread_worker(gpointer p) {
 		}
 		if (rstatus == GOT_OK_LAST_FILE || rstatus == GOT_OK_LAST_IN_SEQ_LAST_FILE)
 			break;
-		if (rstatus == GOT_OK_LAST_IN_SEQ) {
+		if (rstatus == GOT_OK_LAST_IN_SEQ || rstatus == GOT_OK_FILE) {
 			siril_debug_print("last image of the sequence reached, opening next sequence\n");
 			open_next_input_seq(&convert);
 		}
@@ -811,6 +811,7 @@ static seqread_status get_next_read_details(convert_status *conv, struct reader_
 					retval = GOT_OK_LAST_FILE;
 				else retval = GOT_OK_FILE;
 			}
+			else siril_log_message(_("Skipping input file %s (failed to be opened)\n"), filename);
 		} while (next_status == OPEN_ERROR && conv->next_file < conv->args->total);
 	}
 	return retval;
