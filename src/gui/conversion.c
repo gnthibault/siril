@@ -78,7 +78,7 @@ int count_selected_files() {
 }
 
 static void initialize_convert() {
-	const gchar *file_data;
+	gchar *file_data;
 	GtkTreeIter iter;
 	GList *list = NULL;
 	
@@ -112,13 +112,12 @@ static void initialize_convert() {
 	gboolean there_is_a_film = FALSE;
 	int count = 0;
 	while (valid) {
-		GValue data = G_VALUE_INIT;
-		gtk_tree_model_get_value(model, &iter, COLUMN_FILENAME_FULL, &data);
-		file_data = g_value_get_string(&data);
+		gtk_tree_model_get(model, &iter, COLUMN_FILENAME_FULL, &file_data, -1);
 
-		list = g_list_prepend(list, (gchar *)file_data);
+		list = g_list_prepend(list, file_data);
 
 		const char *src_ext = get_filename_ext(file_data);
+
 		image_type type = get_type_for_extension(src_ext);
 		if (type == TYPEAVI || type == TYPESER) {
 			no_sequence_to_convert = FALSE;
@@ -350,6 +349,7 @@ void fill_convert_list(GSList *list) {
 
 		add_file_to_list(file);
 		g_free(filename);
+		g_object_unref(file);
 	}
 	check_for_conversion_form_completeness();
 	on_input_files_change();
