@@ -5,7 +5,8 @@
 
 #include "core/siril_date.h"
 
-#define INPUT_TIME    G_GUINT64_CONSTANT(637232717926133387)
+#define UNDER_US      G_GUINT64_CONSTANT(7)
+#define INPUT_TIME    G_GUINT64_CONSTANT(637232717926133380) + UNDER_US
 #define SER_TIME_1970 G_GUINT64_CONSTANT(621355968000000000) // 621.355.968.000.000.000 ticks between 1st Jan 0001 and 1st Jan 1970.
 
 /**
@@ -24,7 +25,7 @@ int test_consistency() {
 	 *  structure is accurate down to 1 microsecond
 	 */
 	diff = INPUT_TIME - ts;
-	cr_expect(diff == 7, "Failed with retval=%lu", diff);
+	cr_expect(diff == UNDER_US, "Failed with retval=%lu", diff);
 
 	dt2 = g_date_time_new_now_utc();
 	ts = date_time_to_ser_timestamp(dt2);
