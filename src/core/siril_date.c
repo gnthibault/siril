@@ -130,7 +130,7 @@ GDateTime *ser_timestamp_to_date_time(guint64 timestamp) {
 
 	dt = g_date_time_new_from_unix_utc(secs);
 	if (dt) {
-		/* add milliseconds */
+		/* add microseconds */
 		new_dt = g_date_time_add_seconds(dt, (gdouble) us / 10000000.0);
 
 		g_date_time_unref(dt);
