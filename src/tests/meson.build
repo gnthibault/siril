@@ -22,14 +22,14 @@ if criterion_dep.found()
 
      test('stacking_blocks_test', sorting_exec)
      
-     date_exec = executable('siril_date_time_test',
-                                'siril_date_time_test.c',
+     date_exec = executable('siril_date_test',
+                                'siril_date_test.c',
                                 dependencies : [siril_dep, criterion_dep],
                                 link_args : [siril_link_arg, '-Wl,--unresolved-symbols=ignore-all'],
                                 c_args : siril_c_flag,
                                 cpp_args : siril_cpp_flag)
 
-     test('siril_date_time_test', date_exec)
+     test('siril_date_test', date_exec)
 
 endif
 
