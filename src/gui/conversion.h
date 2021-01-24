@@ -5,6 +5,7 @@
 
 enum {
 	COLUMN_FILENAME,	// string
+	COLUMN_FILENAME_FULL,	// string
 	COLUMN_SIZE,		// string
 	COLUMN_SIZE_INT64,	// gint64
 	COLUMN_DATE,		// string

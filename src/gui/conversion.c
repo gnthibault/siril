@@ -112,9 +112,9 @@ static void initialize_convert() {
 	gboolean there_is_a_film = FALSE;
 	int count = 0;
 	while (valid) {
-		GValue g_data = G_VALUE_INIT;
-		gtk_tree_model_get_value(model, &iter, COLUMN_FILENAME, &g_data);
-		file_data = g_value_get_string(&g_data);
+		GValue data = G_VALUE_INIT;
+		gtk_tree_model_get_value(model, &iter, COLUMN_FILENAME_FULL, &data);
+		file_data = g_value_get_string(&data);
 
 		list = g_list_prepend(list, (gchar *)file_data);
 
@@ -240,17 +240,20 @@ static void add_file_to_list(GFile *file) {
 	GDateTime *dt = g_date_time_new_from_unix_local(mtime);
 	gchar *date = g_date_time_format(dt, "%c");
 	const gchar *filename = g_file_peek_path(file);
+	gchar *bname = g_file_get_basename(file);
 	gchar *size = g_format_size(g_file_info_get_size(info));
 
 	gtk_list_store_append(liststore_convert, &iter);
 	gtk_list_store_set(liststore_convert, &iter,
-			COLUMN_FILENAME, filename,
+			COLUMN_FILENAME, bname,
+			COLUMN_FILENAME_FULL, filename,
 			COLUMN_SIZE, size,
 			COLUMN_SIZE_INT64, g_file_info_get_size(info),
 			COLUMN_DATE, date,
 			COLUMN_DATE_UNIX, mtime,
 			-1);
 
+	g_free(bname);
 	g_object_unref(info);
 	g_date_time_unref(dt);
 	g_free(date);
