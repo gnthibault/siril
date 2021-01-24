@@ -3,14 +3,10 @@
 #include <criterion/criterion.h>
 #endif
 
-#include "../core/siril.h"
 #include "core/siril_date.h"
-#include <stdio.h>
 
 #define INPUT_TIME    G_GUINT64_CONSTANT(637232717926133387)
 #define SER_TIME_1970 G_GUINT64_CONSTANT(621355968000000000) // 621.355.968.000.000.000 ticks between 1st Jan 0001 and 1st Jan 1970.
-
-cominfo com;	// the main data struct
 
 /**
  *  Test consistency of siril_date_time functions
@@ -33,7 +29,7 @@ int test_consistency() {
 	dt2 = g_date_time_new_now_utc();
 	ts = date_time_to_ser_timestamp(dt2);
 	dt3 = ser_timestamp_to_date_time(ts);
-	cr_expect(g_date_time_equal(dt2, dt3), "date_time  from ser are not equal");
+	cr_expect(g_date_time_equal(dt2, dt3), "date_time from ser are not equal");
 
 	/**
 	 *  Test FITS date time consistency
