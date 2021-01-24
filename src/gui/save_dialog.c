@@ -480,6 +480,9 @@ static gpointer mini_save_dialog(gpointer p) {
 					gfit.hi = USHRT_MAX;
 					gfit.lo = 0;
 				}
+			} else {
+				gfit.hi = 0;
+				gfit.lo = 0;
 			}
 			args->retval = savefits(args->filename, &gfit);
 			if (!args->retval && single_image_is_loaded()) {
