@@ -38,6 +38,7 @@ struct plate_solver_data {
 };
 
 
+gchar *search_in_catalogs(const gchar *object);
 int fill_plate_solver_structure(struct plate_solver_data *args);
 gpointer match_catalog(gpointer p);
 

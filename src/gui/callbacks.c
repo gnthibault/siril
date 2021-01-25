@@ -365,8 +365,10 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("toolbarbox"), any_image_is_loaded);
 #ifdef HAVE_WCSLIB
 	gtk_widget_set_sensitive(lookup_widget("annotate_button"), has_wcs());
+	gtk_widget_set_sensitive(lookup_widget("menu_gray_search"), has_wcs());
 #else
 	gtk_widget_set_sensitive(lookup_widget("annotate_button"), FALSE);
+	gtk_widget_set_sensitive(lookup_widget("menu_gray_search"), FALSE);
 #endif
 	gtk_widget_set_sensitive(lookup_widget("header_undo_button"), is_undo_available());
 	if (is_undo_available()) {
@@ -1014,6 +1016,8 @@ static void load_accels() {
 	add_accelerator(GTK_APPLICATION(application), "app.zoom_out", "<Primary>minus", "<Primary>KP_Subtract", (const char *)NULL);
 	add_accelerator(GTK_APPLICATION(application), "app.zoom_in", "<Primary>plus", "<Primary>KP_Add", (const char *)NULL);
 	add_accelerator(GTK_APPLICATION(application), "app.zoom_fit", "<Primary>0", (const char *)NULL);
+
+	add_accelerator(GTK_APPLICATION(application), "app.search_object", "slash", (const char *)NULL);
 }
 
 /* Initialize the combobox when loading new single_image */

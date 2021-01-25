@@ -1301,7 +1301,7 @@ enter a visible wavelength in nm</property>
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="tooltip-text" translatable="yes">Will use registration data if any are available on the registration layer, otherwise if the checkbox 'follow star movement' is checked in the registration tab, it will run with this option.</property>
-        <property name="label" translatable="yes">PSF for the sequence</property>
+        <property name="label" translatable="yes">PSF for the Sequence</property>
         <signal name="activate" handler="on_menu_gray_seqpsf_activate" swapped="no"/>
       </object>
     </child>
@@ -1312,6 +1312,15 @@ enter a visible wavelength in nm</property>
         <property name="label" translatable="yes">Pick a Star</property>
         <property name="use-underline">True</property>
         <signal name="activate" handler="on_menu_gray_pick_star_activate" swapped="no"/>
+      </object>
+    </child>
+    <child>
+      <object class="GtkMenuItem" id="menu_gray_search">
+        <property name="visible">True</property>
+        <property name="can-focus">False</property>
+        <property name="action-name">app.search_object</property>
+        <property name="label" translatable="yes">Search Object...</property>
+        <property name="use-underline">True</property>
       </object>
     </child>
     <child>
@@ -1348,7 +1357,7 @@ enter a visible wavelength in nm</property>
       <object class="GtkMenuItem" id="menu_gray_selection">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="label" translatable="yes">Selection</property>
+        <property name="label" translatable="yes">Selection...</property>
         <property name="use-underline">True</property>
         <child type="submenu">
           <object class="GtkMenu" id="menu5">
@@ -2078,6 +2087,25 @@ enter a visible wavelength in nm</property>
     <property name="upper">180</property>
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
+  </object>
+  <object class="GtkWindow" id="search_objects">
+    <property name="can-focus">False</property>
+    <property name="title" translatable="yes">Search Objects</property>
+    <property name="resizable">False</property>
+    <property name="destroy-with-parent">True</property>
+    <property name="type-hint">utility</property>
+    <property name="skip-taskbar-hint">True</property>
+    <signal name="delete-event" handler="gtk_widget_hide_on_delete" swapped="no"/>
+    <child>
+      <object class="GtkSearchEntry" id="search_objects_entry">
+        <property name="visible">True</property>
+        <property name="can-focus">True</property>
+        <property name="primary-icon-name">edit-find-symbolic</property>
+        <property name="primary-icon-activatable">False</property>
+        <property name="primary-icon-sensitive">False</property>
+        <signal name="activate" handler="on_search_objects_entry_activate" swapped="no"/>
+      </object>
+    </child>
   </object>
   <object class="GtkAdjustment" id="stack_sighigh_adjustment">
     <property name="upper">9.99</property>

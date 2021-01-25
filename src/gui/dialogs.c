@@ -54,6 +54,7 @@ static const SirilDialogEntry entries[] =
 		{"rotation_dialog", IMAGE_PROCESSING_DIALOG, FALSE, NULL},
 		{"satu_dialog", IMAGE_PROCESSING_DIALOG, TRUE, apply_satu_cancel},
 		{"SCNR_dialog", IMAGE_PROCESSING_DIALOG,  FALSE, NULL},
+		{"search_objects", SEARCH_ENTRY_DIALOG, FALSE, NULL},
 		{"settings_window", INFORMATION_DIALOG, FALSE, NULL},
 		{"seqlist_dialog", INFORMATION_DIALOG, FALSE, NULL},
 		{"split_cfa_dialog", OTHER_DIALOG, FALSE, NULL},
@@ -74,10 +75,20 @@ static SirilDialogEntry get_entry_by_id(gchar *id) {
 	return retvalue;
 }
 
+static gboolean check_escape(GtkWidget *widget, GdkEventKey *event,
+		gpointer data) {
+	if (event->keyval == GDK_KEY_Escape) {
+		gtk_widget_hide(widget);
+		return TRUE;
+	}
+	return FALSE;
+}
+
 void siril_open_dialog(gchar *id) {
 	int i;
 	gint x, y;
 	gboolean win_already_shown = FALSE;
+	GtkWindow *win = GTK_WINDOW(lookup_widget(id));
 
 	if (get_entry_by_id(id).type != INFORMATION_DIALOG) {
 		for (i = 0; i < G_N_ELEMENTS(entries); i++) {
@@ -92,7 +103,10 @@ void siril_open_dialog(gchar *id) {
 			}
 		}
 	}
-	GtkWindow *win = GTK_WINDOW(lookup_widget(id));
+	if (get_entry_by_id(id).type == SEARCH_ENTRY_DIALOG) {
+		g_signal_connect(win, "key_press_event", G_CALLBACK(check_escape), NULL);
+	}
+
 	if (win_already_shown && x >=0 && y >= 0) {
 		gtk_window_move(win, x, y);
 	} else {

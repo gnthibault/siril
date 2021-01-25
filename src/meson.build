@@ -40,6 +40,7 @@ src_files = [
   'algos/statistics.c',
   'algos/statistics_float.c',
   'algos/transform.c',
+  'algos/search_objects.c',
   'algos/siril_wcs.c',
   
   'compositing/align_rgb.c',

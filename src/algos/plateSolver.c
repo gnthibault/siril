@@ -1273,9 +1273,7 @@ gpointer match_catalog(gpointer p) {
 	return GINT_TO_POINTER(args->ret);
 }
 
-static void search_object_in_catalogs(const gchar *object) {
-	GString *string_url;
-	gchar *url, *result, *name;
+static void add_object_in_tree_view(const gchar *object) {
 	struct object obj;
 	GtkTreeView *GtkTreeViewIPS;
 
@@ -1283,28 +1281,16 @@ static void search_object_in_catalogs(const gchar *object) {
 
 	set_cursor_waiting(TRUE);
 
-	name = g_utf8_strup(object, -1);
-
-	string_url = g_string_new(CDSSESAME);
-	string_url = g_string_append(string_url, "/-oI/A?");
-	string_url = g_string_append(string_url, name);
-	url = g_string_free(string_url, FALSE);
-
-	gchar *cleaned_url = url_cleanup(url);
-
-	result = fetch_url(cleaned_url);
+	gchar *result = search_in_catalogs(object);
 	if (result) {
 		free_Platedobject();
 		parse_content_buffer(result, &obj);
 		g_signal_handlers_block_by_func(GtkTreeViewIPS, on_GtkTreeViewIPS_cursor_changed, NULL);
 		add_object_to_list();
 		g_signal_handlers_unblock_by_func(GtkTreeViewIPS, on_GtkTreeViewIPS_cursor_changed, NULL);
+		g_free(result);
 	}
 	set_cursor_waiting(FALSE);
-	g_free(cleaned_url);
-	g_free(url);
-	g_free(result);
-	g_free(name);
 }
 
 static void start_image_plate_solve() {
@@ -1404,7 +1390,7 @@ void on_GtkButtonIPS_clicked(GtkButton *button, gpointer user_data) {
 	GtkEntry *entry;
 
 	entry = GTK_ENTRY(lookup_widget("GtkSearchIPS"));
-	search_object_in_catalogs(gtk_entry_get_text(GTK_ENTRY(entry)));
+	add_object_in_tree_view(gtk_entry_get_text(GTK_ENTRY(entry)));
 }
 
 void on_buttonIPS_ok_clicked(GtkButton *button, gpointer user_data) {
@@ -1412,7 +1398,7 @@ void on_buttonIPS_ok_clicked(GtkButton *button, gpointer user_data) {
 }
 
 void on_GtkSearchIPS_activate(GtkEntry *entry, gpointer user_data) {
-	search_object_in_catalogs(gtk_entry_get_text(GTK_ENTRY(entry)));
+	add_object_in_tree_view(gtk_entry_get_text(GTK_ENTRY(entry)));
 }
 
 void on_GtkCheckButton_Mag_Limit_toggled(GtkToggleButton *button,
@@ -1435,6 +1421,31 @@ void on_GtkCheckButton_OnlineCat_toggled(GtkToggleButton *button,
  *
  * Public functions
  */
+
+gchar *search_in_catalogs(const gchar *object) {
+	GString *string_url;
+	gchar *url, *result, *name;
+
+	set_cursor_waiting(TRUE);
+
+	name = g_utf8_strup(object, -1);
+
+	string_url = g_string_new(CDSSESAME);
+	string_url = g_string_append(string_url, "/-oI/A?");
+	string_url = g_string_append(string_url, name);
+	url = g_string_free(string_url, FALSE);
+
+	gchar *cleaned_url = url_cleanup(url);
+
+	result = fetch_url(cleaned_url);
+
+	set_cursor_waiting(FALSE);
+	g_free(cleaned_url);
+	g_free(url);
+	g_free(name);
+
+	return result;
+}
 
 int fill_plate_solver_structure(struct plate_solver_data *args) {
 	double fov, px_size, scale, m;
@@ -1487,7 +1498,9 @@ void invalidate_WCS_keywords(fits *fit) {
 	if (has_wcs()) {
 		free_wcs();
 	}
-	initialize_wcs_toggle_button();
+	if (!com.headless) {
+		initialize_wcs_toggle_button();
+	}
 }
 
 /** some getters and setters */

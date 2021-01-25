@@ -20,8 +20,11 @@
 #ifndef SRC_ALGOS_ANNOTATE_H_
 #define SRC_ALGOS_ANNOTATE_H_
 
+#include "core/siril_world_cs.h"
+
 typedef struct _CatalogObjects CatalogObjects;
 
+void add_object_in_catalogue(gchar *code, SirilWorldCS *wcs);
 gchar *get_catalogue_object_code(CatalogObjects *object);
 gchar *get_catalogue_object_name(CatalogObjects *object);
 gdouble get_catalogue_object_ra(CatalogObjects *object);

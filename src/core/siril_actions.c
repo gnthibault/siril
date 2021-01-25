@@ -24,6 +24,7 @@
 #include "core/undo.h"
 #include "core/siril_update.h"
 #include "core/siril_cmd_help.h"
+#include "algos/siril_wcs.h"
 #include "gui/about_dialog.h"
 #include "gui/utils.h"
 #include "gui/callbacks.h"
@@ -222,4 +223,10 @@ void zoom_out_activate(GSimpleAction *action,
 		GVariant *parameter, gpointer user_data) {
 	point center = get_center_of_vport();
 	update_zoom(center.x, center.y, ZOOM_OUT);
+}
+
+void search_object_activate(GSimpleAction *action,
+		GVariant *parameter, gpointer user_data) {
+	if (has_wcs())
+		siril_open_dialog("search_objects");
 }

@@ -22,6 +22,7 @@
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "core/siril_world_cs.h"
 #include "core/siril_app_dirs.h"
 #include "core/siril_log.h"
 #include "gui/utils.h"
@@ -54,13 +55,14 @@ struct _CatalogObjects {
 	const gchar *catalogue;
 };
 
-static CatalogObjects *new_catalog_object(gchar *code, gdouble ra, gdouble dec, gdouble radius, gchar *name) {
+static CatalogObjects *new_catalog_object(gchar *code, gdouble ra, gdouble dec, gdouble radius, gchar *name, const gchar *catalogue) {
 	CatalogObjects *object = g_new(CatalogObjects, 1);
 	object->code = g_strdup(code);
 	object->ra = ra;
 	object->dec = dec;
 	object->radius = radius;
 	object->name = g_strdup(name);
+	object->catalogue = catalogue;
 	return object;
 }
 
@@ -187,13 +189,13 @@ static GSList *find_objects(fits *fit) {
 
 	for (GSList *l = list; l; l = l->next) {
 		CatalogObjects *cur = (CatalogObjects *)l->data;
-		if (!show_catalog(cur->catalogue)) continue;
+		if (cur->catalogue && !show_catalog(cur->catalogue)) continue;
 
 		/* Search for objects in the circle of radius defined by the image */
 		if (is_inside(x1, y1, sqrt(pow((x2 - x1), 2) + pow((y2 - y1), 2)),
 				cur->ra, cur->dec)) {
 			if (!already_exist(targets, cur)) {
-				CatalogObjects *new_object = new_catalog_object(cur->code, cur->ra, cur->dec, cur->radius, cur->name);
+				CatalogObjects *new_object = new_catalog_object(cur->code, cur->ra, cur->dec, cur->radius, cur->name, cur->catalogue);
 				targets = g_slist_prepend(targets, new_object);
 			}
 		}
@@ -203,6 +205,16 @@ static GSList *find_objects(fits *fit) {
 		targets = g_slist_reverse(targets);
 	}
 	return targets;
+}
+
+void add_object_in_catalogue(gchar *code, SirilWorldCS *wcs) {
+	if (!is_catalogue_loaded())
+		load_all_catalogues();
+
+	CatalogObjects *new_object = new_catalog_object(code,
+			siril_world_cs_get_alpha(wcs), siril_world_cs_get_delta(wcs), 0,
+			NULL, NULL);
+	siril_catalogue_list = g_slist_prepend(siril_catalogue_list, new_object);
 }
 
 gchar *get_catalogue_object_code(CatalogObjects *object) {
@@ -243,7 +255,6 @@ static gboolean show_catalog(const gchar *catalog) {
 
 	return show;
 }
-
 
 void on_annotate_button_toggled(GtkToggleToolButton *togglebutton,
 		gpointer user_data) {

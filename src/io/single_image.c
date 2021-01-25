@@ -28,6 +28,7 @@
 #include "algos/statistics.h"
 #include "algos/annotate.h"
 #include "algos/background_extraction.h"
+#include "algos/plateSolver.h"
 #include "gui/image_interactions.h"
 #include "gui/image_display.h"
 #include "gui/utils.h"
@@ -57,7 +58,6 @@ void close_single_image() {
 	 */
 	if (!com.headless) {
 		siril_close_preview_dialogs();
-		initialize_wcs_toggle_button();
 	}
 	free_image_data();
 	undo_flush();
@@ -73,6 +73,7 @@ void free_image_data() {
 	if (!single_image_is_loaded() && sequence_is_loaded())
 		save_stats_from_fit(&gfit, &com.seq, com.seq.current);
 	clearfits(&gfit);
+	invalidate_WCS_keywords(&gfit);
 	if (!com.headless) {
 		clear_stars_list();
 		delete_selected_area();
