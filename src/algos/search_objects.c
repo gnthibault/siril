@@ -38,11 +38,11 @@ static gboolean parse_buffer(char *buffer) {
 	nargs = g_strv_length(token);
 
 	while (i < nargs) {
-		if (g_str_has_prefix(token[i], "%I.0 ")) {
-				gchar *name = g_strstr_len(token[i], strlen(token[i]), "%I.0 ");
-				realname = g_strdup(name + 5);
+		if (g_str_has_prefix(token[i], "%I.0 ") && !realname) {
+			gchar *name = g_strstr_len(token[i], strlen(token[i]), "%I.0 ");
+			realname = g_strdup(name + 5);
 
-		} else if (g_str_has_prefix (token[i], "%J ")) {
+		} else if (g_str_has_prefix (token[i], "%J ") && !world_cs) {
 			fields = g_strsplit(token[i], " ", -1);
 			sscanf(fields[1], "%lf", &center.x);
 			sscanf(fields[2], "%lf", &center.y);
