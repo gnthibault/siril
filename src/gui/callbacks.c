@@ -364,11 +364,9 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("header_precision_button"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("toolbarbox"), any_image_is_loaded);
 #ifdef HAVE_WCSLIB
-	gtk_widget_set_sensitive(lookup_widget("annotate_button"), has_wcs());
-	gtk_widget_set_sensitive(lookup_widget("menu_gray_search"), has_wcs());
+	gtk_widget_set_sensitive(lookup_widget("annotate_button"), any_image_is_loaded && has_wcs());
 #else
 	gtk_widget_set_sensitive(lookup_widget("annotate_button"), FALSE);
-	gtk_widget_set_sensitive(lookup_widget("menu_gray_search"), FALSE);
 #endif
 	gtk_widget_set_sensitive(lookup_widget("header_undo_button"), is_undo_available());
 	if (is_undo_available()) {

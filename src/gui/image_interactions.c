@@ -241,6 +241,11 @@ static void do_popup_graymenu(GtkWidget *my_widget, GdkEventButton *event) {
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_pick_star"), selected);
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_crop"), selected && is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_crop_seq"), selected && sequence_is_loaded());
+#ifdef HAVE_WCSLIB
+	gtk_widget_set_sensitive(lookup_widget("menu_gray_search"), has_wcs());
+#else
+	gtk_widget_set_sensitive(lookup_widget("menu_gray_search"), FALSE);
+#endif
 
 	// selection submenu
 	double original_ratio = (double)gfit.rx / (double)gfit.ry;
