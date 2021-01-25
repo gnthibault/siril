@@ -22,6 +22,7 @@
 #include "core/siril_world_cs.h"
 #include "gui/dialogs.h"
 #include "gui/utils.h"
+#include "gui/image_display.h"
 #include "gui/progress_and_log.h"
 #include "algos/plateSolver.h"
 #include "algos/annotate.h"
@@ -69,6 +70,7 @@ void on_search_objects_entry_activate(GtkEntry *entry, gpointer user_data) {
 			if (!gtk_toggle_tool_button_get_active(button)) {
 				gtk_toggle_tool_button_set_active(button, TRUE);
 			}
+			redraw(com.cvport, REMAP_NONE);
 			gtk_entry_set_text(GTK_ENTRY(entry), "");
 			gtk_widget_hide(lookup_widget("search_objects"));
 		}

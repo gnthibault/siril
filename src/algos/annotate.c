@@ -78,22 +78,23 @@ gboolean is_inside(int circle_x, int circle_y, int rad, int x, int y) {
 
 static gboolean already_exist(GSList *list, CatalogObjects *obj) {
 	/* we exclude from the check the star catalogue */
-	if (g_strcmp0(obj->catalogue, "stars.txt")) {
-		for (GSList *l = list; l; l = l->next) {
+	if (!g_strcmp0(obj->catalogue, "stars.txt") || (obj->catalogue == NULL)) {
+		return FALSE;
+	}
+	for (GSList *l = list; l; l = l->next) {
+		gdouble cur_dec = ((CatalogObjects*) l->data)->dec;
+		gdouble cur_ra = ((CatalogObjects*) l->data)->ra;
 
-			gdouble cur_dec = ((CatalogObjects*) l->data)->dec;
-			gdouble cur_ra = ((CatalogObjects*) l->data)->ra;
+		double minDec = cur_dec - TOLERANCE;
+		double maxDec = cur_dec + TOLERANCE;
 
-			double minDec = cur_dec - TOLERANCE;
-			double maxDec = cur_dec + TOLERANCE;
+		double minRa = cur_ra - TOLERANCE;
+		double maxRa = cur_ra + TOLERANCE;
 
-			double minRa = cur_ra - TOLERANCE;
-			double maxRa = cur_ra + TOLERANCE;
-
-			/* compare */
-			if (obj->dec > minDec && obj->dec < maxDec && obj->ra > minRa && obj->ra < maxRa) {
-				return TRUE;
-			}
+		/* compare */
+		if (obj->dec > minDec && obj->dec < maxDec && obj->ra > minRa
+				&& obj->ra < maxRa) {
+			return TRUE;
 		}
 	}
 	return FALSE;
@@ -214,7 +215,8 @@ void add_object_in_catalogue(gchar *code, SirilWorldCS *wcs) {
 	CatalogObjects *new_object = new_catalog_object(code,
 			siril_world_cs_get_alpha(wcs), siril_world_cs_get_delta(wcs), 0,
 			NULL, NULL);
-	siril_catalogue_list = g_slist_prepend(siril_catalogue_list, new_object);
+	/* We need to add it at the end of the list, if not double rejection could reject it */
+	siril_catalogue_list = g_slist_append(siril_catalogue_list, new_object);
 }
 
 gchar *get_catalogue_object_code(CatalogObjects *object) {
