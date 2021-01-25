@@ -48,4 +48,6 @@ void fwhm_to_arcsec_if_needed(fits*, fitted_PSF*);
 void fwhm_to_pixels(fitted_PSF *result);
 double convert_single_fwhm_to_pixels(double fwhm, double s);
 
+fitted_PSF *duplicate_psf(fitted_PSF *);
+
 #endif

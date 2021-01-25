@@ -1536,14 +1536,17 @@ gboolean end_seqpsf(gpointer p) {
 	int layer = args->layer_for_partial;
 	int photometry_index = 0;
 	gboolean displayed_warning = FALSE, write_to_regdata = FALSE;
-	gboolean dont_stop_thread;
+	gboolean duplicate_for_regdata = FALSE, dont_stop_thread;
 
 	if (args->retval)
 		goto proper_ending;
 
 	if (spsfargs->for_registration || !seq->regparam[layer]) {
+		if (!spsfargs->for_registration && !seq->regparam[layer])
+			duplicate_for_regdata = TRUE;
 		check_or_allocate_regparam(seq, layer);
 		write_to_regdata = TRUE;
+		seq->needs_saving = TRUE;
 	}
 	if (!spsfargs->for_registration) {
 		int i;
@@ -1568,7 +1571,8 @@ gboolean end_seqpsf(gpointer p) {
 		seq->exposure = data->exposure;
 
 		if (write_to_regdata) {
-			seq->regparam[layer][data->image_index].fwhm_data = data->psf;
+			seq->regparam[layer][data->image_index].fwhm_data =
+				duplicate_for_regdata ? duplicate_psf(data->psf) : data->psf;
 			if (data->psf) {
 				seq->regparam[layer][data->image_index].fwhm = data->psf->fwhmx;
 				seq->regparam[layer][data->image_index].roundness =
@@ -1580,12 +1584,6 @@ gboolean end_seqpsf(gpointer p) {
 		if (!spsfargs->for_registration) {
 			seq->photometry[photometry_index][data->image_index] = data->psf;
 		}
-	}
-
-	// for registration use: store data in seq->regparam
-	if (spsfargs->for_registration || !seq->regparam[layer]) {
-		// the data put in regparam if !for_registration is not yet saved
-		seq->needs_saving = TRUE;
 	}
 
 	if (com.seq.needs_saving)

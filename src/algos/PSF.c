@@ -772,3 +772,15 @@ double convert_single_fwhm_to_pixels(double fwhm, double s) {
 	return sqrt(s * 0.5) * _2_SQRT_2_LOG2;
 }
 
+fitted_PSF *duplicate_psf(fitted_PSF *psf) {
+	if (!psf)
+		return NULL;
+	fitted_PSF *new_psf = malloc(sizeof(fitted_PSF));
+	memcpy(new_psf, psf, sizeof(fitted_PSF));
+	if (psf->phot) {
+		new_psf->phot = malloc(sizeof(photometry));
+		memcpy(new_psf->phot, psf->phot, sizeof(photometry));
+	}
+	return new_psf;
+}
+
