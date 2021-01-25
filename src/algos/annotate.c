@@ -245,6 +245,15 @@ void free_object(CatalogObjects *object) {
 	g_free(object);
 }
 
+void force_to_refresh_catalogue_list() {
+	if (has_wcs()) {
+		if (com.found_object) {
+			g_slist_free_full(com.found_object, (GDestroyNotify) free_object);
+		}
+		com.found_object = find_objects(&gfit);
+	}
+}
+
 /*** UI callbacks **/
 
 static gboolean show_catalog(const gchar *catalog) {

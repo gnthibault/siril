@@ -69,8 +69,10 @@ void on_search_objects_entry_activate(GtkEntry *entry, gpointer user_data) {
 			GtkToggleToolButton *button = GTK_TOGGLE_TOOL_BUTTON(lookup_widget("annotate_button"));
 			if (!gtk_toggle_tool_button_get_active(button)) {
 				gtk_toggle_tool_button_set_active(button, TRUE);
+			} else {
+				force_to_refresh_catalogue_list();
+				redraw(com.cvport, REMAP_NONE);
 			}
-			redraw(com.cvport, REMAP_NONE);
 			gtk_entry_set_text(GTK_ENTRY(entry), "");
 			gtk_widget_hide(lookup_widget("search_objects"));
 		}

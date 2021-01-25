@@ -30,6 +30,7 @@ gchar *get_catalogue_object_name(CatalogObjects *object);
 gdouble get_catalogue_object_ra(CatalogObjects *object);
 gdouble get_catalogue_object_dec(CatalogObjects *object);
 gdouble get_catalogue_object_radius(CatalogObjects *object);
+void force_to_refresh_catalogue_list();
 void free_object(CatalogObjects *object);
 void initialize_wcs_toggle_button();
 
