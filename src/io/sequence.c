@@ -1648,6 +1648,17 @@ int seqpsf(sequence *seq, int layer, gboolean for_registration, gboolean regall,
 
 	args->partial_image = TRUE;
 	memcpy(&args->area, &com.selection, sizeof(rectangle));
+	if (seq->regparam[layer] && seq->current >= 0) {
+		args->area.x += seq->regparam[layer][seq->current].shiftx;
+		args->area.y -= seq->regparam[layer][seq->current].shifty;
+		if (args->area.x < 0 || args-> area.x > seq->rx - args->area.w ||
+				args->area.y < 0 || args->area.y > seq->ry - args->area.h) {
+			siril_log_color_message(_("This area is outside of the reference image. Please select the reference image to select another star.\n"), "red");
+			free(args);
+			free(spsfargs);
+			return 1;
+		}
+	}
 	args->layer_for_partial = layer;
 	args->regdata_for_partial = framing == REGISTERED_FRAME;
 	args->get_photometry_data_for_partial = !for_registration;
