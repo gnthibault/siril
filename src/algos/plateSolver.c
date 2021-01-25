@@ -445,6 +445,7 @@ static char *fetch_url(const char *url) {
 	curl_easy_setopt(curl, CURLOPT_VERBOSE, 0);
 	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cbk_curl);
 	curl_easy_setopt(curl, CURLOPT_WRITEDATA, content);
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, PACKAGE_STRING);
 
 	if (curl_easy_perform(curl) == CURLE_OK) {
 		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
