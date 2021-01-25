@@ -1017,7 +1017,7 @@ static void load_accels() {
 	add_accelerator(GTK_APPLICATION(application), "app.zoom_in", "<Primary>plus", "<Primary>KP_Add", (const char *)NULL);
 	add_accelerator(GTK_APPLICATION(application), "app.zoom_fit", "<Primary>0", (const char *)NULL);
 
-	add_accelerator(GTK_APPLICATION(application), "app.search_object", "slash", (const char *)NULL);
+	add_accelerator(GTK_APPLICATION(application), "app.search_object", "<Primary>slash", (const char *)NULL);
 }
 
 /* Initialize the combobox when loading new single_image */
