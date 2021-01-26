@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-25 15:58+0100\n"
+"POT-Creation-Date: 2021-01-26 10:22+0100\n"
 "PO-Revision-Date: 2020-04-17 22:50+0100\n"
 "Last-Translator: David Vazquez Garcia <davidvazquezgijon@gmail.com>\n"
 "Language-Team: \n"
@@ -298,11 +298,11 @@ msgstr "Patrón de alineamiento (planetario/espacio profundo)"
 msgid "One star registration (deep-sky)"
 msgstr "Registro de una estrella (espacio profundo)"
 
-#: src/gui/siril3.glade:1681 src/gui/callbacks.c:745
+#: src/gui/siril3.glade:1681 src/gui/callbacks.c:743
 msgid "16 bits"
 msgstr "16 bits"
 
-#: src/gui/siril3.glade:1689 src/gui/siril3.glade:7520 src/gui/callbacks.c:745
+#: src/gui/siril3.glade:1689 src/gui/siril3.glade:7520 src/gui/callbacks.c:743
 msgid "32 bits"
 msgstr "32 bits"
 
@@ -431,7 +431,7 @@ msgstr "Composición RGB..."
 
 #: src/gui/siril3.glade:2093
 #, fuzzy
-msgid "Search Objects"
+msgid "Search Object"
 msgstr "Buscar secuencias"
 
 #: src/gui/siril3.glade:2125
@@ -446,7 +446,7 @@ msgstr "archivo rojo actual"
 #: src/gui/siril3.glade:2302 src/gui/siril3.glade:9525
 #: src/gui/siril3.glade:10892 src/gui/siril3.glade:17064
 #: src/gui/siril3.glade:18374 src/compositing/compositing.c:479
-#: src/gui/callbacks.c:63 src/gui/callbacks.c:935
+#: src/gui/callbacks.c:63 src/gui/callbacks.c:933
 msgid "Red"
 msgstr "Rojo"
 
@@ -5221,7 +5221,7 @@ msgstr "Cambiar el directorio de trabajo"
 #: src/gui/siril-shortcuts.ui:156
 #, fuzzy
 msgctxt "shortcut window"
-msgid "Search objects in image"
+msgid "Search an object in the image"
 msgstr "Selección de imagen"
 
 #: src/gui/siril-shortcuts.ui:164
@@ -5279,7 +5279,7 @@ msgctxt "shortcut window"
 msgid "Quit the application"
 msgstr "Salir de la aplicación"
 
-#: src/algos/annotate.c:114 src/core/command.c:1798
+#: src/algos/annotate.c:115 src/core/command.c:1798
 #: src/core/command_line_processor.c:344 src/gui/photometric_cc.c:602
 #: src/gui/script_menu.c:165 src/main.c:277
 #, c-format
@@ -5654,102 +5654,102 @@ msgstr ""
 "Precaución: no hay suficientes píxeles en el anillo del cielo. Necesita "
 "realizar una selección mayor.\n"
 
-#: src/algos/plateSolver.c:474
+#: src/algos/plateSolver.c:475
 #, c-format
 msgid "Fetch failed with code %ld for URL %s\n"
 msgstr "La búsqueda ha fallado con el código %ld en la URL %s\n"
 
-#: src/algos/plateSolver.c:475 src/filters/fft.c:551 src/filters/fft.c:557
+#: src/algos/plateSolver.c:476 src/filters/fft.c:551 src/filters/fft.c:557
 #: src/filters/fft.c:578 src/gui/open_dialog.c:330 src/gui/plot.c:376
 #: src/gui/preferences.c:492 src/gui/PSF_list.c:218 src/gui/save_dialog.c:381
 #: src/io/single_image.c:161
 msgid "Error"
 msgstr "Error"
 
-#: src/algos/plateSolver.c:495 src/core/siril_update.c:187
+#: src/algos/plateSolver.c:496 src/core/siril_update.c:187
 #, fuzzy, c-format
 msgid "Error loading url: %s: %s\n"
 msgstr "Error en línea %d: '%s'.\n"
 
 #. Matching information
-#: src/algos/plateSolver.c:793 src/registration/global.c:555
+#: src/algos/plateSolver.c:794 src/registration/global.c:555
 #, fuzzy, c-format
 msgid "%d pair match.\n"
 msgid_plural "%d pair matches.\n"
 msgstr[0] "Par %d coincide.\n"
 msgstr[1] "Par %d coincide.\n"
 
-#: src/algos/plateSolver.c:798 src/registration/global.c:560
+#: src/algos/plateSolver.c:799 src/registration/global.c:560
 #, c-format
 msgid "Inliers:%*.3f\n"
 msgstr "Inliers: %*.3f\n"
 
 #. we assume square pixels
-#: src/algos/plateSolver.c:804
+#: src/algos/plateSolver.c:805
 #, c-format
 msgid "Resolution:%*.3lf arcsec/px\n"
 msgstr "Resolución:%*.3lf arcsec/px\n"
 
-#: src/algos/plateSolver.c:818
+#: src/algos/plateSolver.c:819
 #, c-format
 msgid "Rotation:%+*.2lf deg %s\n"
 msgstr "Rotación:%+*.2lf deg %s\n"
 
-#: src/algos/plateSolver.c:818
+#: src/algos/plateSolver.c:819
 msgid "(flipped)"
 msgstr "(volteado)"
 
-#: src/algos/plateSolver.c:832
+#: src/algos/plateSolver.c:833
 #, c-format
 msgid "Focal:%*.2lf mm\n"
 msgstr "Focal:%*.2lf mm\n"
 
-#: src/algos/plateSolver.c:833
+#: src/algos/plateSolver.c:834
 #, c-format
 msgid "Pixel size:%*.2lf µm\n"
 msgstr "Tamaó de píxel:%*.2lf µm\n"
 
-#: src/algos/plateSolver.c:836
+#: src/algos/plateSolver.c:837
 #, c-format
 msgid "Field of view:    %s x %s\n"
 msgstr "Profundidad de campo: %s x %s\n"
 
-#: src/algos/plateSolver.c:840
+#: src/algos/plateSolver.c:841
 #, fuzzy, c-format
 msgid "Image center: alpha: %s, delta: %s\n"
 msgstr "Centro de imagen: RA: %s, DEC: %s\n"
 
-#: src/algos/plateSolver.c:888
+#: src/algos/plateSolver.c:889
 #, c-format
 msgid "Catalog NOMAD size: %d objects\n"
 msgstr "Tamaño del catálogo NOMAD: %d objetos\n"
 
-#: src/algos/plateSolver.c:925
+#: src/algos/plateSolver.c:926
 #, c-format
 msgid "Catalog TYCHO-2 size: %d objects\n"
 msgstr "Tamaño del catálogo TYCHO-2: %d objetos\n"
 
-#: src/algos/plateSolver.c:966
+#: src/algos/plateSolver.c:967
 #, c-format
 msgid "Catalog Gaia DR2 size: %d objects\n"
 msgstr "Tamaño del catálogo Gaia DR2: %d objetos\n"
 
-#: src/algos/plateSolver.c:1007
+#: src/algos/plateSolver.c:1008
 #, c-format
 msgid "Catalog PPMXL size: %d objects\n"
 msgstr "Tamaño del catálogo PPMXL: %d objetos\n"
 
-#: src/algos/plateSolver.c:1048
+#: src/algos/plateSolver.c:1049
 #, c-format
 msgid "Catalog Bright stars size: %d objects\n"
 msgstr "Tamaño del catálogo Bright Stars: %d objetos\n"
 
-#: src/algos/plateSolver.c:1089
+#: src/algos/plateSolver.c:1090
 #, c-format
 msgid "Catalog APASS size: %d objects\n"
 msgstr "Tamaño del catálogo APASS: %d objetos\n"
 
-#: src/algos/plateSolver.c:1143
+#: src/algos/plateSolver.c:1144
 msgid ""
 "Plate Solving failed. The image could not be aligned with the reference "
 "stars.\n"
@@ -5757,7 +5757,7 @@ msgstr ""
 "Resolución de placas fallida. La imagen no puede alinearse con las estrellas "
 "de referencia.\n"
 
-#: src/algos/plateSolver.c:1146
+#: src/algos/plateSolver.c:1147
 msgid ""
 "This is usually because the initial parameters (pixel size, focal length, "
 "initial coordinates) are too far from the real metadata of the image.\n"
@@ -5772,11 +5772,11 @@ msgstr ""
 "Finalmente, ten en cuenta que el algoritmo de resolución de platos sólo "
 "puede aplicarse a imágenes lineales."
 
-#: src/algos/plateSolver.c:1165
+#: src/algos/plateSolver.c:1166
 msgid "Flipping image and updating astrometry data.\n"
 msgstr ""
 
-#: src/algos/plateSolver.c:1201
+#: src/algos/plateSolver.c:1202
 #, c-format
 msgid ""
 "There are not enough stars picked in the image. At least %d stars are needed."
@@ -5784,37 +5784,37 @@ msgstr ""
 "No hay suficientes estrellas seleccionadas en la imagen. Se necesitan como "
 "mínimo %d estrellas."
 
-#: src/algos/plateSolver.c:1382
+#: src/algos/plateSolver.c:1383
 msgid "There are no keywords stored in the FITS header.\n"
 msgstr "No se han encontrado palabras clave en la cabecera FITS.\n"
 
-#: src/algos/plateSolver.c:1383
+#: src/algos/plateSolver.c:1384
 msgid "No metadata"
 msgstr "Sin metadatos"
 
-#: src/algos/plateSolver.c:1461
+#: src/algos/plateSolver.c:1462
 #, fuzzy
 msgid "No coordinates"
 msgstr "Coordenadas centrales incorrectas"
 
-#: src/algos/plateSolver.c:1461
+#: src/algos/plateSolver.c:1462
 #, fuzzy
 msgid "Please enter object coordinates."
 msgstr "Coordenadas centrales incorrectas"
 
-#: src/algos/plateSolver.c:1470
+#: src/algos/plateSolver.c:1471
 msgid "No catalog"
 msgstr ""
 
-#: src/algos/plateSolver.c:1470
+#: src/algos/plateSolver.c:1471
 msgid "Cannot download the online star catalog."
 msgstr ""
 
-#: src/algos/plateSolver.c:1486
+#: src/algos/plateSolver.c:1487
 msgid "Astrometric solution detected"
 msgstr "Solución astrométrica detectada"
 
-#: src/algos/plateSolver.c:1487
+#: src/algos/plateSolver.c:1488
 msgid ""
 "The astrometric solution contained in the image will be erased by the "
 "geometric transformation and no undo will be possible."
@@ -5822,7 +5822,7 @@ msgstr ""
 "La solución astronométrica que contiene la imagen se borrará con la "
 "transformación geométrica y no será posible deshacer."
 
-#: src/algos/plateSolver.c:1489
+#: src/algos/plateSolver.c:1490
 #, fuzzy
 msgid "Process"
 msgstr "procesador"
@@ -8494,61 +8494,61 @@ msgstr ""
 "Este nombre de secuencia ya existe. Por favor cambie el nombre antes de "
 "convertir."
 
-#: src/gui/callbacks.c:375
+#: src/gui/callbacks.c:373
 #, c-format
 msgid "Undo: \"%s\""
 msgstr ""
 
-#: src/gui/callbacks.c:379
+#: src/gui/callbacks.c:377
 #, fuzzy
 msgid "Nothing to undo"
 msgstr "Nada que ajustar, no hay desbordamiento\n"
 
-#: src/gui/callbacks.c:382
+#: src/gui/callbacks.c:380
 #, c-format
 msgid "Redo: \"%s\""
 msgstr ""
 
-#: src/gui/callbacks.c:386
+#: src/gui/callbacks.c:384
 msgid "Nothing to redo"
 msgstr ""
 
-#: src/gui/callbacks.c:606 src/gui/photometric_cc.c:525
+#: src/gui/callbacks.c:604 src/gui/photometric_cc.c:525
 msgid "red"
 msgstr "rojo"
 
-#: src/gui/callbacks.c:608 src/gui/photometric_cc.c:525
+#: src/gui/callbacks.c:606 src/gui/photometric_cc.c:525
 msgid "green"
 msgstr "verde"
 
-#: src/gui/callbacks.c:610 src/gui/photometric_cc.c:525
+#: src/gui/callbacks.c:608 src/gui/photometric_cc.c:525
 msgid "blue"
 msgstr "azul"
 
-#: src/gui/callbacks.c:612
+#: src/gui/callbacks.c:610
 msgid "rgb"
 msgstr "rgb"
 
-#: src/gui/callbacks.c:650
+#: src/gui/callbacks.c:648
 #, c-format
 msgid "W: %dpx H: %dpx ratio: %.4f"
 msgstr ""
 
-#: src/gui/callbacks.c:667
+#: src/gui/callbacks.c:665
 #, fuzzy, c-format
 msgid "fwhm: %.2f, r: %.2f"
 msgstr "fwhm = %2f, r = %.2f"
 
-#: src/gui/callbacks.c:669 src/gui/callbacks.c:671
+#: src/gui/callbacks.c:667 src/gui/callbacks.c:669
 #, fuzzy, c-format
 msgid "fwhm: N/A"
 msgstr "Mem: N/A"
 
-#: src/gui/callbacks.c:709
+#: src/gui/callbacks.c:707
 msgid "Cannot convert a sequence file"
 msgstr "No se puede convertir un fichero de secuencia"
 
-#: src/gui/callbacks.c:710
+#: src/gui/callbacks.c:708
 msgid ""
 "A sequence file cannot be converted to 32 bits. This operation can only be "
 "done on a single file."
@@ -8556,11 +8556,11 @@ msgstr ""
 "Un fichero de secuencia no se puede convertir a 32 bits. Esta operación sólo "
 "se puede hacer con un único ficheros."
 
-#: src/gui/callbacks.c:715
+#: src/gui/callbacks.c:713
 msgid "Precision loss"
 msgstr "Precisión perdida"
 
-#: src/gui/callbacks.c:716
+#: src/gui/callbacks.c:714
 msgid ""
 "Converting the image from 32 bits to 16 bits may lead to a loss of numerical "
 "accuracy. Getting back to 32 bits will not recover this loss.\n"
@@ -8570,38 +8570,38 @@ msgstr ""
 "precisión numérica. Volver a 32 bits no recuperará esta pérdida.\n"
 "¿Está seguro de que quiere convertir sus datos?"
 
-#: src/gui/callbacks.c:718
+#: src/gui/callbacks.c:716
 msgid "Convert to 16 bits"
 msgstr ""
 
-#: src/gui/callbacks.c:771
+#: src/gui/callbacks.c:769
 msgid "Unassigned"
 msgstr "Sin asignar"
 
-#: src/gui/callbacks.c:795
+#: src/gui/callbacks.c:793
 #, c-format
 msgid "%d: not affected yet"
 msgstr "%d; sin afectar por el momento"
 
-#: src/gui/callbacks.c:932
+#: src/gui/callbacks.c:930
 msgid "B&W"
 msgstr "Blanco y Negro"
 
-#: src/gui/callbacks.c:1168
+#: src/gui/callbacks.c:1166
 msgid "This binning is not handled yet\n"
 msgstr "Esta unión todavía no se maneja\n"
 
-#: src/gui/callbacks.c:1271
+#: src/gui/callbacks.c:1269
 #, fuzzy, c-format
 msgid "Default FITS extension is set to %s\n"
 msgstr "Extensión FITS desconocida: %s\n"
 
-#: src/gui/callbacks.c:1285
+#: src/gui/callbacks.c:1283
 #, fuzzy, c-format
 msgid "Welcome to %s"
 msgstr "Bienvenido a %s v%s\n"
 
-#: src/gui/callbacks.c:1288
+#: src/gui/callbacks.c:1286
 msgid ""
 "Hello, this is the first time you use this new version of Siril. Please, "
 "have a seat and take the time to watch the short introduction we have "
@@ -8609,37 +8609,37 @@ msgid ""
 "the Miscellaneous tab of the preferences dialog box."
 msgstr ""
 
-#: src/gui/callbacks.c:1291
+#: src/gui/callbacks.c:1289
 #, fuzzy
 msgid "See Introduction"
 msgstr "Interpolación: "
 
-#: src/gui/callbacks.c:1554
+#: src/gui/callbacks.c:1552
 msgid "Closing application"
 msgstr "Cerrando aplicación"
 
-#: src/gui/callbacks.c:1555
+#: src/gui/callbacks.c:1553
 msgid "Are you sure you want to quit?"
 msgstr "¿Está seguro de que quiere salir?"
 
-#: src/gui/callbacks.c:1555
+#: src/gui/callbacks.c:1553
 msgid "Exit"
 msgstr ""
 
-#: src/gui/callbacks.c:1732
+#: src/gui/callbacks.c:1730
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Seleccionada %s secuencia %s..."
 
-#: src/gui/callbacks.c:1794
+#: src/gui/callbacks.c:1792
 msgid "Searching for sequences in the current working directory..."
 msgstr "Buscando secuencias en el directorio de trabajo actual..."
 
-#: src/gui/callbacks.c:1850
+#: src/gui/callbacks.c:1848
 msgid "RGB alignment (DFT)"
 msgstr ""
 
-#: src/gui/callbacks.c:1855
+#: src/gui/callbacks.c:1853
 msgid "RGB alignment (PSF)"
 msgstr ""
 
@@ -8803,12 +8803,12 @@ msgstr ""
 "tiene %d).\n"
 
 #. left click
-#: src/gui/image_interactions.c:464
+#: src/gui/image_interactions.c:469
 #, fuzzy
 msgid "Only for visualization"
 msgstr "normalización"
 
-#: src/gui/image_interactions.c:465 src/gui/siril_intro.c:36
+#: src/gui/image_interactions.c:470 src/gui/siril_intro.c:36
 #, fuzzy
 msgid ""
 "The RGB tab is only for visualization. Operations must be done on R, G, and "
