@@ -54,7 +54,7 @@ int convert_catalog_coords(const char *fileA, SirilWorldCS *world_cs, GFile *out
 	/* now walk through the file and do the dirty work */
 	if (proc_star_file(fileA, RACOL, DECCOL, ra, dec, out, doASEC) != SH_SUCCESS) {
 		shError("can't process data from file %s", fileA);
-		exit(1);
+		return SH_GENERIC_ERROR;
 	}
 
 	return (0);
@@ -120,6 +120,17 @@ int doASEC /* I: if > 0, write offsets in arcsec */
 	//cent_ra_rad = central_ra*DEGTORAD;
 	cent_dec_rad = central_dec * DEGTORAD;
 
+	GOutputStream *output_stream = (GOutputStream *)g_file_append_to(file_out, G_FILE_CREATE_NONE, NULL, &error);
+	if (!output_stream) {
+		if (error != NULL) {
+			siril_debug_print("proc_star_file: can't open file %s for input. [%s]", file, error->message);
+			g_clear_error(&error);
+			g_object_unref(input_stream);
+			g_object_unref(file_in);
+			return SH_GENERIC_ERROR;
+		}
+	}
+
 	GDataInputStream *data_input = g_data_input_stream_new(input_stream);
 	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL, NULL, NULL))) {
 
@@ -149,8 +160,7 @@ int doASEC /* I: if > 0, write offsets in arcsec */
 						&(col[26][0]), &(col[27][0]), &(col[28][0]),
 						&(col[29][0]));
 		if (last_column > ncol) {
-			shError(
-					"proc_star_file: not enough entries in following line; skipping");
+			shError("proc_star_file: not enough entries in following line; skipping");
 			shError("  %s", line);
 			g_free(line);
 			continue;
@@ -241,17 +251,9 @@ int doASEC /* I: if > 0, write offsets in arcsec */
 		}
 		gchar *newline = g_strjoinv(" ", token);
 		gchar *output_line = g_strconcat (newline, "\n", NULL);
-		GOutputStream *output_stream = (GOutputStream *)g_file_append_to(file_out, G_FILE_CREATE_NONE, NULL, &error);
-		if (output_stream) {
-			g_output_stream_write_all(output_stream, output_line, strlen(output_line), NULL, NULL, NULL);
-		} else {
-			if (error != NULL) {
-				shError("proc_star_file: can't open file %s for input", file);
-				g_clear_error(&error);
-			}
-		}
 
-		g_object_unref(output_stream);
+		g_output_stream_write_all(output_stream, output_line, strlen(output_line), NULL, NULL, NULL);
+
 		g_strfreev(token);
 		g_free(newline);
 		g_free(output_line);
@@ -260,6 +262,7 @@ int doASEC /* I: if > 0, write offsets in arcsec */
 
 	g_object_unref(data_input);
 	g_object_unref(input_stream);
+	g_object_unref(output_stream);
 	g_object_unref(file_in);
 	return (SH_SUCCESS);
 }
