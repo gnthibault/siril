@@ -968,7 +968,6 @@ struct s_star **matched_list_B
 	*num_matches = num_stars_J;
 
 #ifdef DEBUG
-	char filename[100];
 	/*
 	 * now write the output into ASCII text files, each of which starts
 	 * with 'basename', but has a different extension.
@@ -2787,6 +2786,7 @@ TRANS *trans /* O: place solved coefficients into this */
 	s_star *sa, *sb;
 	s_star *a_prime; /* will hold transformed version of stars in set A */
 
+
 	/*
 	 * set some variables depending on the order of the fit to be
 	 * performed.
@@ -4401,19 +4401,21 @@ TRANS *trans /* O: place solved coefficients into this */
 		g_assert(winner_index_B[i] < num_stars_B);
 		s2 = &(star_array_B[winner_index_B[i]]);
 
-		/* elements of the matrix */
-		sum += 1.0;
-		sumx1 += s1->x;
-		sumx2 += s2->x;
-		sumy1 += s1->y;
-		sumy2 += s2->y;
-		sumx1sq += s1->x * s1->x;
-		sumy1sq += s1->y * s1->y;
-		sumx1x2 += s1->x * s2->x;
-		sumx1y1 += s1->x * s1->y;
-		sumx1y2 += s1->x * s2->y;
-		sumy1x2 += s1->y * s2->x;
-		sumy1y2 += s1->y * s2->y;
+		if (winner_index_A[i] != -1 && winner_index_B[i] != -1) {
+			/* elements of the matrix */
+			sum += 1.0;
+			sumx1 += s1->x;
+			sumx2 += s2->x;
+			sumy1 += s1->y;
+			sumy2 += s2->y;
+			sumx1sq += s1->x * s1->x;
+			sumy1sq += s1->y * s1->y;
+			sumx1x2 += s1->x * s2->x;
+			sumx1y1 += s1->x * s1->y;
+			sumx1y2 += s1->x * s2->y;
+			sumy1x2 += s1->y * s2->x;
+			sumy1y2 += s1->y * s2->y;
+		}
 
 	}
 
