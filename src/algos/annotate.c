@@ -127,13 +127,13 @@ static GSList *load_catalog(const gchar *catalogue) {
 		}
 		gchar **token = g_strsplit(line, "\t", -1);
 
-		CatalogObjects *object = g_new(CatalogObjects, 1);
-		object->code = g_strdup(token[0]);
-		object->ra = g_ascii_strtod(token[1], NULL) * 15.0;
-		object->dec = g_strcmp0(token[2], "-") ? g_ascii_strtod(token[3], NULL) : g_ascii_strtod(token[3], NULL) * -1.0;
-		object->radius = g_ascii_strtod(token[4], NULL) * 0.5;
-		object->name = g_strdup(token[6]);
-		object->catalogue = catalogue;
+		CatalogObjects *object = new_catalog_object(
+				g_strdup(token[0]),
+				g_ascii_strtod(token[1], NULL) * 15.0,
+				g_strcmp0(token[2], "-") ? g_ascii_strtod(token[3], NULL) :	g_ascii_strtod(token[3], NULL) * -1.0,
+				g_ascii_strtod(token[4], NULL) * 0.5,
+				g_strdup(token[6]),
+				catalogue);
 
 		list = g_slist_prepend(list, (gpointer) object);
 
