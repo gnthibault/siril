@@ -66,7 +66,7 @@ static CatalogObjects *new_catalog_object(gchar *code, gdouble ra, gdouble dec, 
 	return object;
 }
 
-gboolean is_inside(int circle_x, int circle_y, int rad, int x, int y) {
+gboolean is_inside(double circle_x, double circle_y, double rad, double x, double y) {
 	// Compare radius of circle with distance
 	// of its center from given point
 	if ((x - circle_x) * (x - circle_x) + (y - circle_y) * (y - circle_y)

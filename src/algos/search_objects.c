@@ -33,6 +33,7 @@ static gboolean parse_buffer(char *buffer) {
 	point center;
 	int nargs, i = 0;
 	SirilWorldCS *world_cs = NULL;
+	gboolean ok = FALSE;
 
 	token = g_strsplit(buffer, "\n", -1);
 	nargs = g_strv_length(token);
@@ -55,10 +56,11 @@ static gboolean parse_buffer(char *buffer) {
 	if (world_cs && realname) {
 		add_object_in_catalogue(realname, world_cs);
 		siril_world_cs_unref(world_cs);
+		ok = TRUE;
 	}
 
 	g_strfreev(token);
-	return (world_cs && realname);
+	return ok;
 }
 
 void on_search_objects_entry_activate(GtkEntry *entry, gpointer user_data) {
