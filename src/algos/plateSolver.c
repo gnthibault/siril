@@ -1237,11 +1237,16 @@ gpointer match_catalog(gpointer p) {
 	n = n_fit < n_cat ? n_fit : n_cat;
 	n = n > BRIGHTEST_STARS ? BRIGHTEST_STARS : n;
 
-	args->ret = 1;
-	while (args->ret && attempt < NB_OF_MATCHING_TRY){
-		args->ret = new_star_match(com.stars, cstars, n, nobj,
-				args->scale - 0.2, args->scale + 0.2, &H, args->for_photometry_cc);
-		nobj += 50;
+	double scale_min = args->scale - 0.2;
+	double scale_max = args->scale + 0.2;
+	while (args->ret && attempt < NB_OF_MATCHING_TRY) {
+		args->ret = new_star_match(com.stars, cstars, n, nobj, scale_min, scale_max, &H, args->for_photometry_cc);
+		if (attempt == 1) {
+			scale_min = -1.0;
+			scale_max = -1.0;
+		} else {
+			nobj += 50;
+		}
 		attempt++;
 	}
 	if (!args->ret) {

@@ -254,20 +254,10 @@ int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, int nobj_override, d
 	/*
 	 * Now, as the has not given us an initial TRANS structure, we need
 	 * to find one ourselves.
-	 * First we try with no scale. If it fails we add scale changes.
 	 */
-	int iter = 0;
-	do {
 	ret = atFindTrans(numA, star_list_A, numB, star_list_B, triangle_radius,
 			nobj, min_scale, max_scale, rot_angle, rot_tol, max_iter,
 			halt_sigma, trans);
-		if (ret != SH_SUCCESS && iter == 0) {
-			min_scale = -1.0;
-			max_scale = -1.0;
-			fprintf(stdout, "Give another try with scale changes\n");
-		}
-		iter++;
-	} while (iter < 2 && ret != SH_SUCCESS);
 	if (ret != SH_SUCCESS) {
 		fprintf(stderr,"initial call to atFindTrans fails\n");
 		/** */

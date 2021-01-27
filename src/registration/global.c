@@ -278,9 +278,16 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		}
 
 		/* make a loop with different tries in order to align the two sets of data */
+		double scale_min = 0.9;
+		double scale_max = 1.1;
 		while (retvalue && attempt < NB_OF_MATCHING_TRY){
-			retvalue = new_star_match(stars, sadata->refstars, nbpoints, nobj, 0.9, 1.1, &H, FALSE);
-			nobj += 50;
+			retvalue = new_star_match(stars, sadata->refstars, nbpoints, nobj, scale_min, scale_max, &H, FALSE);
+			if (attempt == 1) {
+				scale_min = -1.0;
+				scale_max = -1.0;
+			} else {
+				nobj += 50;
+			}
 			attempt++;
 		}
 		if (retvalue) {
