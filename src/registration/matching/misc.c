@@ -398,7 +398,7 @@ int get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list) {
 	head = (struct s_star *) NULL;
 	last = head;
 
-	while (i < n) {
+	while (i < n && s[i]) {
 		new = atStarNew(s[i]->xpos, s[i]->ypos, s[i]->mag, s[i]->BV);
 		new->id = i;
 
