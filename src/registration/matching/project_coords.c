@@ -121,8 +121,7 @@ int doASEC /* I: if > 0, write offsets in arcsec */
 	cent_dec_rad = central_dec * DEGTORAD;
 
 	GDataInputStream *data_input = g_data_input_stream_new(input_stream);
-	gsize length = 0;
-	while ((line = g_data_input_stream_read_line_utf8(data_input, &length, NULL, NULL))) {
+	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL, NULL, NULL))) {
 
 		if (line[0] == COMMENT_CHAR) {
 			g_free(line);
