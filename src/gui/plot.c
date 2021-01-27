@@ -884,7 +884,12 @@ static int get_index_of_frame(gdouble x, gdouble y) {
 	pldata *plot = plot_data;
 
 	point min = { plot->frame[0], plot->data[0].y };
-	point max = { plot->frame[com.seq.selnum - 1], plot->data[com.seq.selnum - 1].y };
+	/* ensure to correctly find max frame index */
+	int i = 0;
+	while (plot->frame[com.seq.selnum - 1 - i] == 0.0) {
+		i++;
+	}
+	point max = { plot->frame[com.seq.selnum - 1 - i], plot->data[com.seq.selnum - 1 - i].y };
 	point intervale = { get_dimx() / (max.x - min.x), get_dimy() / (max.y - min.y)};
 	point pos = { x - get_offsx(), get_dimy() - y + get_offsy() };
 
