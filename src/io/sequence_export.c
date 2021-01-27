@@ -35,7 +35,6 @@
 #include "io/films.h"
 #endif
 #include "avi_pipp/avi_writer.h"
-#include "opencv/opencv.h"
 #ifdef HAVE_FFMPEG
 #include "io/mp4_output.h"
 #endif
@@ -163,7 +162,6 @@ static gpointer export_sequence(gpointer ptr) {
 			break;
 
 		case EXPORT_SER:
-			/* image size is not known here, no problem for crop or resample */
 			ser_file = malloc(sizeof(struct ser_struct));
 			snprintf(dest, 256, "%s.ser", args->basename);
 			if (ser_create_file(dest, ser_file, TRUE, args->seq->ser_file)) {
@@ -178,8 +176,6 @@ static gpointer export_sequence(gpointer ptr) {
 			break;
 
 		case EXPORT_AVI:
-			/* image size is set here, resample is managed by opencv when
-			 * writing frames, we don't need crop size here */
 			snprintf(dest, 256, "%s.avi", args->basename);
 			int32_t avi_format;
 
@@ -204,8 +200,7 @@ static gpointer export_sequence(gpointer ptr) {
 			retval = -1;
 			goto free_and_reset_progress_bar;
 #else
-			/* image size is set here, resample is managed by ffmpeg so it also
-			 * needs to know the input image size after crop */
+			/* resampling is managed by libswscale */
 			snprintf(dest, 256, "%s.%s", args->basename,
 					args->output == EXPORT_MP4 ? "mp4" : "webm");
 

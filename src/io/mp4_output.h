@@ -23,7 +23,7 @@ struct mp4_struct {
 	struct SwsContext *sws_ctx;
 	struct SwrContext *swr_ctx;
 
-	int bitrate;
+	int64_t bitrate;
 	int src_w, src_h;
 
 };
