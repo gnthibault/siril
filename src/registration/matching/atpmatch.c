@@ -4394,29 +4394,31 @@ TRANS *trans /* O: place solved coefficients into this */
 	sumy1y2 = 0.0;
 
 	for (i = 0; i < nbright; i++) {
-
 		/* sanity checks */
 		g_assert(winner_index_A[i] < num_stars_A);
-		s1 = &(star_array_A[winner_index_A[i]]);
 		g_assert(winner_index_B[i] < num_stars_B);
-		s2 = &(star_array_B[winner_index_B[i]]);
-
-		if (winner_index_A[i] != -1 && winner_index_B[i] != -1) {
-			/* elements of the matrix */
-			sum += 1.0;
-			sumx1 += s1->x;
-			sumx2 += s2->x;
-			sumy1 += s1->y;
-			sumy2 += s2->y;
-			sumx1sq += s1->x * s1->x;
-			sumy1sq += s1->y * s1->y;
-			sumx1x2 += s1->x * s2->x;
-			sumx1y1 += s1->x * s1->y;
-			sumx1y2 += s1->x * s2->y;
-			sumy1x2 += s1->y * s2->x;
-			sumy1y2 += s1->y * s2->y;
+		if (winner_index_A[i] < 0 || winner_index_B[i] < 0) {
+			/* top_vote_getters initializes the winners to -1,
+			 * there may not be winners all the time */
+			continue;
 		}
 
+		s1 = &(star_array_A[winner_index_A[i]]);
+		s2 = &(star_array_B[winner_index_B[i]]);
+
+		/* elements of the matrix */
+		sum += 1.0;
+		sumx1 += s1->x;
+		sumx2 += s2->x;
+		sumy1 += s1->y;
+		sumy2 += s2->y;
+		sumx1sq += s1->x * s1->x;
+		sumy1sq += s1->y * s1->y;
+		sumx1x2 += s1->x * s2->x;
+		sumx1y1 += s1->x * s1->y;
+		sumx1y2 += s1->x * s2->y;
+		sumy1x2 += s1->y * s2->x;
+		sumy1y2 += s1->y * s2->y;
 	}
 
 	/*

@@ -856,8 +856,9 @@ static int read_NOMAD_catalog(GInputStream *stream, fitted_PSF **cstars) {
 	int i = 0;
 
 	GDataInputStream *data_input = g_data_input_stream_new(stream);
-	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
-				NULL, NULL))) {
+	while (i < MAX_STARS &&
+			(line = g_data_input_stream_read_line_utf8(data_input, NULL,
+								   NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, Bmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
@@ -897,8 +898,9 @@ static int read_TYCHO2_catalog(GInputStream *stream, fitted_PSF **cstars) {
 	int i = 0;
 
 	GDataInputStream *data_input = g_data_input_stream_new(stream);
-	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
-				NULL, NULL))) {
+	while (i < MAX_STARS &&
+			(line = g_data_input_stream_read_line_utf8(data_input, NULL,
+								   NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, Bmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
@@ -934,8 +936,9 @@ static int read_GAIA_catalog(GInputStream *stream, fitted_PSF **cstars) {
 	int i = 0;
 
 	GDataInputStream *data_input = g_data_input_stream_new(stream);
-	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
-				NULL, NULL))) {
+	while (i < MAX_STARS &&
+			(line = g_data_input_stream_read_line_utf8(data_input, NULL,
+								   NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Gmag = 0.0, BPmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
@@ -975,8 +978,9 @@ static int read_PPMXL_catalog(GInputStream *stream, fitted_PSF **cstars) {
 	int i = 0;
 
 	GDataInputStream *data_input = g_data_input_stream_new(stream);
-	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
-				NULL, NULL))) {
+	while (i < MAX_STARS &&
+			(line = g_data_input_stream_read_line_utf8(data_input, NULL,
+								   NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Jmag = 0.0, Hmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
@@ -1016,8 +1020,9 @@ static int read_BRIGHT_STARS_catalog(GInputStream *stream, fitted_PSF **cstars) 
 	int i = 0;
 
 	GDataInputStream *data_input = g_data_input_stream_new(stream);
-	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
-				NULL, NULL))) {
+	while (i < MAX_STARS &&
+			(line = g_data_input_stream_read_line_utf8(data_input, NULL,
+								   NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, BV = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
@@ -1057,8 +1062,9 @@ static int read_APASS_catalog(GInputStream *stream, fitted_PSF **cstars) {
 	int i = 0;
 
 	GDataInputStream *data_input = g_data_input_stream_new(stream);
-	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
-				NULL, NULL))) {
+	while (i < MAX_STARS &&
+			(line = g_data_input_stream_read_line_utf8(data_input, NULL,
+								   NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, Bmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
@@ -1182,8 +1188,7 @@ gpointer match_catalog(gpointer p) {
 	struct plate_solver_data *args = (struct plate_solver_data *) p;
 	GError *error = NULL;
 	fitted_PSF **cstars;
-	int n_fit = 0, n_cat = 0, n = 0, i = 0;
-	int attempt = 1;
+	int n_fit = 0, n_cat = 0, n = 0;
 	point image_size = { args->fit->rx, args->fit->ry };
 	Homography H = { 0 };
 	int nobj = AT_MATCH_CATALOG_NBRIGHT;
@@ -1193,10 +1198,8 @@ gpointer match_catalog(gpointer p) {
 	if (!args->manual) {
 		com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, NULL, FALSE); // TODO: use good layer
 	} else {
-		while (com.stars && com.stars[i]) {
-			i++;
-		}
-		n_fit = i;
+		if (com.stars)
+			while (com.stars[n_fit++]);
 	}
 	if (!com.stars || n_fit < AT_MATCH_STARTN_LINEAR) {
 		args->message = g_strdup_printf(_("There are not enough stars picked in the image. "
@@ -1234,12 +1237,12 @@ gpointer match_catalog(gpointer p) {
 
 	/* make sure that arrays are not too small
 	 * make  sure that the max of stars is BRIGHTEST_STARS */
-	n = n_fit < n_cat ? n_fit : n_cat;
-	n = n > BRIGHTEST_STARS ? BRIGHTEST_STARS : n;
+	n = min(min(n_fit, n_cat), BRIGHTEST_STARS);
 
 	double scale_min = args->scale - 0.2;
 	double scale_max = args->scale + 0.2;
 	args->ret = 1;
+	int attempt = 1;
 	while (args->ret && attempt < NB_OF_MATCHING_TRY) {
 		args->ret = new_star_match(com.stars, cstars, n, nobj, scale_min, scale_max, &H, args->for_photometry_cc);
 		if (attempt == 1) {
@@ -1251,11 +1254,9 @@ gpointer match_catalog(gpointer p) {
 		attempt++;
 	}
 	if (!args->ret) {
-
 		/* we only want to compare with linear function
 		 * Maybe one day we will apply match with homography matrix
 		 */
-
 		TRANS trans = H_to_linear_TRANS(H);
 		if (check_affine_TRANS_sanity(trans)) {
 
