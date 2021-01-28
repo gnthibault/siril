@@ -7426,27 +7426,6 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
           </packing>
         </child>
         <child>
-          <object class="GtkMenuButton" id="hamburger-menu">
-            <property name="name">menu-button</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="popover">main_menu</property>
-            <child>
-              <object class="GtkImage">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="icon-name">open-menu</property>
-              </object>
-            </child>
-            <accelerator key="F10" signal="clicked"/>
-          </object>
-          <packing>
-            <property name="pack-type">end</property>
-            <property name="position">1</property>
-          </packing>
-        </child>
-        <child>
           <object class="GtkButtonBox">
             <property name="visible">True</property>
             <property name="can-focus">False</property>
@@ -7501,6 +7480,122 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
           </packing>
         </child>
         <child>
+          <object class="GtkMenuButton" id="header_processing_button">
+            <property name="name">processing-button</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="tooltip-text" translatable="yes">Menu of the image processing tools. It contains all suitable functions for image enhancement.</property>
+            <property name="popup">processing_menu</property>
+            <child>
+              <object class="GtkBox" id="image_processing_button_box">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <child>
+                  <object class="GtkLabel" id="image_processing_button_name">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="valign">baseline</property>
+                    <property name="label" translatable="yes">Image Processing</property>
+                    <property name="use-underline">True</property>
+                    <property name="ellipsize">end</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkImage" id="image_processing_button_arrow">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="valign">baseline</property>
+                    <property name="icon-name">pan-down-symbolic</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="position">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="header_scripts_button">
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="tooltip-text" translatable="yes">Menu of the script files. This menu appears only when the script paths defined in the preferences are set to the existing script folders.</property>
+            <property name="use-popover">False</property>
+            <child>
+              <object class="GtkBox" id="script_button_box">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <child>
+                  <object class="GtkLabel" id="script_button_name">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="valign">baseline</property>
+                    <property name="label" translatable="yes">Scripts</property>
+                    <property name="use-underline">True</property>
+                    <property name="ellipsize">end</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkImage" id="script_button_arrow">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="valign">baseline</property>
+                    <property name="icon-name">pan-down-symbolic</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">1</property>
+                  </packing>
+                </child>
+              </object>
+            </child>
+            <style>
+              <class name="suggested-action"/>
+            </style>
+          </object>
+          <packing>
+            <property name="position">4</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkMenuButton" id="hamburger-menu">
+            <property name="name">menu-button</property>
+            <property name="visible">True</property>
+            <property name="can-focus">True</property>
+            <property name="receives-default">True</property>
+            <property name="popover">main_menu</property>
+            <child>
+              <object class="GtkImage">
+                <property name="visible">True</property>
+                <property name="can-focus">False</property>
+                <property name="icon-name">open-menu</property>
+              </object>
+            </child>
+            <accelerator key="F10" signal="clicked"/>
+          </object>
+          <packing>
+            <property name="pack-type">end</property>
+            <property name="position">5</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkMenuButton" id="header_precision_button">
             <property name="visible">True</property>
             <property name="can-focus">True</property>
@@ -7544,7 +7639,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
           </object>
           <packing>
             <property name="pack-type">end</property>
-            <property name="position">2</property>
+            <property name="position">6</property>
           </packing>
         </child>
         <child>
@@ -7615,54 +7710,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
           </object>
           <packing>
             <property name="pack-type">end</property>
-            <property name="position">3</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkMenuButton" id="header_processing_button">
-            <property name="name">processing-button</property>
-            <property name="visible">True</property>
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="tooltip-text" translatable="yes">Menu of the image processing tools. It contains all suitable functions for image enhancement.</property>
-            <property name="popup">processing_menu</property>
-            <child>
-              <object class="GtkBox" id="image_processing_button_box">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkLabel" id="image_processing_button_name">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="valign">baseline</property>
-                    <property name="label" translatable="yes">Image Processing</property>
-                    <property name="use-underline">True</property>
-                    <property name="ellipsize">end</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkImage" id="image_processing_button_arrow">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="valign">baseline</property>
-                    <property name="icon-name">pan-down-symbolic</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="position">3</property>
+            <property name="position">7</property>
           </packing>
         </child>
         <child>
@@ -7689,7 +7737,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
           </object>
           <packing>
             <property name="pack-type">end</property>
-            <property name="position">4</property>
+            <property name="position">8</property>
           </packing>
         </child>
         <child>
@@ -7740,55 +7788,7 @@ WARNING: Reducing the number of allowed processors too much will degrade perform
           </object>
           <packing>
             <property name="pack-type">end</property>
-            <property name="position">5</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkMenuButton" id="header_scripts_button">
-            <property name="can-focus">True</property>
-            <property name="receives-default">True</property>
-            <property name="tooltip-text" translatable="yes">Menu of the script files. This menu appears only when the script paths defined in the preferences are set to the existing script folders.</property>
-            <property name="use-popover">False</property>
-            <child>
-              <object class="GtkBox" id="script_button_box">
-                <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <child>
-                  <object class="GtkLabel" id="script_button_name">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="valign">baseline</property>
-                    <property name="label" translatable="yes">Scripts</property>
-                    <property name="use-underline">True</property>
-                    <property name="ellipsize">end</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkImage" id="script_button_arrow">
-                    <property name="visible">True</property>
-                    <property name="can-focus">False</property>
-                    <property name="valign">baseline</property>
-                    <property name="icon-name">pan-down-symbolic</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-            </child>
-            <style>
-              <class name="suggested-action"/>
-            </style>
-          </object>
-          <packing>
-            <property name="position">5</property>
+            <property name="position">9</property>
           </packing>
         </child>
       </object>
