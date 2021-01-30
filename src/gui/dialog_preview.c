@@ -176,8 +176,7 @@ static gpointer update_preview_cb_idle(gpointer p) {
 }
 
 static void update_preview_cb(GtkFileChooser *file_chooser, gpointer p) {
-	gchar *filename;
-	char *uri;
+	gchar *uri;
 	GFile *file;
 	GFileInfo *file_info;
 
@@ -195,14 +194,14 @@ static void update_preview_cb(GtkFileChooser *file_chooser, gpointer p) {
 				       G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
 				       0, NULL, NULL);
 
-	filename = gtk_file_chooser_get_preview_filename(file_chooser);
 	gtk_file_chooser_set_preview_widget_active(file_chooser, TRUE);
 
 	struct _updta_preview_data *data = malloc(sizeof(struct _updta_preview_data));
-	data->filename = filename;
+	data->filename = g_file_get_path(file);
 	data->file_info = file_info;
 	data->file_chooser = file_chooser;
 
+	g_free(uri);
 	g_object_unref(file);
 
 	start_in_new_thread(update_preview_cb_idle, data);
