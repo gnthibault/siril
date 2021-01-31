@@ -251,7 +251,9 @@ static int fill_rgb_image(AVFrame *pict, int frame_index,
 			int dstpixel = desty * fit->rx;
 			for (x = 0; x < fit->rx; x++, srcpixel++, dstpixel++) {
 				// linear scaling
-				tmp_pixel_value = src[srcpixel] - lo;
+				if (src[srcpixel] - lo < 0)
+					tmp_pixel_value = 0;
+				else 	tmp_pixel_value = src[srcpixel] - lo;
 				dst[dstpixel] = map[tmp_pixel_value];
 			}
 		}

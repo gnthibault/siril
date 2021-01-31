@@ -71,7 +71,8 @@ struct exportseq_args {
 };
 
 
-/* Used for avi exporter */
+/* Used for avi exporter, creates buffer as BGRBGR, with the slope but without
+ * offset (probably a mistake) */
 static uint8_t *fits_to_uint8(fits *fit) {
 	uint8_t *data;
 	int w, h, i, j, channel, step;
@@ -85,10 +86,10 @@ static uint8_t *fits_to_uint8(fits *fit) {
 
 	data = malloc(w * h * channel * sizeof(uint8_t));
 	for (i = 0, j = 0; i < w * h * channel; i += channel, j++) {
-		data[i + step] = (uint8_t) round_to_BYTE(((double) fit->pdata[RLAYER][j] * slope));
+		data[i + step] = (uint8_t) roundf_to_BYTE((float) fit->pdata[RLAYER][j] * slope);
 		if (channel > 1) {
-			data[i + 1] = (uint8_t) round_to_BYTE(((double) fit->pdata[GLAYER][j] * slope));
-			data[i + 2 - step] = (uint8_t) round_to_BYTE(((double) fit->pdata[BLAYER][j] * slope));
+			data[i + 1] = (uint8_t) roundf_to_BYTE((float) fit->pdata[GLAYER][j] * slope);
+			data[i + 2 - step] = (uint8_t) roundf_to_BYTE((float) fit->pdata[BLAYER][j] * slope);
 		}
 	}
 	return data;
