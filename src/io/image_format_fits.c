@@ -80,15 +80,13 @@ static void read_fits_date_obs_header(fits *fit) {
 
 	fits_read_key(fit->fptr, TSTRING, "DATE-OBS", &date_obs, NULL, &status);
 
-	if (status == KEY_NO_EXIST) {
 	/** Case seen in some FITS files. Needed to get date back in SER conversion **/
-		status = 0;
-		fits_read_key(fit->fptr, TSTRING, "UT-START", &ut_start, NULL, &status);
-		if (ut_start[0] != '\0' && date_obs[2] == '/') {
-			int year, month, day;
-			if (sscanf(date_obs, "%02d/%02d/%04d", &day, &month, &year) == 4) {
-				g_snprintf(date_obs, sizeof(date_obs), "%04d-%02d-%02dT%s", year, month, day, ut_start);
-			}
+	status = 0;
+	fits_read_key(fit->fptr, TSTRING, "UT-START", &ut_start, NULL, &status);
+	if (status == 0 && ut_start[0] != '\0' && date_obs[2] == '/') {
+		int year, month, day;
+		if (sscanf(date_obs, "%02d/%02d/%04d", &day, &month, &year) == 3) {
+			g_snprintf(date_obs, sizeof(date_obs), "%04d-%02d-%02dT%s", year, month, day, ut_start);
 		}
 	}
 	fit->date_obs = FITS_date_to_date_time(date_obs);
