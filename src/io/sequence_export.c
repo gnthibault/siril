@@ -71,8 +71,7 @@ struct exportseq_args {
 };
 
 
-/* Used for avi exporter, creates buffer as BGRBGR, with the slope but without
- * offset (probably a mistake) */
+/* Used for avi exporter, creates buffer as BGRBGR, using GUI cursors lo and hi */
 static uint8_t *fits_to_uint8(fits *fit) {
 	uint8_t *data;
 	int w, h, i, j, channel, step;
@@ -86,10 +85,13 @@ static uint8_t *fits_to_uint8(fits *fit) {
 
 	data = malloc(w * h * channel * sizeof(uint8_t));
 	for (i = 0, j = 0; i < w * h * channel; i += channel, j++) {
-		data[i + step] = (uint8_t) roundf_to_BYTE((float) fit->pdata[RLAYER][j] * slope);
+		float pixel = fit->pdata[RLAYER][j] - lo < 0 ? 0.0f : (float)(fit->pdata[RLAYER][j] - lo);
+		data[i + step] = (uint8_t) roundf_to_BYTE(pixel * slope);
 		if (channel > 1) {
-			data[i + 1] = (uint8_t) roundf_to_BYTE((float) fit->pdata[GLAYER][j] * slope);
-			data[i + 2 - step] = (uint8_t) roundf_to_BYTE((float) fit->pdata[BLAYER][j] * slope);
+			pixel = fit->pdata[GLAYER][j] - lo < 0 ? 0.0f : (float)(fit->pdata[GLAYER][j] - lo);
+			data[i + 1] = (uint8_t) roundf_to_BYTE(pixel * slope);
+			pixel = fit->pdata[BLAYER][j] - lo < 0 ? 0.0f : (float)(fit->pdata[BLAYER][j] - lo);
+			data[i + 2 - step] = (uint8_t) roundf_to_BYTE(pixel * slope);
 		}
 	}
 	return data;
