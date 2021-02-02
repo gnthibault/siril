@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-01-26 10:22+0100\n"
+"POT-Creation-Date: 2021-02-02 15:24+0100\n"
 "PO-Revision-Date: 2020-04-17 22:50+0100\n"
 "Last-Translator: David Vazquez Garcia <davidvazquezgijon@gmail.com>\n"
 "Language-Team: \n"
@@ -302,7 +302,7 @@ msgstr "Registro de una estrella (espacio profundo)"
 msgid "16 bits"
 msgstr "16 bits"
 
-#: src/gui/siril3.glade:1689 src/gui/siril3.glade:7520 src/gui/callbacks.c:743
+#: src/gui/siril3.glade:1689 src/gui/siril3.glade:7615 src/gui/callbacks.c:743
 msgid "32 bits"
 msgstr "32 bits"
 
@@ -795,7 +795,7 @@ msgstr ""
 "secuencia.\n"
 "\t\t\t"
 
-#: src/gui/siril3.glade:3517 src/io/sequence_export.c:620
+#: src/gui/siril3.glade:3517 src/io/sequence_export.c:618
 msgid "Select area to crop"
 msgstr "Seleccione un área para recortar"
 
@@ -840,9 +840,11 @@ msgid "Height of output video"
 msgstr "Alto del vídeo de salida"
 
 #: src/gui/siril3.glade:3690
+#, fuzzy
 msgid ""
 "Film quality: lower value will use more compression and less bitrate, also "
-"resulting is smaller file size."
+"resulting is smaller file size. Values above 2 could be useful for fast-"
+"moving images like bright time-lapses."
 msgstr ""
 "Calidad de la película: un valor bajo dará lugar a más compresión y menos "
 "tasa de bits, así como un fichero más pequeño."
@@ -2168,27 +2170,7 @@ msgstr "Abrir imágenes recientes (sólo ficheros FITS y SER)"
 msgid "Change current working directory"
 msgstr "Cambiar el directorio de trabajo actual"
 
-#: src/gui/siril3.glade:7508
-msgid "Bit-depth select button"
-msgstr "Botón de selección de profundidad de bits"
-
-#: src/gui/siril3.glade:7556 src/gui/siril3.glade:14352
-msgid "Save"
-msgstr "Guardar"
-
-#: src/gui/siril3.glade:7561
-msgid "Save the current FITS image"
-msgstr "Guardar la imagen FITS actual"
-
-#: src/gui/siril3.glade:7576
-msgid "Save the current image in a different name"
-msgstr "Guarda la imagen actual con un nombre diferente"
-
-#: src/gui/siril3.glade:7598
-msgid "Take a snapshot of your displayed image."
-msgstr ""
-
-#: src/gui/siril3.glade:7627
+#: src/gui/siril3.glade:7488
 msgid ""
 "Menu of the image processing tools. It contains all suitable functions for "
 "image enhancement."
@@ -2196,11 +2178,45 @@ msgstr ""
 "Menú de las herramientas de proceso de imagen. Contiene todas las funciones "
 "para la mejora de imágenes."
 
-#: src/gui/siril3.glade:7638
+#: src/gui/siril3.glade:7499
 msgid "Image Processing"
 msgstr "Procesado de imagen"
 
-#: src/gui/siril3.glade:7672
+#: src/gui/siril3.glade:7533
+msgid ""
+"Menu of the script files. This menu appears only when the script paths "
+"defined in the preferences are set to the existing script folders."
+msgstr ""
+"Menú de los ficheros de scripts. Este menú aparece sólo cuando las rutas de "
+"los scripts  definidas en las preferencias se configuran con los directorios "
+"de los scripts existentes."
+
+#: src/gui/siril3.glade:7544 src/gui/siril3.glade:19853
+#: src/gui/siril3.glade:20013
+msgid "Scripts"
+msgstr "Scritps"
+
+#: src/gui/siril3.glade:7603
+msgid "Bit-depth select button"
+msgstr "Botón de selección de profundidad de bits"
+
+#: src/gui/siril3.glade:7651 src/gui/siril3.glade:14352
+msgid "Save"
+msgstr "Guardar"
+
+#: src/gui/siril3.glade:7656
+msgid "Save the current FITS image"
+msgstr "Guardar la imagen FITS actual"
+
+#: src/gui/siril3.glade:7671
+msgid "Save the current image in a different name"
+msgstr "Guarda la imagen actual con un nombre diferente"
+
+#: src/gui/siril3.glade:7693
+msgid "Take a snapshot of your displayed image."
+msgstr ""
+
+#: src/gui/siril3.glade:7720
 msgid ""
 "Set number of threads manually.\n"
 "WARNING: Reducing the number of allowed processors too much will degrade "
@@ -2210,11 +2226,11 @@ msgstr ""
 "PRECAUCIÓN: reducir demasiado el número de procesadores permitidos puede "
 "degradar el rendimiento."
 
-#: src/gui/siril3.glade:7706
+#: src/gui/siril3.glade:7754
 msgid "Displays the amount of used RAM memory by Siril."
 msgstr "Muestra la cantidad de memoria RAM usada por Siril."
 
-#: src/gui/siril3.glade:7725
+#: src/gui/siril3.glade:7773
 msgid ""
 "Displays the amount of disk space available on the file system containing "
 "the working directory."
@@ -2223,24 +2239,10 @@ msgstr ""
 "que contiene al directorio de trabajo."
 
 #. Must be short !!
-#: src/gui/siril3.glade:7727
+#: src/gui/siril3.glade:7775
 msgctxt "GUI"
 msgid "Disk Space: N/A"
 msgstr "[GUI] Espacio en disco: N/A"
-
-#: src/gui/siril3.glade:7750
-msgid ""
-"Menu of the script files. This menu appears only when the script paths "
-"defined in the preferences are set to the existing script folders."
-msgstr ""
-"Menú de los ficheros de scripts. Este menú aparece sólo cuando las rutas de "
-"los scripts  definidas en las preferencias se configuran con los directorios "
-"de los scripts existentes."
-
-#: src/gui/siril3.glade:7761 src/gui/siril3.glade:19853
-#: src/gui/siril3.glade:20013
-msgid "Scripts"
-msgstr "Scritps"
 
 #: src/gui/siril3.glade:7822 src/gui/siril3.glade:9597
 #: src/gui/siril3.glade:11473 src/gui/siril3.glade:11477
@@ -5666,20 +5668,20 @@ msgstr "La búsqueda ha fallado con el código %ld en la URL %s\n"
 msgid "Error"
 msgstr "Error"
 
-#: src/algos/plateSolver.c:496 src/core/siril_update.c:187
+#: src/algos/plateSolver.c:496 src/core/siril_update.c:189
 #, fuzzy, c-format
 msgid "Error loading url: %s: %s\n"
 msgstr "Error en línea %d: '%s'.\n"
 
 #. Matching information
-#: src/algos/plateSolver.c:794 src/registration/global.c:555
+#: src/algos/plateSolver.c:794 src/registration/global.c:563
 #, fuzzy, c-format
 msgid "%d pair match.\n"
 msgid_plural "%d pair matches.\n"
 msgstr[0] "Par %d coincide.\n"
 msgstr[1] "Par %d coincide.\n"
 
-#: src/algos/plateSolver.c:799 src/registration/global.c:560
+#: src/algos/plateSolver.c:799 src/registration/global.c:568
 #, c-format
 msgid "Inliers:%*.3f\n"
 msgstr "Inliers: %*.3f\n"
@@ -5719,37 +5721,37 @@ msgstr "Profundidad de campo: %s x %s\n"
 msgid "Image center: alpha: %s, delta: %s\n"
 msgstr "Centro de imagen: RA: %s, DEC: %s\n"
 
-#: src/algos/plateSolver.c:889
+#: src/algos/plateSolver.c:890
 #, c-format
 msgid "Catalog NOMAD size: %d objects\n"
 msgstr "Tamaño del catálogo NOMAD: %d objetos\n"
 
-#: src/algos/plateSolver.c:926
+#: src/algos/plateSolver.c:928
 #, c-format
 msgid "Catalog TYCHO-2 size: %d objects\n"
 msgstr "Tamaño del catálogo TYCHO-2: %d objetos\n"
 
-#: src/algos/plateSolver.c:967
+#: src/algos/plateSolver.c:970
 #, c-format
 msgid "Catalog Gaia DR2 size: %d objects\n"
 msgstr "Tamaño del catálogo Gaia DR2: %d objetos\n"
 
-#: src/algos/plateSolver.c:1008
+#: src/algos/plateSolver.c:1012
 #, c-format
 msgid "Catalog PPMXL size: %d objects\n"
 msgstr "Tamaño del catálogo PPMXL: %d objetos\n"
 
-#: src/algos/plateSolver.c:1049
+#: src/algos/plateSolver.c:1054
 #, c-format
 msgid "Catalog Bright stars size: %d objects\n"
 msgstr "Tamaño del catálogo Bright Stars: %d objetos\n"
 
-#: src/algos/plateSolver.c:1090
+#: src/algos/plateSolver.c:1096
 #, c-format
 msgid "Catalog APASS size: %d objects\n"
 msgstr "Tamaño del catálogo APASS: %d objetos\n"
 
-#: src/algos/plateSolver.c:1144
+#: src/algos/plateSolver.c:1150
 msgid ""
 "Plate Solving failed. The image could not be aligned with the reference "
 "stars.\n"
@@ -5757,7 +5759,7 @@ msgstr ""
 "Resolución de placas fallida. La imagen no puede alinearse con las estrellas "
 "de referencia.\n"
 
-#: src/algos/plateSolver.c:1147
+#: src/algos/plateSolver.c:1153
 msgid ""
 "This is usually because the initial parameters (pixel size, focal length, "
 "initial coordinates) are too far from the real metadata of the image.\n"
@@ -5772,11 +5774,11 @@ msgstr ""
 "Finalmente, ten en cuenta que el algoritmo de resolución de platos sólo "
 "puede aplicarse a imágenes lineales."
 
-#: src/algos/plateSolver.c:1166
+#: src/algos/plateSolver.c:1172
 msgid "Flipping image and updating astrometry data.\n"
 msgstr ""
 
-#: src/algos/plateSolver.c:1202
+#: src/algos/plateSolver.c:1205
 #, c-format
 msgid ""
 "There are not enough stars picked in the image. At least %d stars are needed."
@@ -5784,37 +5786,37 @@ msgstr ""
 "No hay suficientes estrellas seleccionadas en la imagen. Se necesitan como "
 "mínimo %d estrellas."
 
-#: src/algos/plateSolver.c:1383
+#: src/algos/plateSolver.c:1390
 msgid "There are no keywords stored in the FITS header.\n"
 msgstr "No se han encontrado palabras clave en la cabecera FITS.\n"
 
-#: src/algos/plateSolver.c:1384
+#: src/algos/plateSolver.c:1391
 msgid "No metadata"
 msgstr "Sin metadatos"
 
-#: src/algos/plateSolver.c:1462
+#: src/algos/plateSolver.c:1469
 #, fuzzy
 msgid "No coordinates"
 msgstr "Coordenadas centrales incorrectas"
 
-#: src/algos/plateSolver.c:1462
+#: src/algos/plateSolver.c:1469
 #, fuzzy
 msgid "Please enter object coordinates."
 msgstr "Coordenadas centrales incorrectas"
 
-#: src/algos/plateSolver.c:1471
+#: src/algos/plateSolver.c:1478
 msgid "No catalog"
 msgstr ""
 
-#: src/algos/plateSolver.c:1471
+#: src/algos/plateSolver.c:1478
 msgid "Cannot download the online star catalog."
 msgstr ""
 
-#: src/algos/plateSolver.c:1487
+#: src/algos/plateSolver.c:1494
 msgid "Astrometric solution detected"
 msgstr "Solución astrométrica detectada"
 
-#: src/algos/plateSolver.c:1488
+#: src/algos/plateSolver.c:1495
 msgid ""
 "The astrometric solution contained in the image will be erased by the "
 "geometric transformation and no undo will be possible."
@@ -5822,7 +5824,7 @@ msgstr ""
 "La solución astronométrica que contiene la imagen se borrará con la "
 "transformación geométrica y no será posible deshacer."
 
-#: src/algos/plateSolver.c:1490
+#: src/algos/plateSolver.c:1497
 #, fuzzy
 msgid "Process"
 msgstr "procesador"
@@ -8183,51 +8185,55 @@ msgstr "Está seguro de que quiere borrar el log? No es posible deshacer."
 msgid "Clear the Log"
 msgstr "Limpiar el log"
 
-#: src/core/siril_update.c:209
-#, c-format
+#: src/core/siril_update.c:212
+#, fuzzy
+msgid "No update check: cannot fetch version file\n"
+msgstr "No hay actualizaciones: esta versión está en desarrollo\n"
+
+#: src/core/siril_update.c:215
+#, fuzzy, c-format
 msgid ""
-"New version is available. You can download it at <a href=\"%s%d.%d.%d\">%s%d."
-"%d.%d</a>\n"
+"New version is available. You can download it at <a href=\"%s\">%s</a>\n"
 msgstr ""
 "Hay una nueva versión disponible. Puede descargarla en <a href=\"%s%d.%d.%d"
 "\">%s%d.%d.%d</a>\n"
 
-#: src/core/siril_update.c:218
+#: src/core/siril_update.c:224
 msgid "No update check: this is a development version\n"
 msgstr "No hay actualizaciones: esta versión está en desarrollo\n"
 
-#: src/core/siril_update.c:221
+#: src/core/siril_update.c:227
 msgid "Siril is up to date\n"
 msgstr "Siril está actualizado\n"
 
-#: src/core/siril_update.c:276
+#: src/core/siril_update.c:283
 msgid "Unable to check updates! Please Check your network connection\n"
 msgstr "Imposible buscar actualizaciones. Revise su conexión a internet\n"
 
-#: src/core/siril_update.c:280
+#: src/core/siril_update.c:287
 #, c-format
 msgid "Unable to check updates! Error: %ld\n"
 msgstr "Imposible buscar actualizaciones. Error: %ld\n"
 
-#: src/core/siril_update.c:290 src/core/siril_update.c:433
+#: src/core/siril_update.c:297 src/core/siril_update.c:440
 msgid "Software Update"
 msgstr "Actualizaciones de software"
 
-#: src/core/siril_update.c:360
+#: src/core/siril_update.c:367
 #, c-format
 msgid "Error: %ld. Wait %us before retry\n"
 msgstr "Erro: %ld. Espere %us antes de volver a intentarlo\n"
 
-#: src/core/siril_update.c:379
+#: src/core/siril_update.c:386
 #, c-format
 msgid "Cannot retrieve information from the update URL. Error: [%ld]\n"
 msgstr ""
 
-#: src/core/siril_update.c:402 src/core/siril_update.c:454
+#: src/core/siril_update.c:409 src/core/siril_update.c:461
 msgid "Looking for updates..."
 msgstr "Buscando actualizaciones..."
 
-#: src/core/siril_update.c:426
+#: src/core/siril_update.c:433
 #, fuzzy, c-format
 msgid "Siril cannot access to %s\n"
 msgstr "Siril no puede crear el fichero JPG.\n"
@@ -8291,15 +8297,15 @@ msgstr[1] "secuencia"
 msgid "Filename is too long, not expanding it\n"
 msgstr "Nombre de fichero demasiado largo, no se expande\n"
 
-#: src/core/utils.c:1180 src/io/image_format_fits.c:2477
-#: src/io/image_format_fits.c:2482 src/io/ser.c:1304
+#: src/core/utils.c:1180 src/io/image_format_fits.c:2475
+#: src/io/image_format_fits.c:2480 src/io/ser.c:1304
 msgid "pixel"
 msgid_plural "pixels"
 msgstr[0] "píxel"
 msgstr[1] "píxeles"
 
-#: src/core/utils.c:1181 src/io/image_format_fits.c:2478
-#: src/io/image_format_fits.c:2483 src/io/ser.c:1305
+#: src/core/utils.c:1181 src/io/image_format_fits.c:2476
+#: src/io/image_format_fits.c:2481 src/io/ser.c:1305
 msgid "channel"
 msgid_plural "channels"
 msgstr[0] "canal"
@@ -9056,7 +9062,7 @@ msgstr "Posición de la estrella en el eje X"
 msgid "Star position on Y axis"
 msgstr "Posición de la estrella en el eje Y"
 
-#: src/gui/plot.c:960
+#: src/gui/plot.c:965
 #, fuzzy, c-format
 msgid "Exclude Frame %d"
 msgstr "Excluída"
@@ -9777,7 +9783,7 @@ msgstr "No se puede abrir el fichero: %s\n"
 msgid "Cannot open FITS file %s: doesn't seem to be a FITS sequence\n"
 msgstr ""
 
-#: src/io/fits_sequence.c:178 src/io/image_format_fits.c:1516
+#: src/io/fits_sequence.c:178 src/io/image_format_fits.c:1514
 msgid ""
 "FITS images with 64 bits signed integer per pixel.channel are not "
 "supported.\n"
@@ -9789,8 +9795,8 @@ msgstr ""
 msgid "Your version of cfitsio does not support multi-threading\n"
 msgstr "Su versión de cfitsio no soporta multi hilo\n"
 
-#: src/io/fits_sequence.c:246 src/io/image_format_fits.c:571
-#: src/io/image_format_fits.c:641 src/io/image_format_fits.c:1414
+#: src/io/fits_sequence.c:246 src/io/image_format_fits.c:569
+#: src/io/image_format_fits.c:639 src/io/image_format_fits.c:1412
 msgid "Unknown FITS data format in internal conversion\n"
 msgstr "Datos FITS desconocidos en la conversión interna\n"
 
@@ -9814,113 +9820,113 @@ msgstr ""
 msgid "Symbolic link could not be made, copying the file. Error: %s\n"
 msgstr ""
 
-#: src/io/image_format_fits.c:251
+#: src/io/image_format_fits.c:249
 #, c-format
 msgid "Loaded FITS file has a BSCALE different than 1 (%f)\n"
 msgstr "El fichero FITS cargado tiene un BSCALE distinto de 1 (%f)\n"
 
-#: src/io/image_format_fits.c:525
+#: src/io/image_format_fits.c:523
 #, c-format
 msgid "FITS error: %s\n"
 msgstr "Error FITS: %s\n"
 
-#: src/io/image_format_fits.c:685
+#: src/io/image_format_fits.c:683
 #, fuzzy
 msgid "Cannot move to first image in FITS file\n"
 msgstr "No se puede convertir un fichero de secuencia"
 
-#: src/io/image_format_fits.c:695
+#: src/io/image_format_fits.c:693
 msgid "Cannot get dimension of FITS file\n"
 msgstr ""
 
-#: src/io/image_format_fits.c:705
+#: src/io/image_format_fits.c:703
 msgid "Cannot move to next image in FITS file\n"
 msgstr ""
 
-#: src/io/image_format_fits.c:772 src/io/image_format_fits.c:908
+#: src/io/image_format_fits.c:770 src/io/image_format_fits.c:906
 #, c-format
 msgid "FITS image format %d is not supported by Siril.\n"
 msgstr "El formato de imagen  FITS %d no está soportado Siril.\n"
 
-#: src/io/image_format_fits.c:840
+#: src/io/image_format_fits.c:838
 #, c-format
 msgid "Fitsio error reading data, file: %s.\n"
 msgstr "FITSIO error leyendo datos, fichero: %s.\n"
 
-#: src/io/image_format_fits.c:1268
+#: src/io/image_format_fits.c:1266
 #, c-format
 msgid "%s.[any_allowed_extension] not found.\n"
 msgstr "%s.[any_allowed_extension] no encontrado.\n"
 
-#: src/io/image_format_fits.c:1275
+#: src/io/image_format_fits.c:1273
 #, c-format
 msgid ""
 "The file %s is not a FITS file or doesn't exists with FITS extensions.\n"
 msgstr "El archivo %s no es FITS o no existe con extensiones FITS.\n"
 
-#: src/io/image_format_fits.c:1294 src/io/image_format_fits.c:1374
-#: src/io/image_format_fits.c:1535 src/io/image_format_fits.c:2454
+#: src/io/image_format_fits.c:1292 src/io/image_format_fits.c:1372
+#: src/io/image_format_fits.c:1533 src/io/image_format_fits.c:2452
 #, c-format
 msgid "Selecting the primary header failed, is the FITS file '%s' malformed?\n"
 msgstr ""
 "La selección de la cabecera primaria ha fallado, ¿el fichero FITS '%s' es "
 "correcto?\n"
 
-#: src/io/image_format_fits.c:1312
+#: src/io/image_format_fits.c:1310
 #, fuzzy, c-format
 msgid "Reading FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Leyendo FITS: archivo %s, %ld capa(s), %ux%u píxeles\n"
 
-#: src/io/image_format_fits.c:1396
+#: src/io/image_format_fits.c:1394
 #, c-format
 msgid "FITS read partial: there is no layer %d in the image %s\n"
 msgstr "Lectura parcial FITS: no existe la capa %d en la imagen %s\n"
 
-#: src/io/image_format_fits.c:1404
+#: src/io/image_format_fits.c:1402
 #, c-format
 msgid "Unsupported FITS image format (%ld axes).\n"
 msgstr "Imagen FITS con formato no soportado (%ld ejes).\n"
 
-#: src/io/image_format_fits.c:1481
+#: src/io/image_format_fits.c:1479
 #, c-format
 msgid "Loaded partial FITS file %s\n"
 msgstr "Cargado archivo FITS parcial %s\n"
 
-#: src/io/image_format_fits.c:1490
+#: src/io/image_format_fits.c:1488
 #, fuzzy
 msgid "FITSIO error getting image parameters.\n"
 msgstr "Error FITSIO obteniendo parámetros de imagen, archivo %s.\n"
 
-#: src/io/image_format_fits.c:1503
+#: src/io/image_format_fits.c:1501
 #, c-format
 msgid ""
 "The FITS image contains more than 3 channels (%ld). Opening only the three "
 "first.\n"
 msgstr ""
 
-#: src/io/image_format_fits.c:1621
+#: src/io/image_format_fits.c:1619
 #, fuzzy
 msgid "Unknown FITS compression method in internal conversion\n"
 msgstr "Datos FITS desconocidos en la conversión interna\n"
 
-#: src/io/image_format_fits.c:1703
+#: src/io/image_format_fits.c:1701
 #, c-format
 msgid "Saving FITS: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Guardando archivo FITS: archivo %s, %ld capa(s), %ux%u píxeles\n"
 
-#: src/io/image_format_fits.c:1784
+#: src/io/image_format_fits.c:1782
 #, c-format
 msgid "ERROR: trying to save a FITS image with an unsupported format (%d).\n"
 msgstr ""
 "ERROR: intentando guardar imagen FITS con un formato no soportado (%d).\n"
 
-#: src/io/image_format_fits.c:2479 src/io/ser.c:1306
+#: src/io/image_format_fits.c:2477 src/io/ser.c:1306
 msgid "frame"
 msgid_plural "frames"
 msgstr[0] "frame"
 msgstr[1] "frames"
 
-#: src/io/image_format_fits.c:2479 src/io/image_format_fits.c:2484
+#: src/io/image_format_fits.c:2477 src/io/image_format_fits.c:2482
 #: src/io/ser.c:1306
 msgid "(Monochrome Preview)"
 msgstr "(Vista previa en monocromo)"
@@ -10196,7 +10202,7 @@ msgstr "Esta es una secuencia de %d imágnes: cargando la primaria.\n"
 msgid "Reading HEIF: file %s, %ld layer(s), %ux%u pixels\n"
 msgstr "Leyendo archivo HEIF: archivo %s, %ld capa(s), %ux%u píxeles\n"
 
-#: src/io/mp4_output.c:415
+#: src/io/mp4_output.c:417
 msgid ""
 "Parameters for mp4 file creation were incorrect. Image dimension has to be a "
 "multiple of 2, fps and file name non nul, quality between 1 and 5."
@@ -10385,18 +10391,18 @@ msgstr ""
 "Fijando el número de la selección en el archivo .seq (%d) al valor actual "
 "(%d) (no guardado)\n"
 
-#: src/io/sequence_export.c:116
+#: src/io/sequence_export.c:118
 #, c-format
 msgid "Using registration information from layer %d to export sequence\n"
 msgstr ""
 "Usando información de registro de la capa %d para exportar la secuencia\n"
 
-#: src/io/sequence_export.c:192
+#: src/io/sequence_export.c:191
 #, fuzzy, c-format
 msgid "AVI file `%s' could not be created\n"
 msgstr "Se ha creado el archivo stars.lst.\n"
 
-#: src/io/sequence_export.c:203
+#: src/io/sequence_export.c:202
 msgid ""
 "MP4 output is not supported because siril was not compiled with ffmpeg "
 "support.\n"
@@ -10404,7 +10410,7 @@ msgstr ""
 "La salida en MP4 no está soportada porque Siril no se compiló con soporte "
 "ffmpeg.\n"
 
-#: src/io/sequence_export.c:213
+#: src/io/sequence_export.c:211
 msgid ""
 "Film output needs to have a width that is a multiple of 32 and an even "
 "height, resizing selection.\n"
@@ -10412,57 +10418,57 @@ msgstr ""
 "La salida de película necesita tener un ancho múltiplo de 32 y una altura "
 "incluso, cambiando la selección.\n"
 
-#: src/io/sequence_export.c:295
+#: src/io/sequence_export.c:293
 #, c-format
 msgid "image %d is excluded from export\n"
 msgstr "la imagen %d se ha excluido de la exportación\n"
 
-#: src/io/sequence_export.c:308 src/stacking/stackminmax.c:84
+#: src/io/sequence_export.c:306 src/stacking/stackminmax.c:84
 #, fuzzy, c-format
 msgid "Processing image %s"
 msgstr "Procesando imagen "
 
-#: src/io/sequence_export.c:316
+#: src/io/sequence_export.c:314
 msgid "Export: could not read frame, aborting\n"
 msgstr "Exportar: no se pudo leer el frame, abortando\n"
 
-#: src/io/sequence_export.c:521
+#: src/io/sequence_export.c:519
 msgid "Sequence export failed. Check the log."
 msgstr "Fallo al exportar la secuencia. Revise el log."
 
-#: src/io/sequence_export.c:522
+#: src/io/sequence_export.c:520
 msgid "Sequence export failed\n"
 msgstr "Fallo al exportar la secuencia\n"
 
-#: src/io/sequence_export.c:525
+#: src/io/sequence_export.c:523
 msgid "Sequence export succeeded."
 msgstr "Exportación de la secuencia correcta."
 
-#: src/io/sequence_export.c:526
+#: src/io/sequence_export.c:524
 msgid "Sequence export succeeded.\n"
 msgstr "Exportación de la secuencia correcta.\n"
 
-#: src/io/sequence_export.c:572
+#: src/io/sequence_export.c:570
 msgid "Width or height cannot be null. Not resizing.\n"
 msgstr "El ancho o alto no pueden estar vacíos. No se redimensiona.\n"
 
-#: src/io/sequence_export.c:587
+#: src/io/sequence_export.c:585
 #, fuzzy
 msgid "Export cropped sequence?"
 msgstr "Exportar secuencia"
 
-#: src/io/sequence_export.c:588
+#: src/io/sequence_export.c:586
 msgid ""
 "An active selection was detected. The exported sequence will only contain "
 "data within the drawn selection. You can confirm the crop or cancel it. If "
 "you choose to click on cancel, the exported sequence will contain all data."
 msgstr ""
 
-#: src/io/sequence_export.c:589
+#: src/io/sequence_export.c:587
 msgid "Confirm Crop"
 msgstr ""
 
-#: src/io/sequence_export.c:619
+#: src/io/sequence_export.c:617
 msgid "Cropping to selection"
 msgstr "Recortando a la selección"
 
@@ -10754,12 +10760,12 @@ msgstr ""
 msgid "Reference Image: Limiting to %d brightest stars\n"
 msgstr "Imagen de referencia: Limitada a  las %d estrellas más brillantes\n"
 
-#: src/registration/global.c:167 src/registration/global.c:579
+#: src/registration/global.c:167 src/registration/global.c:587
 #, c-format
 msgid "FWHMx:%*.2f %s\n"
 msgstr "FWHMx:%*.2f %s\n"
 
-#: src/registration/global.c:168 src/registration/global.c:580
+#: src/registration/global.c:168 src/registration/global.c:588
 #, c-format
 msgid "FWHMy:%*.2f %s\n"
 msgstr "FWHMy:%*.2f %s\n"
@@ -10784,51 +10790,51 @@ msgstr "No hay suficientes estrellas. Descartada imagen %d\n"
 msgid "Target Image: Limiting to %d brightest stars\n"
 msgstr "Imagen Objetivo: Limitada a las %d estrellas más brillantes\n"
 
-#: src/registration/global.c:287
+#: src/registration/global.c:295
 #, c-format
 msgid "Cannot perform star matching: try #%d. Image %d skipped\n"
 msgstr ""
 "No se puede realizar el emparejado de estrellas: pruebe #%d. Descartada "
 "imagen %d\n"
 
-#: src/registration/global.c:293
+#: src/registration/global.c:301
 #, fuzzy, c-format
 msgid "Not enough star pairs (%d): Image %d skipped\n"
 msgstr "No hay suficientes estrellas. Descartada imagen %d\n"
 
-#: src/registration/global.c:408 src/registration/registration.c:429
+#: src/registration/global.c:416 src/registration/registration.c:429
 #: src/registration/registration.c:515 src/registration/registration.c:650
 msgid "Registration finished.\n"
 msgstr "Registro terminado.\n"
 
-#: src/registration/global.c:409
+#: src/registration/global.c:417
 #, fuzzy, c-format
 msgid "%d image processed.\n"
 msgid_plural "%d images processed.\n"
 msgstr[0] "_Procesado de imagen"
 msgstr[1] "_Procesado de imagen"
 
-#: src/registration/global.c:412
+#: src/registration/global.c:420
 #, c-format
 msgid "Total: %d failed, %d registered.\n"
 msgstr "Total: %d fallidas, %d registradas.\n"
 
-#: src/registration/global.c:423
+#: src/registration/global.c:431
 msgid "Registration aborted.\n"
 msgstr "Registro cancelado.\n"
 
-#: src/registration/global.c:442
+#: src/registration/global.c:450
 msgid "Global star registration"
 msgstr "Registro global de estrellas"
 
-#: src/registration/global.c:489
+#: src/registration/global.c:497
 #, c-format
 msgid ""
 "Not enough memory to do this operation (%s required per image, %s considered "
 "available)\n"
 msgstr ""
 
-#: src/registration/global.c:497
+#: src/registration/global.c:505
 #, fuzzy, c-format
 msgid ""
 "With the current memory and thread limits, up to %d thread(s) can be used "
@@ -10838,37 +10844,37 @@ msgstr ""
 "hilos para la secuencia de normalización\n"
 
 #. Matching information
-#: src/registration/global.c:554
+#: src/registration/global.c:562
 #, c-format
 msgid "Matching stars in image %d: done\n"
 msgstr "Emparejado de estrellas en la imagen %d: completado\n"
 
-#: src/registration/global.c:566
+#: src/registration/global.c:574
 #, c-format
 msgid "scaleX:%*.3f\n"
 msgstr "escalaX: %*.3f\n"
 
-#: src/registration/global.c:567
+#: src/registration/global.c:575
 #, c-format
 msgid "scaleY:%*.3f\n"
 msgstr "escalaY: %*.3f\n"
 
-#: src/registration/global.c:568
+#: src/registration/global.c:576
 #, c-format
 msgid "scale:%*.3f\n"
 msgstr "escala: %*.3f\n"
 
-#: src/registration/global.c:572
+#: src/registration/global.c:580
 #, c-format
 msgid "rotation:%+*.3f deg\n"
 msgstr "rotación:%+*.3f deg\n"
 
-#: src/registration/global.c:577
+#: src/registration/global.c:585
 #, c-format
 msgid "dx:%+*.2f px\n"
 msgstr "dx:%+*.2f px\n"
 
-#: src/registration/global.c:578
+#: src/registration/global.c:586
 #, c-format
 msgid "dy:%+*.2f px\n"
 msgstr "dy:%+*.2f px\n"

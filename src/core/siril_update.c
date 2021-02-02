@@ -207,22 +207,27 @@ static gchar *check_version(struct _update_data *args, gchar **data) {
 	guint y = last_version_available.minor_version;
 	guint z = last_version_available.micro_version;
 	guint patch = last_version_available.patched_version;
-	if (compare_version(current_version, last_version_available) < 0) {
-		msg = siril_log_message(_("New version is available. You can download it at "
-						"<a href=\"%s\">%s</a>\n"),
-				SIRIL_DOWNLOAD, SIRIL_DOWNLOAD);
-		changelog = get_changelog(x, y, z, patch);
-		*data = parse_changelog(changelog);
-		/* force the verbose variable */
-		args->verbose = TRUE;
-	} else if (compare_version(current_version, last_version_available)	> 0) {
+	if (x == 0 && y == 0 && z == 0) {
 		if (args->verbose)
-			msg = siril_log_message(_("No update check: this is a development version\n"));
+			msg = siril_log_message(_("No update check: cannot fetch version file\n"));
 	} else {
-		if (args->verbose)
-			msg = siril_log_message(_("Siril is up to date\n"));
+		if (compare_version(current_version, last_version_available) < 0) {
+			msg = siril_log_message(_("New version is available. You can download it at "
+							"<a href=\"%s\">%s</a>\n"),
+					SIRIL_DOWNLOAD, SIRIL_DOWNLOAD);
+			changelog = get_changelog(x, y, z, patch);
+			*data = parse_changelog(changelog);
+			/* force the verbose variable */
+			args->verbose = TRUE;
+		} else if (compare_version(current_version, last_version_available)	> 0) {
+			if (args->verbose)
+				msg = siril_log_message(_("No update check: this is a development version\n"));
+		} else {
+			if (args->verbose)
+				msg = siril_log_message(_("Siril is up to date\n"));
+		}
+		g_free(changelog);
 	}
-	g_free(changelog);
 	return msg;
 }
 
