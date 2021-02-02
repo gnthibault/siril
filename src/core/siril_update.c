@@ -37,13 +37,12 @@
 #include "core/siril_update.h"
 
 
-#define DOMAIN_NAME "https://free-astro.org/"
-#define GITLAB_URL "https://gitlab.com/free-astro/siril/"
-#define TITLE_TAG_STRING "<a class=\"item-title"
+#define DOMAIN "https://staging.siril.org/"
+#define SIRIL_VERSIONS DOMAIN"siril_versions.json"
+#define SIRIL_DOWNLOAD DOMAIN"download"
+#define GITLAB_URL "https://gitlab.com/free-astro/siril/raw"
 
-static const gchar* gitlab_tags = GITLAB_URL"-/tags?sort=updated_desc";
-static const gchar* gitlab_raw = GITLAB_URL"raw";
-static const gchar* download_url = DOMAIN_NAME"index.php?title=Siril:";
+#define VERSION_NODE "            \"version\":"
 
 /**
  * Check if the version is a patched version.
@@ -89,17 +88,18 @@ static version_number get_last_version_number(gchar *buffer) {
 
 	i = 0;
 	while (i < nargs) {
-		if (g_str_has_prefix(g_strchug(token[i]), TITLE_TAG_STRING)) {
-			/* get value between > and < */
+		char *str = g_strstr_len(token[i], strlen(VERSION_NODE), VERSION_NODE);
+		if (str) {
+			/* get value between " and " */
 			/* the first version number is the newer */
-			strtok(token[i], ">");
-			v = strtok(NULL, "<");
+			strtok(str + strlen(VERSION_NODE), "\"");
+			v = strtok(NULL, "\"");
 			break;
 		}
 		i++;
 	}
 	if (v) {
-		g_fprintf(stdout, "last tagged version: %s\n", v);
+		g_fprintf(stdout, "Last available version: %s\n", v);
 		fullVersionNumber = g_strsplit_set(v, ".-", -1);
 
 		version.major_version = g_ascii_strtoull(fullVersionNumber[0], NULL, 10);
@@ -109,6 +109,8 @@ static version_number get_last_version_number(gchar *buffer) {
 
 		g_strfreev(fullVersionNumber);
 		g_strfreev(token);
+	} else {
+		g_fprintf(stdout, "Cannot fetch last available version.\n");
 	}
 	return version;
 }
@@ -176,7 +178,7 @@ static gchar *get_changelog(gint x, gint y, gint z, gint p) {
 	} else {
 		str = g_strdup_printf("/%d.%d.%d/", x, y, z);
 	}
-	GString *url = g_string_new(gitlab_raw);
+	GString *url = g_string_new(GITLAB_URL);
 	url = g_string_append(url, str);
 	url = g_string_append(url, "ChangeLog");
 
@@ -207,8 +209,8 @@ static gchar *check_version(struct _update_data *args, gchar **data) {
 	guint patch = last_version_available.patched_version;
 	if (compare_version(current_version, last_version_available) < 0) {
 		msg = siril_log_message(_("New version is available. You can download it at "
-						"<a href=\"%s%d.%d.%d\">%s%d.%d.%d</a>\n"),
-				download_url, x, y, z, download_url, x, y, z);
+						"<a href=\"%s\">%s</a>\n"),
+				SIRIL_DOWNLOAD, SIRIL_DOWNLOAD);
 		changelog = get_changelog(x, y, z, patch);
 		*data = parse_changelog(changelog);
 		/* force the verbose variable */
@@ -394,7 +396,7 @@ void siril_check_updates(gboolean verbose) {
 	struct _update_data *args;
 
 	args = malloc(sizeof(struct _update_data));
-	args->url = (gchar *)gitlab_tags;
+	args->url = (gchar *)SIRIL_VERSIONS;
 	args->code = 0L;
 	args->content = NULL;
 	args->verbose = verbose;
@@ -446,7 +448,7 @@ void siril_check_updates(gboolean verbose) {
 	struct _update_data *args;
 
 	args = malloc(sizeof(struct _update_data));
-	args->url = (gchar *)gitlab_tags;
+	args->url = (gchar *)SIRIL_VERSIONS;
 	args->content = NULL;
 	args->verbose = verbose;
 
