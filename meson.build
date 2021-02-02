@@ -227,6 +227,7 @@ exiv_dep = dependency('exiv2', required : true, version: '>= 0.25')
 fftw3f_dep = dependency('fftw3f', required : true)
 cfitsio_dep = dependency('cfitsio', required : true)
 cairo_dep = dependency('cairo', required : true)
+json_glib = dependency('json-glib-1.0', version: '>=1.2.6')
 kplot_dep = dependency('kplot', fallback : ['kplot', 'kplot_dep'], required : true)
 
 
@@ -313,6 +314,18 @@ conf_data.set_quoted('PACKAGE_URL', 'https://www.siril.org', description : 'Defi
 conf_data.set_quoted('PACKAGE_BUGREPORT', 'https://gitlab.com/free-astro/siril/issues', description : 'Define to the address where bug reports for this package should be sent.')
 conf_data.set_quoted('PACKAGE_DATA_DIR', siril_datadir, description : 'Define to the data directory.')
 conf_data.set_quoted('LOCALEDIR', siril_locale, description : 'Define to the locale directory.')
+
+# Build identifiers #
+
+if platform_linux
+  conf_data.set_quoted('SIRIL_BUILD_PLATFORM_FAMILY', 'linux')
+elif platform_windows
+  conf_data.set_quoted('SIRIL_BUILD_PLATFORM_FAMILY', 'windows')
+elif platform_osx
+  conf_data.set_quoted('SIRIL_BUILD_PLATFORM_FAMILY', 'macos')
+else
+  conf_data.set_quoted('SIRIL_BUILD_PLATFORM_FAMILY', 'other')
+endif
 
 # Check for available headers
 foreach header : [
@@ -420,6 +433,7 @@ externals_dep = declare_dependency(
     dbghelp,
     m_dep,
     glib_dep,
+    json_glib,
     gio_dep,
     gio_platform_dep,
     gtk_dep,

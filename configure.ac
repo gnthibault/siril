@@ -127,6 +127,9 @@ case "$host_os" in
     ;;
 esac
 
+dnl Check for json-glib
+PKG_CHECK_MODULES(JSON_GLIB, json-glib-1.0 >= 1.2.6)
+
 dnl check libexiv2
 PKG_CHECK_MODULES(EXIV2, exiv2 >= 0.25)
 
@@ -273,17 +276,21 @@ fi
 #####################################
 # Check for Platform and architecture
 #####################################
+platform_family="other"
 PATHSEP=':'
 AC_MSG_CHECKING([platform and architecture])
 case "$host_os" in
 	linux-* | freebsd-*)
 		platform=unix
+		platform_family="linux"
 		;;
 	cygwin*)
 		platform=windows
+		platform_family="windows"
 		;;
 	mingw*)
 		platform=windows
+		platform_family="windows"
 		PATHSEP=';'
 		CFLAGS=" $CFLAGS -D_WIN32_WINNT=0x0600 -DWINVER=0x0600 "
 		CXXFLAGS=" $CXXFLAGS -D_WIN32_WINNT=0x0600 -DWINVER=0x0600 "
@@ -297,6 +304,7 @@ case "$host_os" in
 		;;
 	darwin*)
 		platform=osx
+		platform_family="macos"
 		AC_SUBST(EXTRA_LIBS,'-framework AppKit')
 		CFLAGS="$CFLAGS -ObjC"
 		;;
@@ -305,6 +313,10 @@ AC_MSG_RESULT([$platform])
 AM_CONDITIONAL([PLATFORM_UNIX], [test "$platform" = "unix"])
 AM_CONDITIONAL([PLATFORM_WIN32], [test "$platform" = "windows"])
 AM_CONDITIONAL([PLATFORM_OSX], [test "$platform" = "osx"])
+
+AC_DEFINE_UNQUOTED(SIRIL_BUILD_PLATFORM_FAMILY, "$platform_family",
+                   [The OS family this was built for])
+                   
 AC_SUBST(WIN32_LARGE_ADDRESS_AWARE)
 AC_SUBST(PATHSEP)
 

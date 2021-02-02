@@ -9,6 +9,7 @@ AM_CPPFLAGS = \
 	${OPENCV_CFLAGS} \
 	$(FFMPEG_CFLAGS) \
 	$(GIO_CFLAGS) \
+	$(JSON_GLIB_CFLAGS) \
 	$(GTK_CFLAGS) \
 	${GTK_MAC_CFLAGS} \
 	$(LIBTIFF_CFLAGS) \
@@ -269,6 +270,7 @@ siril_common_LDADD = \
 	$(FFTW_LIBS) \
 	$(CFITSIO_LIBS) \
 	$(GSL_LIBS) \
+	$(JSON_GLIB_LIBS) \
 	$(FFMS2_LIBS) \
 	$(LIBCONFIG_LIBS) \
 	$(LIBCURL) \

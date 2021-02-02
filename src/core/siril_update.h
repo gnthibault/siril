@@ -28,13 +28,6 @@ typedef struct {
 	guint patched_version;
 } version_number;
 
-struct _update_data {
-	gchar *url;
-	long code;
-	gchar *content;
-	gboolean verbose;
-};
-
 //void siril_check_updates(gboolean verbose);
 void siril_check_updates(gboolean verbose);
 
