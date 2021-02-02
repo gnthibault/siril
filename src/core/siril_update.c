@@ -387,10 +387,15 @@ static void siril_check_updates_callback(GObject *source, GAsyncResult *result,
 		}
 
 		siril_update_get_highest(parser, &last_version, &release_timestamp,	&build_revision, &build_comment);
-		g_fprintf(stdout, "Last available version: %s\n", last_version);
 
-		msg = check_version(last_version, &verbose, &data);
-		message_type = GTK_MESSAGE_INFO;
+		if (last_version) {
+			g_fprintf(stdout, "Last available version: %s\n", last_version);
+
+			msg = check_version(last_version, &verbose, &data);
+			message_type = GTK_MESSAGE_INFO;
+		} else {
+			msg = siril_log_message(_("Cannot fetch version file\n"));
+		}
 
 		g_clear_pointer(&last_version, g_free);
 		g_clear_pointer(&build_comment, g_free);
