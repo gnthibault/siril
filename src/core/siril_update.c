@@ -355,6 +355,237 @@ static gchar *check_version(gchar *version, gboolean *verbose, gchar **data) {
 	return msg;
 }
 
+// TODO: For now, to fix this bug https://gitlab.com/free-astro/siril/-/issues/604() we need to use GIO for Windows
+#if defined HAVE_LIBCURL && !defined _WIN32
+
+struct _update_data {
+	gchar *url;
+	long code;
+	gchar *content;
+	gboolean verbose;
+};
+
+
+static const int DEFAULT_FETCH_RETRIES = 5;
+static CURL *curl;
+
+struct ucontent {
+	gchar *data;
+	size_t len;
+};
+
+static size_t cbk_curl(void *buffer, size_t size, size_t nmemb, void *userp) {
+	size_t realsize = size * nmemb;
+	struct ucontent *mem = (struct ucontent *) userp;
+
+	mem->data = g_try_realloc(mem->data, mem->len + realsize + 1);
+
+	memcpy(&(mem->data[mem->len]), buffer, realsize);
+	mem->len += realsize;
+	mem->data[mem->len] = 0;
+
+	return realsize;
+}
+
+static void init() {
+	if (!curl) {
+		g_fprintf(stdout, "initializing CURL\n");
+		curl_global_init(CURL_GLOBAL_ALL);
+		curl = curl_easy_init();
+	}
+
+	if (!curl)
+		exit(EXIT_FAILURE);
+}
+
+static void http_cleanup() {
+	curl_easy_cleanup(curl);
+	curl_global_cleanup();
+	curl = NULL;
+}
+
+static gchar *check_update_version(struct _update_data *args) {
+	JsonParser *parser;
+	gchar *last_version = NULL;
+	gchar *build_comment = NULL;
+	gint64 release_timestamp = 0;
+	gint build_revision = 0;
+	GError *error = NULL;
+	gchar *msg = NULL;
+	gchar *data = NULL;
+	GtkMessageType message_type = GTK_MESSAGE_ERROR;
+
+	parser = json_parser_new();
+	if (!json_parser_load_from_data(parser, args->content, -1, &error)) {
+//		g_printerr("%s: parsing of %s failed: %s\n", G_STRFUNC,
+//				g_file_get_uri(G_FILE(source)), error->message);
+		g_clear_object(&parser);
+		g_clear_error(&error);
+
+		return NULL;
+	}
+
+	siril_update_get_highest(parser, &last_version, &release_timestamp,	&build_revision, &build_comment);
+
+	if (last_version) {
+		g_fprintf(stdout, "Last available version: %s\n", last_version);
+
+		msg = check_version(last_version, &(args->verbose), &data);
+		message_type = GTK_MESSAGE_INFO;
+	} else {
+		msg = siril_log_message(_("Cannot fetch version file\n"));
+	}
+
+	g_clear_pointer(&last_version, g_free);
+	g_clear_pointer(&build_comment, g_free);
+	g_object_unref(parser);
+
+	return msg;
+}
+
+static gboolean end_update_idle(gpointer p) {
+	char *msg = NULL;
+	gchar *data = NULL;
+	GtkMessageType message_type = GTK_MESSAGE_ERROR;
+	struct _update_data *args = (struct _update_data *) p;
+
+	if (args->content == NULL) {
+		switch(args->code) {
+		case 0:
+			msg = siril_log_message(_("Unable to check updates! "
+					"Please Check your network connection\n"));
+			break;
+		default:
+			msg = siril_log_message(_("Unable to check updates! Error: %ld\n"),
+					args->code);
+		}
+	} else {
+		msg = check_update_version(args);
+		message_type = GTK_MESSAGE_INFO;
+	}
+	if (args->verbose) {
+		set_cursor_waiting(FALSE);
+		if (msg) {
+			siril_data_dialog(message_type, _("Software Update"), msg, data);
+		}
+	}
+
+	/* free data */
+	g_free(args->content);
+	g_free(data);
+	free(args);
+	http_cleanup();
+	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
+	stop_processing_thread();
+	return FALSE;
+}
+
+static gpointer fetch_url(gpointer p) {
+	struct ucontent *content;
+	gchar *result;
+	long code = -1L;
+	int retries;
+	unsigned int s;
+	struct _update_data *args = (struct _update_data *) p;
+
+	content = g_try_malloc(sizeof(struct ucontent));
+	if (content == NULL) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
+
+	g_fprintf(stdout, "fetch_url(): %s\n", args->url);
+
+	init();
+	set_progress_bar_data(NULL, 0.1);
+
+	result = NULL;
+
+	retries = DEFAULT_FETCH_RETRIES;
+
+	retrieve: content->data = g_malloc(1);
+	content->data[0] = '\0';
+	content->len = 0;
+
+	curl_easy_setopt(curl, CURLOPT_URL, args->url);
+	curl_easy_setopt(curl, CURLOPT_VERBOSE, 0L);
+	curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, cbk_curl);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, content);
+	curl_easy_setopt(curl, CURLOPT_USERAGENT, "siril/0.0");
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+
+	CURLcode retval = curl_easy_perform(curl);
+	if (retval == CURLE_OK) {
+		if (retries == DEFAULT_FETCH_RETRIES) set_progress_bar_data(NULL, 0.4);
+		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
+		if (retries == DEFAULT_FETCH_RETRIES) set_progress_bar_data(NULL, 0.6);
+
+		switch (code) {
+		case 200:
+			result = content->data;
+			break;
+		case 500:
+		case 502:
+		case 503:
+		case 504:
+			g_fprintf(stderr, "Fetch failed with code %ld for URL %s\n", code,
+					args->url);
+
+			if (retries && get_thread_run()) {
+				double progress = (DEFAULT_FETCH_RETRIES - retries) / (double) DEFAULT_FETCH_RETRIES;
+				progress *= 0.4;
+				progress += 0.6;
+				s = 2 * (DEFAULT_FETCH_RETRIES - retries) + 2;
+				char *msg = siril_log_message(_("Error: %ld. Wait %us before retry\n"), code, s);
+				msg[strlen(msg) - 1] = 0; /* we remove '\n' at the end */
+				set_progress_bar_data(msg, progress);
+				g_usleep(s * 1E6);
+
+				g_free(content->data);
+				retries--;
+				goto retrieve;
+			}
+
+			break;
+		default:
+			g_fprintf(stderr, "Fetch failed with code %ld for URL %s\n", code,
+					args->url);
+		}
+		g_fprintf(stderr, "Fetch succeeded with code %ld for URL %s\n", code,
+				args->url);
+		args->code = code;
+	} else {
+		siril_log_color_message(_("Cannot retrieve information from the update URL. Error: [%ld]\n"), "red", retval);
+	}
+	set_progress_bar_data(NULL, PROGRESS_DONE);
+
+	if (!result)
+		g_free(content->data);
+	g_free(content);
+
+	args->content = result;
+
+	gdk_threads_add_idle(end_update_idle, args);
+	return NULL;
+}
+
+void siril_check_updates(gboolean verbose) {
+	struct _update_data *args;
+
+	args = malloc(sizeof(struct _update_data));
+	args->url = SIRIL_VERSIONS;
+	args->code = 0L;
+	args->content = NULL;
+	args->verbose = verbose;
+
+	set_progress_bar_data(_("Looking for updates..."), PROGRESS_NONE);
+	if (args->verbose)
+		set_cursor_waiting(TRUE);
+	start_in_new_thread(fetch_url, args);
+}
+
+#else
+
 static void siril_check_updates_callback(GObject *source, GAsyncResult *result,
 		gpointer user_data) {
 	gboolean verbose = GPOINTER_TO_INT(user_data);
@@ -425,3 +656,4 @@ void siril_check_updates(gboolean verbose) {
 	g_file_load_contents_async(siril_versions, NULL, siril_check_updates_callback, GINT_TO_POINTER(verbose));
 	g_object_unref(siril_versions);
 }
+#endif
