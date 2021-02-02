@@ -170,8 +170,7 @@ static gboolean siril_update_get_highest(JsonParser *parser,
 			g_date_time_unref(datetime);
 		} else {
 			/* JSON file data bug. */
-			g_printerr(
-					"%s: release date for version %s not properly formatted: %s\n",
+			g_printerr("%s: release date for version %s not properly formatted: %s\n",
 					G_STRFUNC, *highest_version, release_date);
 
 			g_clear_pointer(highest_version, g_free);
@@ -432,6 +431,13 @@ static gchar *check_update_version(struct _update_data *args) {
 		message_type = GTK_MESSAGE_INFO;
 	} else {
 		msg = siril_log_message(_("Cannot fetch version file\n"));
+	}
+
+	if (args->verbose) {
+		set_cursor_waiting(FALSE);
+		if (msg) {
+			siril_data_dialog(message_type, _("Software Update"), msg, data);
+		}
 	}
 
 	g_clear_pointer(&last_version, g_free);
