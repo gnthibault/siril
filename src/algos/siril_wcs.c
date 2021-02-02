@@ -43,54 +43,6 @@ gboolean has_wcs(){
 	return wcs != NULL;
 }
 
-//static int parse_header_str(gchar *orig_header, gchar **header, int *nkeys, int *status) {
-//	char keybuf[162], keyname[FLEN_KEYWORD], *headptr;
-//	gchar **token = g_strsplit_set(orig_header, "\n", -1);
-//	int totkeys = g_strv_length(token);
-//
-//	*nkeys = 0;
-//
-//	*header = (char*) calloc((totkeys + 1) * 80 + 1, 1);
-//	if (!(*header)) {
-//		PRINT_ALLOC_ERR;
-//	}
-//
-//    headptr = *header;
-//
-//	/* read every keyword */
-//	for (int i = 0; i < totkeys; i++) {
-//		strcpy(keybuf, token[i]);
-//		/* pad record with blanks so that it is at least 80 chars long */
-//		strcat(keybuf,
-//				"                                                                                ");
-//
-//		keyname[0] = '\0';
-//		strncat(keyname, keybuf, 8); /* copy the keyword name */
-//
-//		if (!g_strcmp0("COMMENT ", keyname) || !g_strcmp0("HISTORY ", keyname)
-//				|| !g_strcmp0("        ", keyname))
-//			continue; /* skip this commentary keyword */
-//
-//		/* not in exclusion list, add this keyword to the string */
-//		strcpy(headptr, keybuf);
-//		headptr += 80;
-//		(*nkeys)++;
-//	}
-//
-//
-//    /* add the END keyword */
-//    strcpy(headptr,
-//    "END                                                                             ");
-//    headptr += 80;
-//    (*nkeys)++;
-//    g_strfreev(token);
-//
-//    *headptr = '\0';   /* terminate the header string */
-//    /* minimize the allocated memory */
-//    *header = (char *) realloc(*header, (*nkeys *80) + 1);
-//    return *status;
-//}
-
 gboolean load_WCS_from_memory(fits *fit) {
 #ifdef HAVE_WCSLIB
 	int status;
@@ -100,7 +52,7 @@ gboolean load_WCS_from_memory(fits *fit) {
 	}
 	wcsinit(1, NAXIS, wcs, 0, 0, 0);
 
-	char CTYPE[2][9] = {"RA---TAN", "DEC--TAN"};
+	const char CTYPE[2][9] = {"RA---TAN", "DEC--TAN"};
 
 	double *cdij = wcs->cd;
 	double *pcij = wcs->pc;
@@ -154,7 +106,7 @@ gboolean load_WCS_from_file(fits* fit) {
 	struct wcsprm *data = NULL;
 	int nkeyrec, nreject, nwcs;
 
-	/* sanity check to avoid error in some creep files */
+	/* sanity check to avoid error in some strange files */
 	if ((fit->wcs.crpix[0] == 0) && (fit->wcs.crpix[1] == 0)) {
 		return FALSE;
 	}
