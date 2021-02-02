@@ -125,35 +125,33 @@ static gboolean siril_update_get_highest(JsonParser *parser,
 			builds = json_object_get_array_member(version, platform);
 
 			for (j = 0; j < (gint) json_array_get_length(builds); j++) {
+				const gchar *build_id = NULL;
 				JsonObject *build;
 
 				build = json_array_get_object_element(builds, j);
-				if (g_strcmp0(platform, "source") == 0) {
+				if (json_object_has_member(build, "build-id"))
+					build_id = json_object_get_string_member (build, "build-id");
+				if (g_strcmp0(build_id, "org.free_astro.siril") == 0
+						|| g_strcmp0(platform, "source") == 0) {
 					/* Release date is the build date if any set,
 					 * otherwise the main version release date.
 					 */
 					if (json_object_has_member(build, "date"))
-						release_date = json_object_get_string_member(build,
-								"date");
+						release_date = json_object_get_string_member(build, "date");
 					else
-						release_date = json_object_get_string_member(version,
-								"date");
+						release_date = json_object_get_string_member(version, "date");
 
 					/* These are optional data. */
 					if (json_object_has_member(build, "revision"))
-						*build_revision = json_object_get_int_member(build,
-								"revision");
+						*build_revision = json_object_get_int_member(build, "revision");
 					if (json_object_has_member(build, "comment"))
-						*build_comment = g_strdup(
-								json_object_get_string_member(build,
-										"comment"));
+						*build_comment = g_strdup(json_object_get_string_member(build, "comment"));
 					break;
 				}
 			}
 
 			if (release_date) {
-				*highest_version = g_strdup(
-						json_object_get_string_member(version, "version"));
+				*highest_version = g_strdup(json_object_get_string_member(version, "version"));
 				break;
 			}
 		}
