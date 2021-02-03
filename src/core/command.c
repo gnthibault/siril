@@ -3372,7 +3372,7 @@ static int stack_one_seq(struct stacking_configuration *arg) {
 		if (!arg->result_file) {
 			char filename[256];
 			char *suffix = g_str_has_suffix(seq->seqname, "_") ||
-				g_str_has_suffix(com.seq.seqname, "-") ? "" : "_";
+				g_str_has_suffix(seq->seqname, "-") ? "" : "_";
 			snprintf(filename, 256, "%s%sstacked%s",
 					seq->seqname, suffix, com.pref.ext);
 			arg->result_file = strdup(filename);
