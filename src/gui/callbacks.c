@@ -849,10 +849,10 @@ GtkWindow *siril_get_active_window() {
 }
 
 void initialize_FITS_name_entries() {
-	GtkEntry *moffset, *mdark, *mflat, *final_stack;
-	gchar *str[4];
+	GtkEntry *mbias, *mdark, *mflat, *final_stack;
+	gchar *str[4] = { NULL };
 
-	moffset = GTK_ENTRY(lookup_widget("offsetname_entry"));
+	mbias = GTK_ENTRY(lookup_widget("offsetname_entry"));
 	mdark = GTK_ENTRY(lookup_widget("darkname_entry"));
 	mflat = GTK_ENTRY(lookup_widget("flatname_entry"));
 	final_stack = GTK_ENTRY(lookup_widget("entryresultfile"));
@@ -860,39 +860,51 @@ void initialize_FITS_name_entries() {
 	if (com.pref.prepro_bias_lib && (g_file_test(com.pref.prepro_bias_lib, G_FILE_TEST_EXISTS))) {
 		if (com.pref.use_bias_lib) {
 			str[0] = g_strdup_printf("%s", com.pref.prepro_bias_lib);
-		} else {
-			str[0] = g_strdup_printf("master-bias%s", com.pref.ext);
 		}
-	} else {
-		str[0] = g_strdup_printf("master-bias%s", com.pref.ext);
 	}
 
 	if (com.pref.prepro_dark_lib && (g_file_test(com.pref.prepro_dark_lib, G_FILE_TEST_EXISTS))) {
 		if (com.pref.use_dark_lib) {
 			str[1] = g_strdup_printf("%s", com.pref.prepro_dark_lib);
-		} else {
-			str[1] = g_strdup_printf("master-dark%s", com.pref.ext);
 		}
-	} else {
-		str[1] = g_strdup_printf("master-dark%s", com.pref.ext);
 	}
 
 	if (com.pref.prepro_flat_lib && (g_file_test(com.pref.prepro_flat_lib, G_FILE_TEST_EXISTS))) {
 		if (com.pref.use_flat_lib) {
 			str[2] = g_strdup_printf("%s", com.pref.prepro_flat_lib);
-		} else {
-			str[2] = g_strdup_printf("master-flat%s", com.pref.ext);
 		}
 
-	} else {
-		str[2] = g_strdup_printf("master-flat%s", com.pref.ext);
 	}
 	str[3] = g_strdup_printf("stack_result%s", com.pref.ext);
 
-	gtk_entry_set_text(moffset, str[0]);
-	gtk_entry_set_text(mdark, str[1]);
-	gtk_entry_set_text(mflat, str[2]);
-	gtk_entry_set_text(final_stack, str[3]);
+	const char *t_bias = gtk_entry_get_text(mbias);
+	if (!str[0] && t_bias[0] == '\0') {
+		str[0] = g_strdup_printf("master-bias%s", com.pref.ext);
+	}
+	if (str[0]) {
+		gtk_entry_set_text(mbias, str[0]);
+	}
+
+	const char *t_dark = gtk_entry_get_text(mdark);
+	if (!str[1] && t_dark[0] == '\0') {
+		str[1] = g_strdup_printf("master-dark%s", com.pref.ext);
+	}
+	if (str[1]) {
+		gtk_entry_set_text(mdark, str[1]);
+	}
+
+	const char *t_flat = gtk_entry_get_text(mflat);
+	if (!str[2] && t_flat[0] == '\0') {
+		str[2] = g_strdup_printf("master-flat%s", com.pref.ext);
+	}
+	if (str[2]) {
+		gtk_entry_set_text(mflat, str[2]);
+	}
+
+	const char *t_stack = gtk_entry_get_text(final_stack);
+	if (t_stack[0] == '\0') {
+		gtk_entry_set_text(final_stack, str[3]);
+	}
 
 	for (int i = 0; i < 4; i++)
 		g_free(str[i]);

@@ -2693,11 +2693,6 @@ int process_stat(int nb){
 	int layer;
 	char layername[6];
 
-	if (!single_image_is_loaded()) {
-		PRINT_NOT_FOR_SEQUENCE;
-		return 1;
-	}
-
 	nplane = gfit.naxes[2];
 
 	for (layer = 0; layer < nplane; layer++) {
