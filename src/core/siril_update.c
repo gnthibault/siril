@@ -38,7 +38,7 @@
 #include "core/siril_update.h"
 
 
-#define DOMAIN "https://staging.siril.org/"
+#define DOMAIN "https://www.siril.org/"
 #define SIRIL_VERSIONS DOMAIN"siril_versions.json"
 #define SIRIL_DOWNLOAD DOMAIN"download"
 #define GITLAB_URL "https://gitlab.com/free-astro/siril/raw"
@@ -410,11 +410,12 @@ static gchar *check_update_version(struct _update_data *args) {
 	GError *error = NULL;
 	gchar *msg = NULL;
 	gchar *data = NULL;
+	GtkMessageType message_type = GTK_MESSAGE_ERROR;
 
 	parser = json_parser_new();
 	if (!json_parser_load_from_data(parser, args->content, -1, &error)) {
-//		g_printerr("%s: parsing of %s failed: %s\n", G_STRFUNC,
-//				g_file_get_uri(G_FILE(source)), error->message);
+		g_printerr("%s: parsing of %s failed: %s\n", G_STRFUNC,
+				args->url, error->message);
 		g_clear_object(&parser);
 		g_clear_error(&error);
 
@@ -429,6 +430,7 @@ static gchar *check_update_version(struct _update_data *args) {
 		msg = check_version(last_version, &(args->verbose), &data);
 	} else {
 		msg = siril_log_message(_("Cannot fetch version file\n"));
+		message_type = GTK_MESSAGE_INFO;
 	}
 
 	if (args->verbose) {
