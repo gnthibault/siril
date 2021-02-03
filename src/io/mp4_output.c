@@ -446,7 +446,7 @@ struct mp4_struct *mp4_create(const char *filename, int dst_w, int dst_h, int fp
 	/* Kush gauge: pixel count x framerate x motion factor x 0.07 = bit rate
 	 * with motion factor: 1 - 4 depending on how much pixels change between frames.
 	 * We can use that as a quality factor (1 - 5) */
-	video_st->bitrate = (int64_t)(dst_w * dst_h * fps * quality * 0.07);
+	video_st->bitrate = (int64_t)(0.07f * (float) dst_w * (float) dst_h * (float) fps * (float) quality);
 
 	/* Add the video stream and initialize the codecs. */
 	if (video_st->fmt->video_codec != AV_CODEC_ID_NONE) {
