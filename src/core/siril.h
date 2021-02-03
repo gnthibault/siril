@@ -15,6 +15,11 @@
 #endif
 #include <libintl.h>
 
+#ifdef HAVE_WCSLIB
+#include <wcslib.h>
+#include <wcsfix.h>
+#endif
+
 #include "gui/preferences.h"
 #include "core/atomic.h"
 
@@ -415,7 +420,10 @@ struct ffit {
 	double cvf; // Conversion factor (e-/adu)
 
 	/* Plate Solving data */
-	wcs_info wcs;
+	wcs_info wcsdata;	// data from the header
+#ifdef HAVE_WCSLIB
+	struct wcsprm *wcslib;	// struct of the lib
+#endif
 
 	/* data used in the Fourier space */
 	dft_info dft;

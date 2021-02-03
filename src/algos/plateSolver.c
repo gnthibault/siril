@@ -665,22 +665,22 @@ static gboolean has_any_keywords() {
 	return (gfit.focal_length > 0.0 ||
 			gfit.pixel_size_x > 0.f ||
 			gfit.pixel_size_y > 0.f ||
-			(gfit.wcs.crval[0] > 0.0 && gfit.wcs.crval[1] != 0.0) ||
-			(gfit.wcs.objctra[0] != '\0' && gfit.wcs.objctdec[0] != '\0'));
+			(gfit.wcsdata.crval[0] > 0.0 && gfit.wcsdata.crval[1] != 0.0) ||
+			(gfit.wcsdata.objctra[0] != '\0' && gfit.wcsdata.objctdec[0] != '\0'));
 }
 
 static void update_coords() {
 	SirilWorldCS *world_cs = NULL;
 
-	if (gfit.wcs.crval[0] != 0.0 && gfit.wcs.crval[1] != 0.0) {
+	if (gfit.wcsdata.crval[0] != 0.0 && gfit.wcsdata.crval[1] != 0.0) {
 		// first transform coords to alpha and delta
-		world_cs = siril_world_cs_new_from_a_d(gfit.wcs.crval[0], gfit.wcs.crval[1]);
+		world_cs = siril_world_cs_new_from_a_d(gfit.wcsdata.crval[0], gfit.wcsdata.crval[1]);
 
 		update_coordinates(world_cs);
 		unselect_all_items();
-	} else if (gfit.wcs.objctra[0] != '\0' && gfit.wcs.objctdec[0] != '\0') {
+	} else if (gfit.wcsdata.objctra[0] != '\0' && gfit.wcsdata.objctdec[0] != '\0') {
 
-		world_cs = siril_world_cs_new_from_objct_ra_dec(gfit.wcs.objctra, gfit.wcs.objctdec);
+		world_cs = siril_world_cs_new_from_objct_ra_dec(gfit.wcsdata.objctra, gfit.wcsdata.objctdec);
 
 		update_coordinates(world_cs);
 		unselect_all_items();
@@ -753,33 +753,33 @@ static void cd_x(wcs_info *wcs) {
 static void update_gfit(image_solved image, double det, gboolean ask_for_flip) {
 	gfit.focal_length = image.focal;
 	gfit.pixel_size_x = gfit.pixel_size_y = image.pixel_size;
-	gfit.wcs.crpix[0] = image.x;
-	gfit.wcs.crpix[1] = image.y;
-	gfit.wcs.crval[0] = siril_world_cs_get_alpha(image.image_center);
-	gfit.wcs.crval[1] = siril_world_cs_get_delta(image.image_center);
-	gfit.wcs.equinox = 2000.0;
-	gfit.wcs.cdelt[0] = image.resolution / 3600.0;
-	gfit.wcs.cdelt[1] = -gfit.wcs.cdelt[0];
+	gfit.wcsdata.crpix[0] = image.x;
+	gfit.wcsdata.crpix[1] = image.y;
+	gfit.wcsdata.crval[0] = siril_world_cs_get_alpha(image.image_center);
+	gfit.wcsdata.crval[1] = siril_world_cs_get_delta(image.image_center);
+	gfit.wcsdata.equinox = 2000.0;
+	gfit.wcsdata.cdelt[0] = image.resolution / 3600.0;
+	gfit.wcsdata.cdelt[1] = -gfit.wcsdata.cdelt[0];
 	if (det < 0&& !ask_for_flip)
-		gfit.wcs.cdelt[0] = -gfit.wcs.cdelt[0];
-	gfit.wcs.crota[0] = gfit.wcs.crota[1] = -image.crota;
-	cd_x(&gfit.wcs);
+		gfit.wcsdata.cdelt[0] = -gfit.wcsdata.cdelt[0];
+	gfit.wcsdata.crota[0] = gfit.wcsdata.crota[1] = -image.crota;
+	cd_x(&gfit.wcsdata);
 
 	gchar *ra = siril_world_cs_alpha_format(image.image_center, "%02d %02d %.3lf");
 	gchar *dec = siril_world_cs_delta_format(image.image_center, "%c%02d %02d %.3lf");
 
-	g_sprintf(gfit.wcs.objctra, "%s", ra);
-	g_sprintf(gfit.wcs.objctdec, "%s", dec);
+	g_sprintf(gfit.wcsdata.objctra, "%s", ra);
+	g_sprintf(gfit.wcsdata.objctdec, "%s", dec);
 
 	g_free(ra);
 	g_free(dec);
 }
 
 static void flip_astrometry_data(fits *fit) {
-	fit->wcs.cd[0][0] = -fit->wcs.cd[0][0];
-	fit->wcs.cd[1][1] = -fit->wcs.cd[1][1];
-	fit->wcs.crota[0] = -fit->wcs.crota[0] - 180.0;
-	fit->wcs.crota[1] = fit->wcs.crota[0];
+	fit->wcsdata.cd[0][0] = -fit->wcsdata.cd[0][0];
+	fit->wcsdata.cd[1][1] = -fit->wcsdata.cd[1][1];
+	fit->wcsdata.crota[0] = -fit->wcsdata.crota[0] - 180.0;
+	fit->wcsdata.crota[1] = fit->wcsdata.crota[0];
 }
 
 static void print_platesolving_results(Homography H, image_solved image, gboolean *flip_image) {
@@ -1490,7 +1490,7 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 gboolean confirm_delete_wcs_keywords(fits *fit) {
 	gboolean erase = TRUE;
 
-	if (fit->wcs.equinox > 0.0) {
+	if (fit->wcsdata.equinox > 0.0) {
 		erase = siril_confirm_dialog(_("Astrometric solution detected"),
 				_("The astrometric solution contained in "
 				"the image will be erased by the geometric transformation and no undo "
@@ -1500,12 +1500,10 @@ gboolean confirm_delete_wcs_keywords(fits *fit) {
 }
 
 void invalidate_WCS_keywords(fits *fit) {
-	if (fit->wcs.equinox > 0.0) {
-		memset(&fit->wcs, 0, sizeof(fit->wcs));
+	if (fit->wcsdata.equinox > 0.0) {
+		memset(&fit->wcsdata, 0, sizeof(fit->wcsdata));
 	}
-	if (has_wcs()) {
-		free_wcs();
-	}
+	free_wcs(&gfit);
 	if (!com.headless) {
 		initialize_wcs_toggle_button();
 	}

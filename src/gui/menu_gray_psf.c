@@ -36,9 +36,9 @@
 #include "gui/PSF_list.h"
 
 static gchar *build_wcs_url(gchar *ra, gchar *dec) {
-	if (!has_wcs()) return NULL;
+	if (!has_wcs(&gfit)) return NULL;
 
-	double resolution = get_wcs_image_resolution();
+	double resolution = get_wcs_image_resolution(&gfit);
 
 	gchar *tol = g_strdup_printf("%lf", resolution * 3600 * 15);
 
@@ -86,11 +86,11 @@ void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 
 	double x = result->x0 + com.selection.x;
 	double y = com.selection.y + com.selection.h - result->y0;
-	if (has_wcs()) {
+	if (has_wcs(&gfit)) {
 		double world_x, world_y;
 		SirilWorldCS *world_cs;
 
-		pix2wcs(x, (double) gfit.ry - y, &world_x, &world_y);
+		pix2wcs(&gfit, x, (double) gfit.ry - y, &world_x, &world_y);
 		world_cs = siril_world_cs_new_from_a_d(world_x, world_y);
 		if (world_cs) {
 			gchar *ra = siril_world_cs_alpha_format(world_cs, "%02d %02d %.3lf");

@@ -227,6 +227,6 @@ void zoom_out_activate(GSimpleAction *action,
 
 void search_object_activate(GSimpleAction *action,
 		GVariant *parameter, gpointer user_data) {
-	if (has_wcs())
+	if (has_wcs(&gfit))
 		siril_open_dialog("search_objects");
 }

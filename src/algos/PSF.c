@@ -699,10 +699,10 @@ void psf_display_result(fitted_PSF *result, rectangle *area) {
 	double x = result->x0 + area->x;
 	double y = area->y + area->h - result->y0;
 
-	if (has_wcs()) {
+	if (has_wcs(&gfit)) {
 		double world_x, world_y;
 		SirilWorldCS *world_cs;
-		pix2wcs(x, (double) gfit.ry - y, &world_x, &world_y);
+		pix2wcs(&gfit, x, (double) gfit.ry - y, &world_x, &world_y);
 		world_cs = siril_world_cs_new_from_a_d(world_x, world_y);
 		if (world_cs) {
 			gchar *ra = siril_world_cs_alpha_format(world_cs, "%02dh%02dm%02ds");

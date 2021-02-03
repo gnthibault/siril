@@ -37,58 +37,69 @@
 /* we force naxis to 2 */
 #define NAXIS 2
 
-static struct wcsprm *wcs = NULL;
+gboolean has_wcs(fits *fit) {
+#ifdef HAVE_WCSLIB
+	return fit->wcslib != NULL;
+#endif
+	return FALSE;
+}
 
-gboolean has_wcs(){
-	return wcs != NULL;
+void free_wcs(fits *fit) {
+#ifdef HAVE_WCSLIB
+	if (fit->wcslib) {
+		if (!wcsfree(fit->wcslib))
+			free(fit->wcslib);
+		fit->wcslib = NULL;
+	}
+#endif
 }
 
 gboolean load_WCS_from_memory(fits *fit) {
 #ifdef HAVE_WCSLIB
 	int status;
-	if (!has_wcs()) {
-		wcs = calloc(1, sizeof(struct wcsprm));
-		wcs->flag = -1;
+	if (!fit->wcslib) {
+		fit->wcslib = calloc(1, sizeof(struct wcsprm));
+		fit->wcslib->flag = -1;
 	}
-	wcsinit(1, NAXIS, wcs, 0, 0, 0);
+	wcsinit(1, NAXIS, fit->wcslib, 0, 0, 0);
 
 	const char CTYPE[2][9] = {"RA---TAN", "DEC--TAN"};
 
-	double *cdij = wcs->cd;
-	double *pcij = wcs->pc;
+	double *cdij = fit->wcslib->cd;
+	double *pcij = fit->wcslib->pc;
 	for (int i = 0; i < NAXIS; i++) {
 		for (int j = 0; j < NAXIS; j++) {
-			*(cdij++) = fit->wcs.cd[i][j];
-			*(pcij++) = fit->wcs.cd[i][j];
+			*(cdij++) = fit->wcsdata.cd[i][j];
+			*(pcij++) = fit->wcsdata.cd[i][j];
 		}
 	}
 
 	for (int i = 0; i < NAXIS; i++) {
-		wcs->crval[i] = fit->wcs.crval[i];
+		fit->wcslib->crval[i] = fit->wcsdata.crval[i];
 	}
 
 	for (int i = 0; i < NAXIS; i++) {
-		wcs->crota[i] = fit->wcs.crota[i];
+		fit->wcslib->crota[i] = fit->wcsdata.crota[i];
 	}
 
 	for (int i = 0; i < NAXIS; i++) {
-		wcs->crpix[i] = fit->wcs.crpix[i];
+		fit->wcslib->crpix[i] = fit->wcsdata.crpix[i];
 	}
 
 	for (int i = 0; i < NAXIS; i++) {
-		wcs->cdelt[i] = 1;
+		fit->wcslib->cdelt[i] = 1;
 	}
 
 	for (int i = 0; i < NAXIS; i++) {
-		strcpy(wcs->ctype[i], &CTYPE[i][0]);
+		strcpy(fit->wcslib->ctype[i], &CTYPE[i][0]);
 	}
 
-	wcs->equinox = fit->wcs.equinox;
-//	wcs->lonpole = 180;
-	wcs->latpole = fit->wcs.crval[1];
+	fit->wcslib->equinox = fit->wcsdata.equinox;
+//	fit->wcslib->lonpole = 180;
+	fit->wcslib->latpole = fit->wcsdata.crval[1];
 
-	if ((status = wcsset(wcs)) != 0) {
-		free_wcs();
+	if ((status = wcsset(fit->wcslib)) != 0) {
+		free_wcs(fit);
 		siril_debug_print("wcsset error %d: %s.\n", status, wcs_errmsg[status]);
 		return FALSE;
 	}
@@ -107,12 +118,12 @@ gboolean load_WCS_from_file(fits* fit) {
 	int nkeyrec, nreject, nwcs;
 
 	/* sanity check to avoid error in some strange files */
-	if ((fit->wcs.crpix[0] == 0) && (fit->wcs.crpix[1] == 0)) {
+	if ((fit->wcsdata.crpix[0] == 0) && (fit->wcsdata.crpix[1] == 0)) {
 		return FALSE;
 	}
 
-	if (has_wcs()) {
-		free_wcs();
+	if (fit->wcslib) {
+		free_wcs(fit);
 	}
 
 	ffhdr2str(fit->fptr, 1, NULL, 0, &header, &nkeyrec, &status);
@@ -138,15 +149,15 @@ gboolean load_WCS_from_file(fits* fit) {
 				nsub = 2;
 				axes[0] = WCSSUB_LONGITUDE;
 				axes[1] = WCSSUB_LATITUDE;
-				wcs = (struct wcsprm*) calloc(1, sizeof(struct wcsprm));
-				wcs->flag = -1;
-				status = wcssub(1, prm, &nsub, axes, wcs);
+				fit->wcslib = (struct wcsprm*) calloc(1, sizeof(struct wcsprm));
+				fit->wcslib->flag = -1;
+				status = wcssub(1, prm, &nsub, axes, fit->wcslib);
 				if (status == 0) {
 					break;
 				} else {
 					siril_debug_print("wcssub error %d: %s.\n", status, wcs_errmsg[status]);
-					wcsvfree(&nwcs, &wcs);
-					wcs = NULL;
+					wcsvfree(&nwcs, &fit->wcslib);
+					fit->wcslib = NULL;
 				}
 			}
 		}
@@ -154,10 +165,10 @@ gboolean load_WCS_from_file(fits* fit) {
 	wcsvfree(&nwcs, &data);
 	free(header);
 
-	if (!has_wcs()) {
+	if (!fit->wcslib) {
 		siril_debug_print("No world coordinate systems found.\n");
-		wcsvfree(&nwcs, &wcs);
-		wcs = NULL;
+		wcsvfree(&nwcs, &fit->wcslib);
+		fit->wcslib = NULL;
 		return FALSE;
 	}
 
@@ -167,7 +178,7 @@ gboolean load_WCS_from_file(fits* fit) {
 #endif
 }
 
-void pix2wcs(double x, double y, double *r, double *d) {
+void pix2wcs(fits *fit, double x, double y, double *r, double *d) {
 	*r = -1.0;
 	*d = -1.0;
 #ifdef HAVE_WCSLIB
@@ -177,7 +188,7 @@ void pix2wcs(double x, double y, double *r, double *d) {
 	pixcrd[0] = x;
 	pixcrd[1] = y;
 
-	status = wcsp2s(wcs, 1, 2, pixcrd, imgcrd, &phi, &theta, world, stat);
+	status = wcsp2s(fit->wcslib, 1, 2, pixcrd, imgcrd, &phi, &theta, world, stat);
 	if (status != 0)
 		return;
 
@@ -186,7 +197,7 @@ void pix2wcs(double x, double y, double *r, double *d) {
 #endif
 }
 
-void wcs2pix(double r, double d, double *x, double *y) {
+void wcs2pix(fits *fit, double r, double d, double *x, double *y) {
 	*x = -1.0;
 	*y = -1.0;
 #ifdef HAVE_WCSLIB
@@ -196,7 +207,7 @@ void wcs2pix(double r, double d, double *x, double *y) {
 	world[0] = r;
 	world[1] = d;
 
-	status = wcss2p(wcs, 1, 2, world, &phi, &theta, imgcrd, pixcrd, stat);
+	status = wcss2p(fit->wcslib, 1, 2, world, &phi, &theta, imgcrd, pixcrd, stat);
 	if (status != 0)
 		return;
 
@@ -206,12 +217,12 @@ void wcs2pix(double r, double d, double *x, double *y) {
 }
 
 /* get resolution in arcsec/pixel */
-double get_wcs_image_resolution() {
+double get_wcs_image_resolution(fits *fit) {
 	double resolution = -1.0;
 #ifdef HAVE_WCSLIB
-	if (has_wcs()) {
-		double res_x = sqrt(wcs->cd[0] * wcs->cd[0] + wcs->cd[2] * wcs->cd[2]);
-		double res_y = sqrt(wcs->cd[1] * wcs->cd[1] + wcs->cd[3] * wcs->cd[3]);
+	if (fit->wcslib) {
+		double res_x = sqrt(fit->wcslib->cd[0] * fit->wcslib->cd[0] + fit->wcslib->cd[2] * fit->wcslib->cd[2]);
+		double res_y = sqrt(fit->wcslib->cd[1] * fit->wcslib->cd[1] + fit->wcslib->cd[3] * fit->wcslib->cd[3]);
 		resolution = (res_x + res_y) * 0.5;
 	}
 #endif
@@ -222,12 +233,12 @@ double get_wcs_image_resolution() {
 	return resolution;
 }
 
-double *get_wcs_crval() {
+double *get_wcs_crval(fits *fit) {
 #ifdef HAVE_WCSLIB
 	static double ret[NWCSFIX] = { 0 };
-	if (has_wcs()) {
+	if (fit->wcslib) {
 		for (int i = 0; i < NAXIS; i++) {
-			ret[i] = wcs->crval[i];
+			ret[i] = fit->wcslib->crval[i];
 		}
 	}
 	return ret;
@@ -236,11 +247,3 @@ double *get_wcs_crval() {
 #endif
 }
 
-void free_wcs() {
-	// Clean up.
-#ifdef HAVE_WCSLIB
-	if (!wcsfree(wcs))
-		free(wcs);
-	wcs = NULL;
-#endif
-}

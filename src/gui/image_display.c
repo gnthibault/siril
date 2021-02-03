@@ -732,7 +732,7 @@ static void draw_annotates(const draw_data_t* dd) {
 		gdouble world_x = get_catalogue_object_ra(object);
 		gdouble world_y = get_catalogue_object_dec(object);
 		gchar *code = get_catalogue_object_code(object);
-		gdouble resolution = get_wcs_image_resolution();
+		gdouble resolution = get_wcs_image_resolution(&gfit);
 		gdouble x, y;
 		gdouble size = 18 * (com.pref.font_scale / 100.0);
 
@@ -740,7 +740,7 @@ static void draw_annotates(const draw_data_t* dd) {
 
 		radius = radius / resolution / 60.0;
 
-		wcs2pix(world_x, world_y, &x, &y);
+		wcs2pix(&gfit, world_x, world_y, &x, &y);
 		y = gfit.ry - y;
 
 		if (x > 0 && x < gfit.rx && y > 0 && y < gfit.ry) {

@@ -349,49 +349,49 @@ void read_fits_header(fits *fit) {
 	 * ******************* PLATE SOLVING KEYWORDS **********************
 	 * ****************************************************************/
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "EQUINOX", &(fit->wcs.equinox), NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "EQUINOX", &(fit->wcsdata.equinox), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcs.objctra), NULL, &status);
+	fits_read_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcsdata.objctra), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TSTRING, "OBJCTDEC", &(fit->wcs.objctdec), NULL, &status);
+	fits_read_key(fit->fptr, TSTRING, "OBJCTDEC", &(fit->wcsdata.objctdec), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CRPIX1", &(fit->wcs.crpix[0]), NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "CRPIX1", &(fit->wcsdata.crpix[0]), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CRPIX2", &(fit->wcs.crpix[1]), NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "CRPIX2", &(fit->wcsdata.crpix[1]), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CRVAL1", &(fit->wcs.crval[0]), NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "CRVAL1", &(fit->wcsdata.crval[0]), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcs.crval[1]), NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcsdata.crval[1]), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CD1_1", &(fit->wcs.cd[0][0]), NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "CD1_1", &(fit->wcsdata.cd[0][0]), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CD1_2", &(fit->wcs.cd[0][1]), NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "CD1_2", &(fit->wcsdata.cd[0][1]), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CD2_1", &(fit->wcs.cd[1][0]), NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "CD2_1", &(fit->wcsdata.cd[1][0]), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CD2_2", &(fit->wcs.cd[1][1]), NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "CD2_2", &(fit->wcsdata.cd[1][1]), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CDELT1", &(fit->wcs.cdelt[0]), NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "CDELT1", &(fit->wcsdata.cdelt[0]), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CDELT2", &(fit->wcs.cdelt[1]), NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "CDELT2", &(fit->wcsdata.cdelt[1]), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CROTA1", &(fit->wcs.crota[0]), NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "CROTA1", &(fit->wcsdata.crota[0]), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CROTA2", &(fit->wcs.crota[1]), NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "CROTA2", &(fit->wcsdata.crota[1]), NULL, &status);
 
 	load_WCS_from_file(fit);
 
@@ -919,12 +919,12 @@ int siril_fits_create_diskfile(fitsfile **fptr, const char *filename, int *statu
 static void save_wcs_keywords(fits *fit) {
 	int status = 0;
 
-	if (fit->wcs.equinox > 0.0) {
+	if (fit->wcsdata.equinox > 0.0) {
 		fits_update_key(fit->fptr, TSTRING, "CTYPE1", "RA---TAN", "Coordinate type for the first axis", &status);
 		status = 0;
 		fits_update_key(fit->fptr, TSTRING, "CTYPE2", "DEC--TAN", "Coordinate type for the second axis", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "EQUINOX", &(fit->wcs.equinox),	"Equatorial equinox", &status);
+		fits_update_key(fit->fptr, TDOUBLE, "EQUINOX", &(fit->wcsdata.equinox),	"Equatorial equinox", &status);
 		status = 0;
 
 		/* Needed for Aladin compatibility */
@@ -933,33 +933,33 @@ static void save_wcs_keywords(fits *fit) {
 			fits_update_key(fit->fptr, TSTRING, "CTYPE3", "RGB", "RGB image", &status);
 		}
 
-		if (fit->wcs.objctra[0] != '\0') {
+		if (fit->wcsdata.objctra[0] != '\0') {
 			status = 0;
-			fits_update_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcs.objctra),	"Image center R.A. (hms)", &status);
+			fits_update_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcsdata.objctra),	"Image center R.A. (hms)", &status);
 			status = 0;
-			fits_update_key(fit->fptr, TSTRING, "OBJCTDEC", &(fit->wcs.objctdec), "Image center declination (dms)", &status);
+			fits_update_key(fit->fptr, TSTRING, "OBJCTDEC", &(fit->wcsdata.objctdec), "Image center declination (dms)", &status);
 		}
-		if (fit->wcs.crpix[0] != '\0') {
+		if (fit->wcsdata.crpix[0] != '\0') {
 			status = 0;
-			fits_update_key(fit->fptr, TDOUBLE, "CRPIX1", &(fit->wcs.crpix[0]), "Axis1 reference pixel", &status);
+			fits_update_key(fit->fptr, TDOUBLE, "CRPIX1", &(fit->wcsdata.crpix[0]), "Axis1 reference pixel", &status);
 			status = 0;
-			fits_update_key(fit->fptr, TDOUBLE, "CRPIX2", &(fit->wcs.crpix[1]), "Axis2 reference pixel", &status);
+			fits_update_key(fit->fptr, TDOUBLE, "CRPIX2", &(fit->wcsdata.crpix[1]), "Axis2 reference pixel", &status);
 		}
-		if (fit->wcs.crval[0] != '\0') {
+		if (fit->wcsdata.crval[0] != '\0') {
 			status = 0;
-			fits_update_key(fit->fptr, TDOUBLE, "CRVAL1", &(fit->wcs.crval[0]), "Axis1 reference value", &status);
+			fits_update_key(fit->fptr, TDOUBLE, "CRVAL1", &(fit->wcsdata.crval[0]), "Axis1 reference value", &status);
 			status = 0;
-			fits_update_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcs.crval[1]), "Axis2 reference value", &status);
+			fits_update_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcsdata.crval[1]), "Axis2 reference value", &status);
 		}
-		if ((fit->wcs.cd[0][0] != 0.0) && (fit->wcs.cd[0][1] != 0.0) && (fit->wcs.cd[1][0] != 0.0) && (fit->wcs.cd[1][1] != 0.0)) {
+		if ((fit->wcsdata.cd[0][0] != 0.0) && (fit->wcsdata.cd[0][1] != 0.0) && (fit->wcsdata.cd[1][0] != 0.0) && (fit->wcsdata.cd[1][1] != 0.0)) {
 			status = 0;
-			fits_update_key(fit->fptr, TDOUBLE, "CD1_1", &(fit->wcs.cd[0][0]), "Scale matrix (1, 1)", &status);
+			fits_update_key(fit->fptr, TDOUBLE, "CD1_1", &(fit->wcsdata.cd[0][0]), "Scale matrix (1, 1)", &status);
 			status = 0;
-			fits_update_key(fit->fptr, TDOUBLE, "CD1_2", &(fit->wcs.cd[0][1]), "Scale matrix (1, 2)", &status);
+			fits_update_key(fit->fptr, TDOUBLE, "CD1_2", &(fit->wcsdata.cd[0][1]), "Scale matrix (1, 2)", &status);
 			status = 0;
-			fits_update_key(fit->fptr, TDOUBLE, "CD2_1", &(fit->wcs.cd[1][0]), "Scale matrix (2, 1)", &status);
+			fits_update_key(fit->fptr, TDOUBLE, "CD2_1", &(fit->wcsdata.cd[1][0]), "Scale matrix (2, 1)", &status);
 			status = 0;
-			fits_update_key(fit->fptr, TDOUBLE, "CD2_2", &(fit->wcs.cd[1][1]), "Scale matrix (2, 2)", &status);
+			fits_update_key(fit->fptr, TDOUBLE, "CD2_2", &(fit->wcsdata.cd[1][1]), "Scale matrix (2, 2)", &status);
 			status = 0;
 			fits_update_key(fit->fptr, TINT, "IMAGEW", &(fit->rx), "Image width, in pixels.", &status);
 			status = 0;
@@ -1349,6 +1349,7 @@ void clearfits(fits *fit) {
 			free_stats(fit->stats[i]);
 		free(fit->stats);
 	}
+	free_wcs(fit);
 
 	memset(fit, 0, sizeof(fits));
 }
@@ -1846,6 +1847,9 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 		to->history = NULL;
 		to->date = NULL;
 		to->date_obs = NULL;
+#ifdef HAVE_WCSLIB
+		to->wcslib = NULL;
+#endif
 	}
 
 	if ((oper & CP_ALLOC)) {
@@ -1940,6 +1944,9 @@ int extract_fits(fits *from, fits *to, int channel, gboolean to_float) {
 	to->history = NULL;
 	to->date = NULL;
 	to->date_obs = NULL;
+#ifdef HAVE_WCSLIB
+	to->wcslib = NULL;
+#endif
 
 	if (from->type == DATA_USHORT)
 		if (to_float) {

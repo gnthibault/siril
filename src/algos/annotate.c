@@ -163,14 +163,14 @@ static gboolean is_catalogue_loaded() {
 }
 
 static GSList *find_objects(fits *fit) {
-	if (!has_wcs()) return NULL;
+	if (!has_wcs(fit)) return NULL;
 	GSList *targets = NULL;
 	gdouble x1, y1, x2, y2;
 	double *crval;
 	double resolution;
 
-	crval = get_wcs_crval();
-	resolution = get_wcs_image_resolution();
+	crval = get_wcs_crval(fit);
+	resolution = get_wcs_image_resolution(fit);
 
 	if (crval == NULL) return NULL;
 	if (crval[0] == 0.0 && crval[1] == 0.0) return NULL;
@@ -246,7 +246,7 @@ void free_object(CatalogObjects *object) {
 }
 
 void force_to_refresh_catalogue_list() {
-	if (has_wcs()) {
+	if (has_wcs(&gfit)) {
 		if (com.found_object) {
 			g_slist_free_full(com.found_object, (GDestroyNotify) free_object);
 		}
@@ -270,7 +270,7 @@ static gboolean show_catalog(const gchar *catalog) {
 void on_annotate_button_toggled(GtkToggleToolButton *togglebutton,
 		gpointer user_data) {
 	if (gtk_toggle_tool_button_get_active(togglebutton)) {
-		if (has_wcs()) {
+		if (has_wcs(&gfit)) {
 			com.found_object = find_objects(&gfit);
 		}
 	} else {

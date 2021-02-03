@@ -242,7 +242,7 @@ static void do_popup_graymenu(GtkWidget *my_widget, GdkEventButton *event) {
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_crop"), selected && is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_crop_seq"), selected && sequence_is_loaded());
 #ifdef HAVE_WCSLIB
-	gtk_widget_set_sensitive(lookup_widget("menu_gray_search"), has_wcs());
+	gtk_widget_set_sensitive(lookup_widget("menu_gray_search"), has_wcs(&gfit));
 #else
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_search"), FALSE);
 #endif
@@ -698,9 +698,9 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 				g_sprintf(buffer, format, zoomed.x, zoomed.y,
 						gfit.fpdata[com.cvport][gfit.rx * (gfit.ry - zoomed.y - 1) + zoomed.x]);
 			}
-			if (has_wcs()) {
+			if (has_wcs(&gfit)) {
 				double world_x, world_y;
-				pix2wcs((double) zoomed.x, (double) (gfit.ry - zoomed.y - 1), &world_x, &world_y);
+				pix2wcs(&gfit, (double) zoomed.x, (double) (gfit.ry - zoomed.y - 1), &world_x, &world_y);
 				if (world_x >= 0.0 && !isnan(world_x) && !isnan(world_y)) {
 					SirilWorldCS *world_cs;
 
