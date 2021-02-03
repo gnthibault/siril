@@ -15,10 +15,6 @@
 #endif
 #include <libintl.h>
 
-#ifdef HAVE_WCSLIB
-#include <wcslib.h>
-#include <wcsfix.h>
-#endif
 
 #include "gui/preferences.h"
 #include "core/atomic.h"
