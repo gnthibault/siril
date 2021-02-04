@@ -222,7 +222,7 @@ deviant_pixel* find_deviant_pixels(fits *fit, double sig[2], long *icold,
 		float pixel = fit->type == DATA_FLOAT ? fbuf[i] : (float) buf[i];
 		if (pixel >= thresHot)
 			(*ihot)++;
-		else if (pixel < thresCold)
+		else if (pixel <= thresCold)
 			(*icold)++;
 	}
 
@@ -242,12 +242,12 @@ deviant_pixel* find_deviant_pixels(fits *fit, double sig[2], long *icold,
 		for (x = 0; x < fit->rx; x++) {
 			float pixel = fit->type == DATA_FLOAT ?
 							fbuf[x + y * fit->rx] : (float) buf[x + y * fit->rx];
-			if (pixel >= thresHot) {
+			if (sig[0] != -1.0 && pixel >= thresHot) {
 				dev[i].p.x = x;
 				dev[i].p.y = y;
 				dev[i].type = HOT_PIXEL;
 				i++;
-			} else if (pixel < thresCold) {
+			} else if (sig[1] != -1.0 && pixel <= thresCold) {
 				dev[i].p.x = x;
 				dev[i].p.y = y;
 				dev[i].type = COLD_PIXEL;
