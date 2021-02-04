@@ -181,6 +181,19 @@ static int imoper_to_ushort(fits *a, fits *b, image_operator oper, float factor)
 						abuf[i] = roundf_to_WORD(aval / bval);
 				}
 			}
+		} else if (oper == OPER_MUL) {
+			for (i = 0; i < n; ++i) {
+				if (bbuf[i] == 0)
+					abuf[i] = 0;
+				else {
+					float aval = (float) abuf[i];
+					float bval = (float) bbuf[i];
+					if (factor != 1.0f)
+						abuf[i] = roundf_to_WORD(factor * (aval * bval));
+					else
+						abuf[i] = roundf_to_WORD(aval * bval);
+				}
+			}
 		} else {
 			for (i = 0; i < n; ++i) {
 				int aval = (int) abuf[i];
@@ -192,12 +205,11 @@ static int imoper_to_ushort(fits *a, fits *b, image_operator oper, float factor)
 				case OPER_SUB:
 					abuf[i] = truncate_to_WORD(aval - bval);
 					break;
-				case OPER_MUL:
-					abuf[i] = truncate_to_WORD(aval * bval);
-					break;
+				case OPER_MUL: // handled above
 				case OPER_DIV:	// handled above
 					break;
 				}
+
 				if (factor != 1.0f)
 					abuf[i] = roundf_to_WORD(factor * (float) abuf[i]);
 			}
@@ -220,6 +232,19 @@ static int imoper_to_ushort(fits *a, fits *b, image_operator oper, float factor)
 						abuf[i] = roundf_to_WORD(aval / bval);
 				}
 			}
+		} else if (oper == OPER_MUL) {
+			for (i = 0; i < n; ++i) {
+				if (bbuf[i] == 0.f)
+					abuf[i] = 0;
+				else {
+					float aval = (float) abuf[i];
+					float bval = bbuf[i] * norm;
+					if (factor != 1.0f)
+						abuf[i] = roundf_to_WORD(factor * (aval * bval));
+					else
+						abuf[i] = roundf_to_WORD(aval * bval);
+				}
+			}
 		} else {
 			for (i = 0; i < n; ++i) {
 				int aval = (int) abuf[i];
@@ -231,9 +256,7 @@ static int imoper_to_ushort(fits *a, fits *b, image_operator oper, float factor)
 				case OPER_SUB:
 					abuf[i] = truncate_to_WORD(aval - bval);
 					break;
-				case OPER_MUL:
-					abuf[i] = truncate_to_WORD(aval * bval);
-					break;
+				case OPER_MUL:	// handled above
 				case OPER_DIV:	// handled above
 					break;
 				}

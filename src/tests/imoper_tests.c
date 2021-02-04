@@ -135,8 +135,7 @@ void test_ushort() {
 	cr_expect(a->data[1] == origa[1]);
 	cr_expect(a->data[2] == origa[2]);
 	cr_expect(a->data[3] == origa[3]);
-//	cr_expect(a->data[4] == origa[4]);
-//	fprintf(stderr, "a->data[4]=%d et origa[4]=%d\n", a->data[4], origa[4]);
+	cr_expect(a->data[4] == origa[4]);
 
 
 	free(dataa);
