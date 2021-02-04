@@ -20,7 +20,7 @@
 
 #include <criterion/criterion.h>
 #include "core/siril.h"
-/** I include c file to test stati function!! */
+/** I include c file to test static function!! */
 #include "core/arithm.c"
 /**********************************************/
 #include "io/image_format_fits.h"
@@ -28,9 +28,6 @@
 cominfo com;	// the main data struct
 GtkBuilder *builder = NULL;	// get widget references anywhere
 fits gfit;	// currently loaded image
-
-WORD origa[] = { 0, 1, 2, 1000, 65535 };
-WORD origb[] = { 2, 2, 2, 2, 2 };
 
 /* required links:
  * new_fit_image (io/image_format_fits.o),
@@ -53,9 +50,19 @@ static WORD *alloc_data(const WORD *from, int length) {
 	return data;
 }
 
+static float *alloc_fdata(const float *from, int length) {
+	float *data = malloc(5 * sizeof(float));
+	memcpy(data, from, length * sizeof(float));
+	return data;
+}
+
 void test_ushort() {
 	fits *a = NULL, *b = NULL;
 	int size = 5;
+
+	WORD origa[] = { 0, 1, 2, 1000, 65535 };
+	WORD origb[] = { 2, 2, 2, 2, 2 };
+
 
 	WORD *dataa = alloc_data(origa, size);
 	WORD *datab = alloc_data(origb, size);
@@ -127,7 +134,6 @@ void test_ushort() {
 	cr_expect(a->data[3] == 1500);
 	cr_expect(a->data[4] == 65535);
 
-	/*  case that probably doesn't work as expected, but I don't think we use it */
 	set_ushort_data(a, origa, size);
 	retval = imoper_with_factor(a, b, OPER_MUL, 0.5f, FALSE);
 	cr_expect(!retval, "imoper failed");
@@ -142,4 +148,59 @@ void test_ushort() {
 	free(datab);
 }
 
+void test_ushort_float() {
+	fits *a = NULL, *b = NULL;
+	int size = 5;
+
+	WORD origa[] = { 0, 1, 2, 1000, 65535 };
+	float origb[] = { 0.1f, 0.1f, 0.1f, 0.1f, 0.1f };
+
+	WORD *dataa = alloc_data(origa, size);
+	float *datab = alloc_fdata(origb, size);
+
+	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
+	new_fit_image_with_data(&b, size, 1, 1, DATA_FLOAT, datab);
+
+	/* with factor = 1 first */
+	int retval = imoper(a, b, OPER_ADD, FALSE);
+	cr_expect(!retval, "imoper failed");
+	cr_expect(a->data[0] == 6553);
+	cr_expect(a->data[1] == 6554);
+	cr_expect(a->data[2] == 6555);
+	cr_expect(a->data[3] == 7553);
+	cr_expect(a->data[4] == 65535);
+
+	set_ushort_data(a, origa, size);
+	retval = imoper(a, b, OPER_SUB, FALSE);
+	cr_expect(!retval, "imoper failed");
+	cr_expect(a->data[0] == 0);
+	cr_expect(a->data[1] == 0);
+	cr_expect(a->data[2] == 0);
+	cr_expect(a->data[3] == 0);
+	cr_expect(a->data[4] == 58982);
+
+	set_ushort_data(a, origa, size);
+	retval = imoper(a, b, OPER_DIV, FALSE);
+	cr_expect(!retval, "imoper failed");
+	cr_expect(a->data[0] == 0);
+	cr_expect(a->data[1] == 0);
+	cr_expect(a->data[2] == 0);
+	cr_expect(a->data[3] == 0);
+	cr_expect(a->data[4] == 10);
+
+	set_ushort_data(a, origa, size);
+	retval = imoper(a, b, OPER_MUL, FALSE);
+	cr_expect(!retval, "imoper failed");
+	cr_expect(a->data[0] == 0);
+	cr_expect(a->data[1] == 6554); // TODO: not consistent with addition: truncate vs. roundf_to_WORD
+	cr_expect(a->data[2] == 13107);// TODO: not consistent with previous line: truncate vs. roundf_to_WORD
+	cr_expect(a->data[3] == 65535);
+	cr_expect(a->data[4] == 65535);
+
+
+	free(dataa);
+	free(datab);
+}
+
 Test(arithmetics, test1) { test_ushort(); }
+Test(arithmetics, test2) { test_ushort_float(); }
