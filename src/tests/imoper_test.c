@@ -92,7 +92,7 @@ void test_ushort() {
 	retval = imoper(a, b, OPER_DIV, FALSE);
 	cr_expect(!retval, "imoper failed");
 	cr_expect(a->data[0] == 0);
-	cr_expect(a->data[1] == 0);
+	cr_expect(a->data[1] == 1);
 	cr_expect(a->data[2] == 1);
 	cr_expect(a->data[3] == 500);
 	cr_expect(a->data[4] == 32768);
