@@ -189,6 +189,9 @@ deviant_pixel* find_deviant_pixels(fits *fit, double sig[2], long *icold,
 	float thresHot, thresCold;
 	deviant_pixel *dev;
 
+	if (sig[0] == -1.0 && sig[1] == -1.0)
+		return NULL;
+
 	stat = statistics(NULL, -1, fit, RLAYER, NULL, STATS_BASIC, FALSE);
 	if (!stat) {
 		siril_log_message(_("Error: statistics computation failed.\n"));

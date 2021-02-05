@@ -104,7 +104,7 @@ BYTE round_to_BYTE(double x) {
  * @return a truncated and rounded BYTE
  */
 BYTE roundf_to_BYTE(float f) {
-	if (f <= 0.5f) return 0;
+	if (f < 0.5f) return 0;
 	if (f >= UCHAR_MAX - 0.5f) return UCHAR_MAX;
 	return (BYTE)(f + 0.5f);
 }
@@ -115,7 +115,7 @@ BYTE roundf_to_BYTE(float f) {
  * @return a truncated and rounded WORD
  */
 WORD roundf_to_WORD(float f) {
-	if (f <= 0.5f) return 0;
+	if (f < 0.5f) return 0;
 	if (f >= USHRT_MAX - 0.5f) return USHRT_MAX;
 	return (WORD)(f + 0.5f);
 }
