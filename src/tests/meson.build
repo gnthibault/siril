@@ -31,14 +31,14 @@ if criterion_dep.found()
 
      test('siril_date_test', date_exec)
      
-     imoper_exec = executable('imoper_tests',
-                                'imoper_tests.c',
+     imoper_exec = executable('imoper_test',
+                                'imoper_test.c',
                                 dependencies : [siril_dep, criterion_dep],
                                 link_args : [siril_link_arg, '-Wl,--unresolved-symbols=ignore-all'],
                                 c_args : siril_c_flag,
                                 cpp_args : siril_cpp_flag)
 
-     test('imoper_tests', imoper_exec)
+     test('imoper_test', imoper_exec)
 
 endif
 
