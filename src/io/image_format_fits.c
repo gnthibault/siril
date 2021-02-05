@@ -53,8 +53,8 @@ const char *fit_extension[] = {
 
 static char *MIPSHI[] = {"MIPS-HI", "CWHITE", "DATAMAX", NULL };
 static char *MIPSLO[] = {"MIPS-LO", "CBLACK", "DATAMIN", NULL };
-static char *PixSizeX[] = { "XPIXSZ", "XPIXELSZ", "PIXSIZE1", NULL };
-static char *PixSizeY[] = { "YPIXSZ", "YPIXELSZ", "PIXSIZE2", NULL };
+static char *PixSizeX[] = { "XPIXSZ", "XPIXELSZ", "PIXSIZE1", "PIXSIZEX", NULL };
+static char *PixSizeY[] = { "YPIXSZ", "YPIXELSZ", "PIXSIZE2", "PIXSIZEY", NULL };
 static char *BinX[] = { "XBINNING", "BINX", NULL };
 static char *BinY[] = { "YBINNING", "BINY", NULL };
 static char *Focal[] = { "FOCAL", "FOCALLEN", NULL };
@@ -325,22 +325,24 @@ void read_fits_header(fits *fit) {
 	fit->date = FITS_date_to_date_time(date);
 
 	__tryToFindKeywords(fit->fptr, TDOUBLE, Focal, &fit->focal_length);
-	if (!sequence_is_loaded() || com.seq.current == 0)
-		fprintf(stdout,
-				"Read from FITS header: pix size %gx%g, binning %ux%u, focal %g\n",
-				fit->pixel_size_x, fit->pixel_size_y, fit->binning_x,
-				fit->binning_y, fit->focal_length);
+	if (fit->focal_length <= 0.0) {
+		/* this keyword is seen in some professional images, FLENGTH is in m. */
+		double flength;
+		status = 0;
+		fits_read_key(fit->fptr, TDOUBLE, "FLENGTH", &flength, NULL, &status);
+		if (!status) {
+			fit->focal_length = flength * 1000.0; // convert m to mm
+		}
+	}
 
 	__tryToFindKeywords(fit->fptr, TDOUBLE, CCD_TEMP, &fit->ccd_temp);
 	__tryToFindKeywords(fit->fptr, TDOUBLE, Exposure, &fit->exposure);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "APERTURE", &(fit->aperture), NULL,
-			&status);
+	fits_read_key(fit->fptr, TDOUBLE, "APERTURE", &(fit->aperture), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "ISOSPEED", &(fit->iso_speed), NULL,
-			&status);	// Non-standard keywords used in MaxIm DL
+	fits_read_key(fit->fptr, TDOUBLE, "ISOSPEED", &(fit->iso_speed), NULL, &status);	// Non-standard keywords used in MaxIm DL
 
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "CVF", &(fit->cvf), NULL, &status);
@@ -400,22 +402,15 @@ void read_fits_header(fits *fit) {
 	 * ****************************************************************/
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "DFTNORM0", &(fit->dft.norm[0]), NULL,
-			&status);
+	fits_read_key(fit->fptr, TDOUBLE, "DFTNORM0", &(fit->dft.norm[0]), NULL, &status);
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "DFTNORM1", &(fit->dft.norm[1]), NULL,
-			&status);
+	fits_read_key(fit->fptr, TDOUBLE, "DFTNORM1", &(fit->dft.norm[1]), NULL, &status);
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "DFTNORM2", &(fit->dft.norm[2]), NULL,
-			&status);
-
+	fits_read_key(fit->fptr, TDOUBLE, "DFTNORM2", &(fit->dft.norm[2]), NULL, &status);
 	status = 0;
-	fits_read_key(fit->fptr, TSTRING, "DFTORD", &(fit->dft.ord), NULL,
-			&status);
-
+	fits_read_key(fit->fptr, TSTRING, "DFTORD", &(fit->dft.ord), NULL, &status);
 	status = 0;
-	fits_read_key(fit->fptr, TSTRING, "DFTTYPE", &(fit->dft.type), NULL,
-			&status);
+	fits_read_key(fit->fptr, TSTRING, "DFTTYPE", &(fit->dft.type), NULL, &status);
 
 	fits_read_history(fit->fptr, &(fit->history));
 }
