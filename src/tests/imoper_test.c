@@ -19,6 +19,7 @@
  */
 
 #include <criterion/criterion.h>
+#include <math.h>
 #include "core/siril.h"
 /** I include c file to test static function!! */
 #include "core/arithm.c"
@@ -63,7 +64,6 @@ void test_ushort() {
 	WORD origa[] = { 0, 1, 2, 1000, 65535 };
 	WORD origb[] = { 2, 2, 2, 2, 2 };
 
-
 	WORD *dataa = alloc_data(origa, size);
 	WORD *datab = alloc_data(origb, size);
 
@@ -72,79 +72,125 @@ void test_ushort() {
 
 	/* with factor = 1 first */
 	int retval = imoper(a, b, OPER_ADD, FALSE);
-	cr_expect(!retval, "imoper failed");
-	cr_expect(a->data[0] == 2);
-	cr_expect(a->data[1] == 3);
-	cr_expect(a->data[2] == 4);
-	cr_expect(a->data[3] == 1002);
-	cr_expect(a->data[4] == 65535);
+	cr_assert(!retval, "imoper ADD failed");
+	cr_expect_eq(a->data[0], 2);
+	cr_expect_eq(a->data[1], 3);
+	cr_expect_eq(a->data[2], 4);
+	cr_expect_eq(a->data[3], 1002);
+	cr_expect_eq(a->data[4], 65535);
 
 	set_ushort_data(a, origa, size);
 	retval = imoper(a, b, OPER_SUB, FALSE);
-	cr_expect(!retval, "imoper failed");
-	cr_expect(a->data[0] == 0);
-	cr_expect(a->data[1] == 0);
-	cr_expect(a->data[2] == 0);
-	cr_expect(a->data[3] == 998);
-	cr_expect(a->data[4] == 65533);
+	cr_assert(!retval, "imoper SUB failed");
+	cr_expect_eq(a->data[0], 0);
+	cr_expect_eq(a->data[1], 0);
+	cr_expect_eq(a->data[2], 0);
+	cr_expect_eq(a->data[3], 998);
+	cr_expect_eq(a->data[4], 65533);
 
 	set_ushort_data(a, origa, size);
 	retval = imoper(a, b, OPER_DIV, FALSE);
-	cr_expect(!retval, "imoper failed");
-	cr_expect(a->data[0] == 0);
-	cr_expect(a->data[1] == 1);
-	cr_expect(a->data[2] == 1);
-	cr_expect(a->data[3] == 500);
-	cr_expect(a->data[4] == 32768);
+	cr_assert(!retval, "imoper DIV failed");
+	cr_expect_eq(a->data[0], 0);
+	cr_expect_eq(a->data[1], 1);
+	cr_expect_eq(a->data[2], 1);
+	cr_expect_eq(a->data[3], 500);
+	cr_expect_eq(a->data[4], 32768);
 
 	set_ushort_data(a, origa, size);
 	retval = imoper(a, b, OPER_MUL, FALSE);
-	cr_expect(!retval, "imoper failed");
-	cr_expect(a->data[0] == 0);
-	cr_expect(a->data[1] == 2);
-	cr_expect(a->data[2] == 4);
-	cr_expect(a->data[3] == 2000);
-	cr_expect(a->data[4] == 65535);
+	cr_assert(!retval, "imoper MUL failed");
+	cr_expect_eq(a->data[0], 0);
+	cr_expect_eq(a->data[1], 2);
+	cr_expect_eq(a->data[2], 4);
+	cr_expect_eq(a->data[3], 2000);
+	cr_expect_eq(a->data[4], 65535);
 
 	/* now with factor != 1 */
 	set_ushort_data(a, origa, size);
 	retval = imoper_with_factor(a, b, OPER_ADD, 2.0f, FALSE);
-	cr_expect(!retval, "imoper failed");
-	cr_expect(a->data[0] == 4);
-	cr_expect(a->data[1] == 6);
-	cr_expect(a->data[2] == 8);
-	cr_expect(a->data[3] == 2004);
-	cr_expect(a->data[4] == 65535);
+	cr_assert(!retval, "imoper ADD with factor failed");
+	cr_expect_eq(a->data[0], 4);
+	cr_expect_eq(a->data[1], 6);
+	cr_expect_eq(a->data[2], 8);
+	cr_expect_eq(a->data[3], 2004);
+	cr_expect_eq(a->data[4], 65535);
 
 	set_ushort_data(a, origa, size);
 	retval = imoper_with_factor(a, b, OPER_SUB, 2.0f, FALSE);
-	cr_expect(!retval, "imoper failed");
-	cr_expect(a->data[0] == 0);
-	cr_expect(a->data[1] == 0);
-	cr_expect(a->data[2] == 0);
-	cr_expect(a->data[3] == 1996);
-	cr_expect(a->data[4] == 65535);
+	cr_assert(!retval, "imoper SUB with factor failed");
+	cr_expect_eq(a->data[0], 0);
+	cr_expect_eq(a->data[1], 0);
+	cr_expect_eq(a->data[2], 0);
+	cr_expect_eq(a->data[3], 1996);
+	cr_expect_eq(a->data[4], 65535);
 
 	set_ushort_data(a, origa, size);
 	retval = imoper_with_factor(a, b, OPER_DIV, 3.0f, FALSE);
-	cr_expect(!retval, "imoper failed");
-	cr_expect(a->data[0] == 0);
-	cr_expect(a->data[1] == 2);
-	cr_expect(a->data[2] == 3);
-	cr_expect(a->data[3] == 1500);
-	cr_expect(a->data[4] == 65535);
+	cr_assert(!retval, "imoper DIV with factor failed");
+	cr_expect_eq(a->data[0], 0);
+	cr_expect_eq(a->data[1], 2);
+	cr_expect_eq(a->data[2], 3);
+	cr_expect_eq(a->data[3], 1500);
+	cr_expect_eq(a->data[4], 65535);
 
 	set_ushort_data(a, origa, size);
 	retval = imoper_with_factor(a, b, OPER_MUL, 0.5f, FALSE);
-	cr_expect(!retval, "imoper failed");
-	cr_expect(a->data[0] == origa[0]);
-	cr_expect(a->data[1] == origa[1]);
-	cr_expect(a->data[2] == origa[2]);
-	cr_expect(a->data[3] == origa[3]);
-	cr_expect(a->data[4] == origa[4]);
+	cr_assert(!retval, "imoper MUL with factor failed");
+	cr_expect_eq(a->data[0], origa[0]);
+	cr_expect_eq(a->data[1], origa[1]);
+	cr_expect_eq(a->data[2], origa[2]);
+	cr_expect_eq(a->data[3], origa[3]);
+	cr_expect_eq(a->data[4], origa[4]);
 
+	/* with float output and no factor: this frees a->data each time */
+	//WORD origa[] = { 0, 1, 2, 1000, 65535 };
+	//WORD origb[] = { 2, 2, 2, 2, 2 };
+	set_ushort_data(a, origa, size);
+	retval = imoper(a, b, OPER_ADD, TRUE);
+	cr_assert(!retval, "imoper ADD to 32 bits failed");
+	cr_expect_float_eq(a->fdata[0], 2.0f*INV_USHRT_MAX_SINGLE, 1e-6);
+	cr_expect_float_eq(a->fdata[1], 3.0f*INV_USHRT_MAX_SINGLE, 1e-6);
+	cr_expect_float_eq(a->fdata[2], 4.0f*INV_USHRT_MAX_SINGLE, 1e-6);
+	cr_expect_float_eq(a->fdata[3], 1002.0f*INV_USHRT_MAX_SINGLE, 1e-6);
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-7);
 
-	free(dataa);
+	clearfits(a);
+	dataa = alloc_data(origa, size);
+	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
+	retval = imoper(a, b, OPER_SUB, TRUE);
+	cr_assert(!retval, "imoper SUB to 32 bits failed");
+	cr_expect_float_eq(a->fdata[0], -2.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected -2 as float, got %f", a->fdata[0]);
+	cr_expect_float_eq(a->fdata[1], -1.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected -1 as float, got %f", a->fdata[1]);
+	cr_expect_float_eq(a->fdata[2], 0.0f, 1e-7, "expected 0, got %f", a->fdata[2]);
+	cr_expect_float_eq(a->fdata[3], 998.f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 998 as float, got %f", a->fdata[3]);
+	cr_expect_float_eq(a->fdata[4], 65533.f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 65535 as float, got %f", a->fdata[4]);
+
+	clearfits(a);
+	dataa = alloc_data(origa, size);
+	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
+	retval = imoper(a, b, OPER_DIV, TRUE);
+	cr_assert(!retval, "imoper DIV to 32 bits failed");
+	cr_expect_float_eq(a->fdata[0], 0.0f, 1e-7, "expected 0, got %f", a->fdata[0]);
+	cr_expect_float_eq(a->fdata[1], 0.5f, 1e-6, "expected 0.5, got %f", a->fdata[1]);
+	cr_expect_float_eq(a->fdata[2], 1.0f, 1e-6, "expected 1, got %f", a->fdata[2]);
+	cr_expect_float_eq(a->fdata[3], 1.0f, 1e-6, "expected 1, got %f", a->fdata[3]);
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-6, "expected 1, got %f", a->fdata[4]);
+
+	/* the expected results for division and multiplication are unclear in
+	 * that case, for example, 1 * 65535 converted to float would be
+	 * .000015259022 because 65535 becomes 1 and 1 becomes .000015259022 */
+	/*clearfits(a);
+	dataa = alloc_data(origa, size);
+	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
+	retval = imoper(a, b, OPER_MUL, TRUE);
+	cr_assert(!retval, "imoper MUL to 32 bits failed");
+	cr_expect_float_eq(a->fdata[0], 0.0f, 1e-7, "expected 0, got %f", a->fdata[0]);
+	cr_expect_float_eq(a->fdata[1], 2.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 2 as float, got %f", a->fdata[1]);
+	cr_expect_float_eq(a->fdata[2], 4.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 4 as float, got %f", a->fdata[2]);
+	cr_expect_float_eq(a->fdata[3], 2000.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 2000 as float, got %f", a->fdata[3]);
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-6, "expected 1, got %f", a->fdata[4]);*/
+
 	free(datab);
 }
 
@@ -163,44 +209,44 @@ void test_ushort_float() {
 
 	/* with factor = 1 first */
 	int retval = imoper(a, b, OPER_ADD, FALSE);
-	cr_expect(!retval, "imoper failed");
-	cr_expect(a->data[0] == 6553);
-	cr_expect(a->data[1] == 6554);
-	cr_expect(a->data[2] == 6555);
-	cr_expect(a->data[3] == 7553);
-	cr_expect(a->data[4] == 65535);
+	cr_assert(!retval, "imoper failed");
+	cr_expect_eq(a->data[0], 6553);
+	cr_expect_eq(a->data[1], 6554);
+	cr_expect_eq(a->data[2], 6555);
+	cr_expect_eq(a->data[3], 7553);
+	cr_expect_eq(a->data[4], 65535);
 
 	set_ushort_data(a, origa, size);
 	retval = imoper(a, b, OPER_SUB, FALSE);
-	cr_expect(!retval, "imoper failed");
-	cr_expect(a->data[0] == 0);
-	cr_expect(a->data[1] == 0);
-	cr_expect(a->data[2] == 0);
-	cr_expect(a->data[3] == 0);
-	cr_expect(a->data[4] == 58982);
+	cr_assert(!retval, "imoper failed");
+	cr_expect_eq(a->data[0], 0);
+	cr_expect_eq(a->data[1], 0);
+	cr_expect_eq(a->data[2], 0);
+	cr_expect_eq(a->data[3], 0);
+	cr_expect_eq(a->data[4], 58982);
 
 	set_ushort_data(a, origa, size);
 	retval = imoper(a, b, OPER_DIV, FALSE);
-	cr_expect(!retval, "imoper failed");
-	cr_expect(a->data[0] == 0);
-	cr_expect(a->data[1] == 0);
-	cr_expect(a->data[2] == 0);
-	cr_expect(a->data[3] == 0);
-	cr_expect(a->data[4] == 10);
+	cr_assert(!retval, "imoper failed");
+	cr_expect_eq(a->data[0], 0);
+	cr_expect_eq(a->data[1], 0);
+	cr_expect_eq(a->data[2], 0);
+	cr_expect_eq(a->data[3], 0);
+	cr_expect_eq(a->data[4], 10);
 
 	set_ushort_data(a, origa, size);
 	retval = imoper(a, b, OPER_MUL, FALSE);
-	cr_expect(!retval, "imoper failed");
-	cr_expect(a->data[0] == 0);
-	cr_expect(a->data[1] == 6554); // TODO: not consistent with addition: truncate vs. roundf_to_WORD
-	cr_expect(a->data[2] == 13107);// TODO: not consistent with previous line: truncate vs. roundf_to_WORD
-	cr_expect(a->data[3] == 65535);
-	cr_expect(a->data[4] == 65535);
+	cr_assert(!retval, "imoper failed");
+	cr_expect_eq(a->data[0], 0);
+	cr_expect_eq(a->data[1], 6554); // TODO: not consistent with addition: truncate vs. roundf_to_WORD
+	cr_expect_eq(a->data[2], 13107);// TODO: not consistent with previous line: truncate vs. roundf_to_WORD
+	cr_expect_eq(a->data[3], 65535);
+	cr_expect_eq(a->data[4], 65535);
 
 
 	free(dataa);
 	free(datab);
 }
 
-Test(arithmetics, test1) { test_ushort(); }
-Test(arithmetics, test2) { test_ushort_float(); }
+Test(arithmetics, ushort) { test_ushort(); }
+Test(arithmetics, float) { test_ushort_float(); }

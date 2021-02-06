@@ -38,7 +38,7 @@ if criterion_dep.found()
                                 c_args : siril_c_flag,
                                 cpp_args : siril_cpp_flag)
 
-     test('imoper_test', imoper_exec)
+     test('imoper_test', imoper_exec, suite: 'arithmetic')
 
 endif
 
