@@ -45,6 +45,10 @@ static void set_ushort_data(fits *fit, WORD *data, int length) {
 	memcpy(fit->data, data, length * sizeof(WORD));
 }
 
+static void set_float_data(fits *fit, float *data, int length) {
+	memcpy(fit->fdata, data, length * sizeof(float));
+}
+
 static WORD *alloc_data(const WORD *from, int length) {
 	WORD *data = malloc(5 * sizeof(WORD));
 	memcpy(data, from, length * sizeof(WORD));
@@ -57,7 +61,8 @@ static float *alloc_fdata(const float *from, int length) {
 	return data;
 }
 
-void test_ushort() {
+/* image a is ushort, image b is ushort */
+void test_a_ushort_b_ushort() {
 	fits *a = NULL, *b = NULL;
 	int size = 5;
 
@@ -70,7 +75,7 @@ void test_ushort() {
 	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
 	new_fit_image_with_data(&b, size, 1, 1, DATA_USHORT, datab);
 
-	/* with factor = 1 first */
+	/* with factor = 1 first, ushort output */
 	int retval = imoper(a, b, OPER_ADD, FALSE);
 	cr_assert(!retval, "imoper ADD failed");
 	cr_expect_eq(a->data[0], 2);
@@ -106,7 +111,7 @@ void test_ushort() {
 	cr_expect_eq(a->data[3], 2000);
 	cr_expect_eq(a->data[4], 65535);
 
-	/* now with factor != 1 */
+	/* now with factor != 1, ushort output */
 	set_ushort_data(a, origa, size);
 	retval = imoper_with_factor(a, b, OPER_ADD, 2.0f, FALSE);
 	cr_assert(!retval, "imoper ADD with factor failed");
@@ -143,9 +148,9 @@ void test_ushort() {
 	cr_expect_eq(a->data[3], origa[3]);
 	cr_expect_eq(a->data[4], origa[4]);
 
-	/* with float output and no factor: this frees a->data each time */
-	//WORD origa[] = { 0, 1, 2, 1000, 65535 };
-	//WORD origb[] = { 2, 2, 2, 2, 2 };
+	/* with factor = 1, float output */
+	/* warning: this frees a->data on each call */
+	// a = { 0, 1, 2, 1000, 65535 }, b = { 2, 2, 2, 2, 2 }
 	set_ushort_data(a, origa, size);
 	retval = imoper(a, b, OPER_ADD, TRUE);
 	cr_assert(!retval, "imoper ADD to 32 bits failed");
@@ -177,10 +182,8 @@ void test_ushort() {
 	cr_expect_float_eq(a->fdata[3], 1.0f, 1e-6, "expected 1, got %f", a->fdata[3]);
 	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-6, "expected 1, got %f", a->fdata[4]);
 
-	/* the expected results for division and multiplication are unclear in
-	 * that case, for example, 1 * 65535 converted to float would be
-	 * .000015259022 because 65535 becomes 1 and 1 becomes .000015259022 */
-	/*clearfits(a);
+	/*
+	clearfits(a);
 	dataa = alloc_data(origa, size);
 	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
 	retval = imoper(a, b, OPER_MUL, TRUE);
@@ -189,12 +192,61 @@ void test_ushort() {
 	cr_expect_float_eq(a->fdata[1], 2.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 2 as float, got %f", a->fdata[1]);
 	cr_expect_float_eq(a->fdata[2], 4.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 4 as float, got %f", a->fdata[2]);
 	cr_expect_float_eq(a->fdata[3], 2000.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 2000 as float, got %f", a->fdata[3]);
-	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-6, "expected 1, got %f", a->fdata[4]);*/
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-6, "expected 1, got %f", a->fdata[4]);
+	*/
 
-	free(datab);
+	/* with factor != 1, float output */
+	/* warning: this frees a->data on each call */
+	// a = { 0, 1, 2, 1000, 65535 }, b = { 2, 2, 2, 2, 2 }
+	clearfits(a);
+	dataa = alloc_data(origa, size);
+	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
+	retval = imoper_with_factor(a, b, OPER_ADD, 2.0f, TRUE);
+	cr_assert(!retval, "imoper ADD with factor to 32 bits failed");
+	cr_expect_float_eq(a->fdata[0], 4.0f*INV_USHRT_MAX_SINGLE, 1e-6);
+	cr_expect_float_eq(a->fdata[1], 6.0f*INV_USHRT_MAX_SINGLE, 1e-6);
+	cr_expect_float_eq(a->fdata[2], 8.0f*INV_USHRT_MAX_SINGLE, 1e-6);
+	cr_expect_float_eq(a->fdata[3], 2004.0f*INV_USHRT_MAX_SINGLE, 1e-6);
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-7);
+
+	clearfits(a);
+	dataa = alloc_data(origa, size);
+	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
+	retval = imoper_with_factor(a, b, OPER_SUB, 2.0f, TRUE);
+	cr_assert(!retval, "imoper SUB with factor to 32 bits failed");
+	cr_expect_float_eq(a->fdata[0], -4.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected -4 as float, got %f", a->fdata[0]);
+	cr_expect_float_eq(a->fdata[1], -2.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected -2 as float, got %f", a->fdata[1]);
+	cr_expect_float_eq(a->fdata[2], 0.0f, 1e-7, "expected 0, got %f", a->fdata[2]);
+	cr_expect_float_eq(a->fdata[3], 1996.f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 1996 as float, got %f", a->fdata[3]);
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-7, "expected 1, got %f", a->fdata[4]);
+
+	clearfits(a);
+	dataa = alloc_data(origa, size);
+	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
+	/* the usual case if float division with a factor = average of flat */
+	retval = imoper_with_factor(a, b, OPER_DIV, 2.0f*INV_USHRT_MAX_SINGLE, TRUE);
+	cr_assert(!retval, "imoper DIV with factor to 32 bits failed");
+	cr_expect_float_eq(a->fdata[0], 0.0f, 1e-7, "expected 0, got %f", a->fdata[0]);
+	cr_expect_float_eq(a->fdata[1], 1.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 1 as float, got %f", a->fdata[1]);
+	cr_expect_float_eq(a->fdata[2], 2.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 2 as float, got %f", a->fdata[2]);
+	cr_expect_float_eq(a->fdata[3], 1000.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 1000 as float, got %f", a->fdata[3]);
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-7, "expected 1, got %f", a->fdata[4]);
+
+	/*clearfits(a);
+	dataa = alloc_data(origa, size);
+	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
+	retval = imoper(a, b, OPER_MUL, TRUE);
+	cr_assert(!retval, "imoper MUL with factor to 32 bits failed");
+	cr_expect_float_eq(a->fdata[0], 0.0f, 1e-7, "expected 0, got %f", a->fdata[0]);
+	cr_expect_float_eq(a->fdata[1], 2.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 2 as float, got %f", a->fdata[1]);
+	cr_expect_float_eq(a->fdata[2], 4.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 4 as float, got %f", a->fdata[2]);
+	cr_expect_float_eq(a->fdata[3], 2000.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 2000 as float, got %f", a->fdata[3]);
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-6, "expected 1, got %f", a->fdata[4]);
+*/
 }
 
-void test_ushort_float() {
+/* image a is ushort, image b is float */
+void test_a_ushort_b_float() {
 	fits *a = NULL, *b = NULL;
 	int size = 5;
 
@@ -207,10 +259,10 @@ void test_ushort_float() {
 	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
 	new_fit_image_with_data(&b, size, 1, 1, DATA_FLOAT, datab);
 
-	/* with factor = 1 first */
+	/* with factor = 1, ushort output */
 	int retval = imoper(a, b, OPER_ADD, FALSE);
-	cr_assert(!retval, "imoper failed");
-	cr_expect_eq(a->data[0], 6553);
+	cr_assert(!retval, "imoper ADD to ushort failed");
+	cr_expect_eq(a->data[0], 6553);	// TODO: should be 6554 with rounding!
 	cr_expect_eq(a->data[1], 6554);
 	cr_expect_eq(a->data[2], 6555);
 	cr_expect_eq(a->data[3], 7553);
@@ -218,7 +270,7 @@ void test_ushort_float() {
 
 	set_ushort_data(a, origa, size);
 	retval = imoper(a, b, OPER_SUB, FALSE);
-	cr_assert(!retval, "imoper failed");
+	cr_assert(!retval, "imoper SUB to ushort failed");
 	cr_expect_eq(a->data[0], 0);
 	cr_expect_eq(a->data[1], 0);
 	cr_expect_eq(a->data[2], 0);
@@ -227,7 +279,7 @@ void test_ushort_float() {
 
 	set_ushort_data(a, origa, size);
 	retval = imoper(a, b, OPER_DIV, FALSE);
-	cr_assert(!retval, "imoper failed");
+	cr_assert(!retval, "imoper DIV to ushort failed");
 	cr_expect_eq(a->data[0], 0);
 	cr_expect_eq(a->data[1], 0);
 	cr_expect_eq(a->data[2], 0);
@@ -236,17 +288,153 @@ void test_ushort_float() {
 
 	set_ushort_data(a, origa, size);
 	retval = imoper(a, b, OPER_MUL, FALSE);
-	cr_assert(!retval, "imoper failed");
+	cr_assert(!retval, "imoper MUL to ushort failed");
 	cr_expect_eq(a->data[0], 0);
 	cr_expect_eq(a->data[1], 6554); // TODO: not consistent with addition: truncate vs. roundf_to_WORD
 	cr_expect_eq(a->data[2], 13107);// TODO: not consistent with previous line: truncate vs. roundf_to_WORD
 	cr_expect_eq(a->data[3], 65535);
 	cr_expect_eq(a->data[4], 65535);
 
+	/* with factor = 1, float output */
+	/* warning: this frees a->data on each call */
+	// a = { 0, 1, 2, 1000, 65535 }, b = { 0.1f, 0.1f, 0.1f, 0.1f, 0.1f }
+	clearfits(a);
+	dataa = alloc_data(origa, size);
+	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
+	retval = imoper(a, b, OPER_ADD, TRUE);
+	cr_assert(!retval, "imoper ADD to float failed");
+	cr_expect_float_eq(a->fdata[0], 6553.5f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 6554 as float, got %f", a->fdata[0]);
+	cr_expect_float_eq(a->fdata[1], 6554.5f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 6555 as float, got %f", a->fdata[1]);
+	cr_expect_float_eq(a->fdata[2], 6555.5f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 6556 as float, got %f", a->fdata[2]);
+	cr_expect_float_eq(a->fdata[3], 7553.5f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 7554 as float, got %f", a->fdata[3]);
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-7);
 
-	free(dataa);
-	free(datab);
+	clearfits(a);
+	dataa = alloc_data(origa, size);
+	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
+	retval = imoper(a, b, OPER_SUB, TRUE);
+	cr_assert(!retval, "imoper SUB to float failed");
+	cr_expect_float_eq(a->fdata[0], -6553.5f*INV_USHRT_MAX_SINGLE, 1e-6, "expected -6553 as float, got %f", a->fdata[0]);
+	cr_expect_float_eq(a->fdata[1], -6552.5f*INV_USHRT_MAX_SINGLE, 1e-6, "expected -6552 as float, got %f", a->fdata[1]);
+	cr_expect_float_eq(a->fdata[2], -6551.5f*INV_USHRT_MAX_SINGLE, 1e-6, "expected -6551 as float, got %f", a->fdata[2]);
+	cr_expect_float_eq(a->fdata[3], -5553.5f*INV_USHRT_MAX_SINGLE, 1e-6, "expected -5553 as float, got %f", a->fdata[3]);
+	cr_expect_float_eq(a->fdata[4], 0.9f, 1e-7, "expected 0.9, got %f", a->fdata[4]);
+
+	clearfits(a);
+	dataa = alloc_data(origa, size);
+	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
+	retval = imoper(a, b, OPER_DIV, TRUE);
+	cr_assert(!retval, "imoper DIV to float failed");
+	cr_expect_float_eq(a->fdata[0], 0.0f, 1e-7, "expected 0, got %f", a->fdata[0]);
+	cr_expect_float_eq(a->fdata[1], 10.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 10 as float, got %f", a->fdata[1]);
+	cr_expect_float_eq(a->fdata[2], 20.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 20 as float, got %f", a->fdata[2]);
+	cr_expect_float_eq(a->fdata[3], 10000.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 10000 as float, got %f", a->fdata[3]);
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-7, "expected 1, got %f", a->fdata[4]);
+
+	/* with factor != 1, float output */
+	clearfits(a);
+	dataa = alloc_data(origa, size);
+	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
+	retval = imoper_with_factor(a, b, OPER_ADD, 0.1f, TRUE);
+	cr_assert(!retval, "imoper ADD to float failed");
+	cr_expect_float_eq(a->fdata[0], 655.35f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 655 as float, got %f", a->fdata[0]);
+	cr_expect_float_eq(a->fdata[1], 655.45f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 655 as float, got %f", a->fdata[1]);
+	cr_expect_float_eq(a->fdata[2], 655.55f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 656 as float, got %f", a->fdata[2]);
+	cr_expect_float_eq(a->fdata[3], 755.35f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 755 as float, got %f", a->fdata[3]);
+	cr_expect_float_eq(a->fdata[4], 0.11f, 1e-6, "expected 0.11, got %f", a->fdata[4]);
+
+	clearfits(a);
+	dataa = alloc_data(origa, size);
+	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
+	retval = imoper_with_factor(a, b, OPER_SUB, 0.1f, TRUE);
+	cr_assert(!retval, "imoper SUB to float failed");
+	cr_expect_float_eq(a->fdata[0], -655.35f*INV_USHRT_MAX_SINGLE, 1e-6, "expected -655 as float, got %f", a->fdata[0]);
+	cr_expect_float_eq(a->fdata[1], -655.25f*INV_USHRT_MAX_SINGLE, 1e-6, "expected -655 as float, got %f", a->fdata[1]);
+	cr_expect_float_eq(a->fdata[2], -655.15f*INV_USHRT_MAX_SINGLE, 1e-6, "expected -655 as float, got %f", a->fdata[2]);
+	cr_expect_float_eq(a->fdata[3], -555.35f*INV_USHRT_MAX_SINGLE, 1e-6, "expected -555 as float, got %f", a->fdata[3]);
+	cr_expect_float_eq(a->fdata[4], 0.09f, 1e-7, "expected 0.09, got %f", a->fdata[4]);
+
+	clearfits(a);
+	dataa = alloc_data(origa, size);
+	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
+	retval = imoper_with_factor(a, b, OPER_DIV, 0.1f, TRUE);
+	cr_assert(!retval, "imoper DIV to float failed");
+	cr_expect_float_eq(a->fdata[0], 0.0f, 1e-7, "expected 0, got %f", a->fdata[0]);
+	cr_expect_float_eq(a->fdata[1], 1.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 1 as float, got %f", a->fdata[1]);
+	cr_expect_float_eq(a->fdata[2], 2.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 2 as float, got %f", a->fdata[2]);
+	cr_expect_float_eq(a->fdata[3], 1000.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 1000 as float, got %f", a->fdata[3]);
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-7, "expected 1, got %f", a->fdata[4]);
 }
 
-Test(arithmetics, ushort) { test_ushort(); }
-Test(arithmetics, float) { test_ushort_float(); }
+void test_a_float_b_float() {
+	fits *a = NULL, *b = NULL;
+	int size = 5;
+
+	float origa[] = { 0.0f, 0.01f, 0.1f, 0.3f, 1.0f };
+	float origb[] = { 0.1f, 0.1f, 0.1f, 0.1f, 0.1f };
+
+	float *dataa = alloc_fdata(origa, size);
+	float *datab = alloc_fdata(origb, size);
+
+	new_fit_image_with_data(&a, size, 1, 1, DATA_FLOAT, dataa);
+	new_fit_image_with_data(&b, size, 1, 1, DATA_FLOAT, datab);
+
+	/* with factor = 1 first */
+	int retval = imoper(a, b, OPER_ADD, TRUE);
+	cr_assert(!retval, "imoper ADD failed");
+	cr_expect_float_eq(a->fdata[0], 0.1f, 1e-7);
+	cr_expect_float_eq(a->fdata[1], 0.11f, 1e-7);
+	cr_expect_float_eq(a->fdata[2], 0.2f, 1e-7);
+	cr_expect_float_eq(a->fdata[3], 0.4f, 1e-7);
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-7);
+
+	set_float_data(a, origa, size);
+	retval = imoper(a, b, OPER_SUB, TRUE);
+	cr_assert(!retval, "imoper SUB failed");
+	cr_expect_float_eq(a->fdata[0], -0.1f, 1e-7);
+	cr_expect_float_eq(a->fdata[1], -0.09f, 1e-7);
+	cr_expect_float_eq(a->fdata[2], 0.0f, 1e-7);
+	cr_expect_float_eq(a->fdata[3], 0.2f, 1e-7);
+	cr_expect_float_eq(a->fdata[4], 0.9f, 1e-7);
+
+	set_float_data(a, origa, size);
+	retval = imoper(a, b, OPER_DIV, TRUE);
+	cr_assert(!retval, "imoper DIV failed");
+	cr_expect_float_eq(a->fdata[0], 0.0f, 1e-7);
+	cr_expect_float_eq(a->fdata[1], 0.1f, 1e-7);
+	cr_expect_float_eq(a->fdata[2], 1.0f, 1e-7);
+	cr_expect_float_eq(a->fdata[3], 1.0f, 1e-7);
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-7);
+
+	/* with factor != 1 */
+	set_float_data(a, origa, size);
+	retval = imoper_with_factor(a, b, OPER_ADD, 2.0f, TRUE);
+	cr_assert(!retval, "imoper ADD with factor failed");
+	cr_expect_float_eq(a->fdata[0], 0.2f, 1e-7);
+	cr_expect_float_eq(a->fdata[1], 0.22f, 1e-7);
+	cr_expect_float_eq(a->fdata[2], 0.4f, 1e-7);
+	cr_expect_float_eq(a->fdata[3], 0.8f, 1e-7);
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-7);
+
+	set_float_data(a, origa, size);
+	retval = imoper_with_factor(a, b, OPER_SUB, 2.0f, TRUE);
+	cr_assert(!retval, "imoper SUB with factor failed");
+	cr_expect_float_eq(a->fdata[0], -0.2f, 1e-7);
+	cr_expect_float_eq(a->fdata[1], -0.18f, 1e-7);
+	cr_expect_float_eq(a->fdata[2], 0.0f, 1e-7);
+	cr_expect_float_eq(a->fdata[3], 0.4f, 1e-7);
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-7);
+
+	set_float_data(a, origa, size);
+	retval = imoper_with_factor(a, b, OPER_DIV, 0.1f, TRUE);
+	cr_assert(!retval, "imoper DIV failed");
+	cr_expect_float_eq(a->fdata[0], 0.0f, 1e-7);
+	cr_expect_float_eq(a->fdata[1], 0.01f, 1e-7);
+	cr_expect_float_eq(a->fdata[2], 0.1f, 1e-7);
+	cr_expect_float_eq(a->fdata[3], 0.3f, 1e-7);
+	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-7);
+}
+
+Test(arithmetics, ushort_ushort) { test_a_ushort_b_ushort(); }
+Test(arithmetics, ushort_float) { test_a_ushort_b_float(); }
+Test(arithmetics, float_float) { test_a_float_b_float(); }

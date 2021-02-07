@@ -162,11 +162,11 @@ static int darkOptimization(fits *raw, struct preprocessing_data *args) {
 		return 1;
 	}
 
+	// TODO: avoid duplicating with soper+imoper together
 	if (copyfits(dark, &dark_tmp, CP_ALLOC | CP_COPYA | CP_FORMAT, 0))
 		return 1;
 
 	/* Minimization of background noise to find better k */
-	//invalidate_stats_from_fit(raw);	// why?
 	k0 = goldenSectionSearch(raw, &dark_tmp, lo, up, 0.001f, args->allow_32bit_output);
 	if (k0 < 0.f) {
 		ret = -1;
@@ -222,6 +222,8 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 			}
 			prepro->normalisation = stat->mean;
 			free_stats(stat);
+			if (DATA_USHORT == prepro->flat->type && prepro->allow_32bit_output)
+				prepro->normalisation *= INV_USHRT_MAX_SINGLE;
 
 			siril_log_message(_("Normalisation value auto evaluated: %.3f\n"),
 					prepro->normalisation);
