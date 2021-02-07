@@ -39,6 +39,15 @@ if criterion_dep.found()
                                 cpp_args : siril_cpp_flag)
 
      test('imoper_test', imoper_exec, suite: 'arithmetic')
+     
+     photometry_exec = executable('photometry_test',
+                                'photometry_test.c',
+                                dependencies : [siril_dep, criterion_dep],
+                                link_args : [siril_link_arg, '-Wl,--unresolved-symbols=ignore-all'],
+                                c_args : siril_c_flag,
+                                cpp_args : siril_cpp_flag)
+
+     test('photometry_test', photometry_exec, suite: 'science')
 
 endif
 
