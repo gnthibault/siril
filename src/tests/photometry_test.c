@@ -155,13 +155,15 @@ void test_photometry_float() {
 	gsl_matrix *matrix = fill_star(star, DATA_FLOAT);
 	fitted_PSF *psf = psf_global_minimisation(matrix, bg, TRUE, TRUE, FALSE);
 
-	cr_assert(psf, "psf faild");
-	cr_assert(psf->phot, "photometry faild");
+	cr_assert(psf, "psf failed");
+	cr_assert(psf->phot, "photometry failed");
 	cr_assert(psf->phot_is_valid, "photometry is not valid");
 
 	cr_expect_float_eq(psf->mag, -3.451156f, 1e-6);
 	cr_expect_float_eq(psf->s_mag, 0.146090f, 1e-6);
 
+	cr_expect_float_eq(psf->x0, 51.77f, 1e-2);
+	cr_expect_float_eq(psf->y0, 54.74f, 1e-2);
 	cr_expect_float_eq(psf->fwhmx, 8.161106f, 1e-6);
 	cr_expect_float_eq(psf->fwhmy, 7.250467f, 1e-6);
 	cr_expect_float_eq(psf->angle, -21.648570f, 1e-6);
@@ -179,8 +181,8 @@ void test_photometry_ushort() {
 	gsl_matrix *matrix = fill_star(star, DATA_USHORT);
 	fitted_PSF *psf = psf_global_minimisation(matrix, bg, TRUE, TRUE, FALSE);
 
-	cr_assert(psf, "psf faild");
-	cr_assert(psf->phot, "photometry faild");
+	cr_assert(psf, "psf failed");
+	cr_assert(psf->phot, "photometry failed");
 	cr_assert(psf->phot_is_valid, "photometry is not valid");
 
 	/* These values are different from float case. This
@@ -192,6 +194,9 @@ void test_photometry_ushort() {
 	/* These values are strictly identical to float case.
 	 * This is perfectly normal too.
 	 */
+	cr_expect_float_eq(psf->x0, 51.77f, 1e-2);
+	cr_expect_float_eq(psf->y0, 54.74f, 1e-2);
+	cr_expect_float_eq(psf->fwhmy, 7.250467f, 1e-6);
 	cr_expect_float_eq(psf->fwhmx, 8.161106f, 1e-6);
 	cr_expect_float_eq(psf->fwhmy, 7.250467f, 1e-6);
 	cr_expect_float_eq(psf->angle, -21.648570f, 1e-6);
