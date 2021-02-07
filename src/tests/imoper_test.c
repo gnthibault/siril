@@ -262,10 +262,10 @@ void test_a_ushort_b_float() {
 	/* with factor = 1, ushort output */
 	int retval = imoper(a, b, OPER_ADD, FALSE);
 	cr_assert(!retval, "imoper ADD to ushort failed");
-	cr_expect_eq(a->data[0], 6553);	// TODO: should be 6554 with rounding!
-	cr_expect_eq(a->data[1], 6554);
-	cr_expect_eq(a->data[2], 6555);
-	cr_expect_eq(a->data[3], 7553);
+	cr_expect_eq(a->data[0], 6554);
+	cr_expect_eq(a->data[1], 6555);
+	cr_expect_eq(a->data[2], 6556);
+	cr_expect_eq(a->data[3], 7554);
 	cr_expect_eq(a->data[4], 65535);
 
 	set_ushort_data(a, origa, size);
@@ -275,7 +275,7 @@ void test_a_ushort_b_float() {
 	cr_expect_eq(a->data[1], 0);
 	cr_expect_eq(a->data[2], 0);
 	cr_expect_eq(a->data[3], 0);
-	cr_expect_eq(a->data[4], 58982);
+	cr_expect_eq(a->data[4], 58981, "expected 58981, got %hu", a->data[4]);
 
 	set_ushort_data(a, origa, size);
 	retval = imoper(a, b, OPER_DIV, FALSE);
@@ -290,8 +290,8 @@ void test_a_ushort_b_float() {
 	retval = imoper(a, b, OPER_MUL, FALSE);
 	cr_assert(!retval, "imoper MUL to ushort failed");
 	cr_expect_eq(a->data[0], 0);
-	cr_expect_eq(a->data[1], 6554); // TODO: not consistent with addition: truncate vs. roundf_to_WORD
-	cr_expect_eq(a->data[2], 13107);// TODO: not consistent with previous line: truncate vs. roundf_to_WORD
+	cr_expect_eq(a->data[1], 6554);
+	cr_expect_eq(a->data[2], 13107);
 	cr_expect_eq(a->data[3], 65535);
 	cr_expect_eq(a->data[4], 65535);
 
@@ -338,11 +338,11 @@ void test_a_ushort_b_float() {
 	a->bitpix = USHORT_IMG;	// used by imoper_to_ushort
 	retval = imoper_with_factor(a, b, OPER_ADD, 0.1f, FALSE);
 	cr_assert(!retval, "imoper ADD with factor to ushort failed");
-	cr_expect_eq(a->data[0], 655);
-	cr_expect_eq(a->data[1], 655);
-	cr_expect_eq(a->data[2], 656);
-	cr_expect_eq(a->data[3], 755);
-	cr_expect_eq(a->data[4], 6554);
+	cr_expect_eq(a->data[0], 655, "expected 655, got %hu", a->data[0]);
+	cr_expect_eq(a->data[1], 656, "expected 656, got %hu", a->data[1]);
+	cr_expect_eq(a->data[2], 656, "expected 656, got %hu", a->data[2]);
+	cr_expect_eq(a->data[3], 755, "expected 755, got %hu", a->data[3]);
+	cr_expect_eq(a->data[4], 6554, "expected 6554, got %hu", a->data[4]);
 
 	set_ushort_data(a, origa, size);
 	retval = imoper_with_factor(a, b, OPER_SUB, 0.1f, FALSE);
@@ -366,9 +366,9 @@ void test_a_ushort_b_float() {
 	retval = imoper_with_factor(a, b, OPER_MUL, 0.1f, FALSE);
 	cr_assert(!retval, "imoper MUL with factor to ushort failed");
 	cr_expect_eq(a->data[0], 0);
-	cr_expect_eq(a->data[1], 655, "expected 1, got %hu", a->data[1]);
-	cr_expect_eq(a->data[2], 1311, "expected 2, got %hu", a->data[2]);
-	cr_expect_eq(a->data[3], 65535, "expected 1000, got %hu", a->data[3]);
+	cr_expect_eq(a->data[1], 655, "expected 655, got %hu", a->data[1]);
+	cr_expect_eq(a->data[2], 1311, "expected 1311, got %hu", a->data[2]);
+	cr_expect_eq(a->data[3], 65535, "expected 65535, got %hu", a->data[3]);
 	cr_expect_eq(a->data[4], 65535, "expected 65535, got %hu", a->data[4]);
 
 	/* with factor != 1, float output */

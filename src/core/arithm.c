@@ -248,7 +248,7 @@ static int imoper_to_ushort(fits *a, fits *b, image_operator oper, float factor)
 		} else {
 			for (i = 0; i < n; ++i) {
 				int aval = (int) abuf[i];
-				int bval = (int) (bbuf[i] * norm);
+				int bval = roundf_to_int(bbuf[i] * norm);
 				switch (oper) {
 				case OPER_ADD:
 					abuf[i] = truncate_to_WORD(aval + bval);
