@@ -222,8 +222,12 @@ static int prepro_prepare_hook(struct generic_seq_args *args) {
 			}
 			prepro->normalisation = stat->mean;
 			free_stats(stat);
+
+			// special cases for division factor, caused by how imoper works with many cases
 			if (DATA_USHORT == prepro->flat->type && prepro->allow_32bit_output)
 				prepro->normalisation *= INV_USHRT_MAX_SINGLE;
+			else if (DATA_FLOAT == prepro->flat->type && !prepro->allow_32bit_output)
+				prepro->normalisation *= USHRT_MAX_SINGLE;
 
 			siril_log_message(_("Normalisation value auto evaluated: %.3f\n"),
 					prepro->normalisation);

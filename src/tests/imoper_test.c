@@ -331,6 +331,46 @@ void test_a_ushort_b_float() {
 	cr_expect_float_eq(a->fdata[3], 10000.0f*INV_USHRT_MAX_SINGLE, 1e-6, "expected 10000 as float, got %f", a->fdata[3]);
 	cr_expect_float_eq(a->fdata[4], 1.0f, 1e-7, "expected 1, got %f", a->fdata[4]);
 
+	/* with factor != 1, ushort output */
+	clearfits(a);
+	dataa = alloc_data(origa, size);
+	new_fit_image_with_data(&a, size, 1, 1, DATA_USHORT, dataa);
+	a->bitpix = USHORT_IMG;	// used by imoper_to_ushort
+	retval = imoper_with_factor(a, b, OPER_ADD, 0.1f, FALSE);
+	cr_assert(!retval, "imoper ADD with factor to ushort failed");
+	cr_expect_eq(a->data[0], 655);
+	cr_expect_eq(a->data[1], 655);
+	cr_expect_eq(a->data[2], 656);
+	cr_expect_eq(a->data[3], 755);
+	cr_expect_eq(a->data[4], 6554);
+
+	set_ushort_data(a, origa, size);
+	retval = imoper_with_factor(a, b, OPER_SUB, 0.1f, FALSE);
+	cr_assert(!retval, "imoper SUB with factor to ushort failed");
+	cr_expect_eq(a->data[0], 0);
+	cr_expect_eq(a->data[1], 0);
+	cr_expect_eq(a->data[2], 0);
+	cr_expect_eq(a->data[3], 0);
+	cr_expect_eq(a->data[4], 5898);
+
+	set_ushort_data(a, origa, size);
+	retval = imoper_with_factor(a, b, OPER_DIV, 0.1f*65535.0f, FALSE);
+	cr_assert(!retval, "imoper DIV with factor to ushort failed");
+	cr_expect_eq(a->data[0], 0);
+	cr_expect_eq(a->data[1], 1, "expected 1, got %hu", a->data[1]);
+	cr_expect_eq(a->data[2], 2, "expected 2, got %hu", a->data[2]);
+	cr_expect_eq(a->data[3], 1000, "expected 1000, got %hu", a->data[3]);
+	cr_expect_eq(a->data[4], 65535, "expected 65535, got %hu", a->data[4]);
+
+	set_ushort_data(a, origa, size);
+	retval = imoper_with_factor(a, b, OPER_MUL, 0.1f, FALSE);
+	cr_assert(!retval, "imoper MUL with factor to ushort failed");
+	cr_expect_eq(a->data[0], 0);
+	cr_expect_eq(a->data[1], 655, "expected 1, got %hu", a->data[1]);
+	cr_expect_eq(a->data[2], 1311, "expected 2, got %hu", a->data[2]);
+	cr_expect_eq(a->data[3], 65535, "expected 1000, got %hu", a->data[3]);
+	cr_expect_eq(a->data[4], 65535, "expected 65535, got %hu", a->data[4]);
+
 	/* with factor != 1, float output */
 	clearfits(a);
 	dataa = alloc_data(origa, size);
