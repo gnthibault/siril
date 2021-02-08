@@ -254,21 +254,21 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 		}
 	}
 
+	/* First we want to know the normalization value!! */
+	stat->normValue = (fit->bitpix == BYTE_IMG) ? UCHAR_MAX_DOUBLE : USHRT_MAX_DOUBLE;
+
 	/* Calculation of min and max */
 	if ((option & (STATS_MINMAX | STATS_BASIC)) && (stat->min < 0. || stat->max < 0.)) {
-		WORD min = 0, max = 0, norm = 0;
+		WORD min = 0, max = 0;
 		if (!data) {
 			if (stat_is_local) free(stat);
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing minmax\n", stat, fit, layer);
 		siril_stats_ushort_minmax(&min, &max, data, stat->total, multithread);
-		if (fit->bitpix == BYTE_IMG)
-			norm = UCHAR_MAX;
-		else norm = USHRT_MAX;
+
 		stat->min = (double) min;
 		stat->max = (double) max;
-		stat->normValue = (double) norm;
 	}
 
 	/* Calculation of ngoodpix, mean, sigma and background noise */
