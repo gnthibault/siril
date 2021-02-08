@@ -252,10 +252,9 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 			if (stat_is_local) free(stat);
 			return NULL;
 		}
+		/* First we want to know the normalization value!! */
+		stat->normValue = (fit->bitpix == BYTE_IMG) ? UCHAR_MAX_DOUBLE : USHRT_MAX_DOUBLE;
 	}
-
-	/* First we want to know the normalization value!! */
-	stat->normValue = (fit->bitpix == BYTE_IMG) ? UCHAR_MAX_DOUBLE : USHRT_MAX_DOUBLE;
 
 	/* Calculation of min and max */
 	if ((option & (STATS_MINMAX | STATS_BASIC)) && (stat->min < 0. || stat->max < 0.)) {
