@@ -2698,6 +2698,7 @@ enter a visible wavelength in nm</property>
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
                                 <property name="tooltip-text" translatable="yes">The RGB channel is only used for visualisation. Please work on the Red, Green or Blue channel.</property>
+                                <property name="label" translatable="yes">ONLY FOR VISUALISATION</property>
                                 <property name="width-chars">20</property>
                                 <attributes>
                                   <attribute name="weight" value="bold"/>
@@ -2707,7 +2708,7 @@ enter a visible wavelength in nm</property>
                               <packing>
                                 <property name="expand">True</property>
                                 <property name="fill">True</property>
-                                <property name="padding">4</property>
+                                <property name="padding">2</property>
                                 <property name="position">0</property>
                               </packing>
                             </child>
@@ -2719,21 +2720,17 @@ enter a visible wavelength in nm</property>
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="labeldensityrgb">
+                          <object class="GtkLabel" id="labelwcs_rgb">
                             <property name="visible">True</property>
                             <property name="can-focus">False</property>
-                            <property name="tooltip-text" translatable="yes">The RGB channel is only used for visualisation. Please work on the Red, Green or Blue channel.</property>
-                            <property name="label" translatable="yes">ONLY FOR VISUALISATION</property>
-                            <property name="width-chars">20</property>
-                            <attributes>
-                              <attribute name="weight" value="bold"/>
-                              <attribute name="foreground" value="#efef29292929"/>
-                            </attributes>
+                            <property name="halign">end</property>
+                            <style>
+                              <class name="label-data"/>
+                            </style>
                           </object>
                           <packing>
                             <property name="expand">False</property>
                             <property name="fill">True</property>
-                            <property name="padding">4</property>
                             <property name="position">3</property>
                           </packing>
                         </child>
