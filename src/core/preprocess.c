@@ -75,7 +75,7 @@ static float evaluateNoiseOfCalibratedImage(fits *fit, fits *dark,
 			siril_log_message(_("Error: statistics computation failed.\n"));
 			return -1.0;
 		}
-		noise += (float) stat->sigma;
+		noise += stat->sigma / stat->normValue;
 		free_stats(stat);
 	}
 	clearfits(&dark_tmp);
@@ -97,6 +97,7 @@ static float goldenSectionSearch(fits *raw, fits *dark, float a, float b,
 	d = a + GR * (b - a);
 	fc = evaluateNoiseOfCalibratedImage(raw, dark, c, allow_32bits);
 	fd = evaluateNoiseOfCalibratedImage(raw, dark, d, allow_32bits);
+	if (fc == fd) return 1.00;
 	do {
 		siril_debug_print("Iter: %d (%1.2f, %1.2f)\n", ++iter, c, d);
 		if (fc < 0.f || fd < 0.f)
