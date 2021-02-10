@@ -131,7 +131,7 @@ int ser_write_and_close(struct ser_struct *ser_file);
 int ser_create_file(const char *filename, struct ser_struct *ser_file, gboolean overwrite, struct ser_struct *copy_from);
 int ser_close_file(struct ser_struct *ser_file);
 int ser_metadata_as_fits(struct ser_struct *ser_file, fits *fit);
-int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit);
+int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit, gboolean force_float);
 int ser_read_opened_partial_fits(struct ser_struct *ser_file, int layer,
 		int frame_no, fits *fit, const rectangle *area);
 int ser_read_opened_partial(struct ser_struct *ser_file, int layer,

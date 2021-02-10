@@ -702,7 +702,7 @@ int ser_metadata_as_fits(struct ser_struct *ser_file, fits *fit) {
 
 /* reads a frame on an already opened SER sequence.
  * frame number starts at 0 */
-int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
+int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit, gboolean force_float) {
 	int retval = 0, i, j, swap = 0;
 	gint64 offset, frame_size;
 	size_t read_size;
@@ -858,6 +858,15 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit) {
 			}
 			fit->date_obs = timestamp;
 		}
+	}
+
+	if (force_float) {
+		float *newbuf;
+		size_t pixel_count = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
+		if (fit->bitpix == BYTE_IMG)
+			newbuf = ushort8_buffer_to_float(fit->data, pixel_count);
+		else newbuf = ushort_buffer_to_float(fit->data, pixel_count);
+		fit_replace_buffer(fit, newbuf, DATA_FLOAT);
 	}
 
 	fits_flip_top_to_bottom(fit);
@@ -1276,7 +1285,7 @@ GdkPixbuf* get_thumbnail_from_ser(char *filename, gchar **descr) {
 	ima_data = malloc(sz * sizeof(float));
 	pixbuf_data = malloc(3 * MAX_SIZE * MAX_SIZE * sizeof(guchar));
 
-	ser_read_frame(&ser, 0, &fit);
+	ser_read_frame(&ser, 0, &fit, FALSE);
 
 	for (i = 0; i < sz; i++) {
 		ima_data[i + 0] = (float)fit.pdata[RLAYER][i];

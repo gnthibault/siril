@@ -694,7 +694,7 @@ int seq_read_frame(sequence *seq, int index, fits *dest, gboolean force_float, i
 			break;
 		case SEQ_SER:
 			assert(seq->ser_file);
-			if (ser_read_frame(seq->ser_file, index, dest)) {
+			if (ser_read_frame(seq->ser_file, index, dest, force_float)) {
 				siril_log_message(_("Could not load frame %d from SER sequence %s\n"),
 						index, seq->seqname);
 				return 1;
