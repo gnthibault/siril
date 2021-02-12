@@ -34,6 +34,8 @@
 
 #include "siril_wcs.h"
 
+static GMutex wcs_mutex;
+
 /* we force naxis to 2 */
 #define NAXIS 2
 
@@ -132,6 +134,8 @@ gboolean load_WCS_from_file(fits* fit) {
 		return FALSE;
 	}
 
+	/** It looks like wcspih is not really thread safe. We need to lock it */
+	g_mutex_lock(&wcs_mutex);
 	wcs_status = wcspih(header, nkeyrec, 0, 0, &nreject, &nwcs, &data);
 
 	if (wcs_status == 0) {
@@ -163,6 +167,7 @@ gboolean load_WCS_from_file(fits* fit) {
 		}
 	}
 	wcsvfree(&nwcs, &data);
+	g_mutex_unlock(&wcs_mutex);
 	free(header);
 
 	if (!fit->wcslib) {
