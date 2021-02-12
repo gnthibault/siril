@@ -16,6 +16,7 @@ struct background_data {
 	double tolerance;
 	int correction;
 	poly_order degree;
+	gboolean dither;
 	fits *fit;
 	sequence *seq;
 	const gchar *seqEntry;

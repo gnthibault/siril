@@ -2139,6 +2139,7 @@ int process_subsky(int nb) {
 		args->correction = 0; //subtraction
 		args->seqEntry = "bkg_";
 		args->degree = (poly_order) (degree - 1);
+		args->dither = TRUE;
 
 		int startoptargs = 3;
 		if (nb > startoptargs) {

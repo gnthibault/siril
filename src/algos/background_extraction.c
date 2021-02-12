@@ -687,7 +687,7 @@ static int background_image_hook(struct generic_seq_args *args, int o, int i, fi
 
 	for (int channel = 0; channel < fit->naxes[2]; channel++) {
 		/* compute background */
-		convert_fits_to_img(fit, image, channel, is_dither_checked());
+		convert_fits_to_img(fit, image, channel, b_args->dither);
 		if (!computeBackground(samples, background, channel, fit->rx, fit->ry, b_args->degree, &error)) {
 			if (error) {
 				siril_log_message(error);
@@ -783,6 +783,7 @@ void on_background_ok_button_clicked(GtkButton *button, gpointer user_data) {
 		args->tolerance = get_tolerance_value();
 		args->correction = get_correction_type();
 		args->degree = get_poly_order();
+		args->dither = is_dither_checked();
 		if (args->degree > BACKGROUND_POLY_1) {
 			int confirm = siril_confirm_dialog(_("Polynomial order seems too high."),
 					_("You are about to process a sequence of preprocessed files with "
