@@ -310,11 +310,12 @@ static int readtif8bits(TIFF* tif, uint32_t width, uint32_t height, uint16_t nsa
 }
 
 static uint16_t get_compression_mode() {
-	GtkToggleButton *button = GTK_TOGGLE_BUTTON(lookup_widget("radiobuttonCompDeflate"));
-	if (gtk_toggle_button_get_active(button))
-		return (uint16_t) COMPRESSION_ADOBE_DEFLATE;
-	else
-		return (uint16_t) COMPRESSION_NONE;
+	if (!com.headless) {
+		GtkToggleButton *button = GTK_TOGGLE_BUTTON(lookup_widget("radiobuttonCompDeflate"));
+		if (gtk_toggle_button_get_active(button))
+			return (uint16_t) COMPRESSION_ADOBE_DEFLATE;
+	}
+	return (uint16_t) COMPRESSION_NONE;
 }
 
 static TIFF* Siril_TIFFOpen(const char *name, const char *mode) {
