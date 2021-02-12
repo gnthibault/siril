@@ -229,7 +229,7 @@ static version_number get_last_version_number(gchar *version_str) {
 		version.minor_version = g_ascii_strtoull(v[1], NULL, 10);
 	if (v[0] && v[1] && v[2])
 		version.micro_version = g_ascii_strtoull(v[2], NULL, 10);
-	if (v[0] && v[1] && v[2] && v[3] && v[4])
+	if (v[0] && v[1] && v[2] && v[3])
 		version.patched_version = g_ascii_strtoull(v[3], NULL, 10);
 
 	g_strfreev(v);
@@ -337,9 +337,11 @@ static gchar *check_version(gchar *version, gboolean *verbose, gchar **data) {
 							"<a href=\"%s\">%s</a>\n"),
 					SIRIL_DOWNLOAD, SIRIL_DOWNLOAD);
 			changelog = get_changelog(x, y, z, patch);
-			*data = parse_changelog(changelog);
-			/* force the verbose variable */
-			*verbose = TRUE;
+			if (changelog) {
+				*data = parse_changelog(changelog);
+				/* force the verbose variable */
+				*verbose = TRUE;
+			}
 		} else if (compare_version(current_version, last_version_available)	> 0) {
 			if (*verbose)
 				msg = siril_log_message(_("No update check: this is a development version\n"));

@@ -230,7 +230,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 	struct star_align_data *sadata = args->user;
 	struct registration_args *regargs = sadata->regargs;
 	int nbpoints, nb_stars = 0;
-	int retvalue = 1;
+	int retvalue;
 	int nobj = 0;
 	int attempt = 1;
 	float FWHMx, FWHMy;
