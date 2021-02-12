@@ -86,7 +86,6 @@ gboolean test_if_symlink_is_ok() {
 }
 
 int symlink_uniq_file(gchar *src_filename, gchar *dest_filename, gboolean allow_symlink) {
-	static gboolean warned = FALSE;
 	int retval = 0;
 
 	/* remove already existing file to avoid error */
@@ -112,6 +111,8 @@ int symlink_uniq_file(gchar *src_filename, gchar *dest_filename, gboolean allow_
 		retval = copy_fits_from_file(src_filename, dest_filename);
 	}
 #else
+	static gboolean warned = FALSE;
+
 	if (symlink(src_filename, dest_filename)) {
 		char err[150];
 		strerror_r(errno, err, 150);
