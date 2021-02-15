@@ -13,9 +13,9 @@ m4_define([siril_unstable],
 m4_define([siril_stable],
           m4_if(m4_eval(siril_minor_version % 2), [0], [yes], [no]))
 
-change siril_version_full by siril_version for stable release
+dnl change siril_version_full by siril_version for stable release
 dnl AC_INIT([siril], [siril_version_full],
-dnl AC_INIT([siril], [siril_version],
+AC_INIT([siril], [siril_version],
         [https://gitlab.com/free-astro/siril/issues],
         [siril],
         [https://www.siril.org])
