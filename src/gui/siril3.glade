@@ -20370,7 +20370,7 @@ The technique gives very good compression for astronomical images and is relativ
                             <property name="valign">center</property>
                             <property name="left-padding">12</property>
                             <child>
-                              <!-- n-columns=2 n-rows=3 -->
+                              <!-- n-columns=2 n-rows=2 -->
                               <object class="GtkGrid">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
@@ -20452,25 +20452,6 @@ Configuring a memory amount larger than what is available on your system may res
                                   <packing>
                                     <property name="left-attach">1</property>
                                     <property name="top-attach">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkRadioButton" id="memunlimited_radio">
-                                    <property name="label" translatable="yes">Unlimited</property>
-                                    <property name="visible">True</property>
-                                    <property name="can-focus">True</property>
-                                    <property name="receives-default">False</property>
-                                    <property name="tooltip-text" translatable="yes">Siril will not enforce memory limits and will let the operating system manage the required memory. Using a smaller number of threads parameter will still decrease used memory.</property>
-                                    <property name="halign">start</property>
-                                    <property name="margin-top">4</property>
-                                    <property name="draw-indicator">True</property>
-                                    <property name="group">memfreeratio_radio</property>
-                                    <signal name="toggled" handler="on_mem_radio_toggled" swapped="no"/>
-                                  </object>
-                                  <packing>
-                                    <property name="left-attach">0</property>
-                                    <property name="top-attach">2</property>
-                                    <property name="width">2</property>
                                   </packing>
                                 </child>
                               </object>

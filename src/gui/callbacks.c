@@ -1113,9 +1113,8 @@ void set_GUI_misc() {
 	memory_amount = GTK_SPIN_BUTTON(lookup_widget("spinbutton_mem_amount"));
 	gtk_spin_button_set_value(memory_amount, com.pref.stack.memory_amount);
 
-	GtkToggleButton *modes[3] = { GTK_TOGGLE_BUTTON(lookup_widget("memfreeratio_radio")),
-		GTK_TOGGLE_BUTTON(lookup_widget("memfixed_radio")),
-		GTK_TOGGLE_BUTTON(lookup_widget("memunlimited_radio")) };
+	GtkToggleButton *modes[2] = { GTK_TOGGLE_BUTTON(lookup_widget("memfreeratio_radio")),
+		GTK_TOGGLE_BUTTON(lookup_widget("memfixed_radio"))};
 	gtk_toggle_button_set_active(modes[com.pref.stack.mem_mode], TRUE);
 
 	/* initialization of default FITS extension and type */

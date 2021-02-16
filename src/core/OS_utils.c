@@ -394,7 +394,7 @@ guint64 get_available_memory() {
 
 /**
  * Get max memory depending on memory management mode
- * @return return the max memory, and -1 for unlimited
+ * @return return the max memory
  */
 int get_max_memory_in_MB() {
 	int retval;
@@ -406,9 +406,6 @@ int get_max_memory_in_MB() {
 			break;
 		case AMOUNT:
 			retval = round_to_int(com.pref.stack.memory_amount * 1024.0);
-			break;
-		case UNLIMITED:
-			return -1;
 	}
 	if (sizeof(void *) == 4 && retval > 1900) {
 		siril_log_message(_("Limiting processing to 1900 MiB allocations (32-bit system)\n"));

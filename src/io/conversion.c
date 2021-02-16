@@ -1244,10 +1244,6 @@ static seqwrite_status write_image(fits *fit, struct writer_data *writer) {
 // similar to compute_nb_images_fit_memory from sequence.c, but uses a FITS as input, not a sequence */
 static int compute_nb_images_fit_mem(fits *fit) {
 	int max_memory_MB = get_max_memory_in_MB();
-	if (max_memory_MB < 0) {
-		// unlimited
-		return -1;
-	}
 	uint64_t memory_per_image = fit->naxes[0] * fit->naxes[1] * fit->naxes[2];
 	if (fit->type == DATA_FLOAT)
 		memory_per_image *= sizeof(float);

@@ -736,20 +736,16 @@ static void compute_date_time_keywords(GList *list_date, fits *fit) {
 static long stack_get_max_number_of_rows(long naxes[3], data_type type, int nb_images_to_stack) {
 	int max_memory = get_max_memory_in_MB();
 	long total_nb_rows = naxes[1] * naxes[2];
-	if (max_memory > 0) {
-		siril_log_message(_("Using %d MB memory maximum for stacking\n"), max_memory);
-		int elem_size = type == DATA_FLOAT ? sizeof(float) : sizeof(WORD);
-		guint64 number_of_rows = (guint64)max_memory * BYTES_IN_A_MB /
-			((guint64)naxes[0] * nb_images_to_stack * elem_size);
-		// this is how many rows we can load in parallel from all images of the
-		// sequence and be under the limit defined in config in megabytes.
-		if (total_nb_rows < number_of_rows)
-			return total_nb_rows;
-		return (long)number_of_rows;
-	} else {
-		siril_log_message(_("Not using limits on maximum memory for stacking\n"));
-		return naxes[1] * naxes[2];
-	}
+
+	siril_log_message(_("Using %d MB memory maximum for stacking\n"), max_memory);
+	int elem_size = type == DATA_FLOAT ? sizeof(float) : sizeof(WORD);
+	guint64 number_of_rows = (guint64)max_memory * BYTES_IN_A_MB /
+		((guint64)naxes[0] * nb_images_to_stack * elem_size);
+	// this is how many rows we can load in parallel from all images of the
+	// sequence and be under the limit defined in config in megabytes.
+	if (total_nb_rows < number_of_rows)
+		return total_nb_rows;
+	return (long)number_of_rows;
 }
 
 static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
