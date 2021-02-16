@@ -192,8 +192,7 @@ static void remap(int vport) {
 			return;
 		}
 	}
-	inverted = gtk_toggle_tool_button_get_active(
-			GTK_TOGGLE_TOOL_BUTTON(lookup_widget("neg_button")));
+	inverted = gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(lookup_widget("neg_button")));
 
 	if (single_image_is_loaded() && com.seq.current != RESULT_IMAGE) {
 		mode = com.uniq->layers[vport].rendering_mode;
@@ -279,8 +278,7 @@ static void remap(int vport) {
 	fsrc = gfit.fpdata[vport];
 	dst = com.graybuf[vport];
 
-	color = gtk_toggle_tool_button_get_active(
-			GTK_TOGGLE_TOOL_BUTTON(lookup_widget("colormap_button")));
+	color = gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(lookup_widget("colormap_button")));
 
 	if (color == RAINBOW_COLOR)
 		make_index_for_rainbow(rainbow_index);

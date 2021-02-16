@@ -111,11 +111,6 @@ static int normalization_get_max_number_of_threads(sequence *seq) {
 	else memory_per_image *= sizeof(WORD) + 2 * sizeof(float);
 	unsigned int memory_per_image_MB = memory_per_image / BYTES_IN_A_MB;
 
-	if (max_memory_MB < 0) {
-		fprintf(stdout, "Memory per image: %u MB (unlimited memory use).\n", memory_per_image_MB);
-		return com.max_thread;
-	}
-
 	fprintf(stdout, "Memory per image: %u MB. Max memory: %d MB\n", memory_per_image_MB, max_memory_MB);
 
 	if (memory_per_image_MB > max_memory_MB) {

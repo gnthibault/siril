@@ -278,10 +278,9 @@ static void update_FITS_options_preferences() {
 
 static void update_performances_preferences() {
 	GSList *tmp_list = gtk_radio_button_get_group (GTK_RADIO_BUTTON(lookup_widget("memfreeratio_radio")));
-	GtkWidget *ratio, *amount;
+	GtkWidget *amount;
 	GtkToggleButton *tmp_button = NULL;//Create a temp toggle button.
 
-	ratio = lookup_widget("memfreeratio_radio");
 	amount = lookup_widget("memfixed_radio");
 	while (tmp_list) {
 		tmp_button = tmp_list->data;
@@ -293,12 +292,10 @@ static void update_performances_preferences() {
 		tmp_button = NULL; //We've enumerated all of them, and none of them is active.
 	}
 	if (tmp_button) {
-		if (GTK_WIDGET(tmp_button) == ratio) {
-			com.pref.stack.mem_mode = RATIO;
-		} else if (GTK_WIDGET(tmp_button) == amount) {
+		if (GTK_WIDGET(tmp_button) == amount) {
 			com.pref.stack.mem_mode = AMOUNT;
 		} else {
-			com.pref.stack.mem_mode = UNLIMITED;
+			com.pref.stack.mem_mode = RATIO;
 		}
 	}
 
@@ -665,7 +662,6 @@ static void set_preferences_ui(preferences *pref) {
 	/* tab 9 */
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("memfreeratio_radio")), pref->stack.mem_mode == RATIO);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("memfixed_radio")), pref->stack.mem_mode == AMOUNT);
-	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("memunlimited_radio")), pref->stack.mem_mode == UNLIMITED);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spinbutton_mem_ratio")), pref->stack.memory_ratio);
 	gtk_spin_button_set_value(GTK_SPIN_BUTTON(lookup_widget("spinbutton_mem_amount")), pref->stack.memory_amount);
 

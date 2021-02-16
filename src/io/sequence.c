@@ -1703,10 +1703,6 @@ void free_reference_image() {
  * on the configured memory ratio. It can return -1 if there is no memory limit enforced. */
 int compute_nb_images_fit_memory(sequence *seq, double factor, gboolean force_float, unsigned int *MB_per_image, int *max_mem_MB) {
 	int max_memory_MB = get_max_memory_in_MB();
-	if (max_memory_MB < 0) {
-		// unlimited
-		return -1;
-	}
 	if (factor < 1.0 || factor > 2.0) {
 		fprintf(stderr, "############ FACTOR UNINIT (set to 1) ############\n");
 		factor = 1.0;
