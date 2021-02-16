@@ -129,6 +129,7 @@ static GActionEntry app_entries[] = {
 	{ "zoom_in", zoom_in_activate },
 	{ "zoom_fit", zoom_fit_activate, NULL, "true", change_zoom_fit_state },
 	{ "hide_show_toolbar", toolbar_activate },
+	{ "astrometry", astrometry_activate },
 	{ "search_object", search_object_activate }
 };
 

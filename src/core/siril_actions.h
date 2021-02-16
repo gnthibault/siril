@@ -52,6 +52,7 @@ void zoom_out_activate(GSimpleAction *action, GVariant *parameter, gpointer user
 void zoom_fit_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void toolbar_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void change_zoom_fit_state(GSimpleAction *action, GVariant *state, gpointer user_data);
+void astrometry_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void search_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 
 #endif /* SRC_CORE_SIRIL_ACTIONS_H_ */

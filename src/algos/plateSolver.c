@@ -51,6 +51,8 @@
 #include "algos/annotate.h"
 #include "algos/siril_wcs.h"
 #include "io/image_format_fits.h"
+#include "io/single_image.h"
+#include "io/sequence.h"
 #include "registration/matching/match.h"
 #include "registration/matching/apply_match.h"
 #include "registration/matching/misc.h"
@@ -100,7 +102,7 @@ static struct object platedObject[RESOLVER_NUMBER];
 static GtkListStore *list_IPS = NULL;
 static image_solved is_result;
 
-static void initialize_ips_dialog() {
+void initialize_ips_dialog() {
 	GtkWidget *button_ips_ok, *button_cc_ok, *catalog_label, *catalog_box_ips,
 			*catalog_box_pcc, *catalog_auto, *frame_cc_bkg, *frame_cc_norm,
 			*catalog_label_pcc;
@@ -1345,8 +1347,7 @@ void on_GtkEntry_IPS_insert_text(GtkEntry *entry, const gchar *text, gint length
 }
 
 void on_info_menu_astrometry_clicked(GtkButton *button, gpointer user_data) {
-	initialize_ips_dialog();
-	siril_open_dialog("ImagePlateSolver_Dial");
+	open_astrometry_dialog();
 }
 
 void on_buttonIPS_close_clicked(GtkButton *button, gpointer user_data) {
@@ -1429,6 +1430,13 @@ void on_GtkCheckButton_OnlineCat_toggled(GtkToggleButton *button,
  *
  * Public functions
  */
+
+void open_astrometry_dialog() {
+	if (single_image_is_loaded() || sequence_is_loaded()) {
+		initialize_ips_dialog();
+		siril_open_dialog("ImagePlateSolver_Dial");
+	}
+}
 
 gchar *search_in_catalogs(const gchar *object) {
 	GString *string_url;

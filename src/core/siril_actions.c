@@ -25,6 +25,7 @@
 #include "core/siril_update.h"
 #include "core/siril_cmd_help.h"
 #include "algos/siril_wcs.h"
+#include "algos/plateSolver.h"
 #include "gui/about_dialog.h"
 #include "gui/utils.h"
 #include "gui/callbacks.h"
@@ -223,6 +224,11 @@ void zoom_out_activate(GSimpleAction *action,
 		GVariant *parameter, gpointer user_data) {
 	point center = get_center_of_vport();
 	update_zoom(center.x, center.y, ZOOM_OUT);
+}
+
+void astrometry_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	open_astrometry_dialog();
 }
 
 void search_object_activate(GSimpleAction *action,
