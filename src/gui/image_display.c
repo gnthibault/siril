@@ -719,9 +719,14 @@ static gdouble y_circle(gdouble y, gdouble radius) {
 
 static void draw_annotates(const draw_data_t* dd) {
 	if (!com.found_object) return;
+	gboolean inverted = gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(lookup_widget("neg_button")));
 	cairo_t *cr = dd->cr;
 	cairo_set_dash(cr, NULL, 0, 0);
-	cairo_set_source_rgba(cr, 0.5, 1.0, 0.3, 0.9);
+	if (inverted) {
+		cairo_set_source_rgba(cr, 0.5, 0.0, 0.7, 0.9);
+	} else {
+		cairo_set_source_rgba(cr, 0.5, 1.0, 0.3, 0.9);
+	}
 	cairo_set_line_width(cr, 1.5 / dd->zoom);
 	GSList *list;
 	for (list = com.found_object; list; list = list->next) {
