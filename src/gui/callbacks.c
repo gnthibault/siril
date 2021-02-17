@@ -56,6 +56,7 @@
 #include "fix_xtrans_af.h"
 #include "siril_intro.h"
 #include "siril_preview.h"
+#include "siril-window.h"
 
 layer_info predefined_layers_colors[] = {
 	/* name, lambda, lo, hi, c/over, c/under, mode */
@@ -982,30 +983,31 @@ static void load_accels() {
 		"app.quit",              "<Primary>q", NULL,
 		"app.preferences",       "<Primary>p", NULL,
 		"app.open",              "<Primary>o", NULL,
-		"app.undo",              "<Primary>z", NULL,
-		"app.redo",              "<Primary><Shift>z", NULL,
 		"app.save",              "<Primary>s", NULL,
 		"app.save_as",           "<Primary><Shift>s", NULL,
-		"app.close",             "<Primary>w", NULL,
-		"app.cwd",               "<Primary>d", NULL,
-		"app.full_screen",       "<Primary>f", NULL,
 
-		"app.conversion",        "F1", NULL,
-		"app.sequence",          "F2", NULL,
-		"app.prepro",            "F3", NULL,
-		"app.registration",      "F4", NULL,
-		"app.plot",              "F5", NULL,
-		"app.stacking",          "F6", NULL,
-		"app.logs",              "F7", NULL,
+		"win.undo",              "<Primary>z", NULL,
+		"win.redo",              "<Primary><Shift>z", NULL,
+		"win.close",             "<Primary>w", NULL,
+		"win.cwd",               "<Primary>d", NULL,
+		"win.full_screen",       "<Primary>f", NULL,
 
-		"app.hide_show_toolbar", "<Primary>T", NULL,
+		"win.conversion",        "F1", NULL,
+		"win.sequence",          "F2", NULL,
+		"win.prepro",            "F3", NULL,
+		"win.registration",      "F4", NULL,
+		"win.plot",              "F5", NULL,
+		"win.stacking",          "F6", NULL,
+		"win.logs",              "F7", NULL,
 
-		"app.zoom_out",          "<Primary>minus", "<Primary>KP_Subtract", NULL,
-		"app.zoom_in",           "<Primary>plus", "<Primary>KP_Add", NULL,
-		"app.zoom_fit",          "<Primary>0", NULL,
+		"win.hide_show_toolbar", "<Primary>T", NULL,
 
-		"app.search_object",     "<Primary>slash", NULL,
-		"app.astrometry",        "<Primary>a", NULL,
+		"win.zoom_out",          "<Primary>minus", "<Primary>KP_Subtract", NULL,
+		"win.zoom_in",           "<Primary>plus", "<Primary>KP_Add", NULL,
+		"win.zoom_fit",          "<Primary>0", NULL,
+
+		"win.search_object",     "<Primary>slash", NULL,
+		"win.astrometry",        "<Primary>a", NULL,
 
 		NULL /* Terminating NULL */
 	};
@@ -1290,6 +1292,9 @@ void initialize_all_GUI(gchar *supported_files) {
 
 		g_free(ver);
 	}
+
+	/* map all actions for main window */
+	siril_window_map_actions(GTK_APPLICATION_WINDOW(lookup_widget("control_window")));
 
 	/* every 0.5sec update memory display */
 	g_timeout_add(500, update_displayed_memory, NULL);

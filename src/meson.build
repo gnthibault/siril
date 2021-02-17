@@ -147,6 +147,7 @@ src_files = [
   'gui/siril_css.c',
   'gui/siril_intro.c',
   'gui/siril_preview.c',
+  'gui/siril-window.c',
   'gui/statistics_list.c',
   'gui/utils.c',
   
