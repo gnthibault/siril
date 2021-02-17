@@ -211,6 +211,10 @@ static void siril_app_activate(GApplication *application) {
 	gchar *supported_files = initialize_converters();
 	startup_cwd = g_get_current_dir();
 
+	if (main_option_initfile) {
+		com.initfile = g_strdup(main_option_initfile);
+	}
+
 	if (checkinitfile()) {
 		fprintf(stderr,	_("Could not load or create settings file, exiting.\n"));
 		exit(EXIT_FAILURE);
@@ -219,10 +223,6 @@ static void siril_app_activate(GApplication *application) {
 	siril_language_parser_init();
 	if (com.pref.combo_lang)
 		language_init(com.pref.combo_lang);
-
-	if (main_option_initfile) {
-		com.initfile = g_strdup(main_option_initfile);
-	}
 
 	if (main_option_directory) {
 		if (!g_path_is_absolute(main_option_directory)) {

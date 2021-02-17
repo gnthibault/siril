@@ -162,13 +162,13 @@ static void siril_app_activate(GApplication *application) {
 	gchar *supported_files = initialize_converters();
 	startup_cwd = g_get_current_dir();
 
+	if (main_option_initfile) {
+		com.initfile = g_strdup(main_option_initfile);
+	}
+
 	if (checkinitfile()) {
 		fprintf(stderr,	_("Could not load or create settings file, exiting.\n"));
 		exit(EXIT_FAILURE);
-	}
-
-	if (main_option_initfile) {
-		com.initfile = g_strdup(main_option_initfile);
 	}
 
 	if (main_option_directory) {
