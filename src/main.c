@@ -108,7 +108,7 @@ static GActionEntry app_entries[] = {
 	{ "open",  open_action_activate },
 	{ "save", save_action_activate },
 	{ "save_as", save_as_action_activate },
-	{ "about", about_action_activate },
+	{ "about", about_action_activate }
 };
 
 

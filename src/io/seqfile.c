@@ -678,7 +678,7 @@ int buildseqfile(sequence *seq, int force_recompute) {
 
 	if (seq->end <= 0 || !seq->seqname || seq->seqname[0] == '\0') return 1;
 	if (existseq(seq->seqname) && !force_recompute) {
-		fprintf(stderr, "seqfile '%s.seq' already exists, not overwriting\n", seq->seqname);
+		fprintf(stdout, "seqfile '%s.seq' already exists, not overwriting\n", seq->seqname);
 		return 0;
 	}
 
