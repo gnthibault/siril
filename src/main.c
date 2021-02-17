@@ -108,30 +108,9 @@ static GActionEntry app_entries[] = {
 	{ "open",  open_action_activate },
 	{ "save", save_action_activate },
 	{ "save_as", save_as_action_activate },
-	{ "snapshot", snapshot_action_activate },
-	{ "close", close_action_activate },
-	{ "undo", undo_action_activate },
-	{ "redo", redo_action_activate },
-	{ "scripts", scripts_action_activate },
-	{ "updates", updates_action_activate },
-	{ "full_screen", full_screen_activated},
-	{ "shortcuts", keyboard_shortcuts_activated},
 	{ "about", about_action_activate },
-	{ "cwd", cwd_action_activate },
-	{ "conversion", tab_conversion_activate },
-	{ "sequence", tab_sequence_activate },
-	{ "registration", tab_registration_activate },
-	{ "prepro", tab_prepro_activate },
-	{ "plot", tab_plot_activate },
-	{ "stacking", tab_stacking_activate },
-	{ "logs", tab_logs_activate },
-	{ "zoom_out", zoom_out_activate },
-	{ "zoom_in", zoom_in_activate },
-	{ "zoom_fit", zoom_fit_activate, NULL, "true", change_zoom_fit_state },
-	{ "hide_show_toolbar", toolbar_activate },
-	{ "astrometry", astrometry_activate },
-	{ "search_object", search_object_activate }
 };
+
 
 void load_glade_file() {
 	GError *err = NULL;
