@@ -100,7 +100,7 @@ static int execute_command(int wordnb) {
 
 	// process the command
 	siril_log_color_message(_("Running command: %s\n"), "salmon", word[0]);
-	fprintf(stderr, "%lu: running command %s\n", time(NULL), word[0]);
+	fprintf(stdout, "%lu: running command %s\n", time(NULL), word[0]);
 	return commands[i].process(wordnb);
 }
 
@@ -256,7 +256,7 @@ gpointer execute_script(gpointer p) {
 		set_progress_bar_data(msg, PROGRESS_DONE);
 	}
 	g_free(saved_cwd);
-	fprintf(stderr, "Script thread exiting\n");
+	fprintf(stdout, "Script thread exiting\n");
 	return GINT_TO_POINTER(retval);
 }
 
