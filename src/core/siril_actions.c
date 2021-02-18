@@ -112,7 +112,6 @@ static gboolean is_extended = FALSE;
 
 void full_screen_activated(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
-	GtkApplication *app;
 	GtkWindow *window;
 	GtkWidget *toolbarbox = lookup_widget("toolbarbox");
 	GtkWidget *control_center_box = lookup_widget("control_center_box");
@@ -120,8 +119,7 @@ void full_screen_activated(GSimpleAction *action, GVariant *parameter,
 	gboolean is_control_box_visible;
 	gboolean is_fullscreen;
 
-	app = GTK_APPLICATION(user_data);
-	window = GTK_WINDOW(gtk_application_get_active_window(app));
+	window = GTK_WINDOW(GTK_APPLICATION_WINDOW(user_data));
 
 	GdkWindow *gdk_window = gtk_widget_get_window(GTK_WIDGET(window));
 	is_fullscreen = gdk_window_get_state(gdk_window) & GDK_WINDOW_STATE_FULLSCREEN;
@@ -143,11 +141,9 @@ void full_screen_activated(GSimpleAction *action, GVariant *parameter,
 
 void keyboard_shortcuts_activated(GSimpleAction *action,
 		GVariant *parameter, gpointer user_data) {
-	GtkApplication *app;
 	GtkWindow *window;
 
-	app = GTK_APPLICATION(user_data);
-	window = GTK_WINDOW(gtk_application_get_active_window(app));
+	window = GTK_WINDOW(GTK_APPLICATION_WINDOW(user_data));
 
 	siril_cmd_help_keyboard_shortcuts(window);
 }
@@ -229,6 +225,12 @@ void zoom_out_activate(GSimpleAction *action,
 void astrometry_activate(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
 	open_astrometry_dialog();
+}
+
+void dyn_psf_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	printf("OKOK\n");
+	siril_open_dialog("stars_list_window");
 }
 
 void search_object_activate(GSimpleAction *action,

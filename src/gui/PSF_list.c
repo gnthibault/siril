@@ -506,10 +506,6 @@ void on_remove_all_button_clicked(GtkButton *button, gpointer user_data) {
 	remove_all_stars();
 }
 
-void on_info_menu_dynamic_psf_clicked(GtkButton *button, gpointer user_data) {
-	siril_open_dialog("stars_list_window");
-}
-
 void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data) {
 	int nbstars = 0;
 	int layer = RLAYER;

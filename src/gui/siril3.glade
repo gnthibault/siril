@@ -6834,6 +6834,9 @@ Modifying parameters in this windows afterward will void the colour balance, and
                 <property name="enable-grid-lines">horizontal</property>
                 <property name="activate-on-single-click">True</property>
                 <signal name="cursor-changed" handler="on_treeview1_cursor_changed" swapped="no"/>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection"/>
+                </child>
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewcolumn16">
                     <property name="resizable">True</property>
@@ -8838,8 +8841,8 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
+            <property name="action-name">win.dyn-psf</property>
             <property name="text" translatable="yes">Dynamic PSF...</property>
-            <signal name="clicked" handler="on_info_menu_dynamic_psf_clicked" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -9026,7 +9029,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
-            <property name="action-name">win..shortcuts</property>
+            <property name="action-name">win.shortcuts</property>
             <property name="text" translatable="yes">Keyboard Shortcuts</property>
           </object>
           <packing>
@@ -9201,7 +9204,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
       <object class="GtkMenuItem" id="menu_gray_search">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
-        <property name="action-name">win.search_object</property>
+        <property name="action-name">win.search-object</property>
         <property name="label" translatable="yes">Search Object...</property>
         <property name="use-underline">True</property>
       </object>
@@ -11065,6 +11068,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
     <property name="can-focus">False</property>
     <property name="icon">pixmaps/siril.svg</property>
     <property name="show-menubar">False</property>
+    <signal name="delete-event" handler="siril_quit" swapped="no"/>
     <child>
       <object class="GtkBox" id="box9">
         <property name="visible">True</property>
@@ -13523,7 +13527,7 @@ When processing images, registration data is taken from the default layer if ava
                                             <property name="can-focus">True</property>
                                             <property name="receives-default">True</property>
                                             <property name="tooltip-text" translatable="yes">Hit this button for star detection settings</property>
-                                            <signal name="clicked" handler="on_info_menu_dynamic_psf_clicked" swapped="no"/>
+                                            <property name="action-name">win.dyn-psf</property>
                                             <child>
                                               <object class="GtkImage">
                                                 <property name="visible">True</property>
@@ -16075,7 +16079,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="tooltip-text" translatable="yes">Shrink the image</property>
-                    <property name="action-name">win.zoom_out</property>
+                    <property name="action-name">win.zoom-out</property>
                     <property name="use-underline">True</property>
                     <property name="icon-name">zoom-out</property>
                   </object>
@@ -16089,7 +16093,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="tooltip-text" translatable="yes">Enlarge the image</property>
-                    <property name="action-name">win.zoom_in</property>
+                    <property name="action-name">win.zoom-in</property>
                     <property name="use-underline">True</property>
                     <property name="icon-name">zoom-in</property>
                   </object>
@@ -16105,7 +16109,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="tooltip-text" translatable="yes">Fit the image to the window</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
-                    <property name="action-name">win.zoom_fit</property>
+                    <property name="action-name">win.zoom-fit</property>
                     <property name="use-underline">True</property>
                     <property name="icon-name">zoom-fit-best-symbolic</property>
                     <property name="active">True</property>

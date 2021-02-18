@@ -990,7 +990,7 @@ static void load_accels() {
 		"win.redo",              "<Primary><Shift>z", NULL,
 		"win.close",             "<Primary>w", NULL,
 		"win.cwd",               "<Primary>d", NULL,
-		"win.full_screen",       "<Primary>f", NULL,
+		"win.full-screen",       "<Primary>f", NULL,
 
 		"win.conversion",        "F1", NULL,
 		"win.sequence",          "F2", NULL,
@@ -1002,11 +1002,11 @@ static void load_accels() {
 
 		"win.hide_show_toolbar", "<Primary>T", NULL,
 
-		"win.zoom_out",          "<Primary>minus", "<Primary>KP_Subtract", NULL,
-		"win.zoom_in",           "<Primary>plus", "<Primary>KP_Add", NULL,
-		"win.zoom_fit",          "<Primary>0", NULL,
+		"win.zoom-out",          "<Primary>minus", "<Primary>KP_Subtract", NULL,
+		"win.zoom-in",           "<Primary>plus", "<Primary>KP_Add", NULL,
+		"win.zoom-fit",          "<Primary>0", NULL,
 
-		"win.search_object",     "<Primary>slash", NULL,
+		"win.search-object",     "<Primary>slash", NULL,
 		"win.astrometry",        "<Primary>a", NULL,
 
 		NULL /* Terminating NULL */
@@ -1512,17 +1512,16 @@ void save_main_window_state() {
 	if (!com.script && com.pref.remember_windows) {
 		if (!main_w)
 			main_w = lookup_widget("control_window");
-		com.pref.main_w_pos = get_window_position(GTK_WINDOW(main_w));
-		com.pref.is_maximized = gtk_window_is_maximized(GTK_WINDOW(main_w));
+		com.pref.main_w_pos = get_window_position(GTK_WINDOW(GTK_APPLICATION_WINDOW(main_w)));
+		com.pref.is_maximized = gtk_window_is_maximized(GTK_WINDOW(GTK_APPLICATION_WINDOW(main_w)));
 	}
 }
 
 void load_main_window_state() {
 	GtkWidget *win = lookup_widget("control_window");
-	GdkRectangle workarea = {0};
-	gdk_monitor_get_workarea(
-	    gdk_display_get_primary_monitor(gdk_display_get_default()),
-	    &workarea);
+	GdkRectangle workarea = { 0 };
+
+	gdk_monitor_get_workarea(gdk_display_get_primary_monitor(gdk_display_get_default()), &workarea);
 
 	int w = com.pref.main_w_pos.w;
 	int h = com.pref.main_w_pos.h;
@@ -1532,10 +1531,10 @@ void load_main_window_state() {
 
 	if (com.pref.remember_windows && w > 0 && h > 0) {
 		if (com.pref.is_maximized) {
-			gtk_window_maximize(GTK_WINDOW(win));
+			gtk_window_maximize(GTK_WINDOW(GTK_APPLICATION_WINDOW(win)));
 		} else {
-			gtk_window_move(GTK_WINDOW(win), x, y);
-			gtk_window_resize(GTK_WINDOW(win), w, h);
+			gtk_window_move(GTK_WINDOW(GTK_APPLICATION_WINDOW(win)), x, y);
+			gtk_window_resize(GTK_WINDOW(GTK_APPLICATION_WINDOW(win)), w, h);
 		}
 	}
 }

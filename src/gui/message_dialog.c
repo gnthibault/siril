@@ -99,7 +99,7 @@ void siril_message_dialog(GtkMessageType type, char *title, char *text) {
 
 	args->parent = siril_get_active_window();
 	if (!GTK_IS_WINDOW(args->parent)) {
-		args->parent = GTK_WINDOW(lookup_widget("control_window"));
+		args->parent = GTK_WINDOW(GTK_APPLICATION_WINDOW(lookup_widget("control_window")));
 	}
 	/* first we want to remove the '\n' at the end of the title and text
 	 * if message come from siril_log_message
@@ -146,7 +146,7 @@ void siril_data_dialog(GtkMessageType type, char *title, char *text, gchar *data
 
 	args->parent = siril_get_active_window();
 	if (!GTK_IS_WINDOW(args->parent)) {
-		args->parent = GTK_WINDOW(lookup_widget("control_window"));
+		args->parent = GTK_WINDOW(GTK_APPLICATION_WINDOW(lookup_widget("control_window")));
 	}
 	/* first we want to remove the '\n' at the end of the title and text
 	 * if message come from siril_log_message
@@ -172,7 +172,7 @@ static gboolean siril_confirm_dialog_internal(gchar *title, gchar *msg, gchar *b
 	if (!GTK_IS_WINDOW(parent)) {
 		/* could happen if the GtkWindow has been destroyed right after the call
 		 * This is the case for chooser dialog */
-		parent = GTK_WINDOW(lookup_widget("control_window"));
+		parent = GTK_WINDOW(GTK_APPLICATION_WINDOW(lookup_widget("control_window")));
 	}
 
 	/* first we want to remove the '\n' at the end of the title and text

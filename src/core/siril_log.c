@@ -78,7 +78,7 @@ static void set_filter(GtkFileChooser *dialog) {
 static void save_log_dialog() {
 	SirilWidget *widgetdialog;
 	GtkFileChooser *dialog = NULL;
-	GtkWindow *control_window = GTK_WINDOW(lookup_widget("control_window"));
+	GtkWindow *control_window = GTK_WINDOW(GTK_APPLICATION_WINDOW(lookup_widget("control_window")));
 	gint res;
 	gchar *filename;
 

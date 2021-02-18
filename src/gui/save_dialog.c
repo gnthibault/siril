@@ -214,7 +214,7 @@ static void prepare_savepopup() {
 	}
 	GtkWindow *parent = siril_get_active_window();
 	if (!GTK_IS_WINDOW(parent)) {
-		parent = GTK_WINDOW(lookup_widget("control_window"));
+		parent = GTK_WINDOW(GTK_APPLICATION_WINDOW(lookup_widget("control_window")));
 	}
 	gtk_window_set_transient_for(GTK_WINDOW(savepopup),	parent);
 
@@ -684,7 +684,7 @@ void on_header_save_as_button_clicked() {
 				close_dialog();
 				GtkWindow *parent = siril_get_active_window();
 				if (!GTK_IS_WINDOW(parent)) {
-					parent = GTK_WINDOW(lookup_widget("control_window"));
+					parent = GTK_WINDOW(GTK_APPLICATION_WINDOW(lookup_widget("control_window")));
 				}
 				gtk_window_set_transient_for(GTK_WINDOW(savepopup), parent);
 				gtk_widget_show(savepopup);

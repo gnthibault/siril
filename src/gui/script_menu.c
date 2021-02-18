@@ -318,7 +318,7 @@ void siril_get_on_script_pages() {
 
 #if GTK_CHECK_VERSION(3, 22, 0)
 	GtkWidget* win = lookup_widget("control_window");
-	ret = gtk_show_uri_on_window(GTK_WINDOW(win), url,
+	ret = gtk_show_uri_on_window(GTK_WINDOW(GTK_APPLICATION_WINDOW(win)), url,
 			gtk_get_current_event_time(), NULL);
 #else
 	ret = gtk_show_uri(gdk_screen_get_default(), url,

@@ -104,6 +104,7 @@ static GOptionEntry main_option[] = {
 
 static GActionEntry app_entries[] = {
 	{ "quit", quit_action_activate },
+	{ "full-screen", full_screen_activated},
 	{ "preferences", preferences_action_activate },
 	{ "open",  open_action_activate },
 	{ "save", save_action_activate },
@@ -280,7 +281,7 @@ static void siril_app_activate(GApplication *application) {
 		/* Load glade file */
 		load_glade_file();
 		/* Passing GApplication to the control center */
-		gtk_window_set_application(GTK_WINDOW(lookup_widget("control_window")),	GTK_APPLICATION(application));
+		gtk_window_set_application(GTK_WINDOW(GTK_APPLICATION_WINDOW(lookup_widget("control_window"))), GTK_APPLICATION(application));
 		/* Load state of the main windows (position and maximized) */
 		load_main_window_state();
 		/* Check for update */

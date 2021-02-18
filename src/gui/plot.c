@@ -617,7 +617,7 @@ static void set_filter(GtkFileChooser *dialog, const gchar *format) {
 }
 
 static void save_dialog(const gchar *format, int (export_function)(pldata *, sequence *, gchar *)) {
-	GtkWindow *control_window = GTK_WINDOW(lookup_widget("control_window"));
+	GtkWindow *control_window = GTK_WINDOW(GTK_APPLICATION_WINDOW(lookup_widget("control_window")));
 	SirilWidget *widgetdialog = siril_file_chooser_save(control_window, GTK_FILE_CHOOSER_ACTION_SAVE);
 	GtkFileChooser *dialog = GTK_FILE_CHOOSER(widgetdialog);
 

@@ -28,7 +28,7 @@ static GActionEntry win_entries[] = {
 	{ "redo", redo_action_activate },
 	{ "scripts", scripts_action_activate },
 	{ "updates", updates_action_activate },
-	{ "full_screen", full_screen_activated},
+	{ "full-screen", full_screen_activated},
 	{ "shortcuts", keyboard_shortcuts_activated},
 	{ "cwd", cwd_action_activate },
 
@@ -42,12 +42,13 @@ static GActionEntry win_entries[] = {
 };
 
 static GActionEntry image_entries[] = {
-	{ "zoom_out", zoom_out_activate },
-	{ "zoom_in", zoom_in_activate },
-	{ "zoom_fit", zoom_fit_activate, NULL, "true", change_zoom_fit_state },
-	{ "hide_show_toolbar", toolbar_activate },
+	{ "zoom-out", zoom_out_activate },
+	{ "zoom-in", zoom_in_activate },
+	{ "zoom-fit", zoom_fit_activate, NULL, "true", change_zoom_fit_state },
+	{ "hide-show_toolbar", toolbar_activate },
 	{ "astrometry", astrometry_activate },
-	{ "search_object", search_object_activate }
+	{ "dyn-psf", dyn_psf_activate },
+	{ "search-object", search_object_activate }
 };
 
 void siril_window_map_actions(GtkApplicationWindow *window) {

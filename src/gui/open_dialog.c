@@ -222,7 +222,7 @@ static void siril_add_debayer_toggle_button(GtkFileChooser *dialog) {
 static void opendial(int whichdial) {
 	SirilWidget *widgetdialog;
 	GtkFileChooser *dialog = NULL;
-	GtkWindow *control_window = GTK_WINDOW(lookup_widget("control_window"));
+	GtkWindow *control_window = GTK_WINDOW(GTK_APPLICATION_WINDOW(lookup_widget("control_window")));
 	gint res;
 	int retval;
 
