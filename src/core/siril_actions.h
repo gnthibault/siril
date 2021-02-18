@@ -55,5 +55,7 @@ void change_zoom_fit_state(GSimpleAction *action, GVariant *state, gpointer user
 void astrometry_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void dyn_psf_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void search_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void statistics_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void noise_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 
 #endif /* SRC_CORE_SIRIL_ACTIONS_H_ */

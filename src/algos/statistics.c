@@ -837,10 +837,3 @@ void on_menu_gray_stat_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	siril_open_dialog("StatWindow");
 	set_cursor_waiting(FALSE);
 }
-
-void on_info_menu_statistics_clicked(GtkButton *button, gpointer user_data) {
-	set_cursor_waiting(TRUE);
-	computeStat();
-	siril_open_dialog("StatWindow");
-	set_cursor_waiting(FALSE);
-}

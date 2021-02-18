@@ -29,6 +29,7 @@ static GActionEntry win_entries[] = {
 	{ "scripts", scripts_action_activate },
 	{ "updates", updates_action_activate },
 	{ "full-screen", full_screen_activated},
+	{ "hide-show-toolbar", toolbar_activate },
 	{ "shortcuts", keyboard_shortcuts_activated},
 	{ "cwd", cwd_action_activate },
 
@@ -45,11 +46,43 @@ static GActionEntry image_entries[] = {
 	{ "zoom-out", zoom_out_activate },
 	{ "zoom-in", zoom_in_activate },
 	{ "zoom-fit", zoom_fit_activate, NULL, "true", change_zoom_fit_state },
-	{ "hide-show_toolbar", toolbar_activate },
+	{ "statistics", statistics_activate },
+	{ "evaluate-noise", noise_activate },
 	{ "astrometry", astrometry_activate },
+	{ "image-information", astrometry_activate },
 	{ "dyn-psf", dyn_psf_activate },
 	{ "search-object", search_object_activate }
 };
+
+static void _siril_window_enable_action_group(GActionMap *map,
+		const gchar **group, gboolean enable) {
+	GAction *action;
+	const gchar **it = group;
+
+	for (it = group; *it != NULL; it++) {
+		action = g_action_map_lookup_action(map, *it);
+		if (G_LIKELY(action))
+			g_simple_action_set_enabled(G_SIMPLE_ACTION(action), enable);
+		else
+			g_warning("Action not found in action group: %s", *it);
+	}
+}
+
+void siril_window_enable_image_actions(GtkApplicationWindow *window, gboolean enable) {
+	static const gchar *image_actions[] = {
+		"zoom-out",
+		"zoom-in",
+		"zoom-fit",
+		"statistics",
+		"evaluate-noise",
+		"astrometry",
+		"image-information",
+	    "dyn-psf",
+        "search-object",
+		NULL,
+	};
+	_siril_window_enable_action_group(G_ACTION_MAP(window), image_actions, enable);
+}
 
 void siril_window_map_actions(GtkApplicationWindow *window) {
 	g_action_map_add_action_entries(G_ACTION_MAP(window), win_entries, G_N_ELEMENTS(win_entries), window);

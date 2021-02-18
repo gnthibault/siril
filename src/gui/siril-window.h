@@ -20,6 +20,7 @@
 #ifndef SRC_GUI_SIRIL_WINDOW_H_
 #define SRC_GUI_SIRIL_WINDOW_H_
 
+void siril_window_enable_image_actions(GtkApplicationWindow *window, gboolean enable);
 void siril_window_map_actions(GtkApplicationWindow *window);
 
 #endif /* SRC_GUI_SIRIL_WINDOW_H_ */

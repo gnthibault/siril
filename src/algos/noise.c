@@ -94,7 +94,7 @@ gpointer noise(gpointer p) {
 }
 
 
-void on_info_menu_noise_estimation_clicked(GtkButton *button, gpointer user_data) {
+void evaluate_noise_in_image() {
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
 		return;

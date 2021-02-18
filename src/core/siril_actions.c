@@ -24,6 +24,7 @@
 #include "core/undo.h"
 #include "core/siril_update.h"
 #include "core/siril_cmd_help.h"
+#include "algos/noise.h"
 #include "algos/siril_wcs.h"
 #include "algos/plateSolver.h"
 #include "gui/about_dialog.h"
@@ -206,18 +207,19 @@ void zoom_fit_activate(GSimpleAction *action, GVariant *parameter,
 	GVariant *state;
 
 	state = g_action_get_state(G_ACTION(action));
-	g_action_change_state(G_ACTION(action),	g_variant_new_boolean(!g_variant_get_boolean(state)));
+	g_action_change_state(G_ACTION(action),
+			g_variant_new_boolean(!g_variant_get_boolean(state)));
 	g_variant_unref(state);
 }
 
-void zoom_in_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
+void zoom_in_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
 	point center = get_center_of_vport();
 	update_zoom(center.x, center.y, ZOOM_IN);
 }
 
-void zoom_out_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
+void zoom_out_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
 	point center = get_center_of_vport();
 	update_zoom(center.x, center.y, ZOOM_OUT);
 }
@@ -233,8 +235,26 @@ void dyn_psf_activate(GSimpleAction *action, GVariant *parameter,
 	siril_open_dialog("stars_list_window");
 }
 
-void search_object_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
+void search_object_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
 	if (has_wcs(&gfit))
 		siril_open_dialog("search_objects");
+}
+
+void statistics_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	set_cursor_waiting(TRUE);
+	computeStat();
+	siril_open_dialog("StatWindow");
+	set_cursor_waiting(FALSE);
+}
+
+void noise_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	evaluate_noise_in_image();
+}
+
+void image_information_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	siril_open_dialog("file_information");
 }

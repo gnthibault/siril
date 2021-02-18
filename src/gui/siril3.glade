@@ -8871,8 +8871,8 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
+            <property name="action-name">win.statistics</property>
             <property name="text" translatable="yes">Statistics...</property>
-            <signal name="clicked" handler="on_info_menu_statistics_clicked" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -8885,8 +8885,8 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
+            <property name="action-name">win.evaluate-noise</property>
             <property name="text" translatable="yes">Noise Estimation</property>
-            <signal name="clicked" handler="on_info_menu_noise_estimation_clicked" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -8910,8 +8910,8 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
+            <property name="action-name">win.image-information</property>
             <property name="text" translatable="yes">Information...</property>
-            <signal name="clicked" handler="on_info_menu_informations_clicked" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -9228,9 +9228,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
       <object class="GtkMenuItem" id="menu_gray_stat">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.statistics</property>
         <property name="label" translatable="yes">Statistics...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menu_gray_stat_activate" swapped="no"/>
       </object>
     </child>
     <child>

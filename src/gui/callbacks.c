@@ -389,7 +389,6 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("header_snapshot_button"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("info_menu_headers"), any_image_is_loaded && gfit.header != NULL);
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_header"), any_image_is_loaded && gfit.header != NULL);
-	gtk_widget_set_sensitive(lookup_widget("info_menu_informations"), any_image_is_loaded);
 
 	/* Image processing Menu */
 	gtk_widget_set_sensitive(lookup_widget("removegreen"), is_a_singleRGB_image_loaded);
@@ -420,10 +419,7 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("menu_linearmatch"), is_a_single_image_loaded);
 
 	/* Image information menu */
-	gtk_widget_set_sensitive(lookup_widget("info_menu_noise_estimation"), any_image_is_loaded);
-	gtk_widget_set_sensitive(lookup_widget("info_menu_statistics"), any_image_is_loaded);
-	gtk_widget_set_sensitive(lookup_widget("info_menu_astrometry"), any_image_is_loaded);
-	gtk_widget_set_sensitive(lookup_widget("info_menu_dynamic_psf"), any_image_is_loaded);
+	siril_window_enable_image_actions(GTK_APPLICATION_WINDOW(lookup_widget("control_window")), any_image_is_loaded);
 }
 
 void sliders_mode_set_state(sliders_mode sliders) {
@@ -984,7 +980,7 @@ static void load_accels() {
 		"app.preferences",       "<Primary>p", NULL,
 		"app.open",              "<Primary>o", NULL,
 		"app.save",              "<Primary>s", NULL,
-		"app.save_as",           "<Primary><Shift>s", NULL,
+		"app.save-as",           "<Primary><Shift>s", NULL,
 
 		"win.undo",              "<Primary>z", NULL,
 		"win.redo",              "<Primary><Shift>z", NULL,
@@ -1000,7 +996,7 @@ static void load_accels() {
 		"win.stacking",          "F6", NULL,
 		"win.logs",              "F7", NULL,
 
-		"win.hide_show_toolbar", "<Primary>T", NULL,
+		"win.hide-show-toolbar", "<Primary>T", NULL,
 
 		"win.zoom-out",          "<Primary>minus", "<Primary>KP_Subtract", NULL,
 		"win.zoom-in",           "<Primary>plus", "<Primary>KP_Add", NULL,
@@ -1232,6 +1228,9 @@ void initialize_all_GUI(gchar *supported_files) {
 	/* initialize theme */
 	initialize_theme_GUI();
 
+	/* map all actions for main window */
+	siril_window_map_actions(GTK_APPLICATION_WINDOW(lookup_widget("control_window")));
+
 	/* initialize menu gui */
 	update_MenuItem();
 	initialize_script_menu();
@@ -1292,9 +1291,6 @@ void initialize_all_GUI(gchar *supported_files) {
 
 		g_free(ver);
 	}
-
-	/* map all actions for main window */
-	siril_window_map_actions(GTK_APPLICATION_WINDOW(lookup_widget("control_window")));
 
 	/* every 0.5sec update memory display */
 	g_timeout_add(500, update_displayed_memory, NULL);
@@ -1470,10 +1466,6 @@ void on_combobinning_changed(GtkComboBox *box, gpointer user_data) {
 			fprintf(stderr, "Should not happen\n");
 	}
 	drawPlot();
-}
-
-void on_info_menu_informations_clicked(GtkButton *button, gpointer user_data) {
-	siril_open_dialog("file_information");
 }
 
 void on_file_information_close_clicked(GtkButton *button, gpointer user_data) {

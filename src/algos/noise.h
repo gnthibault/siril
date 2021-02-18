@@ -14,5 +14,6 @@ struct noise_data {
 };
 
 gpointer noise(gpointer p);
+void evaluate_noise_in_image();
 
 #endif /* SRC_ALGOS_NOISE_H_ */
