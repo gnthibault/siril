@@ -747,11 +747,6 @@ point background_sample_get_position(background_sample *sample) {
 
 /************* CALLBACKS *************/
 
-void on_menuitem_background_extraction_activate(GtkMenuItem *menuitem,
-		gpointer user_data) {
-	siril_open_dialog("background_extraction_dialog");
-}
-
 void on_background_generate_clicked(GtkButton *button, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	int nb_of_samples;

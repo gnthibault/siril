@@ -943,13 +943,6 @@ void on_histoToolAutoStretch_clicked(GtkToolButton *button, gpointer user_data) 
 	set_cursor_waiting(FALSE);
 }
 
-void on_menuitem_histo_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	set_cursor_waiting(TRUE);
-
-	siril_open_dialog("histogram_dialog");
-	set_cursor_waiting(FALSE);
-}
-
 void toggle_histogram_window_visibility(GtkToolButton *button, gpointer user_data) {
 	if (gtk_widget_get_visible((GtkWidget *)user_data)) {
 		set_cursor_waiting(TRUE);
@@ -958,7 +951,7 @@ void toggle_histogram_window_visibility(GtkToolButton *button, gpointer user_dat
 		set_cursor_waiting(FALSE);
 		siril_close_dialog("histogram_dialog");
 	} else {
-		on_menuitem_histo_activate(NULL, NULL);
+		siril_open_dialog("histogram_dialog");
 	}
 }
 

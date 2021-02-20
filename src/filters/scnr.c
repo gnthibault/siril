@@ -123,11 +123,6 @@ gpointer scnr(gpointer p) {
 	return GINT_TO_POINTER(0);
 }
 
-void on_removegreen_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	if (single_image_is_loaded() && isrgb(&gfit))
-		siril_open_dialog("SCNR_dialog");
-}
-
 void on_SCNR_dialog_show(GtkWidget *widget, gpointer user_data) {
 	GtkComboBox *comboscnr = GTK_COMBO_BOX(
 			gtk_builder_get_object(builder, "combo_scnr"));

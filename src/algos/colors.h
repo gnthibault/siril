@@ -23,6 +23,7 @@ void xyz_to_rgb(double, double, double, double *, double *, double *);
 double BV_to_T(double BV);
 
 int pos_to_neg(fits *fit);
+void negative_processing();
 
 int equalize_cfa_fit_with_coeffs(fits *fit, float coeff1, float coeff2, int config);
 

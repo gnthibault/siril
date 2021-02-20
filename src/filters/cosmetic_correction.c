@@ -548,19 +548,6 @@ int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot,
 	return 0;
 }
 
-void on_menuitem_cosmetic_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	if (sequence_is_loaded()) {
-		gtk_toggle_button_set_active(
-				GTK_TOGGLE_BUTTON(lookup_widget("checkCosmeticSeq")), TRUE);
-	} else if (single_image_is_loaded()) {
-		// not a processing result
-		gtk_toggle_button_set_active(
-				GTK_TOGGLE_BUTTON(lookup_widget("checkCosmeticSeq")), FALSE);
-	} else
-		return;
-	siril_open_dialog("cosmetic_dialog");
-}
-
 void on_button_cosmetic_close_clicked(GtkButton *button, gpointer user_data) {
 	siril_close_dialog("cosmetic_dialog");
 }

@@ -57,5 +57,17 @@ void dyn_psf_activate(GSimpleAction *action, GVariant *parameter, gpointer user_
 void search_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void statistics_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void noise_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void image_information_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void remove_green_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void saturation_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void color_calib_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void pcc_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void split_channel_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void negative_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void histo_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void fix_banding_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void cosmetic_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void background_extr_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+
 
 #endif /* SRC_CORE_SIRIL_ACTIONS_H_ */

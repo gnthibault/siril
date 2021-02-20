@@ -24,6 +24,7 @@
 #include "core/undo.h"
 #include "core/siril_update.h"
 #include "core/siril_cmd_help.h"
+#include "algos/colors.h"
 #include "algos/noise.h"
 #include "algos/siril_wcs.h"
 #include "algos/plateSolver.h"
@@ -37,6 +38,7 @@
 #include "gui/script_menu.h"
 #include "gui/image_interactions.h"
 #include "gui/image_display.h"
+#include "gui/photometric_cc.h"
 
 #include "siril_actions.h"
 
@@ -257,4 +259,59 @@ void noise_activate(GSimpleAction *action, GVariant *parameter,
 void image_information_activate(GSimpleAction *action, GVariant *parameter,
 		gpointer user_data) {
 	siril_open_dialog("file_information");
+}
+
+/******* processing menu **************/
+
+void remove_green_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	siril_open_dialog("SCNR_dialog");
+}
+
+void saturation_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	siril_open_dialog("satu_dialog");
+}
+
+void color_calib_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	initialize_calibration_interface();
+	siril_open_dialog("color_calibration");
+}
+
+void pcc_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	initialize_photometric_cc_dialog();
+	siril_open_dialog("ImagePlateSolver_Dial");
+}
+
+void split_channel_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	siril_open_dialog("extract_channel_dialog");
+}
+
+void negative_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	negative_processing();
+}
+
+void histo_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	siril_open_dialog("histogram_dialog");
+}
+
+void fix_banding_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	siril_open_dialog("canon_fixbanding_dialog");
+}
+
+void cosmetic_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	siril_open_dialog("cosmetic_dialog");
+}
+
+void background_extr_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	siril_open_dialog("background_extraction_dialog");
+
 }

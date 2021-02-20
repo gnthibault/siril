@@ -53,53 +53,6 @@ enum {
 	RED, GREEN, BLUE
 };
 
-static void initialize_photometric_cc_dialog() {
-	GtkWidget *button_ips_ok, *button_cc_ok, *catalog_label, *catalog_box_ips,
-			*catalog_box_pcc, *catalog_auto, *frame_cc_bkg, *frame_cc_norm,
-			*catalog_label_pcc;
-	GtkWindow *parent;
-	GtkAdjustment *selection_cc_black_adjustment[4];
-
-	button_ips_ok = lookup_widget("buttonIPS_ok");
-	button_cc_ok = lookup_widget("button_cc_ok");
-	catalog_label = lookup_widget("GtkLabelCatalog");
-	catalog_label_pcc = lookup_widget("GtkLabelCatalogPCC");
-	catalog_box_ips = lookup_widget("ComboBoxIPSCatalog");
-	catalog_box_pcc = lookup_widget("ComboBoxPCCCatalog");
-	catalog_auto = lookup_widget("GtkCheckButton_OnlineCat");
-	frame_cc_bkg = lookup_widget("frame_cc_background");
-	frame_cc_norm = lookup_widget("frame_cc_norm");
-
-	parent = GTK_WINDOW(lookup_widget("ImagePlateSolver_Dial"));
-
-	selection_cc_black_adjustment[0] = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment_cc_bkg_x"));
-	selection_cc_black_adjustment[1] = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment_cc_bkg_y"));
-	selection_cc_black_adjustment[2] = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment_cc_bkg_w"));
-	selection_cc_black_adjustment[3] = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment_cc_bkg_h"));
-
-	gtk_widget_set_visible(button_ips_ok, FALSE);
-	gtk_widget_set_visible(button_cc_ok, TRUE);
-	gtk_widget_set_visible(catalog_label, FALSE);
-	gtk_widget_set_visible(catalog_label_pcc, TRUE);
-	gtk_widget_set_visible(catalog_box_ips, FALSE);
-	gtk_widget_set_visible(catalog_box_pcc, TRUE);
-	gtk_widget_set_visible(catalog_auto, FALSE);
-	gtk_widget_set_visible(frame_cc_bkg, TRUE);
-	gtk_widget_set_visible(frame_cc_norm, TRUE);
-
-	gtk_window_set_title(parent, _("Photometric Color Calibration"));
-
-	gtk_adjustment_set_upper(selection_cc_black_adjustment[0], gfit.rx);
-	gtk_adjustment_set_upper(selection_cc_black_adjustment[1], gfit.ry);
-	gtk_adjustment_set_upper(selection_cc_black_adjustment[2], gfit.rx);
-	gtk_adjustment_set_upper(selection_cc_black_adjustment[3], gfit.ry);
-	gtk_adjustment_set_value(selection_cc_black_adjustment[0], 0);
-	gtk_adjustment_set_value(selection_cc_black_adjustment[1], 0);
-	gtk_adjustment_set_value(selection_cc_black_adjustment[2], 0);
-	gtk_adjustment_set_value(selection_cc_black_adjustment[3], 0);
-
-}
-
 static void start_photometric_cc() {
 	struct plate_solver_data *args = malloc(sizeof(struct plate_solver_data));
 
@@ -579,6 +532,53 @@ static rectangle get_bkg_selection() {
  * PUBLIC FUNCTIONS
  */
 
+void initialize_photometric_cc_dialog() {
+	GtkWidget *button_ips_ok, *button_cc_ok, *catalog_label, *catalog_box_ips,
+			*catalog_box_pcc, *catalog_auto, *frame_cc_bkg, *frame_cc_norm,
+			*catalog_label_pcc;
+	GtkWindow *parent;
+	GtkAdjustment *selection_cc_black_adjustment[4];
+
+	button_ips_ok = lookup_widget("buttonIPS_ok");
+	button_cc_ok = lookup_widget("button_cc_ok");
+	catalog_label = lookup_widget("GtkLabelCatalog");
+	catalog_label_pcc = lookup_widget("GtkLabelCatalogPCC");
+	catalog_box_ips = lookup_widget("ComboBoxIPSCatalog");
+	catalog_box_pcc = lookup_widget("ComboBoxPCCCatalog");
+	catalog_auto = lookup_widget("GtkCheckButton_OnlineCat");
+	frame_cc_bkg = lookup_widget("frame_cc_background");
+	frame_cc_norm = lookup_widget("frame_cc_norm");
+
+	parent = GTK_WINDOW(lookup_widget("ImagePlateSolver_Dial"));
+
+	selection_cc_black_adjustment[0] = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment_cc_bkg_x"));
+	selection_cc_black_adjustment[1] = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment_cc_bkg_y"));
+	selection_cc_black_adjustment[2] = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment_cc_bkg_w"));
+	selection_cc_black_adjustment[3] = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "adjustment_cc_bkg_h"));
+
+	gtk_widget_set_visible(button_ips_ok, FALSE);
+	gtk_widget_set_visible(button_cc_ok, TRUE);
+	gtk_widget_set_visible(catalog_label, FALSE);
+	gtk_widget_set_visible(catalog_label_pcc, TRUE);
+	gtk_widget_set_visible(catalog_box_ips, FALSE);
+	gtk_widget_set_visible(catalog_box_pcc, TRUE);
+	gtk_widget_set_visible(catalog_auto, FALSE);
+	gtk_widget_set_visible(frame_cc_bkg, TRUE);
+	gtk_widget_set_visible(frame_cc_norm, TRUE);
+
+	gtk_window_set_title(parent, _("Photometric Color Calibration"));
+
+	gtk_adjustment_set_upper(selection_cc_black_adjustment[0], gfit.rx);
+	gtk_adjustment_set_upper(selection_cc_black_adjustment[1], gfit.ry);
+	gtk_adjustment_set_upper(selection_cc_black_adjustment[2], gfit.rx);
+	gtk_adjustment_set_upper(selection_cc_black_adjustment[3], gfit.ry);
+	gtk_adjustment_set_value(selection_cc_black_adjustment[0], 0);
+	gtk_adjustment_set_value(selection_cc_black_adjustment[1], 0);
+	gtk_adjustment_set_value(selection_cc_black_adjustment[2], 0);
+	gtk_adjustment_set_value(selection_cc_black_adjustment[3], 0);
+
+}
+
 int apply_photometric_cc() {
 	fitted_PSF **stars;
 	GtkComboBox *norm_box;
@@ -646,11 +646,6 @@ int get_photometry_catalog() {
 /*****
  * CALLBACKS FUNCTIONS
  */
-
-void on_menuitemphotometriccalibration_activate() {
-	initialize_photometric_cc_dialog();
-	siril_open_dialog("ImagePlateSolver_Dial");
-}
 
 void on_button_cc_ok_clicked(GtkButton *button, gpointer user_data) {
 	GtkToggleButton *auto_bkg;

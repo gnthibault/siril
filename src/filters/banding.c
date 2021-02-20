@@ -304,19 +304,6 @@ int BandingEngine(fits *fit, double sigma, double amount, gboolean protect_highl
 
 /***************** GUI for Canon Banding Reduction ********************/
 
-void on_menuitem_fixbanding_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	if (sequence_is_loaded()) {
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("checkBandingSeq")), TRUE);
-	}
-	else if (single_image_is_loaded()) {
-		// not a processing result
-		gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("checkBandingSeq")), FALSE);
-	}
-	else
-		return;
-	siril_open_dialog("canon_fixbanding_dialog");
-}
-
 void on_button_ok_fixbanding_clicked(GtkButton *button, gpointer user_data) {
 	siril_close_dialog("canon_fixbanding_dialog");
 }

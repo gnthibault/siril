@@ -10113,9 +10113,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
       <object class="GtkMenuItem" id="menuitem_histo">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.histo-processing</property>
         <property name="label" translatable="yes">Histogram Transformation...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menuitem_histo_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -10138,18 +10138,18 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
               <object class="GtkMenuItem" id="menuitemcalibration">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="action-name">win.color-calib-processing</property>
                 <property name="label" translatable="yes">Color Calibration...</property>
                 <property name="use-underline">True</property>
-                <signal name="activate" handler="on_menuitemcalibration_activate" swapped="no"/>
               </object>
             </child>
             <child>
               <object class="GtkMenuItem" id="menuitemphotometriccalibration">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="action-name">win.pcc-processing</property>
                 <property name="label" translatable="yes">Photometric Color Calibration...</property>
                 <property name="use-underline">True</property>
-                <signal name="activate" handler="on_menuitemphotometriccalibration_activate" swapped="no"/>
               </object>
             </child>
           </object>
@@ -10160,27 +10160,27 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
       <object class="GtkMenuItem" id="menuitem_satu">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.saturation-processing</property>
         <property name="label" translatable="yes">Color Saturation...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menuitem_satu_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="removegreen">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.remove-green-processing</property>
         <property name="label" translatable="yes">Remove Green Noise...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_removegreen_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menu_negative">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.negative-processing</property>
         <property name="label" translatable="yes">Negative Transformation</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menu_negative_activate" swapped="no"/>
         <accelerator key="i" signal="activate" modifiers="GDK_CONTROL_MASK"/>
       </object>
     </child>
@@ -10203,9 +10203,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
       <object class="GtkMenuItem" id="menuitem_fixbanding">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.fix-banding-processing</property>
         <property name="label" translatable="yes">Banding Reduction...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menuitem_fixbanding_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -10221,9 +10221,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
       <object class="GtkMenuItem" id="menuitem_cosmetic">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.cosmetic-processing</property>
         <property name="label" translatable="yes">Cosmetic Correction...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menuitem_cosmetic_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -10356,9 +10356,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
       <object class="GtkMenuItem" id="menuitem_background_extraction">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.background-extr-processing</property>
         <property name="label" translatable="yes">Background Extraction...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menuitem_background_extraction_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -10375,9 +10375,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
               <object class="GtkMenuItem" id="menu_channel_separation">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="action-name">win.split-channel-processing</property>
                 <property name="label" translatable="yes">Split Channels...</property>
                 <property name="use-underline">True</property>
-                <signal name="activate" handler="on_menu_channel_separation_activate" swapped="no"/>
               </object>
             </child>
             <child>
@@ -16605,7 +16605,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                 <property name="can-focus">True</property>
                 <property name="receives-default">True</property>
                 <property name="tooltip-text" translatable="yes">Save the current image in a different name</property>
-                <property name="action-name">app.save_as</property>
+                <property name="action-name">app.save-as</property>
                 <property name="use-underline">True</property>
                 <child>
                   <object class="GtkImage">

@@ -1104,7 +1104,7 @@ int pos_to_neg(fits *fit) {
 	return 0;
 }
 
-void on_menu_negative_activate(GtkMenuItem *menuitem, gpointer user_data) {
+void negative_processing() {
 	set_cursor_waiting(TRUE);
 	undo_save_state(&gfit, _("Negative Transformation"));
 	pos_to_neg(&gfit);
@@ -1117,19 +1117,6 @@ void on_menu_negative_activate(GtkMenuItem *menuitem, gpointer user_data) {
 }
 
 /**********************************************************************/
-
-void on_menu_channel_separation_activate(GtkMenuItem *menuitem,
-		gpointer user_data) {
-	if (single_image_is_loaded() && isrgb(&gfit))
-		siril_open_dialog("extract_channel_dialog");
-}
-
-void on_menuitemcalibration_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	if (single_image_is_loaded() && isrgb(&gfit)) {
-		initialize_calibration_interface();
-		siril_open_dialog("color_calibration");
-	}
-}
 
 void on_extract_channel_button_close_clicked(GtkButton *button,
 		gpointer user_data) {

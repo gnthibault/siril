@@ -21,6 +21,7 @@ struct photometric_cc_data {
 	int n_channel;
 };
 
+void initialize_photometric_cc_dialog();
 int apply_photometric_cc();
 int get_photometry_catalog();
 

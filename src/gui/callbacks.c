@@ -346,6 +346,7 @@ void set_icon_entry(GtkEntry *entry, gchar *string) {
 }
 
 void update_MenuItem() {
+	GtkApplicationWindow *app_win = GTK_APPLICATION_WINDOW(lookup_widget("control_window"));
 	gboolean is_a_single_image_loaded;		/* An image is loaded. Not a sequence or only the result of stacking process */
 	gboolean is_a_singleRGB_image_loaded;	/* A RGB image is loaded. Not a sequence or only the result of stacking process */
 	gboolean any_image_is_loaded;			/* Something is loaded. Single image or Sequence */
@@ -386,22 +387,15 @@ void update_MenuItem() {
 	/* File Menu */
 	gtk_widget_set_sensitive(lookup_widget("header_save_as_button"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("header_save_button"), is_a_single_image_loaded && com.uniq->fileexist);
-	gtk_widget_set_sensitive(lookup_widget("header_snapshot_button"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("info_menu_headers"), any_image_is_loaded && gfit.header != NULL);
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_header"), any_image_is_loaded && gfit.header != NULL);
 
 	/* Image processing Menu */
-	gtk_widget_set_sensitive(lookup_widget("removegreen"), is_a_singleRGB_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_satu"), is_a_singleRGB_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menu_negative"), any_image_is_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitemcalibration"), is_a_singleRGB_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitemphotometriccalibration"), is_a_singleRGB_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menu_channel_separation"), is_a_singleRGB_image_loaded);
+	siril_window_enable_rgb_proc_actions(app_win, is_a_singleRGB_image_loaded);
+	siril_window_enable_any_proc_actions(app_win, any_image_is_loaded);
+
 	gtk_widget_set_sensitive(lookup_widget("menu_slpitcfa"), any_image_is_loaded && !isrgb(&gfit));
-	gtk_widget_set_sensitive(lookup_widget("menuitem_histo"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_asinh"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_fixbanding"), any_image_is_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_cosmetic"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_fft"), TRUE);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_deconvolution"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_resample"), is_a_single_image_loaded);
@@ -410,7 +404,6 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation270"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_mirrorx"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_mirrory"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_background_extraction"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_wavelets"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menu_wavelet_separation"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_medianfilter"), is_a_single_image_loaded);
@@ -419,7 +412,7 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("menu_linearmatch"), is_a_single_image_loaded);
 
 	/* Image information menu */
-	siril_window_enable_image_actions(GTK_APPLICATION_WINDOW(lookup_widget("control_window")), any_image_is_loaded);
+	siril_window_enable_image_actions(app_win, any_image_is_loaded);
 }
 
 void sliders_mode_set_state(sliders_mode sliders) {

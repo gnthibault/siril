@@ -277,13 +277,6 @@ gpointer enhance_saturation(gpointer p) {
 
 /** callbacks **/
 
-void on_menuitem_satu_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	if (!single_image_is_loaded() || !isrgb(&gfit))
-		return;
-
-	siril_open_dialog("satu_dialog");
-}
-
 void on_satu_dialog_show(GtkWidget *widget, gpointer user_data) {
 	satu_startup();
 	satu_amount = 0.0;

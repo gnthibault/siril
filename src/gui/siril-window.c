@@ -22,36 +22,52 @@
 #include "core/siril_actions.h"
 
 static GActionEntry win_entries[] = {
-	{ "snapshot", snapshot_action_activate },
-	{ "close", close_action_activate },
-	{ "undo", undo_action_activate },
-	{ "redo", redo_action_activate },
-	{ "scripts", scripts_action_activate },
-	{ "updates", updates_action_activate },
-	{ "full-screen", full_screen_activated},
-	{ "hide-show-toolbar", toolbar_activate },
-	{ "shortcuts", keyboard_shortcuts_activated},
-	{ "cwd", cwd_action_activate },
+		{ "close", close_action_activate },
+		{ "undo", undo_action_activate },
+		{ "redo", redo_action_activate },
+		{ "scripts", scripts_action_activate },
+		{ "updates", updates_action_activate },
+		{ "full-screen", full_screen_activated},
+		{ "hide-show-toolbar", toolbar_activate },
+		{ "shortcuts", keyboard_shortcuts_activated},
+		{ "cwd", cwd_action_activate },
 
-	{ "conversion", tab_conversion_activate },
-	{ "sequence", tab_sequence_activate },
-	{ "registration", tab_registration_activate },
-	{ "prepro", tab_prepro_activate },
-	{ "plot", tab_plot_activate },
-	{ "stacking", tab_stacking_activate },
-	{ "logs", tab_logs_activate }
+		{ "conversion", tab_conversion_activate },
+		{ "sequence", tab_sequence_activate },
+		{ "registration", tab_registration_activate },
+		{ "prepro", tab_prepro_activate },
+		{ "plot", tab_plot_activate },
+		{ "stacking", tab_stacking_activate },
+		{ "logs", tab_logs_activate }
 };
 
 static GActionEntry image_entries[] = {
-	{ "zoom-out", zoom_out_activate },
-	{ "zoom-in", zoom_in_activate },
-	{ "zoom-fit", zoom_fit_activate, NULL, "true", change_zoom_fit_state },
-	{ "statistics", statistics_activate },
-	{ "evaluate-noise", noise_activate },
-	{ "astrometry", astrometry_activate },
-	{ "image-information", astrometry_activate },
-	{ "dyn-psf", dyn_psf_activate },
-	{ "search-object", search_object_activate }
+		{ "zoom-out", zoom_out_activate },
+		{ "zoom-in", zoom_in_activate },
+		{ "zoom-fit", zoom_fit_activate, NULL, "true", change_zoom_fit_state },
+		{ "snapshot", snapshot_action_activate },
+		{ "statistics", statistics_activate },
+		{ "evaluate-noise", noise_activate },
+		{ "astrometry", astrometry_activate },
+		{ "image-information", astrometry_activate },
+		{ "dyn-psf", dyn_psf_activate },
+		{ "search-object", search_object_activate }
+};
+
+static GActionEntry rgb_processing_entries[] = {
+		{"remove-green-processing", remove_green_activate },
+		{"saturation-processing", saturation_activate },
+		{"color-calib-processing", color_calib_activate },
+		{"pcc-processing", pcc_activate },
+		{"split-channel-processing", split_channel_activate }
+};
+
+static GActionEntry any_processing_entries[] = {
+		{"negative-processing", negative_activate },
+		{"histo-processing", histo_activate },
+		{"fix-banding-processing", fix_banding_activate },
+		{"cosmetic-processing", cosmetic_activate },
+		{"background-extr-processing", background_extr_activate },
 };
 
 static void _siril_window_enable_action_group(GActionMap *map,
@@ -73,6 +89,7 @@ void siril_window_enable_image_actions(GtkApplicationWindow *window, gboolean en
 		"zoom-out",
 		"zoom-in",
 		"zoom-fit",
+		"snapshot",
 		"statistics",
 		"evaluate-noise",
 		"astrometry",
@@ -84,7 +101,33 @@ void siril_window_enable_image_actions(GtkApplicationWindow *window, gboolean en
 	_siril_window_enable_action_group(G_ACTION_MAP(window), image_actions, enable);
 }
 
+void siril_window_enable_rgb_proc_actions(GtkApplicationWindow *window, gboolean enable) {
+	static const gchar *rgb_processing_actions[] = {
+		"remove-green-processing",
+		"saturation-processing",
+		"color-calib-processing",
+		"pcc-processing",
+		"split-channel-processing",
+		NULL,
+	};
+	_siril_window_enable_action_group(G_ACTION_MAP(window), rgb_processing_actions, enable);
+}
+
+void siril_window_enable_any_proc_actions(GtkApplicationWindow *window, gboolean enable) {
+	static const gchar *rgb_processing_actions[] = {
+		"negative-processing",
+		"histo-processing",
+		"fix-banding-processing",
+		"cosmetic-processing",
+		"background-extr-processing",
+		NULL,
+	};
+	_siril_window_enable_action_group(G_ACTION_MAP(window), rgb_processing_actions, enable);
+}
+
 void siril_window_map_actions(GtkApplicationWindow *window) {
 	g_action_map_add_action_entries(G_ACTION_MAP(window), win_entries, G_N_ELEMENTS(win_entries), window);
 	g_action_map_add_action_entries(G_ACTION_MAP(window), image_entries, G_N_ELEMENTS(image_entries), window);
+	g_action_map_add_action_entries(G_ACTION_MAP(window), rgb_processing_entries, G_N_ELEMENTS(rgb_processing_entries), window);
+	g_action_map_add_action_entries(G_ACTION_MAP(window), any_processing_entries, G_N_ELEMENTS(any_processing_entries), window);
 }
