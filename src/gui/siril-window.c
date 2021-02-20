@@ -70,6 +70,10 @@ static GActionEntry any_processing_entries[] = {
 		{"background-extr-processing", background_extr_activate },
 };
 
+static GActionEntry single_processing_entries[] = {
+		{"asinh-processing", asinh_activate },
+};
+
 static void _siril_window_enable_action_group(GActionMap *map,
 		const gchar **group, gboolean enable) {
 	GAction *action;
@@ -114,7 +118,7 @@ void siril_window_enable_rgb_proc_actions(GtkApplicationWindow *window, gboolean
 }
 
 void siril_window_enable_any_proc_actions(GtkApplicationWindow *window, gboolean enable) {
-	static const gchar *rgb_processing_actions[] = {
+	static const gchar *any_processing_actions[] = {
 		"negative-processing",
 		"histo-processing",
 		"fix-banding-processing",
@@ -122,7 +126,15 @@ void siril_window_enable_any_proc_actions(GtkApplicationWindow *window, gboolean
 		"background-extr-processing",
 		NULL,
 	};
-	_siril_window_enable_action_group(G_ACTION_MAP(window), rgb_processing_actions, enable);
+	_siril_window_enable_action_group(G_ACTION_MAP(window), any_processing_actions, enable);
+}
+
+void siril_window_enable_single_proc_actions(GtkApplicationWindow *window, gboolean enable) {
+	static const gchar *single_processing_actions[] = {
+		"asinh-processing",
+		NULL,
+	};
+	_siril_window_enable_action_group(G_ACTION_MAP(window), single_processing_actions, enable);
 }
 
 void siril_window_map_actions(GtkApplicationWindow *window) {
@@ -130,4 +142,5 @@ void siril_window_map_actions(GtkApplicationWindow *window) {
 	g_action_map_add_action_entries(G_ACTION_MAP(window), image_entries, G_N_ELEMENTS(image_entries), window);
 	g_action_map_add_action_entries(G_ACTION_MAP(window), rgb_processing_entries, G_N_ELEMENTS(rgb_processing_entries), window);
 	g_action_map_add_action_entries(G_ACTION_MAP(window), any_processing_entries, G_N_ELEMENTS(any_processing_entries), window);
+	g_action_map_add_action_entries(G_ACTION_MAP(window), single_processing_entries, G_N_ELEMENTS(single_processing_entries), window);
 }

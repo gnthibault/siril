@@ -173,10 +173,6 @@ void apply_asinh_cancel() {
 
 /*** callbacks **/
 
-void on_menuitem_asinh_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	siril_open_dialog("asinh_dialog");
-}
-
 void on_asinh_dialog_show(GtkWidget *widget, gpointer user_data) {
 	GtkSpinButton *spin_stretch = GTK_SPIN_BUTTON(lookup_widget("spin_asinh"));
 	GtkSpinButton *spin_black_p = GTK_SPIN_BUTTON(lookup_widget("black_point_spin_asinh"));

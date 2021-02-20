@@ -315,3 +315,8 @@ void background_extr_activate(GSimpleAction *action, GVariant *parameter,
 	siril_open_dialog("background_extraction_dialog");
 
 }
+
+void asinh_activate(GSimpleAction *action, GVariant *parameter,
+		gpointer user_data) {
+	siril_open_dialog("asinh_dialog");
+}

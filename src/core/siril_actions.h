@@ -68,6 +68,7 @@ void histo_activate(GSimpleAction *action, GVariant *parameter, gpointer user_da
 void fix_banding_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void cosmetic_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void background_extr_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void asinh_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 
 
 #endif /* SRC_CORE_SIRIL_ACTIONS_H_ */
