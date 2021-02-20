@@ -393,10 +393,11 @@ void update_MenuItem() {
 	/* Image processing Menu */
 	siril_window_enable_rgb_proc_actions(app_win, is_a_singleRGB_image_loaded);
 	siril_window_enable_any_proc_actions(app_win, any_image_is_loaded);
+	siril_window_enable_single_proc_actions(app_win, is_a_single_image_loaded);
 
 	gtk_widget_set_sensitive(lookup_widget("menu_slpitcfa"), any_image_is_loaded && !isrgb(&gfit));
-	gtk_widget_set_sensitive(lookup_widget("menuitem_asinh"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_fft"), TRUE);
+
 	gtk_widget_set_sensitive(lookup_widget("menuitem_deconvolution"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_resample"), is_a_single_image_loaded);
 	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation"), is_a_single_image_loaded);
