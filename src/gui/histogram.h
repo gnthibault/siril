@@ -25,6 +25,7 @@ void clear_histograms();
 float MTF(float x, float m, float lo, float hi);
 float findMidtonesBalance(fits *fit, float *shadows, float *highlights);
 void apply_histo_cancel();
+void toggle_histogram_window_visibility();
 
 void on_histoMidEntry_changed(GtkEditable *editable, gpointer user_data);
 void on_histoShadEntry_changed(GtkEditable *editable, gpointer user_data);

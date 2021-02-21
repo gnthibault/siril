@@ -100,10 +100,6 @@ void apply_clahe_cancel() {
 
 /** callbacks **/
 
-void on_menuitem_clahe_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	siril_open_dialog("CLAHE_dialog");
-}
-
 void on_clahe_cancel_clicked(GtkMenuItem *menuitem, gpointer user_data) {
 	clahe_close(TRUE);
 	siril_close_dialog("CLAHE_dialog");

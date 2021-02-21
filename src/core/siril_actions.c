@@ -26,11 +26,14 @@
 #include "core/siril_cmd_help.h"
 #include "algos/colors.h"
 #include "algos/noise.h"
+#include "algos/geometry.h"
 #include "algos/siril_wcs.h"
 #include "algos/plateSolver.h"
+#include "compositing/compositing.h"
 #include "gui/about_dialog.h"
 #include "gui/utils.h"
 #include "gui/callbacks.h"
+#include "gui/histogram.h"
 #include "gui/open_dialog.h"
 #include "gui/save_dialog.h"
 #include "gui/progress_and_log.h"
@@ -42,79 +45,65 @@
 
 #include "siril_actions.h"
 
-void open_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void open_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	header_open_button_clicked();
 }
 
-void cwd_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void cwd_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	cwd_btton_clicked();
 }
 
-void save_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void save_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	on_header_save_button_clicked();
 }
 
-void save_as_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void save_as_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	on_header_save_as_button_clicked();
 }
 
-void snapshot_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void snapshot_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	on_header_snapshot_button_clicked();
 }
 
-void undo_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void undo_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	undo_display_data(UNDO);
 	set_cursor_waiting(FALSE);
 }
 
-void redo_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void redo_action_activate(GSimpleAction *action, GVariant *parameter,gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	undo_display_data(REDO);
 	set_cursor_waiting(FALSE);
 }
 
-void quit_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void quit_action_activate(GSimpleAction *action, GVariant *parameter,gpointer user_data) {
 	siril_quit();
 }
 
-void about_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void about_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	siril_show_about_dialog();
 }
 
-void preferences_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void preferences_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	siril_open_dialog("settings_window");
 }
 
-void close_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void close_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	process_close(0);
 }
 
-void scripts_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void scripts_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	siril_get_on_script_pages();
 }
 
-void updates_action_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void updates_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	siril_check_updates(TRUE);
 }
 
 static gboolean is_extended = FALSE;
 
-void full_screen_activated(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void full_screen_activated(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	GtkWindow *window;
 	GtkWidget *toolbarbox = lookup_widget("toolbarbox");
 	GtkWidget *control_center_box = lookup_widget("control_center_box");
@@ -142,8 +131,7 @@ void full_screen_activated(GSimpleAction *action, GVariant *parameter,
 	gtk_widget_set_visible(toolbarbox, is_fullscreen);
 }
 
-void keyboard_shortcuts_activated(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
+void keyboard_shortcuts_activated(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	GtkWindow *window;
 
 	window = GTK_WINDOW(GTK_APPLICATION_WINDOW(user_data));
@@ -151,49 +139,40 @@ void keyboard_shortcuts_activated(GSimpleAction *action,
 	siril_cmd_help_keyboard_shortcuts(window);
 }
 
-void tab_conversion_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
+void tab_conversion_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	control_window_switch_to_tab(FILE_CONVERSION);
 }
 
-void tab_sequence_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
+void tab_sequence_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	control_window_switch_to_tab(IMAGE_SEQ);
 }
 
-void tab_prepro_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
+void tab_prepro_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	control_window_switch_to_tab(PRE_PROC);
 }
 
-void tab_registration_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
+void tab_registration_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	control_window_switch_to_tab(REGISTRATION);
 }
 
-void tab_plot_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
+void tab_plot_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	control_window_switch_to_tab(PLOT);
 }
 
-void tab_stacking_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
+void tab_stacking_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	control_window_switch_to_tab(STACKING);
 }
 
-void tab_logs_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
+void tab_logs_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	control_window_switch_to_tab(OUTPUT_LOGS);
 }
 
-void toolbar_activate(GSimpleAction *action,
-		GVariant *parameter, gpointer user_data) {
+void toolbar_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	GtkWidget *w = lookup_widget("toolbarbox");
 	gtk_widget_set_visible(w, !gtk_widget_get_visible(w));
 }
 
-void change_zoom_fit_state(GSimpleAction *action, GVariant *state,
-		gpointer user_data) {
+void change_zoom_fit_state(GSimpleAction *action, GVariant *state, gpointer user_data) {
 	if (g_variant_get_boolean(state)) {
 		com.zoom_value = ZOOM_FIT;
 		reset_display_offset();
@@ -204,8 +183,7 @@ void change_zoom_fit_state(GSimpleAction *action, GVariant *state,
 	g_simple_action_set_state(action, state);
 }
 
-void zoom_fit_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void zoom_fit_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	GVariant *state;
 
 	state = g_action_get_state(G_ACTION(action));
@@ -214,109 +192,158 @@ void zoom_fit_activate(GSimpleAction *action, GVariant *parameter,
 	g_variant_unref(state);
 }
 
-void zoom_in_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void zoom_in_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	point center = get_center_of_vport();
 	update_zoom(center.x, center.y, ZOOM_IN);
 }
 
-void zoom_out_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void zoom_out_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	point center = get_center_of_vport();
 	update_zoom(center.x, center.y, ZOOM_OUT);
 }
 
-void astrometry_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void astrometry_activate(GSimpleAction *action, GVariant *parameter,gpointer user_data) {
 	open_astrometry_dialog();
 }
 
-void dyn_psf_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
-	printf("OKOK\n");
+void dyn_psf_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	siril_open_dialog("stars_list_window");
 }
 
-void search_object_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void search_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	if (has_wcs(&gfit))
 		siril_open_dialog("search_objects");
 }
 
-void statistics_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void statistics_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	computeStat();
 	siril_open_dialog("StatWindow");
 	set_cursor_waiting(FALSE);
 }
 
-void noise_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void noise_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	evaluate_noise_in_image();
 }
 
-void image_information_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void image_information_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	siril_open_dialog("file_information");
 }
 
 /******* processing menu **************/
 
-void remove_green_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void remove_green_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	siril_open_dialog("SCNR_dialog");
 }
 
-void saturation_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void saturation_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	siril_open_dialog("satu_dialog");
 }
 
-void color_calib_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void color_calib_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	initialize_calibration_interface();
 	siril_open_dialog("color_calibration");
 }
 
-void pcc_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void pcc_activate(GSimpleAction *action, GVariant *parameter,gpointer user_data) {
 	initialize_photometric_cc_dialog();
 	siril_open_dialog("ImagePlateSolver_Dial");
 }
 
-void split_channel_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void split_channel_activate(GSimpleAction *action, GVariant *parameter,gpointer user_data) {
 	siril_open_dialog("extract_channel_dialog");
 }
 
-void negative_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void negative_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	negative_processing();
 }
 
-void histo_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
-	siril_open_dialog("histogram_dialog");
+void histo_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	toggle_histogram_window_visibility();
 }
 
-void fix_banding_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void fix_banding_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	siril_open_dialog("canon_fixbanding_dialog");
 }
 
-void cosmetic_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void cosmetic_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	siril_open_dialog("cosmetic_dialog");
 }
 
-void background_extr_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void background_extr_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	siril_open_dialog("background_extraction_dialog");
-
 }
 
-void asinh_activate(GSimpleAction *action, GVariant *parameter,
-		gpointer user_data) {
+void asinh_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	siril_open_dialog("asinh_dialog");
+}
+
+void deconvolution_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	siril_open_dialog("deconvolution_dialog");
+}
+
+void resample_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	siril_open_dialog("resample_dialog");
+}
+
+void rotation_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	siril_open_dialog("rotation_dialog");
+}
+
+void rotation90_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	siril_rotate90();
+}
+
+void rotation270_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	siril_rotate270();
+}
+
+void mirrorx_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	mirrorx_gui(&gfit);
+}
+
+void mirrory_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	mirrory_gui(&gfit);
+}
+
+void wavelets_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	siril_open_dialog("wavelets_dialog");
+}
+
+void split_wavelets_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	siril_open_dialog("extract_wavelets_layers_dialog");
+}
+
+void medianfilter_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	siril_open_dialog("Median_dialog");
+}
+
+void rgradient_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	siril_open_dialog("rgradient_dialog");
+}
+
+void clahe_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	siril_open_dialog("CLAHE_dialog");
+}
+
+void linearmatch_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	siril_open_dialog("linearmatch_dialog");
+}
+
+void fft_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	GtkFileChooserButton *magbutton, *phasebutton;
+
+	magbutton = GTK_FILE_CHOOSER_BUTTON(lookup_widget("filechooser_mag"));
+	phasebutton = GTK_FILE_CHOOSER_BUTTON(lookup_widget("filechooser_phase"));
+	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(magbutton), com.wd);
+	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(phasebutton), com.wd);
+	siril_open_dialog("dialog_FFT");
+}
+
+void rgb_compositing_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	open_compositing_window();
+}
+
+void split_cfa_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	siril_open_dialog("split_cfa_dialog");
 }

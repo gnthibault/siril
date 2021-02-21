@@ -222,10 +222,6 @@ static double get_da() {
 
 ////// CALLBACKS
 
-void on_menuitem_rgradient_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	siril_open_dialog("rgradient_dialog");
-}
-
 void on_rgradient_cancel_clicked(GtkButton *button, gpointer user_data) {
 	siril_close_dialog("rgradient_dialog");
 }

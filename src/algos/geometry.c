@@ -145,7 +145,7 @@ static void fits_rotate_pi(fits *fit) {
 	invalidate_WCS_keywords(fit);
 }
 
-static void mirrorx_gui(fits *fit) {
+void mirrorx_gui(fits *fit) {
 	if (confirm_delete_wcs_keywords(fit)) {
 		set_cursor_waiting(TRUE);
 		undo_save_state(fit, _("Mirror X"));
@@ -156,7 +156,7 @@ static void mirrorx_gui(fits *fit) {
 	}
 }
 
-static void mirrory_gui(fits *fit) {
+void mirrory_gui(fits *fit) {
 	if (confirm_delete_wcs_keywords(fit)) {
 		set_cursor_waiting(TRUE);
 		undo_save_state(fit, _("Mirror Y"));
@@ -468,7 +468,7 @@ int crop(fits *fit, rectangle *bounds) {
 /**
  *  ROTATION
  */
-void on_menuitem_rotation90_activate(GtkMenuItem *menuitem, gpointer user_data) {
+void siril_rotate90() {
 	if (confirm_delete_wcs_keywords(&gfit)) {
 		static GtkToggleButton *crop_rotation = NULL;
 		int cropped;
@@ -488,7 +488,7 @@ void on_menuitem_rotation90_activate(GtkMenuItem *menuitem, gpointer user_data) 
 	}
 }
 
-void on_menuitem_rotation270_activate(GtkMenuItem *menuitem, gpointer user_data) {
+void siril_rotate270() {
 	if (confirm_delete_wcs_keywords(&gfit)) {
 		static GtkToggleButton *crop_rotation = NULL;
 		int cropped;
@@ -508,11 +508,6 @@ void on_menuitem_rotation270_activate(GtkMenuItem *menuitem, gpointer user_data)
 	}
 }
 
-void on_menuitem_rotation_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	if (single_image_is_loaded())
-		siril_open_dialog("rotation_dialog");
-}
-
 void on_button_rotation_close_clicked(GtkButton *button, gpointer user_data) {
 	siril_close_dialog("rotation_dialog");
 }
@@ -521,35 +516,11 @@ void on_button_rotation_ok_clicked(GtkButton *button, gpointer user_data) {
 	rotate_gui(&gfit);
 }
 
-/******
- * MIRROR
- */
-
-void on_menuitem_mirrorx_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	mirrorx_gui(&gfit);
-}
-
-void on_mirrorx_button_clicked(GtkToolButton *button, gpointer user_data) {
-	mirrorx_gui(&gfit);
-}
-
-void on_menuitem_mirrory_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	mirrory_gui(&gfit);
-}
-
-void on_mirrory_button_clicked(GtkToolButton *button, gpointer user_data) {
-	mirrory_gui(&gfit);
-}
-
 /*************
  * RESAMPLE
  */
 
 /* Resample */
-void on_menuitem_resample_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	if (single_image_is_loaded())
-		siril_open_dialog("resample_dialog");
-}
 
 void on_button_resample_ok_clicked(GtkButton *button, gpointer user_data) {
 	if (confirm_delete_wcs_keywords(&gfit)) {

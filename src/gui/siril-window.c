@@ -67,11 +67,33 @@ static GActionEntry any_processing_entries[] = {
 		{"histo-processing", histo_activate },
 		{"fix-banding-processing", fix_banding_activate },
 		{"cosmetic-processing", cosmetic_activate },
-		{"background-extr-processing", background_extr_activate },
+		{"background-extr-processing", background_extr_activate }
+};
+
+static GActionEntry any_mono_processing_entries[] = {
+		{"split-cfa-processing", split_cfa_activate }
 };
 
 static GActionEntry single_processing_entries[] = {
 		{"asinh-processing", asinh_activate },
+		{"deconvolution-processing", deconvolution_activate },
+		{"resample-processing", resample_activate },
+		{"rotation-processing", rotation_activate },
+		{"rotation90-processing", rotation90_activate },
+		{"rotation270-processing", rotation270_activate },
+		{"mirrorx-processing", mirrorx_activate },
+		{"mirrory-processing", mirrory_activate },
+		{"wavelets-processing", wavelets_activate },
+		{"split-wavelets-processing", split_wavelets_activate },
+		{"medianfilter-processing", medianfilter_activate },
+		{"rgradient-processing", rgradient_activate },
+		{"clahe-processing", clahe_activate },
+		{"linearmatch-processing", linearmatch_activate }
+};
+
+static GActionEntry none_processing_entries[] = {
+		{"fft-processing", fft_activate },
+		{"rgb-compositing-processing", rgb_compositing_activate }
 };
 
 static void _siril_window_enable_action_group(GActionMap *map,
@@ -129,12 +151,42 @@ void siril_window_enable_any_proc_actions(GtkApplicationWindow *window, gboolean
 	_siril_window_enable_action_group(G_ACTION_MAP(window), any_processing_actions, enable);
 }
 
+void siril_window_enable_any_mono_proc_actions(GtkApplicationWindow *window, gboolean enable) {
+	static const gchar *any_mono_processing_actions[] = {
+			"split-cfa-processing",
+			NULL,
+	};
+	_siril_window_enable_action_group(G_ACTION_MAP(window), any_mono_processing_actions, enable);
+}
+
 void siril_window_enable_single_proc_actions(GtkApplicationWindow *window, gboolean enable) {
 	static const gchar *single_processing_actions[] = {
 		"asinh-processing",
+		"deconvolution-processing",
+		"resample-processing",
+		"rotation-processing",
+		"rotation90-processing",
+		"rotation270-processing",
+		"mirrorx-processing",
+		"mirrory-processing",
+		"wavelets-processing",
+		"split-wavelets-processing",
+		"medianfilter-processing",
+		"rgradient-processing",
+		"clahe-processing",
+		"linearmatch-processing",
 		NULL,
 	};
 	_siril_window_enable_action_group(G_ACTION_MAP(window), single_processing_actions, enable);
+}
+
+void siril_window_enable_none_proc_actions(GtkApplicationWindow *window, gboolean enable) {
+	static const gchar *none_processing_actions[] = {
+		"fft-processing",
+		"rgb-compositing-processing",
+		NULL,
+	};
+	_siril_window_enable_action_group(G_ACTION_MAP(window), none_processing_actions, enable);
 }
 
 void siril_window_map_actions(GtkApplicationWindow *window) {
@@ -142,5 +194,7 @@ void siril_window_map_actions(GtkApplicationWindow *window) {
 	g_action_map_add_action_entries(G_ACTION_MAP(window), image_entries, G_N_ELEMENTS(image_entries), window);
 	g_action_map_add_action_entries(G_ACTION_MAP(window), rgb_processing_entries, G_N_ELEMENTS(rgb_processing_entries), window);
 	g_action_map_add_action_entries(G_ACTION_MAP(window), any_processing_entries, G_N_ELEMENTS(any_processing_entries), window);
+	g_action_map_add_action_entries(G_ACTION_MAP(window), any_mono_processing_entries, G_N_ELEMENTS(any_mono_processing_entries), window);
 	g_action_map_add_action_entries(G_ACTION_MAP(window), single_processing_entries, G_N_ELEMENTS(single_processing_entries), window);
+	g_action_map_add_action_entries(G_ACTION_MAP(window), none_processing_entries, G_N_ELEMENTS(none_processing_entries), window);
 }

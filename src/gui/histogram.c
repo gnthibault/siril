@@ -943,8 +943,8 @@ void on_histoToolAutoStretch_clicked(GtkToolButton *button, gpointer user_data) 
 	set_cursor_waiting(FALSE);
 }
 
-void toggle_histogram_window_visibility(GtkToolButton *button, gpointer user_data) {
-	if (gtk_widget_get_visible((GtkWidget *)user_data)) {
+void toggle_histogram_window_visibility() {
+	if (gtk_widget_get_visible(lookup_widget("histogram_dialog"))) {
 		set_cursor_waiting(TRUE);
 		reset_cursors_and_values();
 		histo_close(TRUE);
@@ -957,7 +957,6 @@ void toggle_histogram_window_visibility(GtkToolButton *button, gpointer user_dat
 
 gboolean on_drawingarea_histograms_motion_notify_event(GtkWidget *widget, GdkEventMotion *event,
 		gpointer user_data) {
-
 	int width = get_width_of_histo();
 	int height = get_height_of_histo();
 

@@ -187,10 +187,6 @@ static gdouble get_low_rejection() {
 
 /*** callbacks **/
 
-void on_menu_linearmatch_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	siril_open_dialog("linearmatch_dialog");
-}
-
 void on_linearmatch_close_clicked(GtkButton *button, gpointer user_data) {
 	siril_close_dialog("linearmatch_dialog");
 }

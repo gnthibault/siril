@@ -10194,9 +10194,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
       <object class="GtkMenuItem" id="menuitem_wavelets">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.wavelets-processing</property>
         <property name="label" translatable="yes">À trous Wavelets Transform...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menuitem_wavelets_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -10212,9 +10212,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
       <object class="GtkMenuItem" id="menuitem_clahe">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.clahe-processing</property>
         <property name="label" translatable="yes">Contrast-Limited Adaptive Histogram Equalization...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menuitem_clahe_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -10230,36 +10230,36 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
       <object class="GtkMenuItem" id="menuitem_deconvolution">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.deconvolution-processing</property>
         <property name="label" translatable="yes">Deconvolution...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menuitem_deconvolution_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_fft">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.fft-processing</property>
         <property name="label" translatable="yes">Fourier Transform...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menuitem_fft_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_medianfilter">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.medianfilter-processing</property>
         <property name="label" translatable="yes">Median Filter...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menuitem_medianfilter_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menuitem_rgradient">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.rgradient-processing</property>
         <property name="label" translatable="yes">Rotational Gradient...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menuitem_rgradient_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -10282,9 +10282,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
               <object class="GtkMenuItem" id="menuitem_rotation90">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="action-name">win.rotation90-processing</property>
                 <property name="label" translatable="yes">Rotate 90 degrees, clockwise</property>
                 <property name="use-underline">True</property>
-                <signal name="activate" handler="on_menuitem_rotation90_activate" swapped="no"/>
                 <accelerator key="Right" signal="activate" modifiers="GDK_CONTROL_MASK"/>
               </object>
             </child>
@@ -10292,9 +10292,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
               <object class="GtkMenuItem" id="menuitem_rotation270">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="action-name">win.rotation270-processing</property>
                 <property name="label" translatable="yes">Rotate 90 degrees, counter-clockwise</property>
                 <property name="use-underline">True</property>
-                <signal name="activate" handler="on_menuitem_rotation270_activate" swapped="no"/>
                 <accelerator key="Left" signal="activate" modifiers="GDK_CONTROL_MASK"/>
               </object>
             </child>
@@ -10302,9 +10302,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
               <object class="GtkMenuItem" id="menuitem_mirrorx">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="action-name">win.mirrorx-processing</property>
                 <property name="label" translatable="yes">Horizontal Mirror</property>
                 <property name="use-underline">True</property>
-                <signal name="activate" handler="on_menuitem_mirrorx_activate" swapped="no"/>
                 <accelerator key="Up" signal="activate" modifiers="GDK_CONTROL_MASK"/>
               </object>
             </child>
@@ -10312,9 +10312,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
               <object class="GtkMenuItem" id="menuitem_mirrory">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="action-name">win.mirrory-processing</property>
                 <property name="label" translatable="yes">Vertical Mirror</property>
                 <property name="use-underline">True</property>
-                <signal name="activate" handler="on_menuitem_mirrory_activate" swapped="no"/>
                 <accelerator key="Down" signal="activate" modifiers="GDK_CONTROL_MASK"/>
               </object>
             </child>
@@ -10322,9 +10322,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
               <object class="GtkMenuItem" id="menuitem_rotation">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="action-name">win.rotation-processing</property>
                 <property name="label" translatable="yes">Rotation...</property>
                 <property name="use-underline">True</property>
-                <signal name="activate" handler="on_menuitem_rotation_activate" swapped="no"/>
               </object>
             </child>
             <child>
@@ -10337,9 +10337,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
               <object class="GtkMenuItem" id="menuitem_resample">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="action-name">win.resample-processing</property>
                 <property name="label" translatable="yes">Resample...</property>
                 <property name="use-underline">True</property>
-                <signal name="activate" handler="on_menuitem_resample_activate" swapped="no"/>
               </object>
             </child>
           </object>
@@ -10384,18 +10384,18 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
               <object class="GtkMenuItem" id="menu_slpitcfa">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="action-name">win.split-cfa-processing</property>
                 <property name="label" translatable="yes">Split CFA Channels...</property>
                 <property name="use-underline">True</property>
-                <signal name="activate" handler="on_menu_slpitcfa_activate" swapped="no"/>
               </object>
             </child>
             <child>
               <object class="GtkMenuItem" id="menu_wavelet_separation">
                 <property name="visible">True</property>
                 <property name="can-focus">False</property>
+                <property name="action-name">win.split-wavelets-processing</property>
                 <property name="label" translatable="yes">Wavelet Layers...</property>
                 <property name="use-underline">True</property>
-                <signal name="activate" handler="on_menu_wavelet_separation_activate" swapped="no"/>
               </object>
             </child>
           </object>
@@ -10406,18 +10406,18 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
       <object class="GtkMenuItem" id="menu_linearmatch">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.linearmatch-processing</property>
         <property name="label" translatable="yes">Linear Match...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menu_linearmatch_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menu_compositing">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.rgb-compositing-processing</property>
         <property name="label" translatable="yes">RGB Compositing...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menu_compositing_activate" swapped="no"/>
       </object>
     </child>
   </object>
@@ -16153,9 +16153,9 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="tooltip-text" translatable="yes">Rotate 90 degrees, counter-clockwise</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <property name="action-name">win.rotation270-processing</property>
                     <property name="use-underline">True</property>
                     <property name="icon-widget">rotate90-acw</property>
-                    <signal name="clicked" handler="on_menuitem_rotation270_activate" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -16170,9 +16170,9 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="tooltip-text" translatable="yes">Rotate 90 degrees, clockwise</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <property name="action-name">win.rotation90-processing</property>
                     <property name="use-underline">True</property>
                     <property name="icon-widget">rotate90-cw</property>
-                    <signal name="clicked" handler="on_menuitem_rotation90_activate" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -16187,9 +16187,9 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="tooltip-text" translatable="yes">Horizontal mirror</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <property name="action-name">win.mirrorx-processing</property>
                     <property name="use-underline">True</property>
                     <property name="icon-widget">image_mirrorx</property>
-                    <signal name="clicked" handler="on_mirrorx_button_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -16204,9 +16204,9 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="tooltip-text" translatable="yes">Vertical mirror</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <property name="action-name">win.mirrory-processing</property>
                     <property name="use-underline">True</property>
                     <property name="icon-widget">image_mirrory</property>
-                    <signal name="clicked" handler="on_mirrory_button_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -16231,9 +16231,9 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="tooltip-text" translatable="yes">Open/Close histogram toolbox</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <property name="action-name">win.histo-processing</property>
                     <property name="use-underline">True</property>
                     <property name="icon-widget">image_histogram</property>
-                    <signal name="clicked" handler="toggle_histogram_window_visibility" object="histogram_dialog" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>

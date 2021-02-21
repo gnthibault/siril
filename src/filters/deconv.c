@@ -126,11 +126,6 @@ void on_deconvolution_dialog_show(GtkWidget *widget, gpointer user_data) {
 	notify_update((gpointer) param);
 }
 
-
-void on_menuitem_deconvolution_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	siril_open_dialog("deconvolution_dialog");
-}
-
 void on_deconvolution_cancel_clicked(GtkButton *button, gpointer user_data) {
 	deconv_close(TRUE);
 	siril_close_dialog("deconvolution_dialog");

@@ -188,14 +188,6 @@ gpointer extract_plans(gpointer p) {
 	return GINT_TO_POINTER(0);
 }
 
-
-
-void on_menuitem_wavelets_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	if (single_image_is_loaded()) {
-		siril_open_dialog("wavelets_dialog");
-	}
-}
-
 void on_wavelets_dialog_show(GtkWidget *widget, gpointer user_data) {
 	wavelet_show_preview = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("wavelet_preview")));
 	wavelets_startup();
@@ -306,14 +298,6 @@ void on_button_compute_w_clicked(GtkButton *button, gpointer user_data) {
 }
 
 /****************** GUI for Wavelet Layers Extraction *****************/
-
-void on_menu_wavelet_separation_activate(GtkMenuItem *menuitem,
-		gpointer user_data) {
-
-	if (single_image_is_loaded()) {
-		siril_open_dialog("extract_wavelets_layers_dialog");
-	}
-}
 
 void on_button_extract_w_ok_clicked(GtkButton *button, gpointer user_data) {
 	int Nbr_Plan, Type, maxplan, mins;

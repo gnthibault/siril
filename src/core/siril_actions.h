@@ -69,6 +69,22 @@ void fix_banding_activate(GSimpleAction *action, GVariant *parameter, gpointer u
 void cosmetic_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void background_extr_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void asinh_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void deconvolution_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void resample_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void rotation_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void rotation90_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void rotation270_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void mirrorx_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void mirrory_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void wavelets_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void split_wavelets_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void medianfilter_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void rgradient_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void clahe_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void linearmatch_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void fft_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void rgb_compositing_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void split_cfa_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 
 
 #endif /* SRC_CORE_SIRIL_ACTIONS_H_ */

@@ -23,7 +23,9 @@
 void siril_window_enable_image_actions(GtkApplicationWindow *window, gboolean enable);
 void siril_window_enable_rgb_proc_actions(GtkApplicationWindow *window, gboolean enable);
 void siril_window_enable_any_proc_actions(GtkApplicationWindow *window, gboolean enable);
+void siril_window_enable_any_mono_proc_actions(GtkApplicationWindow *window, gboolean enable);
 void siril_window_enable_single_proc_actions(GtkApplicationWindow *window, gboolean enable);
+void siril_window_enable_none_proc_actions(GtkApplicationWindow *window, gboolean enable);
 void siril_window_map_actions(GtkApplicationWindow *window);
 
 #endif /* SRC_GUI_SIRIL_WINDOW_H_ */

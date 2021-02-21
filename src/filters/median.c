@@ -37,13 +37,6 @@
 #include "median.h"
 #include "algos/median_fast.h"
 
-void on_menuitem_medianfilter_activate(GtkMenuItem *menuitem,
-		gpointer user_data) {
-	if (single_image_is_loaded())
-		siril_open_dialog("Median_dialog");
-}
-
-
 void on_Median_cancel_clicked(GtkButton *button, gpointer user_data) {
 	siril_close_dialog("Median_dialog");
 }

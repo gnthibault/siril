@@ -350,7 +350,6 @@ void update_MenuItem() {
 	gboolean is_a_single_image_loaded;		/* An image is loaded. Not a sequence or only the result of stacking process */
 	gboolean is_a_singleRGB_image_loaded;	/* A RGB image is loaded. Not a sequence or only the result of stacking process */
 	gboolean any_image_is_loaded;			/* Something is loaded. Single image or Sequence */
-	char *str;
 
 	is_a_singleRGB_image_loaded = isrgb(&gfit) && (!sequence_is_loaded()
 			|| (sequence_is_loaded() && (com.seq.current == RESULT_IMAGE
@@ -372,14 +371,14 @@ void update_MenuItem() {
 #endif
 	gtk_widget_set_sensitive(lookup_widget("header_undo_button"), is_undo_available());
 	if (is_undo_available()) {
-		str = g_strdup_printf(_("Undo: \"%s\""), com.history[com.hist_display - 1].history);
+		gchar *str = g_strdup_printf(_("Undo: \"%s\""), com.history[com.hist_display - 1].history);
 		gtk_widget_set_tooltip_text(lookup_widget("header_undo_button"), str);
 		g_free(str);
 	}
 	else gtk_widget_set_tooltip_text(lookup_widget("header_undo_button"), _("Nothing to undo"));
 	gtk_widget_set_sensitive(lookup_widget("header_redo_button"), is_redo_available());
 	if (is_redo_available()) {
-		str = g_strdup_printf(_("Redo: \"%s\""), com.history[com.hist_display].history);
+		gchar *str = g_strdup_printf(_("Redo: \"%s\""), com.history[com.hist_display].history);
 		gtk_widget_set_tooltip_text(lookup_widget("header_redo_button"), str);
 		g_free(str);
 	}
@@ -391,26 +390,17 @@ void update_MenuItem() {
 	gtk_widget_set_sensitive(lookup_widget("menu_gray_header"), any_image_is_loaded && gfit.header != NULL);
 
 	/* Image processing Menu */
+
+	/* single RGB image is needed */
 	siril_window_enable_rgb_proc_actions(app_win, is_a_singleRGB_image_loaded);
+	/* any image is needed */
 	siril_window_enable_any_proc_actions(app_win, any_image_is_loaded);
+	/* any mono image is needed */
+	siril_window_enable_any_mono_proc_actions(app_win, any_image_is_loaded && !isrgb(&gfit));
+	/* only single image needed */
 	siril_window_enable_single_proc_actions(app_win, is_a_single_image_loaded);
-
-	gtk_widget_set_sensitive(lookup_widget("menu_slpitcfa"), any_image_is_loaded && !isrgb(&gfit));
-	gtk_widget_set_sensitive(lookup_widget("menuitem_fft"), TRUE);
-
-	gtk_widget_set_sensitive(lookup_widget("menuitem_deconvolution"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_resample"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation90"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_rotation270"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_mirrorx"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_mirrory"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_wavelets"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menu_wavelet_separation"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_medianfilter"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_rgradient"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menuitem_clahe"), is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menu_linearmatch"), is_a_single_image_loaded);
+	/* no images needed */
+	siril_window_enable_none_proc_actions(app_win, TRUE);
 
 	/* Image information menu */
 	siril_window_enable_image_actions(app_win, any_image_is_loaded);
@@ -418,10 +408,8 @@ void update_MenuItem() {
 
 void sliders_mode_set_state(sliders_mode sliders) {
 	GtkToggleButton *radiobutton;	// Must not be static
-	gchar *str[] =
-	{ "radiobutton_hilo", "radiobutton_minmax", "radiobutton_user" };
-	void *func[] = { on_radiobutton_hilo_toggled, on_radiobutton_minmax_toggled,
-		on_radiobutton_user_toggled };
+	gchar *str[] = { "radiobutton_hilo", "radiobutton_minmax", "radiobutton_user" };
+	void *func[] = { on_radiobutton_hilo_toggled, on_radiobutton_minmax_toggled, on_radiobutton_user_toggled };
 
 	radiobutton = GTK_TOGGLE_BUTTON(lookup_widget(str[sliders]));
 

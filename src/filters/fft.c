@@ -602,13 +602,3 @@ void on_button_fft_close_clicked(GtkButton *button, gpointer user_data) {
 	siril_close_dialog("dialog_FFT");
 }
 
-void on_menuitem_fft_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	GtkFileChooserButton *magbutton, *phasebutton;
-
-	magbutton = GTK_FILE_CHOOSER_BUTTON(lookup_widget("filechooser_mag"));
-	phasebutton = GTK_FILE_CHOOSER_BUTTON(lookup_widget("filechooser_phase"));
-	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(magbutton), com.wd);
-	gtk_file_chooser_set_current_folder(GTK_FILE_CHOOSER(phasebutton), com.wd);
-	siril_open_dialog("dialog_FFT");
-}
-

@@ -150,9 +150,6 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data);
 /********************************************************/
 
 /* the compositing menu callback */
-void on_menu_compositing_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	open_compositing_window();
-}
 
 /* creates a new row with all widgets and bindings at the row index in the
  * layers grid. Indices start at 0, but row 0 holds only one label, and row 1 is

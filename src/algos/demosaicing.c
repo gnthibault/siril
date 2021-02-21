@@ -1849,10 +1849,6 @@ void apply_split_cfa_to_sequence(struct split_cfa_data *split_cfa_args) {
 
 /******* SPLIT CFA ******************************/
 
-void on_menu_slpitcfa_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	siril_open_dialog("split_cfa_dialog");
-}
-
 void on_split_cfa_close_clicked(GtkButton *button, gpointer user_data) {
 	siril_close_dialog("split_cfa_dialog");
 }
