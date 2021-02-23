@@ -44,6 +44,7 @@
 #include "preferences.h"
 #include "image_display.h"
 #include "image_interactions.h"
+#include "single_image.h"
 #include "callbacks.h"
 #include "utils.h"
 #include "plot.h"
@@ -364,11 +365,7 @@ void update_MenuItem() {
 	/* toolbar button */
 	gtk_widget_set_sensitive(lookup_widget("header_precision_button"), any_image_is_loaded);
 	gtk_widget_set_sensitive(lookup_widget("toolbarbox"), any_image_is_loaded);
-#ifdef HAVE_WCSLIB
 	gtk_widget_set_sensitive(lookup_widget("annotate_button"), any_image_is_loaded && has_wcs(&gfit));
-#else
-	gtk_widget_set_sensitive(lookup_widget("annotate_button"), FALSE);
-#endif
 	gtk_widget_set_sensitive(lookup_widget("header_undo_button"), is_undo_available());
 	if (is_undo_available()) {
 		gchar *str = g_strdup_printf(_("Undo: \"%s\""), com.history[com.hist_display - 1].history);
@@ -1245,6 +1242,8 @@ void initialize_all_GUI(gchar *supported_files) {
 	gtk_drag_dest_set(lookup_widget("treeview_convert"),
 			GTK_DEST_DEFAULT_MOTION, drop_types, G_N_ELEMENTS(drop_types),
 			GDK_ACTION_COPY);
+
+	siril_drag_single_image_set_dest();
 
 	set_GUI_CWD();
 	siril_log_message(_("Default FITS extension is set to %s\n"), com.pref.ext);

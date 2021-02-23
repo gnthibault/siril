@@ -99,9 +99,8 @@ static GActionEntry none_processing_entries[] = {
 static void _siril_window_enable_action_group(GActionMap *map,
 		const gchar **group, gboolean enable) {
 	GAction *action;
-	const gchar **it = group;
 
-	for (it = group; *it != NULL; it++) {
+	for (const gchar **it = group; *it != NULL; it++) {
 		action = g_action_map_lookup_action(map, *it);
 		if (G_LIKELY(action))
 			g_simple_action_set_enabled(G_SIMPLE_ACTION(action), enable);

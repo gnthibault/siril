@@ -34,7 +34,9 @@
 
 #include "siril_wcs.h"
 
+#ifdef HAVE_WCSLIB
 static GMutex wcs_mutex;
+#endif
 
 /* we force naxis to 2 */
 #define NAXIS 2

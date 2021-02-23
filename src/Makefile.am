@@ -185,6 +185,8 @@ siril_common_SOURCES = \
 	gui/script_menu.h \
 	gui/sequence_list.c \
 	gui/sequence_list.h \
+	gui/single_image.c \
+	gui/single_image.h \
 	gui/siril_css.c \
 	gui/siril_css.h \
 	gui/siril_intro.c \
