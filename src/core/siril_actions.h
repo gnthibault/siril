@@ -51,6 +51,10 @@ void zoom_in_activate(GSimpleAction *action, GVariant *parameter, gpointer user_
 void zoom_out_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void zoom_one_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void zoom_fit_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void negative_view_state(GSimpleAction *action, GVariant *state, gpointer user_data);
+void negative_view_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void color_map_state(GSimpleAction *action, GVariant *state, gpointer user_data);
+void color_map_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void toolbar_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void change_zoom_fit_state(GSimpleAction *action, GVariant *state, gpointer user_data);
 void astrometry_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);

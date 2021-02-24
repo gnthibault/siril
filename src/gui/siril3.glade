@@ -12281,7 +12281,7 @@ WARNING: it will erase all registration and statistics data.</property>
                                         <property name="receives-default">True</property>
                                         <property name="tooltip-text" translatable="yes">Show/Hide list of images in the sequence with registration data</property>
                                         <property name="halign">center</property>
-                                        <signal name="clicked" handler="on_seqlist_button_clicked" swapped="no"/>
+                                        <property name="action-name">win.seq-list</property>
                                       </object>
                                       <packing>
                                         <property name="expand">False</property>
@@ -16015,9 +16015,9 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="tooltip-text" translatable="yes">Switch to normal and negative view</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <property name="action-name">win.negative-view</property>
                     <property name="use-underline">True</property>
                     <property name="icon-widget">image_neg</property>
-                    <signal name="toggled" handler="on_neg_button_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -16032,9 +16032,9 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="tooltip-text" translatable="yes">Switch to normal and rainbow colormap (false color rendering)</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <property name="action-name">win.color-map</property>
                     <property name="use-underline">True</property>
                     <property name="icon-widget">image_colormap</property>
-                    <signal name="toggled" handler="on_colormap_button_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -16262,7 +16262,6 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="action-name">win.seq-list</property>
                     <property name="use-underline">True</property>
                     <property name="icon-widget">image_seqlist</property>
-                    <signal name="clicked" handler="on_seqlist_button_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>

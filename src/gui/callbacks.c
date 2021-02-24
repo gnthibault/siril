@@ -1571,22 +1571,6 @@ void on_radiobutton_user_toggled(GtkToggleButton *togglebutton,
 	}
 }
 
-void on_neg_button_toggled(GtkToggleToolButton *togglebutton,
-		gpointer user_data) {
-	set_cursor_waiting(TRUE);
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
-}
-
-void on_colormap_button_toggled(GtkToggleToolButton *togglebutton,
-		gpointer user_data) {
-	set_cursor_waiting(TRUE);
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	set_cursor_waiting(FALSE);
-}
-
 void on_checkchain_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	if (copy_rendering_settings_when_chained(FALSE))
 		redraw(com.cvport, REMAP_ALL);
