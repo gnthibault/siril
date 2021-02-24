@@ -452,19 +452,35 @@ static int make_index_for_rainbow(BYTE index[][3]) {
 }
 
 static void draw_empty_image(const draw_data_t* dd) {
+	static GdkPixbuf *siril_pix = NULL;
 	cairo_t *cr = dd->cr;
 	guint width = dd->window_width;
 	guint height = dd->window_height;
+	guint pix_size = height / 3;
+	guint offset;
+#ifdef SIRIL_UNSTABLE
+	offset = 32;
+#else
+	offset = 2;
+#endif
 
 	cairo_rectangle(cr, 0, 0, width, height);
 	cairo_fill(cr);
 
-	int pix_w = gdk_pixbuf_get_width(com.siril_pix);
-	int pix_h = gdk_pixbuf_get_height(com.siril_pix);
+	/* Create pixbuf from siril.svg file */
+	if (siril_pix == NULL) {
+		gchar *image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "siril.svg", NULL);
+		siril_pix = gdk_pixbuf_new_from_file_at_size(image, 256, 256, NULL);
+		g_free(image);
+	}
 
-	gdk_cairo_set_source_pixbuf(cr, com.siril_pix, (width - pix_w) / 2, (height - pix_h) / 2);
+	GdkPixbuf *pixbuf = gdk_pixbuf_scale_simple(siril_pix, pix_size, pix_size, GDK_INTERP_BILINEAR);
+
+	gdk_cairo_set_source_pixbuf(cr, pixbuf, (width - pix_size) / 2, (height - pix_size) / offset);
 	cairo_paint(cr);
 	cairo_fill(cr);
+
+	g_object_unref(pixbuf);
 
 #ifdef SIRIL_UNSTABLE
 	{
@@ -481,7 +497,7 @@ static void draw_empty_image(const draw_data_t* dd) {
 		layout = gtk_widget_create_pango_layout(widget, NULL);
 
 		msg = g_strdup_printf(_("<big>Unstable Development Version</big>\n\n"
-				"<small>commit <tt>%s</tt></small>\n\n"
+				"<small>commit <tt>%s</tt></small>\n"
 				"<small>Please test bugs against "
 				"latest git master branch\n"
 				"before reporting them.</small>"),
@@ -500,7 +516,7 @@ static void draw_empty_image(const draw_data_t* dd) {
 		gdk_cairo_set_source_rgba(cr, &color);
 
 		cairo_move_to(cr, (allocation.width - (w * scale)) / 2,
-				(allocation.height - (h * scale)) / 2 - pix_h);
+				(allocation.height - (h * scale)) / 2);
 
 		cairo_scale(cr, scale, scale);
 
@@ -509,6 +525,7 @@ static void draw_empty_image(const draw_data_t* dd) {
 		g_object_unref(layout);
 	}
 #endif /* SIRIL_UNSTABLE */
+
 }
 
 static void draw_vport(const draw_data_t* dd) {
@@ -795,11 +812,6 @@ void initialize_image_display() {
 		last_mode[i] = HISTEQ_DISPLAY;
 		// only HISTEQ mode always computes the index, it's a good initializer here
 	}
-
-	/* Create pixbuf from siril.svg file */
-	gchar *image = g_build_filename(siril_get_system_data_dir(), "pixmaps", "siril.svg", NULL);
-	com.siril_pix = gdk_pixbuf_new_from_file_at_size(image, 256, 256, NULL);
-	g_free(image);
 
 	cairo_matrix_init_identity(&com.display_matrix);
 }

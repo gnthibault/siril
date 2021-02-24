@@ -594,7 +594,6 @@ struct cominf {
 	int surface_height[MAXVPORT];	// allocated height
 	cairo_surface_t *surface[MAXVPORT];
 	gboolean buf_is_dirty[MAXVPORT];// dirtyness of each buffer (= need to redraw)
-	GdkPixbuf *siril_pix; // Siril.svg image loaded at initialization
 
 	/* Color map */
 	color_map color;
