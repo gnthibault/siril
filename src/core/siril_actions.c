@@ -24,6 +24,7 @@
 #include "core/undo.h"
 #include "core/siril_update.h"
 #include "core/siril_cmd_help.h"
+#include "algos/annotate.h"
 #include "algos/colors.h"
 #include "algos/noise.h"
 #include "algos/geometry.h"
@@ -230,6 +231,7 @@ void color_map_state(GSimpleAction *action, GVariant *state, gpointer user_data)
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	set_cursor_waiting(FALSE);
+	g_simple_action_set_state(action, state);
 }
 
 void color_map_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
@@ -251,6 +253,27 @@ void dyn_psf_activate(GSimpleAction *action, GVariant *parameter, gpointer user_
 void search_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	if (has_wcs(&gfit))
 		siril_open_dialog("search_objects");
+}
+
+void annotate_object_state(GSimpleAction *action, GVariant *state, gpointer user_data) {
+	if (g_variant_get_boolean(state)) {
+		if (has_wcs(&gfit)) {
+			com.found_object = find_objects(&gfit);
+		}
+	} else {
+		g_slist_free_full(com.found_object, (GDestroyNotify) free_object);
+		com.found_object = NULL;
+	}
+	g_simple_action_set_state(action, state);
+	redraw(com.cvport, REMAP_NONE);
+}
+
+void annotate_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	GVariant *state;
+
+	state = g_action_get_state(G_ACTION(action));
+	g_action_change_state(G_ACTION(action), g_variant_new_boolean(!g_variant_get_boolean(state)));
+	g_variant_unref(state);
 }
 
 void seq_list_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
@@ -275,6 +298,10 @@ void noise_activate(GSimpleAction *action, GVariant *parameter, gpointer user_da
 
 void image_information_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	siril_open_dialog("file_information");
+}
+
+void image_fits_header_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	show_FITS_header(&gfit);
 }
 
 /******* processing menu **************/

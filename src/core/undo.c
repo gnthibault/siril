@@ -322,3 +322,18 @@ int undo_flush() {
 	com.hist_display = 0;
 	return 0;
 }
+
+void set_undo_redo_tooltip() {
+	if (is_undo_available()) {
+		gchar *str = g_strdup_printf(_("Undo: \"%s\""), com.history[com.hist_display - 1].history);
+		gtk_widget_set_tooltip_text(lookup_widget("header_undo_button"), str);
+		g_free(str);
+	}
+	else gtk_widget_set_tooltip_text(lookup_widget("header_undo_button"), _("Nothing to undo"));
+	if (is_redo_available()) {
+		gchar *str = g_strdup_printf(_("Redo: \"%s\""), com.history[com.hist_display].history);
+		gtk_widget_set_tooltip_text(lookup_widget("header_redo_button"), str);
+		g_free(str);
+	}
+	else gtk_widget_set_tooltip_text(lookup_widget("header_redo_button"), _("Nothing to redo"));
+}

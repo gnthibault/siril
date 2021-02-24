@@ -8924,8 +8924,8 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
             <property name="visible">True</property>
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
+            <property name="action-name">win.fits-header</property>
             <property name="text" translatable="yes">FITS Header...</property>
-            <signal name="clicked" handler="on_info_menu_headers_clicked" swapped="no"/>
           </object>
           <packing>
             <property name="expand">False</property>
@@ -9219,9 +9219,9 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
       <object class="GtkMenuItem" id="menu_gray_header">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.fits-header</property>
         <property name="label" translatable="yes">FITS Header...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menu_gray_header_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -16056,9 +16056,9 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
                     <property name="tooltip-text" translatable="yes">Show object names if WCS information is available</property>
+                    <property name="action-name">win.annotate-object</property>
                     <property name="use-underline">True</property>
                     <property name="icon-widget">astrometry</property>
-                    <signal name="toggled" handler="on_annotate_button_toggled" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -16538,6 +16538,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
             <property name="can-focus">True</property>
             <property name="receives-default">True</property>
             <property name="tooltip-text" translatable="yes">Bit-depth select button</property>
+            <property name="action-name">win.bit-depth</property>
             <property name="popup">precision_menu</property>
             <property name="use-popover">False</property>
             <child>

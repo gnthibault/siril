@@ -60,10 +60,14 @@ void change_zoom_fit_state(GSimpleAction *action, GVariant *state, gpointer user
 void astrometry_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void dyn_psf_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void search_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void annotate_object_state(GSimpleAction *action, GVariant *state, gpointer user_data);
+void annotate_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void seq_list_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void statistics_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void noise_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void image_information_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void image_fits_header_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+
 void remove_green_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void saturation_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void color_calib_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);

@@ -352,39 +352,33 @@ void update_MenuItem() {
 	gboolean is_a_singleRGB_image_loaded;	/* A RGB image is loaded. Not a sequence or only the result of stacking process */
 	gboolean any_image_is_loaded;			/* Something is loaded. Single image or Sequence */
 
-	is_a_singleRGB_image_loaded = isrgb(&gfit) && (!sequence_is_loaded()
-			|| (sequence_is_loaded() && (com.seq.current == RESULT_IMAGE
-					|| com.seq.current == SCALED_IMAGE)));
-
-	is_a_single_image_loaded = single_image_is_loaded()	&& (!sequence_is_loaded()
-			|| (sequence_is_loaded() && (com.seq.current == RESULT_IMAGE
-					|| com.seq.current == SCALED_IMAGE)));
-
+	is_a_single_image_loaded = single_image_is_loaded()	&& (!sequence_is_loaded() || (sequence_is_loaded() && (com.seq.current == RESULT_IMAGE || com.seq.current == SCALED_IMAGE)));
+	is_a_singleRGB_image_loaded = isrgb(&gfit) && single_image_is_loaded();
 	any_image_is_loaded = single_image_is_loaded() || sequence_is_loaded();
 
-	/* toolbar button */
-	gtk_widget_set_sensitive(lookup_widget("header_precision_button"), any_image_is_loaded);
+	/* some toolbar buttons */
 	gtk_widget_set_sensitive(lookup_widget("toolbarbox"), any_image_is_loaded);
-	gtk_widget_set_sensitive(lookup_widget("annotate_button"), any_image_is_loaded && has_wcs(&gfit));
-	gtk_widget_set_sensitive(lookup_widget("header_undo_button"), is_undo_available());
-	if (is_undo_available()) {
-		gchar *str = g_strdup_printf(_("Undo: \"%s\""), com.history[com.hist_display - 1].history);
-		gtk_widget_set_tooltip_text(lookup_widget("header_undo_button"), str);
-		g_free(str);
-	}
-	else gtk_widget_set_tooltip_text(lookup_widget("header_undo_button"), _("Nothing to undo"));
-	gtk_widget_set_sensitive(lookup_widget("header_redo_button"), is_redo_available());
-	if (is_redo_available()) {
-		gchar *str = g_strdup_printf(_("Redo: \"%s\""), com.history[com.hist_display].history);
-		gtk_widget_set_tooltip_text(lookup_widget("header_redo_button"), str);
-		g_free(str);
-	}
-	else gtk_widget_set_tooltip_text(lookup_widget("header_redo_button"), _("Nothing to redo"));
-	/* File Menu */
-	gtk_widget_set_sensitive(lookup_widget("header_save_as_button"), any_image_is_loaded);
-	gtk_widget_set_sensitive(lookup_widget("header_save_button"), is_a_single_image_loaded && com.uniq->fileexist);
-	gtk_widget_set_sensitive(lookup_widget("info_menu_headers"), any_image_is_loaded && gfit.header != NULL);
-	gtk_widget_set_sensitive(lookup_widget("menu_gray_header"), any_image_is_loaded && gfit.header != NULL);
+
+	GAction *action_annotate = g_action_map_lookup_action(G_ACTION_MAP(app_win), "annotate-object");
+	g_simple_action_set_enabled(G_SIMPLE_ACTION (action_annotate), any_image_is_loaded && has_wcs(&gfit));
+
+	/* undo and redo */
+	GAction *action_undo = g_action_map_lookup_action(G_ACTION_MAP(app_win), "undo");
+	GAction *action_redo = g_action_map_lookup_action(G_ACTION_MAP(app_win), "redo");
+	g_simple_action_set_enabled(G_SIMPLE_ACTION (action_undo), is_undo_available());
+	g_simple_action_set_enabled(G_SIMPLE_ACTION (action_redo), is_redo_available());
+
+	set_undo_redo_tooltip();
+
+	/* save and save as */
+	GAction *action_save = g_action_map_lookup_action (G_ACTION_MAP(gtk_window_get_application(GTK_WINDOW(app_win))), "save");
+	GAction *action_save_as = g_action_map_lookup_action (G_ACTION_MAP(gtk_window_get_application(GTK_WINDOW(app_win))), "save-as");
+	g_simple_action_set_enabled(G_SIMPLE_ACTION(action_save), is_a_single_image_loaded && com.uniq->fileexist);
+	g_simple_action_set_enabled(G_SIMPLE_ACTION(action_save_as), any_image_is_loaded);
+
+	/* fits header */
+	GAction *action_fits_header = g_action_map_lookup_action (G_ACTION_MAP(app_win), "fits-header");
+	g_simple_action_set_enabled(G_SIMPLE_ACTION(action_fits_header), any_image_is_loaded && gfit.header != NULL);
 
 	/* Image processing Menu */
 
@@ -1397,14 +1391,6 @@ void on_cosmEnabledCheck_toggled(GtkToggleButton *button, gpointer user_data) {
 	gtk_widget_set_sensitive(checkHot, is_active);
 	gtk_widget_set_sensitive(checkCold, is_active);
 	gtk_widget_set_sensitive(evaluateButton, is_active);
-}
-
-void on_info_menu_headers_clicked(GtkButton *button, gpointer user_data) {
-	show_FITS_header(&gfit);
-}
-
-void on_menu_gray_header_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	show_FITS_header(&gfit);
 }
 
 void on_focal_entry_changed(GtkEditable *editable, gpointer user_data) {

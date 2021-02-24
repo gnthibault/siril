@@ -162,7 +162,7 @@ static gboolean is_catalogue_loaded() {
 	return siril_catalogue_list != NULL;
 }
 
-static GSList *find_objects(fits *fit) {
+GSList *find_objects(fits *fit) {
 	if (!has_wcs(fit)) return NULL;
 	GSList *targets = NULL;
 	gdouble x1, y1, x2, y2;
@@ -265,19 +265,6 @@ static gboolean show_catalog(const gchar *catalog) {
 	g_free(widget);
 
 	return show;
-}
-
-void on_annotate_button_toggled(GtkToggleToolButton *togglebutton,
-		gpointer user_data) {
-	if (gtk_toggle_tool_button_get_active(togglebutton)) {
-		if (has_wcs(&gfit)) {
-			com.found_object = find_objects(&gfit);
-		}
-	} else {
-		g_slist_free_full(com.found_object, (GDestroyNotify) free_object);
-		com.found_object = NULL;
-	}
-	redraw(com.cvport, REMAP_NONE);
 }
 
 void initialize_wcs_toggle_button() {

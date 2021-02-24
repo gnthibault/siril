@@ -42,6 +42,7 @@ static GActionEntry win_entries[] = {
 };
 
 static GActionEntry image_entries[] = {
+		{ "bit-depth", NULL },
 		{ "zoom-out", zoom_out_activate },
 		{ "zoom-in", zoom_in_activate },
 		{ "zoom-fit", zoom_fit_activate, NULL, "true", change_zoom_fit_state },
@@ -49,11 +50,13 @@ static GActionEntry image_entries[] = {
 		{ "negative-view", negative_view_activate, NULL, "false", negative_view_state },
 		{ "color-map", color_map_activate, NULL, "false", color_map_state },
 		{ "snapshot", snapshot_action_activate },
+		{ "fits-header", image_fits_header_activate },
 		{ "statistics", statistics_activate },
 		{ "evaluate-noise", noise_activate },
 		{ "astrometry", astrometry_activate },
-		{ "image-information", astrometry_activate },
+		{ "image-information", image_information_activate },
 		{ "dyn-psf", dyn_psf_activate },
+		{ "annotate-object", annotate_object_activate, NULL, "false", annotate_object_state },
 		{ "search-object", search_object_activate },
 		{ "seq-list", seq_list_activate }
 };
@@ -115,6 +118,7 @@ static void _siril_window_enable_action_group(GActionMap *map,
 
 void siril_window_enable_image_actions(GtkApplicationWindow *window, gboolean enable) {
 	static const gchar *image_actions[] = {
+		"bit-depth",
 		"zoom-out",
 		"zoom-in",
 		"zoom-fit",

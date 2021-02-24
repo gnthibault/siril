@@ -29,5 +29,6 @@ gboolean is_redo_available();
 int undo_display_data(int dir);
 int undo_save_state(fits *fit, char *message, ...);
 int	undo_flush();
+void set_undo_redo_tooltip();
 
 #endif /* UNDO_H_ */
