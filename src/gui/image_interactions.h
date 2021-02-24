@@ -3,6 +3,7 @@
 
 typedef void (*selection_update_callback)();
 gboolean update_zoom(gdouble x, gdouble y, double scale);
+void update_zoom_fit_button();
 void register_selection_update_callback(selection_update_callback f);
 void unregister_selection_update_callback(selection_update_callback f);
 void delete_selected_area();

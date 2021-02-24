@@ -49,12 +49,14 @@ void tab_stacking_activate(GSimpleAction *action, GVariant *parameter, gpointer 
 void tab_logs_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void zoom_in_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void zoom_out_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void zoom_one_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void zoom_fit_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void toolbar_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void change_zoom_fit_state(GSimpleAction *action, GVariant *state, gpointer user_data);
 void astrometry_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void dyn_psf_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void search_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void seq_list_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void statistics_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void noise_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void image_information_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);

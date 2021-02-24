@@ -36,6 +36,7 @@
 #include "gui/histogram.h"
 #include "gui/open_dialog.h"
 #include "gui/save_dialog.h"
+#include "gui/sequence_list.h"
 #include "gui/progress_and_log.h"
 #include "gui/dialogs.h"
 #include "gui/script_menu.h"
@@ -202,6 +203,13 @@ void zoom_out_activate(GSimpleAction *action, GVariant *parameter, gpointer user
 	update_zoom(center.x, center.y, ZOOM_OUT);
 }
 
+void zoom_one_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	update_zoom_fit_button();
+	com.zoom_value = ZOOM_NONE;
+	reset_display_offset();
+	redraw(com.cvport, REMAP_NONE);
+}
+
 void astrometry_activate(GSimpleAction *action, GVariant *parameter,gpointer user_data) {
 	open_astrometry_dialog();
 }
@@ -213,6 +221,15 @@ void dyn_psf_activate(GSimpleAction *action, GVariant *parameter, gpointer user_
 void search_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	if (has_wcs(&gfit))
 		siril_open_dialog("search_objects");
+}
+
+void seq_list_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	if (gtk_widget_get_visible(lookup_widget("seqlist_dialog"))) {
+		siril_close_dialog("seqlist_dialog");
+	} else {
+		update_seqlist();
+		siril_open_dialog("seqlist_dialog");
+	}
 }
 
 void statistics_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {

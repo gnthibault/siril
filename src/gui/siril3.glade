@@ -16127,9 +16127,9 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="tooltip-text" translatable="yes">Show the image at its normal size</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <property name="action-name">win.zoom-one</property>
                     <property name="use-underline">True</property>
                     <property name="icon-name">zoom-original-symbolic</property>
-                    <signal name="clicked" handler="on_zoom_to_one_button_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -16259,6 +16259,7 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="tooltip-text" translatable="yes">Show/Hide list of images in the sequence with registration data</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
+                    <property name="action-name">win.seq-list</property>
                     <property name="use-underline">True</property>
                     <property name="icon-widget">image_seqlist</property>
                     <signal name="clicked" handler="on_seqlist_button_clicked" swapped="no"/>

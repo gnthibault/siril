@@ -376,15 +376,6 @@ static gboolean fill_sequence_list_idle(gpointer p) {
 	return FALSE;
 }
 
-void on_seqlist_button_clicked(GtkToolButton *button, gpointer user_data) {
-	if (gtk_widget_get_visible(lookup_widget("seqlist_dialog"))) {
-		siril_close_dialog("seqlist_dialog");
-	} else {
-		update_seqlist();
-		siril_open_dialog("seqlist_dialog");
-	}
-}
-
 void exclude_single_frame(int index) {
 	siril_log_message(_("%s image %d in sequence %s\n"),
 			com.seq.imgparam[index].incl ? _("Excluding") : _("Including"),

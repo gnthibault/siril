@@ -45,13 +45,15 @@ static GActionEntry image_entries[] = {
 		{ "zoom-out", zoom_out_activate },
 		{ "zoom-in", zoom_in_activate },
 		{ "zoom-fit", zoom_fit_activate, NULL, "true", change_zoom_fit_state },
+		{ "zoom-one", zoom_one_activate },
 		{ "snapshot", snapshot_action_activate },
 		{ "statistics", statistics_activate },
 		{ "evaluate-noise", noise_activate },
 		{ "astrometry", astrometry_activate },
 		{ "image-information", astrometry_activate },
 		{ "dyn-psf", dyn_psf_activate },
-		{ "search-object", search_object_activate }
+		{ "search-object", search_object_activate },
+		{ "seq-list", seq_list_activate }
 };
 
 static GActionEntry rgb_processing_entries[] = {
@@ -114,6 +116,7 @@ void siril_window_enable_image_actions(GtkApplicationWindow *window, gboolean en
 		"zoom-out",
 		"zoom-in",
 		"zoom-fit",
+		"zoom-one",
 		"snapshot",
 		"statistics",
 		"evaluate-noise",
@@ -121,6 +124,7 @@ void siril_window_enable_image_actions(GtkApplicationWindow *window, gboolean en
 		"image-information",
 	    "dyn-psf",
         "search-object",
+		"seq-list",
 		NULL,
 	};
 	_siril_window_enable_action_group(G_ACTION_MAP(window), image_actions, enable);
@@ -152,8 +156,8 @@ void siril_window_enable_any_proc_actions(GtkApplicationWindow *window, gboolean
 
 void siril_window_enable_any_mono_proc_actions(GtkApplicationWindow *window, gboolean enable) {
 	static const gchar *any_mono_processing_actions[] = {
-			"split-cfa-processing",
-			NULL,
+		"split-cfa-processing",
+		NULL,
 	};
 	_siril_window_enable_action_group(G_ACTION_MAP(window), any_mono_processing_actions, enable);
 }
