@@ -4,6 +4,7 @@
 #include <stdint.h>
 #include "../core/siril.h"
 
+void populate_seqcombo(const gchar *realname);
 int	read_single_sequence(char *realname, image_type imagetype);
 int	seqsetnum(int image_number);
 int	check_seq(int recompute_stats);

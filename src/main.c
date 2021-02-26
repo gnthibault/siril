@@ -324,7 +324,7 @@ static void siril_app_open(GApplication *application, GFile **files, gint n_file
 	g_application_activate(application);
 
 	if (n_files > 0) {
-		gchar *path = g_file_get_path (files[0]);
+		gchar *path = g_file_get_path(files[0]);
 		const char *ext = get_filename_ext(path);
 		if (ext && !strncmp(ext, "seq", 4)) {
 			gchar *sequence_dir = g_path_get_dirname(path);
@@ -333,8 +333,10 @@ static void siril_app_open(GApplication *application, GFile **files, gint n_file
 					siril_log_message(_("No sequence `%s' found.\n"), path);
 				} else {
 					set_seq(path);
-					if (!com.script)
+					if (!com.script) {
+						populate_seqcombo(path);
 						set_GUI_CWD();
+					}
 				}
 				g_free(sequence_dir);
 			}

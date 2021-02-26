@@ -28,13 +28,25 @@
 #include "io/sequence.h"
 
 void siril_drag_single_image_set_dest() {
-	gtk_drag_dest_set(lookup_widget("notebook1"),
+	gtk_drag_dest_set(lookup_widget("drawingarear"),
 			GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP,
 			NULL, 0, GDK_ACTION_COPY | GDK_ACTION_ASK);
-	gtk_drag_dest_add_uri_targets(lookup_widget("notebook1"));
+	gtk_drag_dest_set(lookup_widget("drawingareag"),
+			GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP,
+			NULL, 0, GDK_ACTION_COPY | GDK_ACTION_ASK);
+	gtk_drag_dest_set(lookup_widget("drawingareab"),
+			GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP,
+			NULL, 0, GDK_ACTION_COPY | GDK_ACTION_ASK);
+	gtk_drag_dest_set(lookup_widget("drawingareargb"),
+			GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP,
+			NULL, 0, GDK_ACTION_COPY | GDK_ACTION_ASK);
+	gtk_drag_dest_add_uri_targets(lookup_widget("drawingarear"));
+	gtk_drag_dest_add_uri_targets(lookup_widget("drawingareag"));
+	gtk_drag_dest_add_uri_targets(lookup_widget("drawingareab"));
+	gtk_drag_dest_add_uri_targets(lookup_widget("drawingareargb"));
 }
 
-void on_notebook1_drag_data_received(GtkWidget *widget,
+void on_drawingarea_drag_data_received(GtkWidget *widget,
 		GdkDragContext *context, gint x, gint y,
 		GtkSelectionData *selection_data, guint info, guint time,
 		gpointer user_data) {
@@ -78,8 +90,10 @@ void on_notebook1_drag_data_received(GtkWidget *widget,
 							siril_log_message(_("No sequence `%s' found.\n"), filename);
 						} else {
 							set_seq(filename);
-							if (!com.script)
+							if (!com.script) {
+								populate_seqcombo(filename);
 								set_GUI_CWD();
+							}
 						}
 						g_free(sequence_dir);
 					}

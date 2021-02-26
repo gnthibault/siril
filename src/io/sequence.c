@@ -113,6 +113,18 @@ static void fillSeqAviExport() {
 static sequence *check_seq_one_file(const char* name);
 static int seq_read_frame_metadata(sequence *seq, int index, fits *dest);
 
+void populate_seqcombo(const gchar *realname) {
+	control_window_switch_to_tab(IMAGE_SEQ);
+	GtkComboBoxText *combo_box_text = GTK_COMBO_BOX_TEXT(lookup_widget("sequence_list_combobox"));
+	gtk_combo_box_text_remove_all(combo_box_text);
+	gchar *rname = g_path_get_basename(realname);
+	gtk_combo_box_text_append(combo_box_text, 0, rname);
+	g_signal_handlers_block_by_func(GTK_COMBO_BOX(combo_box_text), on_seqproc_entry_changed, NULL);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(combo_box_text), 0);
+	g_signal_handlers_unblock_by_func(GTK_COMBO_BOX(combo_box_text), on_seqproc_entry_changed, NULL);
+	g_free(rname);
+}
+
 /* when opening a file outside the main sequence loading system and that file
  * is a sequence (SER/AVI), this function is called to load this sequence. */
 int read_single_sequence(char *realname, image_type imagetype) {
@@ -160,15 +172,7 @@ int read_single_sequence(char *realname, image_type imagetype) {
 	gchar *fname = g_path_get_basename(name);
 	if (!set_seq(fname)) {
 		/* if it loads, make it selected and only element in the list of sequences */
-		control_window_switch_to_tab(IMAGE_SEQ);
-		GtkComboBoxText *combo_box_text = GTK_COMBO_BOX_TEXT(lookup_widget("sequence_list_combobox"));
-		gtk_combo_box_text_remove_all(combo_box_text);
-		gchar *rname = g_path_get_basename(realname);
-		gtk_combo_box_text_append(combo_box_text, 0, rname);
-		g_signal_handlers_block_by_func(GTK_COMBO_BOX(combo_box_text), on_seqproc_entry_changed, NULL);
-		gtk_combo_box_set_active(GTK_COMBO_BOX(combo_box_text), 0);
-		g_signal_handlers_unblock_by_func(GTK_COMBO_BOX(combo_box_text), on_seqproc_entry_changed, NULL);
-		g_free(rname);
+		populate_seqcombo(realname);
 	}
 	else retval = 1;
 	g_free(fname);
