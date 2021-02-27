@@ -271,7 +271,7 @@ static void FFTD_float(fits *fit, fits *x, fits *y, int type_order, int layer) {
 		strcpy(x->dft.ord, "REGULAR");
 	}
 	strcpy(y->dft.ord, x->dft.ord);
-	x->dft.norm[layer] = maxi / USHRT_MAX_SINGLE;
+	x->dft.norm[layer] = maxi;
 
 	free(modul);
 	free(phase);
