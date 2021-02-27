@@ -11089,7 +11089,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                     <property name="can-focus">True</property>
                     <signal name="switch-page" handler="on_notebook1_switch_page" swapped="no"/>
                     <child>
-                      <object class="GtkBox" id="vbox1">
+                      <object class="GtkBox" id="vbox_r">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="orientation">vertical</property>
@@ -11117,14 +11117,20 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                               <object class="GtkViewport" id="viewportr">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
+                                <signal name="drag-data-received" handler="on_viewport_drag_data_received" swapped="no"/>
+                                <signal name="drag-leave" handler="on_viewport_drag_leave" swapped="no"/>
+                                <signal name="drag-motion" handler="on_viewport_drag_motion" swapped="no"/>
                                 <child>
                                   <object class="GtkDrawingArea" id="drawingarear">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_SCROLL_MASK</property>
+                                    <property name="margin-start">2</property>
+                                    <property name="margin-end">2</property>
+                                    <property name="margin-top">2</property>
+                                    <property name="margin-bottom">2</property>
                                     <signal name="button-press-event" handler="on_drawingarea_button_press_event" swapped="no"/>
                                     <signal name="button-release-event" handler="on_drawingarea_button_release_event" swapped="no"/>
-                                    <signal name="drag-data-received" handler="on_drawingarea_drag_data_received" swapped="no"/>
                                     <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
                                     <signal name="leave-notify-event" handler="on_drawingarea_leave_notify_event" swapped="no"/>
                                     <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
@@ -11251,7 +11257,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id="vbox12">
+                      <object class="GtkBox" id="vbox_g">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="orientation">vertical</property>
@@ -11279,14 +11285,20 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                               <object class="GtkViewport" id="viewportg">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
+                                <signal name="drag-data-received" handler="on_viewport_drag_data_received" swapped="no"/>
+                                <signal name="drag-leave" handler="on_viewport_drag_leave" swapped="no"/>
+                                <signal name="drag-motion" handler="on_viewport_drag_motion" swapped="no"/>
                                 <child>
                                   <object class="GtkDrawingArea" id="drawingareag">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_SCROLL_MASK</property>
+                                    <property name="margin-start">2</property>
+                                    <property name="margin-end">2</property>
+                                    <property name="margin-top">2</property>
+                                    <property name="margin-bottom">2</property>
                                     <signal name="button-press-event" handler="on_drawingarea_button_press_event" swapped="no"/>
                                     <signal name="button-release-event" handler="on_drawingarea_button_release_event" swapped="no"/>
-                                    <signal name="drag-data-received" handler="on_drawingarea_drag_data_received" swapped="no"/>
                                     <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
                                     <signal name="leave-notify-event" handler="on_drawingarea_leave_notify_event" swapped="no"/>
                                     <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
@@ -11416,7 +11428,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id="vbox13">
+                      <object class="GtkBox" id="vbox_b">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="orientation">vertical</property>
@@ -11444,14 +11456,20 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                               <object class="GtkViewport" id="viewportb">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
+                                <signal name="drag-data-received" handler="on_viewport_drag_data_received" swapped="no"/>
+                                <signal name="drag-leave" handler="on_viewport_drag_leave" swapped="no"/>
+                                <signal name="drag-motion" handler="on_viewport_drag_motion" swapped="no"/>
                                 <child>
                                   <object class="GtkDrawingArea" id="drawingareab">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_ENTER_NOTIFY_MASK | GDK_LEAVE_NOTIFY_MASK | GDK_SCROLL_MASK</property>
+                                    <property name="margin-start">2</property>
+                                    <property name="margin-end">2</property>
+                                    <property name="margin-top">2</property>
+                                    <property name="margin-bottom">2</property>
                                     <signal name="button-press-event" handler="on_drawingarea_button_press_event" swapped="no"/>
                                     <signal name="button-release-event" handler="on_drawingarea_button_release_event" swapped="no"/>
-                                    <signal name="drag-data-received" handler="on_drawingarea_drag_data_received" swapped="no"/>
                                     <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
                                     <signal name="leave-notify-event" handler="on_drawingarea_leave_notify_event" swapped="no"/>
                                     <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
@@ -11581,7 +11599,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkBox" id="vbox15">
+                      <object class="GtkBox" id="vbox_rgb">
                         <property name="visible">True</property>
                         <property name="can-focus">False</property>
                         <property name="orientation">vertical</property>
@@ -11608,14 +11626,20 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                               <object class="GtkViewport" id="viewport2">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
+                                <signal name="drag-data-received" handler="on_viewport_drag_data_received" swapped="no"/>
+                                <signal name="drag-leave" handler="on_viewport_drag_leave" swapped="no"/>
+                                <signal name="drag-motion" handler="on_viewport_drag_motion" swapped="no"/>
                                 <child>
                                   <object class="GtkDrawingArea" id="drawingareargb">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
                                     <property name="events">GDK_POINTER_MOTION_MASK | GDK_BUTTON_MOTION_MASK | GDK_BUTTON1_MOTION_MASK | GDK_BUTTON_PRESS_MASK | GDK_BUTTON_RELEASE_MASK | GDK_KEY_PRESS_MASK | GDK_STRUCTURE_MASK | GDK_SCROLL_MASK</property>
+                                    <property name="margin-start">2</property>
+                                    <property name="margin-end">2</property>
+                                    <property name="margin-top">2</property>
+                                    <property name="margin-bottom">2</property>
                                     <signal name="button-press-event" handler="on_drawingarea_button_press_event" swapped="no"/>
                                     <signal name="button-release-event" handler="on_drawingarea_button_release_event" swapped="no"/>
-                                    <signal name="drag-data-received" handler="on_drawingarea_drag_data_received" swapped="no"/>
                                     <signal name="draw" handler="redraw_drawingarea" swapped="no"/>
                                     <signal name="motion-notify-event" handler="on_drawingarea_motion_notify_event" swapped="no"/>
                                     <signal name="popup-menu" handler="rgb_area_popup_menu_handler" swapped="no"/>
@@ -11755,6 +11779,8 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                                         <property name="reorderable">True</property>
                                         <property name="search-column">0</property>
                                         <signal name="drag-data-received" handler="on_treeview_convert_drag_data_received" swapped="no"/>
+                                        <signal name="drag-leave" handler="on_treeview_convert_drag_leave" swapped="no"/>
+                                        <signal name="drag-motion" handler="on_treeview_convert_drag_motion" swapped="no"/>
                                         <signal name="key-release-event" handler="on_treeview_convert_key_release_event" swapped="no"/>
                                         <child internal-child="selection">
                                           <object class="GtkTreeSelection"/>

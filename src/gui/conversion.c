@@ -369,6 +369,18 @@ void on_remove_convert_button_clicked(GtkToolButton *button, gpointer user_data)
 	on_input_files_change();
 }
 
+void on_treeview_convert_drag_leave(GtkWidget *widget, GdkDragContext *context, guint time,
+		gpointer user_data) {
+	gtk_drag_unhighlight(widget);
+}
+
+gboolean on_treeview_convert_drag_motion(GtkWidget *widget, GdkDragContext *context,
+		gint x, gint y, guint time) {
+	gtk_drag_highlight(widget);
+
+	return TRUE;
+}
+
 void on_treeview_convert_drag_data_received(GtkWidget *widget,
 		GdkDragContext *context, gint x, gint y,
 		GtkSelectionData *selection_data, guint info, guint time,

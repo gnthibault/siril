@@ -28,25 +28,37 @@
 #include "io/sequence.h"
 
 void siril_drag_single_image_set_dest() {
-	gtk_drag_dest_set(lookup_widget("drawingarear"),
+	gtk_drag_dest_set(lookup_widget("viewportr"),
 			GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP,
 			NULL, 0, GDK_ACTION_COPY | GDK_ACTION_ASK);
-	gtk_drag_dest_set(lookup_widget("drawingareag"),
+	gtk_drag_dest_set(lookup_widget("viewportg"),
 			GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP,
 			NULL, 0, GDK_ACTION_COPY | GDK_ACTION_ASK);
-	gtk_drag_dest_set(lookup_widget("drawingareab"),
+	gtk_drag_dest_set(lookup_widget("viewportb"),
 			GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP,
 			NULL, 0, GDK_ACTION_COPY | GDK_ACTION_ASK);
-	gtk_drag_dest_set(lookup_widget("drawingareargb"),
+	gtk_drag_dest_set(lookup_widget("viewport2"),
 			GTK_DEST_DEFAULT_MOTION | GTK_DEST_DEFAULT_DROP,
 			NULL, 0, GDK_ACTION_COPY | GDK_ACTION_ASK);
-	gtk_drag_dest_add_uri_targets(lookup_widget("drawingarear"));
-	gtk_drag_dest_add_uri_targets(lookup_widget("drawingareag"));
-	gtk_drag_dest_add_uri_targets(lookup_widget("drawingareab"));
-	gtk_drag_dest_add_uri_targets(lookup_widget("drawingareargb"));
+	gtk_drag_dest_add_uri_targets(lookup_widget("viewportr"));
+	gtk_drag_dest_add_uri_targets(lookup_widget("viewportg"));
+	gtk_drag_dest_add_uri_targets(lookup_widget("viewportb"));
+	gtk_drag_dest_add_uri_targets(lookup_widget("viewport2"));
 }
 
-void on_drawingarea_drag_data_received(GtkWidget *widget,
+gboolean on_viewport_drag_motion(GtkWidget *widget, GdkDragContext *context,
+		gint x, gint y, guint time) {
+	gtk_drag_highlight(widget);
+
+	return TRUE;
+}
+
+void on_viewport_drag_leave(GtkWidget *widget, GdkDragContext *context, guint time,
+		gpointer user_data) {
+	gtk_drag_unhighlight(widget);
+}
+
+void on_viewport_drag_data_received(GtkWidget *widget,
 		GdkDragContext *context, gint x, gint y,
 		GtkSelectionData *selection_data, guint info, guint time,
 		gpointer user_data) {
@@ -78,28 +90,30 @@ void on_drawingarea_drag_data_received(GtkWidget *widget,
 		gchar *filename = g_filename_from_uri(uris[0], NULL, &error);
 		const char *src_ext = get_filename_ext(filename);
 		if (src_ext) {
-			if (single_image_is_loaded() || sequence_is_loaded()) {
-				confirm = siril_confirm_dialog(_("An image (or sequence) is already loaded"),
-						_("Are you sure you want to close everything and open the new image?"), _("Open"));
-			}
-			if (confirm) {
-				if (!strncmp(src_ext, "seq", 4)) {
-					gchar *sequence_dir = g_path_get_dirname(filename);
-					if (!siril_change_dir(sequence_dir, NULL)) {
-						if (check_seq(FALSE)) {
-							siril_log_message(_("No sequence `%s' found.\n"), filename);
-						} else {
-							set_seq(filename);
-							if (!com.script) {
-								populate_seqcombo(filename);
-								set_GUI_CWD();
+			if ((!strncmp(src_ext, "seq", 4)) || (get_type_for_extension(src_ext) != TYPEUNDEF)) {
+				if (single_image_is_loaded() || sequence_is_loaded()) {
+					confirm = siril_confirm_dialog(_("An image (or sequence) is already loaded"),
+							_("Are you sure you want to close everything and open the new image?"), _("Open"));
+				}
+				if (confirm) {
+					if (!strncmp(src_ext, "seq", 4)) {
+						gchar *sequence_dir = g_path_get_dirname(filename);
+						if (!siril_change_dir(sequence_dir, NULL)) {
+							if (check_seq(FALSE)) {
+								siril_log_message(_("No sequence `%s' found.\n"), filename);
+							} else {
+								set_seq(filename);
+								if (!com.script) {
+									populate_seqcombo(filename);
+									set_GUI_CWD();
+								}
 							}
+							g_free(sequence_dir);
 						}
-						g_free(sequence_dir);
-					}
-				} else {
-					if (get_type_for_extension(src_ext) != TYPEUNDEF) {
-						open_single_image(filename);
+					} else {
+						if (get_type_for_extension(src_ext) != TYPEUNDEF) {
+							open_single_image(filename);
+						}
 					}
 				}
 			}
