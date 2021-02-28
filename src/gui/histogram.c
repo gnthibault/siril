@@ -283,8 +283,10 @@ static void adjust_histogram_vport_size() {
 }
 
 size_t get_histo_size(fits *fit) {
-	if (fit->type == DATA_USHORT)
-		return (size_t)get_normalized_value(fit);
+	if (fit->type == DATA_USHORT) {
+		if (fit->orig_bitpix == BYTE_IMG)
+			return UCHAR_MAX;
+	}
 	return (size_t)USHRT_MAX;
 }
 
