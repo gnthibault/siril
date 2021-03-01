@@ -251,8 +251,7 @@ void dyn_psf_activate(GSimpleAction *action, GVariant *parameter, gpointer user_
 }
 
 void search_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-	if (has_wcs(&gfit))
-		siril_open_dialog("search_objects");
+	siril_open_dialog("search_objects");
 }
 
 void annotate_object_state(GSimpleAction *action, GVariant *state, gpointer user_data) {

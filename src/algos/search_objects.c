@@ -76,7 +76,7 @@ void on_search_objects_entry_activate(GtkEntry *entry, gpointer user_data) {
 				redraw(com.cvport, REMAP_NONE);
 			}
 			gtk_entry_set_text(GTK_ENTRY(entry), "");
-			gtk_widget_hide(lookup_widget("search_objects"));
+			siril_close_dialog("search_objects");
 		}
 	}
 }

@@ -100,7 +100,7 @@ void free_image_data() {
 		com.surface_height[vport] = 0;
 	}
 	if (!com.headless)
-		activate_tab(RED_VPORT);
+		activate_tab(com.cvport);
 	if (com.rgbbuf) {
 		free(com.rgbbuf);
 		com.rgbbuf = NULL;
