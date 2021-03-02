@@ -88,7 +88,7 @@ void siril_open_dialog(gchar *id) {
 	int i;
 	gint x, y;
 	gboolean win_already_shown = FALSE;
-	GtkWindow *win = GTK_WINDOW(lookup_widget(id));
+	GtkWindow *win = GTK_WINDOW(gtk_builder_get_object(builder, id));
 
 	if (get_entry_by_id(id).type != INFORMATION_DIALOG) {
 		for (i = 0; i < G_N_ELEMENTS(entries); i++) {
@@ -107,10 +107,10 @@ void siril_open_dialog(gchar *id) {
 		g_signal_connect(win, "key_press_event", G_CALLBACK(check_escape), NULL);
 	}
 
-	if (win_already_shown && x >=0 && y >= 0) {
+	if (win_already_shown && x >= 0 && y >= 0) {
 		gtk_window_move(win, x, y);
 	} else {
-		gtk_window_set_position (win, GTK_WIN_POS_CENTER);
+		gtk_window_set_position(win, GTK_WIN_POS_CENTER);
 	}
 	gtk_window_set_type_hint(win, GDK_WINDOW_TYPE_HINT_DIALOG);
 	gtk_window_set_transient_for(win, GTK_WINDOW(GTK_APPLICATION_WINDOW(lookup_widget("control_window"))));

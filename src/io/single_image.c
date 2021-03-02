@@ -66,7 +66,6 @@ void close_single_image() {
 /* frees resources when changing sequence or closing a single image
  * (image size may vary, so we reallocate) */
 void free_image_data() {
-	int vport;
 	fprintf(stdout, "free_image_data() called, clearing loaded image\n");
 	/* WARNING: single_image.fit references the actual fits image,
 	 * shouldn't it be used here instead of gfit? */
@@ -87,7 +86,7 @@ void free_image_data() {
 	}
 	clear_histograms();
 
-	for (vport = 0; vport < MAXGRAYVPORT; vport++) {
+	for (int vport = 0; vport < MAXGRAYVPORT; vport++) {
 		if (com.graybuf[vport]) {
 			free(com.graybuf[vport]);
 			com.graybuf[vport] = NULL;
@@ -116,8 +115,7 @@ void free_image_data() {
 
 	if (!com.headless) {
 		/* free alignment preview data */
-		int i;
-		for (i = 0; i < PREVIEW_NB; i++) {
+		for (int i = 0; i < PREVIEW_NB; i++) {
 			if (com.preview_surface[i]) {
 				cairo_surface_destroy(com.preview_surface[i]);
 				com.preview_surface[i] = NULL;

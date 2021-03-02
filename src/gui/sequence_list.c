@@ -257,9 +257,14 @@ static void unselect_select_frame_from_list(GtkTreeView *tree_view) {
 
 static void display_status() {
 	GtkStatusbar *statusbar = GTK_STATUSBAR(lookup_widget("seqlist_statusbar"));
-	gchar *text = g_strdup_printf("%d/%d", com.seq.current + 1, com.seq.number);
-	gtk_statusbar_push(statusbar, COUNT_STATE, text);
-	g_free(text);
+	gchar *text;
+	if (sequence_is_loaded()) {
+		text = g_strdup_printf("%d/%d", com.seq.current + 1, com.seq.number);
+		gtk_statusbar_push(statusbar, COUNT_STATE, text);
+		g_free(text);
+	} else {
+		gtk_statusbar_push(statusbar, COUNT_STATE, "");
+	}
 }
 
 /* method handling all include or all exclude from a sequence */
