@@ -25,13 +25,14 @@ extern "C" {
 #include "config.h"
 #endif
 
-#include <glib.h>
 #ifdef _OPENMP
 #include <omp.h>
 #endif
 #ifdef __cplusplus
 }
 #endif
+
+#include <glib.h>
 
 #include <cassert>
 #include <fstream>
