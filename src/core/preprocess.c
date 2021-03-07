@@ -342,22 +342,22 @@ gpointer prepro_worker(gpointer p) {
 
 void start_sequence_preprocessing(struct preprocessing_data *prepro) {
 	struct generic_seq_args *args = create_default_seqargs(prepro->seq);
-	args->force_float = !com.pref.force_to_16bit;
+	args->force_float = !com.pref.force_to_16bit && prepro->output_seqtype != SEQ_SER;
 	args->compute_size_hook = prepro_compute_size_hook;
 	args->prepare_hook = prepro_prepare_hook;
 	args->image_hook = prepro_image_hook;
 	args->finalize_hook = prepro_finalize_hook;
 	args->description = _("Preprocessing");
 	args->has_output = TRUE;
-	// float output is always used in case of FITS sequence
-	args->output_type = (args->force_ser_output || com.pref.force_to_16bit ||
-			(args->seq->type == SEQ_SER && !args->force_fitseq_output)) ?
-		DATA_USHORT : DATA_FLOAT;
 	args->new_seq_prefix = prepro->ppprefix;
 	args->load_new_sequence = TRUE;
 	args->force_ser_output = prepro->seq->type != SEQ_SER && prepro->output_seqtype == SEQ_SER;
 	args->force_fitseq_output = prepro->seq->type != SEQ_FITSEQ && prepro->output_seqtype == SEQ_FITSEQ;
 	args->user = prepro;
+	// float output is always used in case of FITS sequence
+	args->output_type = (args->force_ser_output || com.pref.force_to_16bit ||
+			(args->seq->type == SEQ_SER && !args->force_fitseq_output)) ?
+		DATA_USHORT : DATA_FLOAT;
 
 	remove_prefixed_sequence_files(prepro->seq, prepro->ppprefix);
 
