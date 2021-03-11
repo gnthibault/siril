@@ -12412,7 +12412,8 @@ For SER and TIFF, if input images are 32 bits, they are converted to 16, with a 
                                       <item>16-bit TIFF</item>
                                       <item>SER</item>
                                       <item>AVI</item>
-                                      <item>MP4</item>
+                                      <item>MP4 (h264)</item>
+                                      <item translatable="yes">MP4 (h265)</item>
                                       <item>WEBM</item>
                                     </items>
                                     <signal name="changed" handler="on_comboExport_changed" swapped="no"/>
@@ -12542,6 +12543,7 @@ A first computation pass will be done on all images before exporting, it may tak
                                 <child>
                                   <object class="GtkBox" id="boxAviOptions">
                                     <property name="can-focus">False</property>
+                                    <property name="spacing">5</property>
                                     <child>
                                       <object class="GtkLabel" id="label68">
                                         <property name="visible">True</property>
@@ -12587,6 +12589,27 @@ A first computation pass will be done on all images before exporting, it may tak
                                         <property name="expand">False</property>
                                         <property name="fill">True</property>
                                         <property name="position">2</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkComboBoxText" id="combo_export_preset">
+                                        <property name="visible">True</property>
+                                        <property name="sensitive">False</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="active">0</property>
+                                        <items>
+                                          <item translatable="yes">Preserve ratio</item>
+                                          <item translatable="yes">Free ratio</item>
+                                          <item translatable="yes">Full HD</item>
+                                          <item translatable="yes">4K</item>
+                                          <item translatable="yes">8K</item>
+                                        </items>
+                                        <signal name="changed" handler="on_combo_export_preset_changed" swapped="no"/>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">3</property>
                                       </packing>
                                     </child>
                                     <child>

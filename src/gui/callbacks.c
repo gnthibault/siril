@@ -279,7 +279,7 @@ void set_display_mode() {
 	}
 
 	vport = com.cvport;
-	if (com.cvport ==  RGB_VPORT) vport = GREEN_VPORT;
+	if (com.cvport == RGB_VPORT) vport = GREEN_VPORT;
 	if (single_image_is_loaded() && vport < com.uniq->nb_layers && com.uniq->layers
 			&& com.seq.current != RESULT_IMAGE)
 		mode = com.uniq->layers[vport].rendering_mode;

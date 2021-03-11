@@ -405,7 +405,7 @@ static void close_stream(struct mp4_struct *ost)
 /**************************************************************/
 /* media file output */
 
-struct mp4_struct *mp4_create(const char *filename, int dst_w, int dst_h, int fps, int nb_layers, int quality, int src_w, int src_h)
+struct mp4_struct *mp4_create(const char *filename, int dst_w, int dst_h, int fps, int nb_layers, int quality, int src_w, int src_h, gboolean use_h265)
 {
 	struct mp4_struct *video_st;
 	AVCodec *video_codec;
@@ -440,6 +440,8 @@ struct mp4_struct *mp4_create(const char *filename, int dst_w, int dst_h, int fp
 	if (video_st->fmt->video_codec == AV_CODEC_ID_VP9) {
 		/* force VP8 codec for webm, VP9 is not supported by Opera 12 */
 		video_st->fmt->video_codec = AV_CODEC_ID_VP8;
+	} else if (video_st->fmt->video_codec == AV_CODEC_ID_H264 && use_h265) {
+		video_st->fmt->video_codec = AV_CODEC_ID_H265;
 	}
 	video_st->src_w = src_w;
 	video_st->src_h = src_h;

@@ -28,7 +28,7 @@ struct mp4_struct {
 
 };
 
-struct mp4_struct *mp4_create(const char *filename, int dst_w, int dst_h, int fps, int nb_layers, int quality, int src_w, int src_h);
+struct mp4_struct *mp4_create(const char *filename, int dst_w, int dst_h, int fps, int nb_layers, int quality, int src_w, int src_h, gboolean use_h265);
 int mp4_add_frame(struct mp4_struct *, fits *);
 int mp4_close(struct mp4_struct *);
 

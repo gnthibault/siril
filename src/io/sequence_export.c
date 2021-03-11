@@ -48,8 +48,18 @@ typedef enum {
 	EXPORT_SER,
 	EXPORT_AVI,
 	EXPORT_MP4,
+	EXPORT_MP4_H265,
 	EXPORT_WEBM
 } export_format;
+
+/* same order as in the combo box 'combo_export_preset' */
+typedef enum {
+	PRESET_RATIO,
+	PRESET_FREE,
+	PRESET_FULLHD,
+	PRESET_4K,
+	PRESET_8K
+} export_presets;
 
 struct exportseq_args {
 	sequence *seq;
@@ -197,6 +207,7 @@ static gpointer export_sequence(gpointer ptr) {
 			break;
 
 		case EXPORT_MP4:
+		case EXPORT_MP4_H265:
 		case EXPORT_WEBM:
 #ifndef HAVE_FFMPEG
 			siril_log_message(_("MP4 output is not supported because siril was not compiled with ffmpeg support.\n"));
@@ -205,7 +216,7 @@ static gpointer export_sequence(gpointer ptr) {
 #else
 			/* resampling is managed by libswscale */
 			snprintf(dest, 256, "%s.%s", args->basename,
-					args->output == EXPORT_MP4 ? "mp4" : "webm");
+					args->output == EXPORT_WEBM ? "webm" : "mp4");
 
 			if (in_width % 32 || out_height % 2 || out_width % 2) {
 				siril_log_message(_("Film output needs to have a width that is a multiple of 32 and an even height, resizing selection.\n"));
@@ -237,7 +248,7 @@ static gpointer export_sequence(gpointer ptr) {
 				}
 			}
 
-			mp4_file = mp4_create(dest, out_width, out_height, args->film_fps, args->seq->nb_layers, args->film_quality, in_width, in_height);
+			mp4_file = mp4_create(dest, out_width, out_height, args->film_fps, args->seq->nb_layers, args->film_quality, in_width, in_height, args->output == EXPORT_MP4_H265);
 			if (!mp4_file) {
 				retval = -1;
 				goto free_and_reset_progress_bar;
@@ -462,6 +473,7 @@ static gpointer export_sequence(gpointer ptr) {
 				break;
 #ifdef HAVE_FFMPEG
 			case EXPORT_MP4:
+			case EXPORT_MP4_H265:
 			case EXPORT_WEBM:
 				// an equivalent to fits_to_uint8 is called in there (fill_rgb_image)...
 				retval = mp4_add_frame(mp4_file, destfit);
@@ -503,6 +515,7 @@ free_and_reset_progress_bar:
 			avi_file_close(0);
 			break;
 		case EXPORT_MP4:
+		case EXPORT_MP4_H265:
 		case EXPORT_WEBM:
 #ifdef HAVE_FFMPEG
 			if (mp4_file) {
@@ -551,12 +564,12 @@ void on_buttonExportSeq_clicked(GtkButton *button, gpointer user_data) {
 	if (args->crop)
 		memcpy(&args->crop_area, &com.selection, sizeof(rectangle));
 
-	if (args->output == EXPORT_AVI || args->output == EXPORT_MP4 || args->output == EXPORT_WEBM) {
+	if (args->output == EXPORT_AVI || args->output == EXPORT_MP4 || args->output == EXPORT_MP4_H265 || args->output == EXPORT_WEBM) {
 		GtkEntry *fpsEntry = GTK_ENTRY(lookup_widget("entryAviFps"));
 		args->film_fps = round_to_int(g_ascii_strtod(gtk_entry_get_text(fpsEntry), NULL));
 		if (args->film_fps <= 0) args->film_fps = 1;
 	}
-	if (args->output == EXPORT_MP4 || args->output == EXPORT_WEBM) {
+	if (args->output == EXPORT_MP4 || args->output == EXPORT_MP4_H265 || args->output == EXPORT_WEBM) {
 		GtkAdjustment *adjQual = GTK_ADJUSTMENT(gtk_builder_get_object(builder,"adjustment3"));
 		GtkToggleButton *checkResize = GTK_TOGGLE_BUTTON(lookup_widget("checkAviResize"));
 		args->film_quality = (int)gtk_adjustment_get_value(adjQual);
@@ -605,8 +618,10 @@ void on_comboExport_changed(GtkComboBox *box, gpointer user_data) {
 void on_checkAviResize_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 	GtkWidget *heightEntry = lookup_widget("entryAviHeight");
 	GtkWidget *widthEntry = lookup_widget("entryAviWidth");
+	GtkWidget *combo_export_preset = lookup_widget("combo_export_preset");
 	gtk_widget_set_sensitive(heightEntry, gtk_toggle_button_get_active(togglebutton));
 	gtk_widget_set_sensitive(widthEntry, gtk_toggle_button_get_active(togglebutton));
+	gtk_widget_set_sensitive(combo_export_preset, gtk_toggle_button_get_active(togglebutton));
 }
 
 void update_export_crop_label() {
@@ -665,4 +680,55 @@ void on_entryAviHeight_changed(GtkEditable *editable, gpointer user_data) {
 	gtk_entry_set_text(widthEntry, c_width);
 	g_signal_handlers_unblock_by_func(widthEntry, on_entryAviWidth_changed, NULL);
 	g_free(c_width);
+}
+
+static gboolean g_signal_handlers_is_blocked_by_func(gpointer instance, GFunc func, gpointer data) {
+	return g_signal_handler_find(instance,
+			G_SIGNAL_MATCH_FUNC | G_SIGNAL_MATCH_DATA
+					| G_SIGNAL_MATCH_UNBLOCKED, 0, 0, NULL, func, data) == 0;
+}
+
+void on_combo_export_preset_changed(GtkComboBox *box, gpointer user_data) {
+	int preset = gtk_combo_box_get_active(box);
+	GtkEntry *widthEntry = GTK_ENTRY(lookup_widget("entryAviWidth"));
+	GtkEntry *heightEntry = GTK_ENTRY(lookup_widget("entryAviHeight"));
+
+	switch(preset) {
+	default:
+	case PRESET_RATIO:
+		if (g_signal_handlers_is_blocked_by_func(widthEntry, (GFunc) on_entryAviWidth_changed, NULL)) {
+			g_signal_handlers_unblock_by_func(widthEntry, on_entryAviWidth_changed, NULL);
+			g_signal_handlers_unblock_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+		}
+		break;
+	case PRESET_FREE:
+		if (!g_signal_handlers_is_blocked_by_func(widthEntry, (GFunc) on_entryAviWidth_changed, NULL)) {
+			g_signal_handlers_block_by_func(widthEntry, on_entryAviWidth_changed, NULL);
+			g_signal_handlers_block_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+		}
+		break;
+	case PRESET_FULLHD:
+		g_signal_handlers_block_by_func(widthEntry, on_entryAviWidth_changed, NULL);
+		g_signal_handlers_block_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+		gtk_entry_set_text(widthEntry, "1920");
+		gtk_entry_set_text(heightEntry, "1080");
+		g_signal_handlers_unblock_by_func(widthEntry, on_entryAviWidth_changed, NULL);
+		g_signal_handlers_unblock_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+		break;
+	case PRESET_4K:
+		g_signal_handlers_block_by_func(widthEntry, on_entryAviWidth_changed, NULL);
+		g_signal_handlers_block_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+		gtk_entry_set_text(widthEntry, "3840");
+		gtk_entry_set_text(heightEntry, "2160");
+		g_signal_handlers_unblock_by_func(widthEntry, on_entryAviWidth_changed, NULL);
+		g_signal_handlers_unblock_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+		break;
+	case PRESET_8K:
+		g_signal_handlers_block_by_func(widthEntry, on_entryAviWidth_changed, NULL);
+		g_signal_handlers_block_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+		gtk_entry_set_text(widthEntry, "7680");
+		gtk_entry_set_text(heightEntry, "4320");
+		g_signal_handlers_unblock_by_func(widthEntry, on_entryAviWidth_changed, NULL);
+		g_signal_handlers_unblock_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+	}
 }
