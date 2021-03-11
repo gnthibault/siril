@@ -1035,9 +1035,9 @@ void get_debayer_area(const rectangle *area, rectangle *debayer_area,
 
 	/* top */
 	if (area->y & 1)
-		*debayer_offset_y = 3;
+		*debayer_offset_y = 11;
 	else
-		*debayer_offset_y = 2;
+		*debayer_offset_y = 10;
 	if (area->y - *debayer_offset_y < 0) {
 		debayer_area->y = 0;
 		*debayer_offset_y = area->y;
@@ -1048,9 +1048,9 @@ void get_debayer_area(const rectangle *area, rectangle *debayer_area,
 	/* bottom */
 	int yend = area->y + area->h - 1;
 	if (yend & 1)
-		bottom = 2;
+		bottom = 10;
 	else
-		bottom = 3;
+		bottom = 11;
 	if (yend + bottom >= image_area->h) {
 		bottom = image_area->h - yend - 1;
 	}
