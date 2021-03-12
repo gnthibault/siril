@@ -1007,11 +1007,10 @@ void initialize_display_mode() {
 	else
 		mode = raw_mode;
 	/* The mode is applyed for each layer */
-	if (single_image_is_loaded() && com.cvport < com.uniq->nb_layers
-			&& com.seq.current != RESULT_IMAGE) {
+	if (single_image_is_loaded() && com.seq.current != RESULT_IMAGE) {
 		for (i = 0; i < com.uniq->nb_layers; i++)
 			com.uniq->layers[i].rendering_mode = mode;
-	} else if (sequence_is_loaded() && com.cvport < com.seq.nb_layers) {
+	} else if (sequence_is_loaded()) {
 		for (i = 0; i < com.seq.nb_layers; i++)
 			com.seq.layers[i].rendering_mode = mode;
 	}
