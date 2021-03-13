@@ -31,7 +31,7 @@ static gchar **authors = (gchar *[] ) { "Vincent Hourdin <vh@free-astro.vinvin.t
 
 static gchar **documenters = (gchar *[] ) { "Laurent Rogé <l.roge@siril.org>", NULL };
 
-static gchar **artists = (gchar *[] ) { "Maxime Oudoux <max.oudoux@gmail.com>",
+static gchar **artists = (gchar *[] ) { "Maxime Oudoux <max.oudoux@gmail.com>", "Tobias Bernard",
 				"Cyril Richard <cyril@free-astro.org>", NULL };
 
 void siril_show_about_dialog() {
