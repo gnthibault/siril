@@ -1,9 +1,9 @@
 ###################################################
 # Script pour Siril 1.0
-# Juillet 2020
+# Mars 2021
 # (C) Cyril Richard
 # Adapté, modifié et traduit par Colmic
-# Couleur_Pre-traitement_AvecDrizzle v1.1
+# Couleur_Pre-traitement_AvecDrizzle v1.2
 # 
 ###################################################
 #
@@ -30,7 +30,7 @@ cd ..
 cd flats
 convert flat -out=../process
 cd ../process
-preprocess flat -dark=offset_stacked
+preprocess flat -bias=offset_stacked
 
 #Création du master-flat
 stack pp_flat rej 3 3 -norm=mul
