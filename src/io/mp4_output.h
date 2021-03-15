@@ -7,6 +7,18 @@
 #include <libavcodec/avcodec.h>
 #include <libavutil/frame.h>
 
+/* same order as in the combo box 'comboExport' */
+typedef enum {
+	EXPORT_FITS,
+	EXPORT_FITSEQ,
+	EXPORT_TIFF,
+	EXPORT_SER,
+	EXPORT_AVI,
+	EXPORT_MP4,
+	EXPORT_MP4_H265,
+	EXPORT_WEBM
+} export_format;
+
 struct mp4_struct {
 	AVOutputFormat *fmt;
 	AVFormatContext *oc;
@@ -28,7 +40,7 @@ struct mp4_struct {
 
 };
 
-struct mp4_struct *mp4_create(const char *filename, int dst_w, int dst_h, int fps, int nb_layers, int quality, int src_w, int src_h, gboolean use_h265);
+struct mp4_struct *mp4_create(const char *filename, int dst_w, int dst_h, int fps, int nb_layers, int quality, int src_w, int src_h, export_format type);
 int mp4_add_frame(struct mp4_struct *, fits *);
 int mp4_close(struct mp4_struct *);
 

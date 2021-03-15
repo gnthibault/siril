@@ -405,7 +405,7 @@ static void close_stream(struct mp4_struct *ost)
 /**************************************************************/
 /* media file output */
 
-struct mp4_struct *mp4_create(const char *filename, int dst_w, int dst_h, int fps, int nb_layers, int quality, int src_w, int src_h, gboolean use_h265)
+struct mp4_struct *mp4_create(const char *filename, int dst_w, int dst_h, int fps, int nb_layers, int quality, int src_w, int src_h, export_format type)
 {
 	struct mp4_struct *video_st;
 	AVCodec *video_codec;
@@ -437,11 +437,19 @@ struct mp4_struct *mp4_create(const char *filename, int dst_w, int dst_h, int fp
 	video_st->fmt = video_st->oc->oformat;
 	/* disable unwanted features, is this the correct way? */
 	video_st->fmt->audio_codec = AV_CODEC_ID_NONE;
-	if (video_st->fmt->video_codec == AV_CODEC_ID_VP9) {
+	switch(type) {
+	case EXPORT_WEBM:
 		/* force VP8 codec for webm, VP9 is not supported by Opera 12 */
 		video_st->fmt->video_codec = AV_CODEC_ID_VP8;
-	} else if (video_st->fmt->video_codec == AV_CODEC_ID_H264 && use_h265) {
+		break;
+	case EXPORT_MP4:
+		video_st->fmt->video_codec = AV_CODEC_ID_H264;
+		break;
+	case EXPORT_MP4_H265:
 		video_st->fmt->video_codec = AV_CODEC_ID_H265;
+		break;
+	default:
+		printf("mp4_create: Should not happen\n");
 	}
 	video_st->src_w = src_w;
 	video_st->src_h = src_h;

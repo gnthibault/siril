@@ -40,18 +40,6 @@
 #endif
 #include "algos/geometry.h"
 
-/* same order as in the combo box 'comboExport' */
-typedef enum {
-	EXPORT_FITS,
-	EXPORT_FITSEQ,
-	EXPORT_TIFF,
-	EXPORT_SER,
-	EXPORT_AVI,
-	EXPORT_MP4,
-	EXPORT_MP4_H265,
-	EXPORT_WEBM
-} export_format;
-
 /* same order as in the combo box 'combo_export_preset' */
 typedef enum {
 	PRESET_RATIO,
@@ -248,7 +236,7 @@ static gpointer export_sequence(gpointer ptr) {
 				}
 			}
 
-			mp4_file = mp4_create(dest, out_width, out_height, args->film_fps, args->seq->nb_layers, args->film_quality, in_width, in_height, args->output == EXPORT_MP4_H265);
+			mp4_file = mp4_create(dest, out_width, out_height, args->film_fps, args->seq->nb_layers, args->film_quality, in_width, in_height, args->output);
 			if (!mp4_file) {
 				retval = -1;
 				goto free_and_reset_progress_bar;
