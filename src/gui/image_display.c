@@ -346,7 +346,7 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 
 	/* initialization of data required to build the remap_index */
 	switch (mode) {
-		case NORMAL_DISPLAY:
+		case LINEAR_DISPLAY:
 			slope = UCHAR_MAX_SINGLE / (float) (hi - lo);
 			break;
 		case LOG_DISPLAY:
@@ -405,7 +405,7 @@ static int make_index_for_current_display(display_mode mode, WORD lo, WORD hi,
 				// asinh(2.78*10^110) = 255
 				index[i] = round_to_BYTE(asinhf((float) i / 1000.f) * slope); //1000.f is arbitrary: good matching with ds9, could be asinhf(a*Q*i)/Q
 				break;
-			case NORMAL_DISPLAY:
+			case LINEAR_DISPLAY:
 				index[i] = round_to_BYTE((float) i * slope);
 				break;
 			case STF_DISPLAY:

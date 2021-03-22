@@ -195,7 +195,7 @@ typedef struct save_config_struct save_config;
 /* global structures */
 
 typedef enum {
-	NORMAL_DISPLAY,	
+	LINEAR_DISPLAY,	
 	LOG_DISPLAY,
 	SQRT_DISPLAY,
 	SQUARED_DISPLAY,
@@ -262,7 +262,7 @@ struct layer_info_struct {
 	WORD lo, hi;			// the values of the cutoff sliders
 	//WORD min, max;		// the min and max values of the sliders
 	gboolean cut_over, cut_under;	// display values over hi or under lo as negative
-	display_mode rendering_mode;	// defaults to NORMAL_DISPLAY
+	display_mode rendering_mode;	// defaults to LINEAR_DISPLAY
 };
 
 typedef enum { SEQ_REGULAR, SEQ_SER, SEQ_FITSEQ,

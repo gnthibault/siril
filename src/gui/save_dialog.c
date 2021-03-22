@@ -393,7 +393,17 @@ gboolean end_save(gpointer p) {
 	return FALSE;
 }
 
-static void initialize_data(gpointer p) {
+static gboolean test_for_viewer_mode() {
+	gboolean confirm = TRUE;
+	if (get_display_mode_from_menu() != LINEAR_DISPLAY) {
+		confirm = siril_confirm_dialog(_("Viewer mode is not linear"),
+				_("You are saving an image that is displayed in a non linear mode. "
+						"What you see is not what you will get. Switch the viewer mode to linear to save what you see."), _("Save Anyway"));
+	}
+	return confirm;
+}
+
+static gboolean initialize_data(gpointer p) {
 	struct savedial_data *args = (struct savedial_data *) p;
 
 	GtkToggleButton *fits_8 = GTK_TOGGLE_BUTTON(lookup_widget("radiobutton_save_fit8"));
@@ -422,6 +432,8 @@ static void initialize_data(gpointer p) {
 		args->bitpix = FLOAT_IMG;
 
 	args->update_hilo = gtk_toggle_button_get_active(update_hilo);
+
+	return test_for_viewer_mode();
 }
 
 static gpointer mini_save_dialog(gpointer p) {
@@ -652,16 +664,22 @@ void on_button_savepopup_clicked(GtkButton *button, gpointer user_data) {
 	struct savedial_data *args = malloc(sizeof(struct savedial_data));
 
 	set_cursor_waiting(TRUE);
-	initialize_data(args);
-	start_in_new_thread(mini_save_dialog, args);
+	if (initialize_data(args)) {
+		start_in_new_thread(mini_save_dialog, args);
+	} else {
+		siril_add_idle(end_generic, NULL);
+	}
 }
 
 void on_savetxt_activate(GtkEntry *entry, gpointer user_data) {
 	struct savedial_data *args = malloc(sizeof(struct savedial_data));
 
 	set_cursor_waiting(TRUE);
-	initialize_data(args);
-	start_in_new_thread(mini_save_dialog, args);
+	if (initialize_data(args)) {
+		start_in_new_thread(mini_save_dialog, args);
+	} else {
+		siril_add_idle(end_generic, NULL);
+	}
 }
 
 void on_button_cancelpopup_clicked(GtkButton *button, gpointer user_data) {
@@ -678,8 +696,11 @@ void on_header_save_as_button_clicked() {
 				struct savedial_data *args = malloc(sizeof(struct savedial_data));
 
 				set_cursor_waiting(TRUE);
-				initialize_data(args);
-				start_in_new_thread(mini_save_dialog, args);
+				if (initialize_data(args)) {
+					start_in_new_thread(mini_save_dialog, args);
+				} else {
+					siril_add_idle(end_generic, NULL);
+				}
 			} else {
 				close_dialog();
 				GtkWindow *parent = siril_get_active_window();

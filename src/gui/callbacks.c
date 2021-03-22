@@ -61,10 +61,10 @@
 
 layer_info predefined_layers_colors[] = {
 	/* name, lambda, lo, hi, c/over, c/under, mode */
-	{ N_("Luminance"), 0.0, 0, 0, FALSE, FALSE, NORMAL_DISPLAY }, // no color, undefined value is <0
-	{ N_("Red"), 650.0, 0, 0, FALSE, FALSE, NORMAL_DISPLAY }, // approx. of the middle of the color
-	{ N_("Green"), 530.0, 0, 0, FALSE, FALSE, NORMAL_DISPLAY },	// approx. of the middle of the color
-	{ N_("Blue"), 450.0, 0, 0, FALSE, FALSE, NORMAL_DISPLAY }// approx. of the middle of the color
+	{ N_("Luminance"), 0.0, 0, 0, FALSE, FALSE, LINEAR_DISPLAY }, // no color, undefined value is <0
+	{ N_("Red"), 650.0, 0, 0, FALSE, FALSE, LINEAR_DISPLAY }, // approx. of the middle of the color
+	{ N_("Green"), 530.0, 0, 0, FALSE, FALSE, LINEAR_DISPLAY },	// approx. of the middle of the color
+	{ N_("Blue"), 450.0, 0, 0, FALSE, FALSE, LINEAR_DISPLAY }// approx. of the middle of the color
 };
 
 /*****************************************************************************
@@ -409,8 +409,8 @@ void sliders_mode_set_state(sliders_mode sliders) {
 	g_signal_handlers_unblock_by_func(radiobutton, func[sliders], NULL);
 }
 
-static display_mode get_display_mode_from_menu(GtkMenu *menu) {
-	GtkWidget *w = gtk_menu_get_active(menu);
+display_mode get_display_mode_from_menu() {
+	GtkWidget *w = gtk_menu_get_active(GTK_MENU(lookup_widget("menu_display")));
 	if (w == lookup_widget("log_item"))
 		return LOG_DISPLAY;
 	else if (w == lookup_widget("square_root_item"))
@@ -424,7 +424,7 @@ static display_mode get_display_mode_from_menu(GtkMenu *menu) {
 	else if (w == lookup_widget("histo_item"))
 		return HISTEQ_DISPLAY;
 	else
-		return NORMAL_DISPLAY;
+		return LINEAR_DISPLAY;
 }
 
 /* When rendering settings are chained, they need to be copied to other layers
@@ -441,7 +441,6 @@ static display_mode get_display_mode_from_menu(GtkMenu *menu) {
 int copy_rendering_settings_when_chained(gboolean from_GUI) {
 	static GtkToggleButton *chainedbutton = NULL;
 	static GtkRange *range_lo = NULL, *range_hi = NULL;
-	static GtkMenu *display_menu = NULL;
 	static GtkToggleButton *cutmax = NULL;
 
 	gboolean is_chained;
@@ -453,7 +452,6 @@ int copy_rendering_settings_when_chained(gboolean from_GUI) {
 
 	if (!chainedbutton) {	// init widgets
 		chainedbutton = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_chain"));
-		display_menu = GTK_MENU(lookup_widget("menu_display"));
 		range_lo = GTK_RANGE(gtk_builder_get_object(builder, "scalemin"));
 		range_hi = GTK_RANGE(gtk_builder_get_object(builder, "scalemax"));
 		cutmax = GTK_TOGGLE_BUTTON(
@@ -477,10 +475,10 @@ int copy_rendering_settings_when_chained(gboolean from_GUI) {
 		return 0;
 
 	if (from_GUI) {
-		int raw_mode = get_display_mode_from_menu(display_menu);//gtk_combo_box_get_active(modecombo);
+		int raw_mode = get_display_mode_from_menu();
 		/* update values in the layer_info for cvport */
 		layers[cvport].rendering_mode =
-			raw_mode >= 0 ? raw_mode : NORMAL_DISPLAY;
+			raw_mode >= 0 ? raw_mode : LINEAR_DISPLAY;
 		layers[cvport].lo = round_to_WORD(gtk_range_get_value(range_lo));
 		layers[cvport].hi = round_to_WORD(gtk_range_get_value(range_hi));
 		layers[cvport].cut_over = gtk_toggle_button_get_active(cutmax);
@@ -990,20 +988,15 @@ static void load_accels() {
 
 /* Initialize the combobox when loading new single_image */
 void initialize_display_mode() {
-	static GtkMenu *display_menu = NULL;
 	static GtkToggleButton *chainedbutton = NULL;
 	display_mode mode;
 	int i;
 
-	if (!display_menu) {
-		display_menu = GTK_MENU(lookup_widget("menu_display"));
-	}
-	int raw_mode = get_display_mode_from_menu(display_menu);
-
+	int raw_mode = get_display_mode_from_menu();
 
 	/* Check if never initialized. In this case the mode is set to linear */
 	if (raw_mode == -1)
-		mode = NORMAL_DISPLAY;
+		mode = LINEAR_DISPLAY;
 	else
 		mode = raw_mode;
 	/* The mode is applyed for each layer */

@@ -19,6 +19,7 @@ void set_GUI_misc();
 void set_icon_entry(GtkEntry *entry, gchar *string);
 void update_MenuItem();
 void sliders_mode_set_state(sliders_mode);
+display_mode get_display_mode_from_menu();
 int copy_rendering_settings_when_chained(gboolean from_GUI);
 
 void clear_sampling_setting_box();
