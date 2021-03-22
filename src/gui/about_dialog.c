@@ -26,14 +26,24 @@
 
 #include "about_dialog.h"
 
-static gchar **authors = (gchar *[] ) { "Vincent Hourdin <vh@free-astro.vinvin.tf>",
-				"Cyril Richard <cyril@free-astro.org>", "François Meyer", NULL };
+static gchar **authors = (gchar *[] ) {
+				"Vincent Hourdin <vh@free-astro.vinvin.tf>",
+				"Cyril Richard <cyril@free-astro.org>",
+				"François Meyer",
+				NULL
+};
 
-static gchar **documenters = (gchar *[] ) { "Laurent Rogé <l.roge@siril.org>", NULL };
+static gchar **documenters = (gchar *[] ) {
+				"Laurent Rogé <l.roge@siril.org>",
+				NULL
+};
 
-static gchar **artists = (gchar *[] ) { "Maxime Oudoux <max.oudoux@gmail.com>", ""
+static gchar **artists = (gchar *[] ) {
+				"Maxime Oudoux <max.oudoux@gmail.com>",
 				"Tobias Bernard <tbernard@gnome.org>",
-				"Cyril Richard <cyril@free-astro.org>", NULL };
+				"Cyril Richard <cyril@free-astro.org>",
+				NULL
+};
 
 void siril_show_about_dialog() {
 	GdkPixbuf *icon;
