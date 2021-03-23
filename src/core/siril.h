@@ -449,7 +449,7 @@ struct libraw_config {
 	int auto_mul, use_camera_wb, use_auto_wb;		// White Balance parameters
 	int user_qual;						// Index of the Matrix interpolation set in dcraw, 0: bilinear, 1: VNG, 2: PPG, 3: AHD
 	int user_black;						// black point correction
-	double gamm[2];						// Gamma correction
+	double gamm[3];						// Gamma correction
 };
 
 /* This structure is used for storing all parameters used in photometry module */
