@@ -563,6 +563,9 @@ struct pref_struct {
 	gchar *swap_dir;		// swap directory
 	GSList *script_path;	// script path directories
 
+	gdouble focal;			// focal length saved in config file
+	gdouble pitch;			// pixel pitch saved in config file
+
 	libraw raw_set;			// the libraw settings
 	struct debayer_config debayer;	// debayer settings
 	phot phot_set;          // photometry settings

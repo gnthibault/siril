@@ -88,6 +88,8 @@ static preferences pref_init = {
 		.ext = NULL,
 		.swap_dir = NULL,
 		.script_path = NULL,
+		.focal = 1000,
+		.pitch = 5,
 		{ // raw_set
 				.mul[0] = 1.0,
 				.mul[1] = 1.0,

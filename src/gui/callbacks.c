@@ -33,6 +33,7 @@
 #include "core/OS_utils.h"
 #include "algos/siril_wcs.h"
 #include "algos/star_finder.h"
+#include "algos/plateSolver.h"
 #include "io/conversion.h"
 #include "io/films.h"
 #include "io/image_format_fits.h"
@@ -1214,6 +1215,9 @@ void initialize_all_GUI(gchar *supported_files) {
 
 	/* set all preferences button in the dialog */
 	set_preferences_dialog_from_global();
+
+	/* set focal and pixel pitch */
+	set_focal_and_pixel_pitch();
 
 	initialize_FITS_name_entries();
 

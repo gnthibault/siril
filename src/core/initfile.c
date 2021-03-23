@@ -225,6 +225,12 @@ static int readinitfile() {
 		if (config_setting_lookup_bool(misc_setting, "rgb_aladin", &com.pref.rgb_aladin) == CONFIG_FALSE) {
 			com.pref.rgb_aladin = FALSE;
 		}
+		if (config_setting_lookup_float(misc_setting, "focal", &com.pref.focal) == CONFIG_FALSE) {
+			com.pref.focal = 1000.0;
+		}
+		if (config_setting_lookup_float(misc_setting, "pitch", &com.pref.pitch) == CONFIG_FALSE) {
+			com.pref.pitch = 5.0;
+		}
 		config_setting_lookup_int(misc_setting, "thumbnail_size", &com.pref.thumbnail_size);
 		config_setting_lookup_int(misc_setting, "theme", &com.pref.combo_theme);
 		config_setting_lookup_string(misc_setting, "lang", &lang);
@@ -531,6 +537,13 @@ static void _save_misc(config_t *config, config_setting_t *root) {
 
 	misc_setting = config_setting_add(misc_group, "remember_winpos", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(misc_setting, com.pref.remember_windows);
+
+	misc_setting = config_setting_add(misc_group, "focal", CONFIG_TYPE_FLOAT);
+	config_setting_set_float(misc_setting, com.pref.focal);
+
+	misc_setting = config_setting_add(misc_group, "pitch", CONFIG_TYPE_FLOAT);
+	config_setting_set_float(misc_setting, com.pref.pitch);
+
 
 	misc_setting = config_setting_add(misc_group, "scripts_paths", CONFIG_TYPE_LIST);
 	while (list) {

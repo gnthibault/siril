@@ -1317,8 +1317,14 @@ static void start_image_plate_solve() {
  * CALLBACKS FUNCTIONS
  */
 
-void on_GtkEntry_IPS_changed(GtkEditable *editable, gpointer user_data) {
+void on_GtkEntry_IPS_focal_changed(GtkEditable *editable, gpointer user_data) {
 	update_resolution_field();
+	com.pref.focal = g_ascii_strtod(gtk_editable_get_chars(editable, 0, -1), NULL);
+}
+
+void on_GtkEntry_IPS_pixels_changed(GtkEditable *editable, gpointer user_data) {
+	update_resolution_field();
+	com.pref.pitch = g_ascii_strtod(gtk_editable_get_chars(editable, 0, -1), NULL);
 }
 
 void on_GtkEntry_IPS_insert_text(GtkEntry *entry, const gchar *text, gint length,
@@ -1537,4 +1543,21 @@ double get_image_solved_x(image_solved *image) {
 
 double get_image_solved_y(image_solved *image) {
 	return image->y;
+}
+
+void set_focal_and_pixel_pitch() {
+	GtkEntry *focal, *pitch;
+	gchar *f_str, *p_str;
+
+	focal = GTK_ENTRY(lookup_widget("GtkEntry_IPS_focal"));
+	pitch = GTK_ENTRY(lookup_widget("GtkEntry_IPS_pixels"));
+
+	f_str = g_strdup_printf("%.1lf", com.pref.focal);
+	p_str = g_strdup_printf("%.2lf", com.pref.pitch);
+
+	gtk_entry_set_text(focal, f_str);
+	gtk_entry_set_text(pitch, p_str);
+
+	g_free(f_str);
+	g_free(p_str);
 }
