@@ -34,6 +34,7 @@ typedef enum {
 	SIGMEDIAN,
 	WINSORIZED,
 	LINEARFIT,
+	GESDT
 } rejection;
 
 /* TYPE OF NORMALIZATION */
@@ -74,7 +75,8 @@ struct stacking_args {
 	gboolean output_overwrite;	// used in the idle function only
 	struct timeval t_start;
 	int retval;
-	float sig[2];		/* low and high sigma rejection */
+	float sig[2];		/* low and high sigma rejection or ESD parameters */
+	float *critical_value; // index of critical_values for GESTD
 	rejection type_of_rejection;	/* type of rejection */
 	normalization normalize;	/* type of normalization */
 	norm_coeff coeff;		/* normalization data */
@@ -102,6 +104,17 @@ struct stacking_configuration {
 	gboolean filter_included;
 };
 
+
+/*
+ * ESD test statistic data.
+ */
+struct outliers {
+	float x;
+	int i;
+	int out;
+};
+
+
 void initialize_stacking_default();
 void initialize_stacking_methods();
 gboolean evaluate_stacking_should_output_32bits(stack_method method,
@@ -126,6 +139,9 @@ int do_normalization(struct stacking_args *args);
 
 
 	/* median and mean functions */
+
+int check_G_values(float Gs, float Gc);
+void confirm_outliers(struct outliers *out, int N, double median, int *rejected, guint64 rej[2]);
 
 struct _image_block {
 	long channel, start_row, end_row, height; // long matches naxes type

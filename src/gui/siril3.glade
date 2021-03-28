@@ -14637,7 +14637,7 @@ However, multiplicative normalisation must be used with flat-field frames.&lt;/b
                                                     <property name="max-width-chars">6</property>
                                                     <property name="text">4,000</property>
                                                     <property name="adjustment">stack_siglow_adjustment</property>
-                                                    <property name="climb-rate">0.10</property>
+                                                    <property name="climb-rate">0.05</property>
                                                     <property name="digits">3</property>
                                                     <property name="numeric">True</property>
                                                     <property name="value">4</property>
@@ -14672,7 +14672,7 @@ However, multiplicative normalisation must be used with flat-field frames.&lt;/b
                                                     <property name="max-width-chars">6</property>
                                                     <property name="text">3,000</property>
                                                     <property name="adjustment">stack_sighigh_adjustment</property>
-                                                    <property name="climb-rate">0.10</property>
+                                                    <property name="climb-rate">0.05</property>
                                                     <property name="digits">3</property>
                                                     <property name="numeric">True</property>
                                                     <property name="value">3</property>
@@ -14702,22 +14702,23 @@ However, multiplicative normalisation must be used with flat-field frames.&lt;/b
                                                   <object class="GtkComboBoxText" id="comborejection">
                                                     <property name="visible">True</property>
                                                     <property name="can-focus">False</property>
-                                                    <property name="tooltip-markup" translatable="yes">Five rejection algorithms are available.
-- &lt;b&gt;Percentile Clipping&lt;/b&gt; is a one-step rejection algorithm ideal for small sets of data (up
-to 6 images).
-- &lt;b&gt;Sigma Clipping&lt;/b&gt; is an iterative algorithm which will reject pixels whose distance from
-median will be farthest than two given values in sigma units.
-- &lt;b&gt;Median Sigma Clipping&lt;/b&gt; is the same algorithm except than the rejected pixels are
-replaced by the median value.
-- &lt;b&gt;Winsorized Sigma Clipping&lt;/b&gt; is very similar to Sigma Clipping method but it uses an
-algorithm based on Huber's work [1] [2].
-- &lt;b&gt;Linear Fit Clipping&lt;/b&gt; is an algorithm developed by Juan Conejero, main developer of
-PixInsight [2]. It fits the best straight line (y=ax+b) of the pixel stack and rejects
-outliers. This algorithm performs very well with large stack and images containing sky
-gradients with differing spatial distributions and orientations.
+                                                    <property name="tooltip-markup" translatable="yes">Five rejection algorithms are available:
+
+&lt;b&gt;Percentile Clipping&lt;/b&gt; is a one-step rejection algorithm ideal for small sets of data (up to 6 images).
+
+&lt;b&gt;Sigma Clipping&lt;/b&gt; is an iterative algorithm which will reject pixels whose distance from median will be farthest than two given values in sigma units.
+
+&lt;b&gt;Median Sigma Clipping&lt;/b&gt; is the same algorithm except than the rejected pixels are replaced by the median value.
+
+&lt;b&gt;Winsorized Sigma Clipping&lt;/b&gt; is very similar to Sigma Clipping method but it uses an algorithm based on Huber's work [1] [2].
+
+&lt;b&gt;Linear Fit Clipping&lt;/b&gt; is an algorithm developed by Juan Conejero, main developer of PixInsight [2]. It fits the best straight line (y=ax+b) of the pixel stack and rejects outliers. This algorithm performs very well with large stack and images containing sky gradients with differing spatial distributions and orientations.
+
+The &lt;b&gt;Generalized Extreme Studentized Deviate Test&lt;/b&gt; algorithm [3] is a generalization of Grubbs Test that is used to detect one or more outliers in a univariate data set that follows an approximately normal distribution. This algorithm shows excellent performances with large dataset of more 50 images.
 
 [1] Peter J. Huber and E. Ronchetti (2009), Robust Statistics, 2nd Ed., Wiley
-[2] Juan Conejero, ImageIntegration, Pixinsight Tutorial</property>
+[2] Juan Conejero, ImageIntegration, Pixinsight Tutorial
+[3] Rosner, Bernard (May 1983), Percentage Points for a Generalized ESD Many-Outlier Procedure, Technometrics, 25(2), pp. 165-172</property>
                                                     <property name="halign">start</property>
                                                     <property name="hexpand">True</property>
                                                     <property name="active">4</property>
@@ -14728,6 +14729,7 @@ gradients with differing spatial distributions and orientations.
                                                       <item translatable="yes">Median Sigma Clipping</item>
                                                       <item translatable="yes">Winsorized Sigma Clipping</item>
                                                       <item translatable="yes">Linear Fit Clipping</item>
+                                                      <item translatable="yes">Generalized Extreme Studentized Deviate Test</item>
                                                     </items>
                                                     <signal name="changed" handler="on_comborejection_changed" swapped="no"/>
                                                   </object>

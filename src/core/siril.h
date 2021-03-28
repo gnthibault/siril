@@ -476,6 +476,7 @@ struct stack_config {
 	double sigma_low, sigma_high;
 	double linear_low, linear_high;
 	double percentile_low, percentile_high;
+	double esdt_outliers, esdt_significance;
 	enum { RATIO, AMOUNT } mem_mode; // mode of memory management
 	double memory_ratio;			// ratio of available memory to use for stacking (and others)
 	double memory_amount;			// amount of memory in GB to use for stacking (and others)

@@ -62,7 +62,7 @@ static void select_area_float(fits *fit, float *data, int layer, rectangle *boun
 }
 
 // in this case, N is the number of frames, so int is fine
-float siril_stats_float_sd(const float data[], const int N) {
+float siril_stats_float_sd(const float data[], const int N, float *m) {
 	double accumulator = 0.0; // accumulating in double precision is important for accuracy
 	for (int i = 0; i < N; ++i) {
 		accumulator += data[i];
@@ -71,6 +71,8 @@ float siril_stats_float_sd(const float data[], const int N) {
 	accumulator = 0.0;
 	for (int i = 0; i < N; ++i)
 		accumulator += (data[i] - mean) * (data[i] - mean);
+
+	if (m) *m = mean;
 
 	return sqrtf((float)(accumulator / (N - 1)));
 }

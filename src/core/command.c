@@ -3483,6 +3483,8 @@ int process_stackall(int nb) {
 				arg->type_of_rejection = LINEARFIT;
 			} else if (!strcmp(word[3], "w") || !strcmp(word[3], "winsorized")) {
 				arg->type_of_rejection = WINSORIZED;
+			} else if (!strcmp(word[3], "g") || !strcmp(word[3], "generalized")) {
+				arg->type_of_rejection = GESDT;
 			} else {
 				arg->type_of_rejection = WINSORIZED;
 				shift = 0;
@@ -3587,6 +3589,8 @@ int process_stackone(int nb) {
 				arg->type_of_rejection = LINEARFIT;
 			} else if (!strcmp(word[3], "w") || !strcmp(word[3], "winsorized")) {
 				arg->type_of_rejection = WINSORIZED;
+			} else if (!strcmp(word[3], "g") || !strcmp(word[3], "generalized")) {
+				arg->type_of_rejection = GESDT;
 			} else {
 				arg->type_of_rejection = WINSORIZED;
 				shift = 0;
