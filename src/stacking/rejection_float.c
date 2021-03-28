@@ -74,6 +74,29 @@ static int line_clipping(float pixel, float sig[], float sigma, int i, float a,
 	return 0;
 }
 
+static void remove_element(float *array, int index, int array_length) {
+	for (int i = index; i < array_length - 1; i++)
+		array[i] = array[i + 1];
+}
+
+static void grubbs_stat(float *stack, int N, float *GCal, int *max_ind) {
+	float avg_y;
+
+	float sd = siril_stats_float_sd(stack, N, &avg_y);
+
+	/* data are sorted */
+	float max_of_deviations = avg_y - stack[0];
+	float md2 = stack[N - 1] - avg_y;
+
+	if (md2 > max_of_deviations) {
+		max_of_deviations = md2;
+		*max_ind = N - 1;
+	} else {
+		*max_ind = 0;
+	}
+	*GCal = max_of_deviations / sd;
+}
+
 int apply_rejection_float(struct _data_block *data, int nb_frames,
 		struct stacking_args *args, guint64 crej[2]) {
 	int N = nb_frames;	// N is the number of pixels kept from the current stack
@@ -118,7 +141,7 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 		break;
 	case SIGMA:
 		do {
-			const float sigma = siril_stats_float_sd(stack, N);
+			const float sigma = siril_stats_float_sd(stack, N, NULL);
 			if (!firstloop)
 				median = quickmedian_float(stack, N);
 			else
@@ -148,7 +171,7 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 		break;
 	case SIGMEDIAN:
 		do {
-			const float sigma = siril_stats_float_sd(stack, N);
+			const float sigma = siril_stats_float_sd(stack, N, NULL);
 			const float medianf = quickmedian_float(stack, N);
 			n = 0;
 			for (int frame = 0; frame < N; frame++) {
@@ -162,7 +185,7 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 	case WINSORIZED:
 		do {
 			float sigma0;
-			float sigma = siril_stats_float_sd(stack, N);
+			float sigma = siril_stats_float_sd(stack, N, NULL);
 			const float medianf = quickmedian_float(stack, N);
 			memcpy(w_stack, stack, N * sizeof(float));
 			do {
@@ -172,7 +195,7 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 					w_stack[jj] = min(m1, max(m0, w_stack[jj]));
 				}
 				sigma0 = sigma;
-				sigma = 1.134f * siril_stats_float_sd(w_stack, N);
+				sigma = 1.134f * siril_stats_float_sd(w_stack, N, NULL);
 			} while (fabsf(sigma - sigma0) > sigma0 * 0.0005f);
 			for (int frame = 0; frame < N; frame++) {
 				if (N - r <= 4) {
@@ -231,6 +254,48 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 			N = output;
 		} while (changed && N > 3);
 		break;
+	case GESDT:
+		/* Normaly The algorithm does not need to play with sorted data.
+		 * But our implementation (after the rejection) needs to be sorted.
+		 * So we do it, and by the way we get the median value. Indeed, by design
+		 * this algorithm does not have low and high representation of rejection.
+		 * We define:
+		 * - cold pixel: rejected < median
+		 * - hot pixel: rejected > median
+		 */
+
+		quicksort_f(stack, N);
+		median = gsl_stats_float_median_from_sorted_data(stack, 1, N);
+
+		int max_outliers = (int) floor(N * args->sig[0]);
+		struct outliers *out = malloc(max_outliers * sizeof(struct outliers));
+
+		memcpy(w_stack, stack, N * sizeof(float));
+		memset(rejected, 0, N * sizeof(int));
+
+		for (int iter = 0, size = N; iter < max_outliers; iter++, size--) {
+			float Gstat;
+			int max_index = 0;
+
+			grubbs_stat(w_stack, size, &Gstat, &max_index);
+			out[iter].out = check_G_values(Gstat, args->critical_value[iter]);
+			out[iter].x = w_stack[max_index];
+			out[iter].i = max_index;
+			remove_element(w_stack, max_index, size);
+		}
+		confirm_outliers(out, max_outliers, median, rejected, crej);
+		free(out);
+
+		for (pixel = 0, output = 0; pixel < N; pixel++) {
+			if (!rejected[pixel]) {
+				// copy only if there was a rejection
+				if (pixel != output)
+					stack[output] = stack[pixel];
+				output++;
+			}
+		}
+		N = output;
+	break;
 	default:
 	case NO_REJEC:
 		;		// Nothing to do, no rejection

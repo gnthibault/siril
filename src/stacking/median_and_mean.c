@@ -20,6 +20,8 @@
 
 #include <string.h>
 #include <math.h>
+#include <gsl/gsl_statistics_ushort.h>
+#include <gsl/gsl_cdf.h>
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -490,6 +492,66 @@ static int line_clipping(WORD pixel, float sig[], float sigma, int i, float a, f
 	return 0;
 }
 
+static void remove_element(WORD *array, int index, int array_length) {
+	for (int i = index; i < array_length - 1; i++)
+		array[i] = array[i + 1];
+}
+
+static float siril_stats_ushort_sd(const WORD data[], const int N, float *m) {
+	double accumulator = 0.0; // accumulating in double precision is important for accuracy
+	for (int i = 0; i < N; ++i) {
+		accumulator += data[i];
+	}
+	float mean = (float)(accumulator / N);
+	accumulator = 0.0;
+	for (int i = 0; i < N; ++i)
+		accumulator += (data[i] - mean) * (data[i] - mean);
+
+	if (m) *m = mean;
+
+	return sqrtf((float)(accumulator / (N - 1)));
+}
+
+static void grubbs_stat(WORD *stack, int N, float *GCal, int *max_ind) {
+	float avg_y;
+	float sd = siril_stats_ushort_sd(stack, N, &avg_y);
+
+	/* data are sorted */
+	float max_of_deviations = avg_y - stack[0];
+	float md2 = stack[N - 1] - avg_y;
+
+	if (md2 > max_of_deviations) {
+		max_of_deviations = md2;
+		*max_ind = N - 1;
+	} else {
+		*max_ind = 0;
+	}
+	*GCal = max_of_deviations / sd;
+}
+
+int check_G_values(float Gs, float Gc) {
+	return (Gs > Gc);
+}
+
+void confirm_outliers(struct outliers *out, int N, double median, int *rejected,
+		guint64 rej[2]) {
+	int i = N - 1;
+
+	while (!out[i].out) {
+		i--;
+	}
+	for (int j = i; j >= 0; j--) {
+		out[j].out = 1;
+		if (out[j].x >= median) {
+			rejected[out[j].i] = 1;
+			rej[1]++;
+		} else {
+			rejected[out[j].i] = -1;
+			rej[0]++;
+		}
+	}
+}
+
 static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struct stacking_args *args, guint64 crej[2]) {
 	int N = nb_frames;	// N is the number of pixels kept from the current stack
 	float median = 0.f;
@@ -648,6 +710,48 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 				N = output;
 			} while (changed && N > 3);
 			break;
+		case GESDT:
+			/* Normaly The algorithm does not need to play with sorted data.
+			 * But our implementation (after the rejection) needs to be sorted.
+			 * So we do it, and by the way we get the median value. Indeed, by design
+			 * this algorithm does not have low and high representation of rejection.
+			 * We define:
+			 * - cold pixel: rejected < median
+			 * - hot pixel: rejected > median
+			 */
+
+			quicksort_s(stack, N);
+			median = gsl_stats_ushort_median_from_sorted_data(stack, 1, N);
+
+			int max_outliers = (int) floor(N * args->sig[0]);
+			struct outliers *out = malloc(max_outliers * sizeof(struct outliers));
+
+			memcpy(w_stack, stack, N * sizeof(WORD));
+			memset(rejected, 0, N * sizeof(int));
+
+			for (int iter = 0, size = N; iter < max_outliers; iter++, size--) {
+				float Gstat;
+				int max_index = 0;
+
+				grubbs_stat(w_stack, size, &Gstat, &max_index);
+				out[iter].out = check_G_values(Gstat, args->critical_value[iter]);
+				out[iter].x = w_stack[max_index];
+				out[iter].i = max_index;
+				remove_element(w_stack, max_index, size);
+			}
+			confirm_outliers(out, max_outliers, median, rejected, crej);
+			free(out);
+
+			for (pixel = 0, output = 0; pixel < N; pixel++) {
+				if (!rejected[pixel]) {
+					// copy only if there was a rejection
+					if (pixel != output)
+						stack[output] = stack[pixel];
+					output++;
+				}
+			}
+			N = output;
+		break;
 		default:
 		case NO_REJEC:
 			;		// Nothing to do, no rejection
@@ -766,6 +870,9 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	if (nb_frames < 2) {
 		siril_log_message(_("Select at least two frames for stacking. Aborting.\n"));
 		return ST_GENERIC_ERROR;
+	} else if (nb_frames < 3 && args->type_of_rejection == GESDT) {
+		siril_log_message(_("The Generalized Extreme Studentized Deviate Test needs at least three frames for stacking. Aborting.\n"));
+		return ST_GENERIC_ERROR;
 	}
 	g_assert(nb_frames <= args->seq->number);
 
@@ -872,6 +979,9 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		bufferSize += nb_frames * sizeof(int); // for rejected
 		if (args->type_of_rejection == WINSORIZED) {
 			bufferSize += ielem_size * nb_frames; // for w_frame
+		} else if (args->type_of_rejection == GESDT) {
+			bufferSize += ielem_size * nb_frames; // for w_frame
+			bufferSize +=  sizeof(float) * (int) floor(nb_frames * args->sig[0]); //and GCritical
 		} else if (args->type_of_rejection == LINEARFIT) {
 			bufferSize += 2 * sizeof(float) * nb_frames; // for xc and yc
 		}
@@ -900,6 +1010,16 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 			data_pool[i].rejected = (int*)((char*)data_pool[i].tmp + offset);
 			if (args->type_of_rejection == WINSORIZED) {
 				data_pool[i].w_stack = (void*)((char*)data_pool[i].rejected + sizeof(int) * nb_frames);
+			} else if (args->type_of_rejection == GESDT) {
+				data_pool[i].w_stack = (void*)((char*)data_pool[i].rejected + sizeof(int) * nb_frames);
+				int max_outliers = (int) floor(nb_frames * args->sig[0]);
+				args->critical_value = malloc(max_outliers * sizeof(float));
+				for (int j = 0, size = nb_frames; j < max_outliers; j++, size--) {
+					float t_dist = gsl_cdf_tdist_Pinv(1 - args->sig[1] / (2 * size), size - 2);
+					float numerator = (size - 1) * t_dist;
+					float denominator = sqrtf(size) * sqrtf(size - 2 + (t_dist * t_dist));
+					args->critical_value[j] = numerator / denominator;
+				}
 			} else if (args->type_of_rejection == LINEARFIT) {
 				data_pool[i].xf = (float (*)) ((char*) data_pool[i].rejected + sizeof(int) * nb_frames);
 				data_pool[i].yf = data_pool[i].xf + nb_frames;

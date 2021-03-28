@@ -47,7 +47,7 @@
 
 static struct stacking_args stackparam = {	// parameters passed to stacking
 	NULL, NULL, -1, NULL, -1.0, 0, NULL, NULL, NULL, FALSE, { 0, 0 }, -1,
-	{ 0, 0 }, NO_REJEC, NO_NORM, { NULL, NULL, NULL}, FALSE, -1
+	{ 0, 0 }, NULL, NO_REJEC, NO_NORM, { NULL, NULL, NULL}, FALSE, -1
 };
 
 #define MAX_FILTERS 5
@@ -91,6 +91,10 @@ void initialize_stacking_methods() {
 	case WINSORIZED:
 		gtk_spin_button_set_value(low, com.pref.stack.sigma_low);
 		gtk_spin_button_set_value(high, com.pref.stack.sigma_high);
+		break;
+	case GESDT:
+		gtk_spin_button_set_value(low, 0.3);
+		gtk_spin_button_set_value(high, 0.05);
 		break;
 	default:
 		return;
@@ -297,27 +301,32 @@ static void _show_summary(struct stacking_args *args) {
 		switch (args->type_of_rejection) {
 		default:
 		case NO_REJEC:
-			rej_str = _("none");
+			rej_str = _("None");
 			break;
 		case PERCENTILE:
-			rej_str = _("percentile clipping");
+			rej_str = _("Percentile Clipping");
 			break;
 		case SIGMA:
-			rej_str = _("sigma clipping");
+			rej_str = _("Sigma Clipping");
 			break;
 		case SIGMEDIAN:
-			rej_str = _("median sigma clipping");
+			rej_str = _("Median sigma Clipping");
 			break;
 		case WINSORIZED:
-			rej_str = _("Winsorized sigma clipping");
+			rej_str = _("Winsorized Sigma Clipping");
 			break;
 		case LINEARFIT:
-			rej_str = _("linear fit clipping");
+			rej_str = _("Linear Fit Clipping");
+			break;
+		case GESDT:
+			rej_str = _("Generalized Extreme Studentized Deviate Test");
 			break;
 		}
 		siril_log_message(_("Pixel rejection ........... %s\n"), rej_str);
-		siril_log_message(_("Rejection parameters ...... low=%.3f high=%.3f\n"),
+		if (args->type_of_rejection != GESDT) {
+			siril_log_message(_("Rejection parameters ...... low=%.3f high=%.3f\n"),
 				args->sig[0], args->sig[1]);
+		}
 	}
 }
 
@@ -481,6 +490,9 @@ void on_stack_siglow_button_value_changed(GtkSpinButton *button, gpointer user_d
 	case WINSORIZED:
 		com.pref.stack.sigma_low = gtk_spin_button_get_value(button);
 		break;
+	case GESDT:
+		com.pref.stack.esdt_outliers = gtk_spin_button_get_value(button);
+		break;
 	default:
 		return;
 	}
@@ -502,13 +514,16 @@ void on_stack_sighigh_button_value_changed(GtkSpinButton *button, gpointer user_
 	case WINSORIZED:
 		com.pref.stack.sigma_high = gtk_spin_button_get_value(button);
 		break;
+	case GESDT:
+		com.pref.stack.esdt_significance = gtk_spin_button_get_value(button);
+		break;
 	default:
 		return;
 	}
 	writeinitfile();
 }
 
-void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
+void on_comborejection_changed(GtkComboBox *box, gpointer user_data) {
 	rejection type_of_rejection = gtk_combo_box_get_active(box);
 	static GtkWidget *labellow = NULL, *labelhigh = NULL;
 	static GtkWidget *siglow = NULL, *sighigh = NULL;
@@ -535,6 +550,8 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 			gtk_widget_set_visible(sighigh, TRUE);
 			gtk_widget_set_visible(labellow, TRUE);
 			gtk_widget_set_visible(labelhigh, TRUE);
+			gtk_widget_set_tooltip_text(siglow, _("Low clipping factor for the percentile clipping rejection algorithm."));
+			gtk_widget_set_tooltip_text(sighigh, _("High clipping factor for the percentile clipping rejection algorithm."));
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(siglow), com.pref.stack.percentile_low);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(sighigh), com.pref.stack.percentile_high);
 			gtk_spin_button_set_range(GTK_SPIN_BUTTON(siglow), 0.0, 1.0);
@@ -547,6 +564,8 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 			gtk_widget_set_visible(sighigh, TRUE);
 			gtk_widget_set_visible(labellow, TRUE);
 			gtk_widget_set_visible(labelhigh, TRUE);
+			gtk_widget_set_tooltip_text(siglow, _("Tolerance for low pixel values of the linear fit clipping algorithm, in sigma units."));
+			gtk_widget_set_tooltip_text(sighigh, _("Tolerance for high pixel values of the linear fit clipping algorithm, in sigma units."));
 			gtk_spin_button_set_range(GTK_SPIN_BUTTON(siglow), 0.0, 10.0);
 			gtk_spin_button_set_range(GTK_SPIN_BUTTON(sighigh), 0.0, 10.0);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(siglow), com.pref.stack.linear_low);
@@ -556,17 +575,35 @@ void on_comborejection_changed (GtkComboBox *box, gpointer user_data) {
 			break;
 		default:
 		case SIGMA:
+		case SIGMEDIAN:
 		case WINSORIZED:
 			gtk_widget_set_visible(siglow, TRUE);
 			gtk_widget_set_visible(sighigh, TRUE);
 			gtk_widget_set_visible(labellow, TRUE);
 			gtk_widget_set_visible(labelhigh, TRUE);
+			gtk_widget_set_tooltip_text(siglow, _("Low clipping factor for the sigma clipping rejection algorithm."));
+			gtk_widget_set_tooltip_text(sighigh, _("High clipping factor for the sigma clipping rejection algorithm."));
 			gtk_spin_button_set_range(GTK_SPIN_BUTTON(siglow), 0.0, 10.0);
 			gtk_spin_button_set_range(GTK_SPIN_BUTTON(sighigh), 0.0, 10.0);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(siglow), com.pref.stack.sigma_low);
 			gtk_spin_button_set_value(GTK_SPIN_BUTTON(sighigh), com.pref.stack.sigma_high);
 			gtk_label_set_text(GTK_LABEL(labellow), _("Sigma low: "));
 			gtk_label_set_text(GTK_LABEL(labelhigh), _("Sigma high: "));
+			break;
+		case GESDT:
+			gtk_widget_set_visible(siglow, TRUE);
+			gtk_widget_set_visible(sighigh, TRUE);
+			gtk_widget_set_visible(labellow, TRUE);
+			gtk_widget_set_visible(labelhigh, TRUE);
+			gtk_widget_set_tooltip_text(siglow, _("Expected fraction of maximum outliers for the Generalized Extreme Studentized Deviate Test algorithm."));
+			gtk_widget_set_tooltip_text(sighigh, _("Probability of making a false positive for the Generalized Extreme Studentized Deviate Test algorithm. "
+					"Increasing this value will reject more pixels."));
+			gtk_spin_button_set_range(GTK_SPIN_BUTTON(siglow), 0.0, 1.0);
+			gtk_spin_button_set_range(GTK_SPIN_BUTTON(sighigh), 0.0, 1.0);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(siglow), 0.3);
+			gtk_spin_button_set_value(GTK_SPIN_BUTTON(sighigh), 0.05);
+			gtk_label_set_text(GTK_LABEL(labellow), _("ESD Outliers: "));
+			gtk_label_set_text(GTK_LABEL(labelhigh), _("ESD Significance: "));
 	}
 
 	g_signal_handlers_unblock_by_func(GTK_SPIN_BUTTON(siglow), on_stack_siglow_button_value_changed, NULL);
@@ -847,5 +884,6 @@ static void stacking_args_deep_copy(struct stacking_args *from, struct stacking_
 static void stacking_args_deep_free(struct stacking_args *args) {
 	free(args->image_indices);
 	free(args->description);
+	free(args->critical_value);
 	free(args);
 }
