@@ -75,8 +75,8 @@ struct stacking_args {
 	gboolean output_overwrite;	// used in the idle function only
 	struct timeval t_start;
 	int retval;
-	float sig[2];		/* low and high sigma rejection or ESD parameters */
-	float *critical_value; // index of critical_values for GESTD
+	float sig[2];		/* low and high sigma rejection or GESTD parameters */
+	float *critical_value; /* index of critical_values for GESTD */
 	rejection type_of_rejection;	/* type of rejection */
 	normalization normalize;	/* type of normalization */
 	norm_coeff coeff;		/* normalization data */

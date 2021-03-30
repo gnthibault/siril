@@ -981,7 +981,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 			bufferSize += ielem_size * nb_frames; // for w_frame
 		} else if (args->type_of_rejection == GESDT) {
 			bufferSize += ielem_size * nb_frames; // for w_frame
-			bufferSize +=  sizeof(float) * (int) floor(nb_frames * args->sig[0]); //and GCritical
+			bufferSize += sizeof(float) * (int) floor(nb_frames * args->sig[0]); //and GCritical
 		} else if (args->type_of_rejection == LINEARFIT) {
 			bufferSize += 2 * sizeof(float) * nb_frames; // for xc and yc
 		}

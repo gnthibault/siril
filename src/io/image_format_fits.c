@@ -1840,10 +1840,6 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 		to->header = NULL;
 		to->history = NULL;
 		to->date = NULL;
-		to->date_obs = NULL;
-#ifdef HAVE_WCSLIB
-		to->wcslib = NULL;
-#endif
 	}
 
 	if ((oper & CP_ALLOC)) {
