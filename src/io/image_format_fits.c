@@ -1840,6 +1840,10 @@ int copyfits(fits *from, fits *to, unsigned char oper, int layer) {
 		to->header = NULL;
 		to->history = NULL;
 		to->date = NULL;
+		to->date_obs = NULL;
+#ifdef HAVE_WCSLIB
+		to->wcslib = NULL;
+#endif
 	}
 
 	if ((oper & CP_ALLOC)) {
@@ -1933,6 +1937,10 @@ int extract_fits(fits *from, fits *to, int channel, gboolean to_float) {
 	to->header = NULL;
 	to->history = NULL;
 	to->date = NULL;
+	to->date_obs = NULL;
+#ifdef HAVE_WCSLIB
+	to->wcslib = NULL;
+#endif
 
 	if (from->type == DATA_USHORT)
 		if (to_float) {
