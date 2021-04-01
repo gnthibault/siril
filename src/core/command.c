@@ -2333,6 +2333,7 @@ int process_split(int nb){
 		free(args);
 		return 1;
 	}
+	copy_fits_metadata(&gfit, args->fit);
 	start_in_new_thread(extract_channels, args);
 	return 0;
 }
