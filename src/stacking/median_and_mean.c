@@ -1164,7 +1164,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 								((float*)data->stack)[frame] = (float)(tmp - args->coeff.offset[frame]);
 							} else {
 								tmp = (double)pixel * args->coeff.scale[frame];
-								((WORD *)data->stack)[frame] = round_to_WORD(tmp - args->coeff.offset[frame]);
+								((WORD *)data->stack)[frame] = round_to_WORD(tmp - args->coeff.offset[frame] * USHRT_MAX_SINGLE);
 							}
 							break;
 						case MULTIPLICATIVE:
