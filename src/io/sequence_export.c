@@ -401,7 +401,7 @@ static gpointer export_sequence(gpointer ptr) {
 							if (args->normalize) {
 								double tmp = (double) pixel;
 								tmp *= coeff.scale[i];
-								tmp -= coeff.offset[i];
+								tmp -= (coeff.offset[i] * USHRT_MAX_DOUBLE);
 								pixel = round_to_WORD(tmp);
 							}
 							destfit->pdata[layer][nx + ny * fit.rx] = pixel;
