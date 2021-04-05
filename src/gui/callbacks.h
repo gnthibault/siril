@@ -10,6 +10,7 @@ void load_prefered_theme();
 void set_cutoff_sliders_max_values();		// was set_upper_minmax
 void set_cutoff_sliders_values();		// was set_ranges
 void set_sliders_value_to_gfit();
+void set_accel_map(const gchar * const *accelmap);
 void initialize_display_mode();
 void set_display_mode();
 void adjust_exclude(int n, gboolean changed);

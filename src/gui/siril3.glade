@@ -15574,6 +15574,8 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                                     <property name="placeholder-text" translatable="yes">Type "help" for the list of supported commands</property>
                                     <property name="input-hints">GTK_INPUT_HINT_WORD_COMPLETION | GTK_INPUT_HINT_NONE</property>
                                     <signal name="activate" handler="on_command_activate" swapped="no"/>
+                                    <signal name="focus-in-event" handler="on_command_focus_in_event" swapped="no"/>
+                                    <signal name="focus-out-event" handler="on_command_focus_out_event" swapped="no"/>
                                     <signal name="key-press-event" handler="on_command_key_press_event" swapped="no"/>
                                   </object>
                                   <packing>

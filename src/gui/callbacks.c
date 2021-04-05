@@ -945,8 +945,6 @@ void update_spinCPU(int max) {
  ****************************************************************************/
 
 static void load_accels() {
-	GApplication *application = g_application_get_default();
-
 	static const gchar * const accelmap[] = {
 		"app.quit",              "<Primary>q", NULL,
 		"app.preferences",       "<Primary>p", NULL,
@@ -980,9 +978,13 @@ static void load_accels() {
 		NULL /* Terminating NULL */
 	};
 
-	const gchar *const*it;
+	set_accel_map(accelmap);
+}
 
-	for (it = accelmap; it[0]; it += g_strv_length((gchar**) it) + 1) {
+void set_accel_map(const gchar * const *accelmap) {
+	GApplication *application = g_application_get_default();
+
+	for (const gchar *const *it = accelmap; it[0]; it += g_strv_length((gchar**) it) + 1) {
 		gtk_application_set_accels_for_action(GTK_APPLICATION(application), it[0], &it[1]);
 	}
 }

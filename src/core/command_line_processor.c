@@ -614,3 +614,29 @@ gboolean on_command_key_press_event(GtkWidget *widget, GdkEventKey *event,
 	}
 	return (handled == 1);
 }
+
+gboolean on_command_focus_in_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+
+	static const gchar * const accelmap[] = {
+		"win.astrometry", NULL, NULL,
+
+		NULL /* Terminating NULL */
+	};
+	set_accel_map(accelmap);
+
+	return GDK_EVENT_PROPAGATE;
+}
+
+gboolean on_command_focus_out_event(GtkWidget *widget, GdkEvent *event,
+		gpointer user_data) {
+
+	static const gchar * const accelmap[] = {
+		"win.astrometry", "<Primary>a", NULL,
+
+		NULL /* Terminating NULL */
+	};
+	set_accel_map(accelmap);
+
+	return GDK_EVENT_PROPAGATE;
+}
