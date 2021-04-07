@@ -390,7 +390,7 @@ static void stack_read_block_data(struct stacking_args *args, int use_regdata,
 				int tid = omp_get_thread_num();
 				if (tid == 0)
 #endif
-					siril_log_message(_("Error reading one of the image areas\n"));
+					siril_log_color_message(_("Error reading one of the image areas\n"), "red");
 				break;
 			}
 		}
