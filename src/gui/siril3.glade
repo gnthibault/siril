@@ -14967,7 +14967,7 @@ However, multiplicative normalisation must be used with flat-field frames.&lt;/b
                                                   <object class="GtkComboBoxText" id="comborejection">
                                                     <property name="visible">True</property>
                                                     <property name="can-focus">False</property>
-                                                    <property name="tooltip-markup" translatable="yes">Five rejection algorithms are available:
+                                                    <property name="tooltip-markup" translatable="yes">Six rejection algorithms are available:
 
 &lt;b&gt;Percentile Clipping&lt;/b&gt; is a one-step rejection algorithm ideal for small sets of data (up to 6 images).
 
@@ -15149,12 +15149,13 @@ Pixel values are added in an image normalized to 32-bit values.
 It increases signal/noise ratio (SNR) as square root of number of images.
 
 &lt;b&gt;Average with rejection&lt;/b&gt;: This method is used to reject deviant pixels iteratively.
-Five methods have been implemented:
+Six methods have been implemented:
 - Percentile Clipping
 - Sigma Clipping
 - Median Sigma Clipping
 - Winsorized Sigma Clipping
 - Linear Fit Clipping
+- Generalized Extreme Studentized Deviate Test
 After pixel rejection, the mean of the stack is computed.
 
 &lt;b&gt;Median&lt;/b&gt;: This method was mostly used for dark/flat/offset stacking although now we recommend the use of average with rejection stacking.
