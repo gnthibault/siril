@@ -36,6 +36,7 @@
 #include "gui/callbacks.h"
 #include "gui/histogram.h"
 #include "gui/open_dialog.h"
+#include "gui/message_dialog.h"
 #include "gui/save_dialog.h"
 #include "gui/sequence_list.h"
 #include "gui/progress_and_log.h"
@@ -280,8 +281,18 @@ void seq_list_activate(GSimpleAction *action, GVariant *parameter, gpointer user
 	if (gtk_widget_get_visible(lookup_widget("seqlist_dialog"))) {
 		siril_close_dialog("seqlist_dialog");
 	} else {
-		update_seqlist();
-		siril_open_dialog("seqlist_dialog");
+		gboolean confirm = TRUE;
+		if (com.seq.current == RESULT_IMAGE) {
+			confirm = siril_confirm_dialog(_("Save your changes before loading a frame of the sequence."),
+					_("The image currently displayed is the result of the previous stack. "
+							"If you load an image from the sequence, you might lose the entire process you performed on the image, "
+							"but not the image itself. You need to save your data before doing this."),
+					_("Load another image"));
+		}
+		if (confirm) {
+			update_seqlist();
+			siril_open_dialog("seqlist_dialog");
+		}
 	}
 }
 
