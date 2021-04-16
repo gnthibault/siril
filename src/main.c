@@ -148,6 +148,7 @@ static void global_initialization() {
 	com.sliders = MINMAX;
 	com.zoom_value = ZOOM_DEFAULT;
 	com.ratio = 0.0;
+	com.pref.font_scale = 100.0;
 }
 
 static void init_num_procs() {
