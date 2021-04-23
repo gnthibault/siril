@@ -180,7 +180,7 @@ static void start_stacking() {
 	gchar *error = NULL;
 	static GtkComboBox *method_combo = NULL, *rejec_combo = NULL, *norm_combo = NULL;
 	static GtkEntry *output_file = NULL;
-	static GtkToggleButton *overwrite = NULL, *force_norm = NULL;
+	static GtkToggleButton *overwrite = NULL, *force_norm = NULL, *weight_button = NULL;
 	static GtkSpinButton *sigSpin[2] = {NULL, NULL};
 	static GtkWidget *norm_to_max = NULL;
 
@@ -194,6 +194,7 @@ static void start_stacking() {
 		norm_combo = GTK_COMBO_BOX(lookup_widget("combonormalize"));
 		force_norm = GTK_TOGGLE_BUTTON(lookup_widget("checkforcenorm"));
 		norm_to_max = lookup_widget("check_normalise_to_max");
+		weight_button = GTK_TOGGLE_BUTTON(lookup_widget("stack_weight_button"));
 	}
 
 	if (get_thread_run()) {
@@ -206,12 +207,13 @@ static void start_stacking() {
 	stackparam.type_of_rejection = gtk_combo_box_get_active(rejec_combo);
 	stackparam.normalize = gtk_combo_box_get_active(norm_combo);
 	stackparam.force_norm = gtk_toggle_button_get_active(force_norm);
-	stackparam.output_norm= gtk_toggle_button_get_active(
+	stackparam.output_norm = gtk_toggle_button_get_active(
 			GTK_TOGGLE_BUTTON(norm_to_max)) && gtk_widget_is_visible(norm_to_max);
 	stackparam.coeff.offset = NULL;
 	stackparam.coeff.mul = NULL;
 	stackparam.coeff.scale = NULL;
 	stackparam.method =	stacking_methods[gtk_combo_box_get_active(method_combo)];
+	stackparam.apply_weight = gtk_toggle_button_get_active(weight_button) && (gtk_combo_box_get_active(norm_combo) != NO_NORM);
 
 	stackparam.use_32bit_output = evaluate_stacking_should_output_32bits(stackparam.method,
 			&com.seq, stackparam.nb_images_to_stack, &error);
@@ -471,8 +473,9 @@ void on_comboboxstack_methods_changed (GtkComboBox *box, gpointer user_data) {
 void on_combonormalize_changed (GtkComboBox *box, gpointer user_data) {
 	GtkWidget *widgetnormalize = lookup_widget("combonormalize");
 	GtkWidget *force_norm = lookup_widget("checkforcenorm");
-	gtk_widget_set_sensitive(force_norm,
-			gtk_combo_box_get_active(GTK_COMBO_BOX(widgetnormalize)) != 0);
+	GtkWidget *use_weight = lookup_widget("stack_weight_button");
+	gtk_widget_set_sensitive(force_norm, gtk_combo_box_get_active(GTK_COMBO_BOX(widgetnormalize)) != 0);
+	gtk_widget_set_sensitive(use_weight, gtk_combo_box_get_active(GTK_COMBO_BOX(widgetnormalize)) != 0);
 }
 
 void on_stack_siglow_button_value_changed(GtkSpinButton *button, gpointer user_data) {
