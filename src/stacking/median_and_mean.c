@@ -561,6 +561,9 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 	WORD *stack = (WORD *)data->stack;
 	WORD *w_stack = (WORD *)data->w_stack;
 	int *rejected = (int *)data->rejected;
+	WORD *o_stack = (WORD *)data->o_stack;	
+
+	memcpy(o_stack, stack, N * sizeof(WORD)); /* making a copy of unsorted stack to apply weights (before the median sorts in place)*/
 
 	/* prepare median and check that the stack is not mostly zero */
 	switch (args->type_of_rejection) {
@@ -762,27 +765,67 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 static double mean_and_reject(struct stacking_args *args, struct _data_block *data,
 		int stack_size, data_type itype, guint64 crej[2]) {
 	double mean;
+
 	if (itype == DATA_USHORT) {
 		int kept_pixels = apply_rejection_ushort(data, stack_size, args, crej);
 		if (kept_pixels == 0)
 			mean = quickmedian(data->stack, stack_size);
 		else {
-			gint64 sum = 0L;
-			for (int frame = 0; frame < kept_pixels; ++frame) {
-				sum += ((WORD *)data->stack)[frame];
+			if (args->apply_weight) {
+				WORD pmin = 65535, pmax = 0; /* min and max computed here instead of rejection step to avoid dealing with too many particular cases */
+				for (int frame = 0; frame < stack_size; ++frame) {
+					if (pmin > ((WORD*)data->stack)[frame]) pmin = ((WORD*)data->stack)[frame];
+					if (pmax < ((WORD*)data->stack)[frame]) pmax = ((WORD*)data->stack)[frame];
+				}
+				double sum = 0.0;
+				double norm = 0.0;
+				WORD val;
+
+				for (int frame = 0; frame < stack_size; ++frame) {
+					val = ((WORD*)data->o_stack)[frame];
+					if ((val >= pmin) && (val <= pmax)){
+						sum += (float)val * args->weights[frame];
+						norm += args->weights[frame];
+					}
+				}
+				mean = sum / norm;
+			} else {
+				gint64 sum = 0L;
+				for (int frame = 0; frame < kept_pixels; ++frame) {
+					sum += ((WORD *)data->stack)[frame];
+				}
+				mean = sum / (double)kept_pixels;
 			}
-			mean = sum / (double)kept_pixels;
 		}
 	} else {
 		int kept_pixels = apply_rejection_float(data, stack_size, args, crej);
 		if (kept_pixels == 0)
 			mean = quickmedian_float(data->stack, stack_size);
 		else {
-			double sum = 0.0;
-			for (int frame = 0; frame < kept_pixels; ++frame) {
-				sum += ((float*)data->stack)[frame];
+			if (args->apply_weight) {
+				float pmin = 10000.0, pmax = -10000.0; /* min and max computed here instead of rejection step to avoid dealing with too many particular cases */
+				for (int frame = 0; frame < stack_size; ++frame) {
+					if (pmin > ((float*)data->stack)[frame]) pmin = ((float*)data->stack)[frame];
+					if (pmax < ((float*)data->stack)[frame]) pmax = ((float*)data->stack)[frame];
+				}
+				double sum = 0.0;
+				double norm = 0.0;
+				float val;
+				for (int frame = 0; frame < stack_size; ++frame) {
+					val = ((float*)data->o_stack)[frame];
+					if ((val >= pmin) && (val <= pmax)){
+						sum += val * args->weights[frame];
+						norm += args->weights[frame];
+					}
+				}
+			mean = sum / norm;
+			} else {
+				double sum = 0.0;
+				for (int frame = 0; frame < kept_pixels; ++frame) {
+					sum += ((float*)data->stack)[frame];
+				}
+				mean = sum / (double)kept_pixels;
 			}
-			mean = sum / (double)kept_pixels;
 		}
 	}
 	return mean;
@@ -794,6 +837,27 @@ int stack_mean_with_rejection(struct stacking_args *args) {
 
 int stack_median(struct stacking_args *args) {
 	return stack_mean_or_median(args, FALSE);
+}
+
+static int compute_weights(struct stacking_args *args) {
+	int nb_frames = args->nb_images_to_stack;
+	int reglayer;
+	double norm = 0.0;
+	args->weights = malloc(nb_frames * sizeof(double));
+
+	reglayer = (args->reglayer == -1) ? 0 : args->reglayer;
+	for (int i = 0; i < args->nb_images_to_stack; i++) {
+		args->weights[i] = 1.f / (args->coeff.scale[i] * args->coeff.scale[i] * args->seq->stats[reglayer][i]->bgnoise * args->seq->stats[reglayer][i]->bgnoise);
+		norm += args->weights[i];
+	}
+
+	norm /= (double) nb_frames;
+
+	for (int i = 0; i < args->nb_images_to_stack; i++) {
+		args->weights[i] /= norm;
+	}
+
+	return ST_OK;
 }
 
 static void compute_date_time_keywords(GList *list_date, fits *fit) {
@@ -863,6 +927,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	guint64 irej[3][2] = {{0,0}, {0,0}, {0,0}};
 	regdata *layerparam = NULL;
 	gboolean use_regdata = is_mean;
+
 
 	int nb_frames = args->nb_images_to_stack; // number of frames actually used
 	naxes[0] = naxes[1] = 0; naxes[2] = 1;
@@ -977,6 +1042,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	size_t bufferSize = ielem_size * nb_frames * (npixels_in_block + 1ul) + 4ul; // buffer for tmp and stack, added 4 byte for alignment
 	if (is_mean) {
 		bufferSize += nb_frames * sizeof(int); // for rejected
+		bufferSize += ielem_size * nb_frames; // for o_stack
 		if (args->type_of_rejection == WINSORIZED) {
 			bufferSize += ielem_size * nb_frames; // for w_frame
 		} else if (args->type_of_rejection == GESDT) {
@@ -1008,10 +1074,12 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 				offset += sizeof(int) - temp;
 			}
 			data_pool[i].rejected = (int*)((char*)data_pool[i].tmp + offset);
+			data_pool[i].o_stack = (void*)((char*)data_pool[i].rejected + sizeof(int) * nb_frames);
+
 			if (args->type_of_rejection == WINSORIZED) {
-				data_pool[i].w_stack = (void*)((char*)data_pool[i].rejected + sizeof(int) * nb_frames);
+				data_pool[i].w_stack = (void*)((char*)data_pool[i].o_stack + ielem_size * nb_frames);
 			} else if (args->type_of_rejection == GESDT) {
-				data_pool[i].w_stack = (void*)((char*)data_pool[i].rejected + sizeof(int) * nb_frames);
+				data_pool[i].w_stack = (void*)((char*)data_pool[i].o_stack + ielem_size * nb_frames);
 				int max_outliers = (int) floor(nb_frames * args->sig[0]);
 				args->critical_value = malloc(max_outliers * sizeof(float));
 				for (int j = 0, size = nb_frames; j < max_outliers; j++, size--) {
@@ -1021,7 +1089,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 					args->critical_value[j] = numerator / denominator;
 				}
 			} else if (args->type_of_rejection == LINEARFIT) {
-				data_pool[i].xf = (float (*)) ((char*) data_pool[i].rejected + sizeof(int) * nb_frames);
+				data_pool[i].xf = (float (*)) ((char*)data_pool[i].o_stack + ielem_size * nb_frames);
 				data_pool[i].yf = data_pool[i].xf + nb_frames;
 				// precalculate some stuff
 				data_pool[i].m_x = (nb_frames - 1) * 0.5f;
@@ -1045,6 +1113,15 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 
 	if (itype == DATA_USHORT)
 		args->sd_calculator = nb_frames < 65536 ? siril_stats_ushort_sd_32 : siril_stats_ushort_sd_64;
+
+	if (args->apply_weight){
+		siril_log_message(_("Computing weights...\n"));
+		retval = compute_weights(args);
+		if(retval){
+			retval = ST_GENERIC_ERROR;
+			goto free_and_close;
+		} 
+	}
 
 	siril_log_message(_("Starting stacking...\n"));
 	if (is_mean)
@@ -1279,6 +1356,7 @@ free_and_close:
 	if (args->coeff.offset) free(args->coeff.offset);
 	if (args->coeff.mul) free(args->coeff.mul);
 	if (args->coeff.scale) free(args->coeff.scale);
+	if (args->weights) free(args->weights);
 	if (retval) {
 		/* if retval is set, gfit has not been modified */
 		if (fit.data) free(fit.data);

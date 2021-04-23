@@ -107,6 +107,7 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 	float *stack = (float*) data->stack;
 	float *w_stack = (float*) data->w_stack;
 	int *rejected = (int*) data->rejected;
+	float *o_stack = (float*) data->o_stack;
 	const float siglow = args->sig[0];
 	const float sighigh = args->sig[1];
 
@@ -123,6 +124,8 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 	default:
 		break;
 	}
+
+	memcpy(o_stack, stack, N * sizeof(float)); /* making a copy of unsorted stack to apply weights*/
 
 	switch (args->type_of_rejection) {
 	case PERCENTILE:

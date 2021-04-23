@@ -3217,6 +3217,14 @@ static int parse_stack_command_line(struct stacking_configuration *arg, int firs
 			arg->force_no_norm = TRUE;
 		else if (!strcmp(current, "-output_norm")) {
 			arg->output_norm = TRUE;
+		} else if (!strcmp(current, "-weighted")) {
+			if (arg->method != stack_mean_with_rejection) {
+				siril_log_message(_("Weighting is allowed only with average stacking, ignoring.\n"));
+			} else if (arg->norm == NO_NORM) {
+				siril_log_message(_("Weighting is allowed only if normalization has been activated, ignoring.\n"));
+			} else{
+				arg->apply_weight = TRUE;
+			}
 		} else if (g_str_has_prefix(current, "-norm=")) {
 			if (!norm_allowed) {
 				siril_log_message(_("Normalization options are not allowed in this context, ignoring.\n"));
@@ -3355,6 +3363,7 @@ static int stack_one_seq(struct stacking_configuration *arg) {
 		args.force_norm = FALSE;
 		args.output_norm = arg->output_norm;
 		args.reglayer = args.seq->nb_layers == 1 ? 0 : 1;
+		args.apply_weight = arg->apply_weight;
 
 		// manage filters
 		if (convert_stack_data_to_filter(arg, &args) ||
@@ -3454,10 +3463,11 @@ int process_stackall(int nb) {
 	arg->f_fwhm = -1.f; arg->f_fwhm_p = -1.f; arg->f_round = -1.f;
 	arg->f_round_p = -1.f; arg->f_quality = -1.f; arg->f_quality_p = -1.f;
 	arg->filter_included = FALSE; arg->norm = NO_NORM; arg->force_no_norm = FALSE;
+	arg->apply_weight = FALSE;
 
 	// stackall { sum | min | max } [-filter-fwhm=value[%]] [-filter-wfwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]
 	// stackall { med | median } [-nonorm, norm=] [-filter-incl[uded]]
-	// stackall { rej | mean } sigma_low sigma_high [-nonorm, norm=] [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]]
+	// stackall { rej | mean } sigma_low sigma_high [-nonorm, norm=] [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]] [-weighted]
 	if (!word[1]) {
 		arg->method = stack_summing_generic;
 	} else {
@@ -3500,7 +3510,7 @@ int process_stackall(int nb) {
 			allow_norm = TRUE;
 		}
 		else {
-			siril_log_color_message(_("Stacking method type '%s' is invalid\n"), word[2], "red");
+			siril_log_color_message(_("Stacking method type '%s' is invalid\n"), "red", word[2]);
 			goto failure;
 		}
 		if (parse_stack_command_line(arg, start_arg_opt, allow_norm, FALSE))
@@ -3556,6 +3566,7 @@ int process_stackone(int nb) {
 	arg->f_fwhm = -1.f; arg->f_fwhm_p = -1.f; arg->f_round = -1.f;
 	arg->f_round_p = -1.f; arg->f_quality = -1.f; arg->f_quality_p = -1.f;
 	arg->filter_included = FALSE; arg->norm = NO_NORM; arg->force_no_norm = FALSE;
+	arg->apply_weight = FALSE;
 
 	sequence *seq = load_sequence(word[1], &arg->seqfile);
 	if (!seq)
@@ -3563,7 +3574,7 @@ int process_stackone(int nb) {
 
 	// stack seqfilename { sum | min | max } [-filter-fwhm=value[%]] [-filter-wfwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]] -out=result_filename
 	// stack seqfilename { med | median } [-nonorm, norm=] [-filter-incl[uded]] -out=result_filename
-	// stack seqfilename { rej | mean } sigma_low sigma_high [-nonorm, norm=] [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]] -out=result_filename
+	// stack seqfilename { rej | mean } sigma_low sigma_high [-nonorm, norm=] [-filter-fwhm=value[%]] [-filter-round=value[%]] [-filter-quality=value[%]] [-filter-incl[uded]] [-weighted] -out=result_filename
 	if (!word[2]) {
 		arg->method = stack_summing_generic;
 	} else {
@@ -3606,7 +3617,7 @@ int process_stackone(int nb) {
 			allow_norm = TRUE;
 		}
 		else {
-			siril_log_color_message(_("Stacking method type '%s' is invalid\n"), word[2], "red");
+			siril_log_color_message(_("Stacking method type '%s' is invalid\n"), "red", word[2]);
 			goto failure;
 		}
 		if (parse_stack_command_line(arg, start_arg_opt, allow_norm, TRUE))

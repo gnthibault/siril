@@ -62,6 +62,7 @@ struct normalization_coeff {
 	double *scale;
 };
 
+
 struct stacking_args {
 	stack_method method;
 	sequence *seq;
@@ -85,6 +86,9 @@ struct stacking_args {
 	gboolean use_32bit_output;	/* output to 32 bit float */
 	int reglayer;		/* layer used for registration data */
 
+	gboolean apply_weight;			/* enable weights */
+	double *weights; 				/* computed weights*/ 
+
 	float (*sd_calculator)(const WORD *, const int); // internal, for ushort
 };
 
@@ -102,6 +106,7 @@ struct stacking_configuration {
 	int number_of_loaded_sequences;
 	float f_fwhm, f_fwhm_p, f_wfwhm, f_wfwhm_p, f_round, f_round_p, f_quality, f_quality_p; // on if >0
 	gboolean filter_included;
+	gboolean apply_weight;
 };
 
 
@@ -157,6 +162,7 @@ struct _data_block {
 	void *stack;	// the reordered stack for one pixel in all images
 	int *rejected;  // 0 if pixel ok, 1 or -1 if rejected
 	void *w_stack;	// stack for the winsorized rejection
+	void *o_stack;  // original unordered stack
 	float *xf, *yf, m_x, m_dx2;// data for the linear fit rejection
 };
 
