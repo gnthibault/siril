@@ -159,7 +159,7 @@ static int darkOptimization(fits *raw, struct preprocessing_data *args) {
 	fits dark_tmp = { 0 };
 
 	if (memcmp(raw->naxes, dark->naxes, sizeof raw->naxes)) {
-		siril_log_message(_("imoper: images must have same dimensions\n"));
+		siril_log_color_message(_("Images must have same dimensions\n"), "red");
 		return 1;
 	}
 

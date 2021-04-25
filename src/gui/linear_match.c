@@ -42,7 +42,7 @@ static int find_linear_coeff_ushort(fits *target_fit, fits *reference_fit, doubl
 	size_t ref_size = reference_fit->rx * reference_fit->ry;
 
 	if (memcmp(target_fit->naxes, reference_fit->naxes, sizeof target_fit->naxes)) {
-		gchar *err = siril_log_message(_("Images must have same dimensions.\n"));
+		gchar *err = siril_log_color_message(_("Images must have same dimensions.\n"), "red");
 		if (error) {
 			*error = err;
 		}
@@ -90,7 +90,7 @@ static int find_linear_coeff_float(fits *target_fit, fits *reference_fit, double
 	size_t ref_size = reference_fit->rx * reference_fit->ry;
 
 	if (memcmp(target_fit->naxes, reference_fit->naxes, sizeof target_fit->naxes)) {
-		gchar *err = siril_log_message(_("Images must have same dimensions.\n"));
+		gchar *err = siril_log_color_message(_("Images must have same dimensions.\n"), "red");
 		if (error) {
 			*error = err;
 		}

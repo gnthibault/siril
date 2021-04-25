@@ -162,7 +162,7 @@ static int imoper_to_ushort(fits *a, fits *b, image_operator oper, float factor)
 	size_t i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
 
 	if (memcmp(a->naxes, b->naxes, sizeof a->naxes)) {
-		siril_log_message(_("imoper: images must have same dimensions\n"));
+		siril_log_color_message(_("Images must have same dimensions.\n"), "red");
 		return 1;
 	}
 
@@ -274,7 +274,7 @@ int imoper_to_float(fits *a, fits *b, image_operator oper, float factor) {
 	float *result;
 
 	if (memcmp(a->naxes, b->naxes, sizeof a->naxes)) {
-		siril_log_message(_("imoper: images must have same dimensions\n"));
+		siril_log_color_message(_("Images must have same dimensions.\n"), "red");
 		return 1;
 	}
 
@@ -350,11 +350,11 @@ int addmax(fits *a, fits *b) {
 	size_t i, n = a->naxes[0] * a->naxes[1] * a->naxes[2];
 
 	if (memcmp(a->naxes, b->naxes, sizeof a->naxes)) {
-		siril_log_message(_("addmax: images must have same dimensions\n"));
+		siril_log_color_message(_("Images must have same dimensions.\n"), "red");
 		return 1;
 	}
 	if (a->type != b->type) {
-		siril_log_message(_("addmax: images must have same data type\n"));
+		siril_log_color_message(_("Images must have same data type.\n"), "red");
 		return 1;
 	}
 	g_assert(a->naxes[2] == 1 || a->naxes[2] == 3);
