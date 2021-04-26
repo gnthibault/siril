@@ -2424,7 +2424,7 @@ int process_extractHa(int nb) {
 				else {
 					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
 								" from Bayer pattern in settings (%s). Overriding settings.\n"),
-							"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
+							"salmon", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
 					tmp_pattern = bayer;
 				}
 			}
@@ -2493,7 +2493,7 @@ int process_extractHaOIII(int nb) {
 				else {
 					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
 								" from Bayer pattern in settings (%s). Overriding settings.\n"),
-							"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
+							"salmon", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
 					tmp_pattern = bayer;
 				}
 			}

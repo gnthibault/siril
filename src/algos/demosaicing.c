@@ -1212,7 +1212,7 @@ int debayer_if_needed(image_type imagetype, fits *fit, gboolean force_debayer) {
 				else {
 					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
 								" from Bayer pattern in settings (%s). Overriding settings.\n"),
-							"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
+							"salmon", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
 					tmp_pattern = bayer;
 				}
 			}
@@ -1541,7 +1541,7 @@ int extractHaOIII_image_hook(struct generic_seq_args *args, int o, int i, fits *
 				else {
 					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
 								" from Bayer pattern in settings (%s). Overriding settings.\n"),
-							"red", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
+							"salmon", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
 					tmp_pattern = bayer;
 				}
 			}
