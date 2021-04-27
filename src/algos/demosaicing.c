@@ -1066,6 +1066,13 @@ static void clear_Bayer_information(fits *fit) {
 	memset(fit->bayer_pattern, 0, FLEN_VALUE);
 }
 
+static void update_sampling_information(fits *fit) {
+	clear_Bayer_information(fit);
+
+	fit->pixel_size_x *= 2;
+	fit->pixel_size_y *= 2;
+}
+
 static int debayer_ushort(fits *fit, interpolation_method interpolation, sensor_pattern pattern) {
 	size_t i, j, npixels = fit->naxes[0] * fit->naxes[1];
 	int width = fit->rx;
@@ -1280,6 +1287,10 @@ int extractHa_ushort(fits *in, fits *Ha, sensor_pattern pattern) {
 		}
 	}
 
+	/* We update FITS keywords */
+	copy_fits_metadata(in, Ha);
+	update_sampling_information(Ha);
+
 	return 0;
 }
 
@@ -1327,6 +1338,10 @@ int extractHa_float(fits *in, fits *Ha, sensor_pattern pattern) {
 			j++;
 		}
 	}
+
+	/* We update FITS keywords */
+	copy_fits_metadata(in, Ha);
+	update_sampling_information(Ha);
 
 	return 0;
 }
@@ -1461,6 +1476,13 @@ int extractHaOIII_ushort(fits *in, fits *Ha, fits *OIII, sensor_pattern pattern)
 		}
 	}
 
+	/* We update FITS keywords */
+	copy_fits_metadata(in, Ha);
+	update_sampling_information(Ha);
+
+	copy_fits_metadata(in, OIII);
+	update_sampling_information(OIII);
+
 	return 0;
 }
 
@@ -1513,6 +1535,13 @@ int extractHaOIII_float(fits *in, fits *Ha, fits *OIII, sensor_pattern pattern) 
 			j++;
 		}
 	}
+
+	/* We update FITS keywords */
+	copy_fits_metadata(in, Ha);
+	update_sampling_information(Ha);
+
+	copy_fits_metadata(in, OIII);
+	update_sampling_information(OIII);
 
 	return 0;
 }
@@ -1755,6 +1784,17 @@ int split_cfa_ushort(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {
 		}
 	}
 
+	copy_fits_metadata(in, cfa0);
+	copy_fits_metadata(in, cfa1);
+	copy_fits_metadata(in, cfa2);
+	copy_fits_metadata(in, cfa3);
+
+	/* we remove Bayer header because not needed now */
+	clear_Bayer_information(cfa0);
+	clear_Bayer_information(cfa1);
+	clear_Bayer_information(cfa2);
+	clear_Bayer_information(cfa3);
+
 	return 0;
 }
 
@@ -1794,6 +1834,17 @@ int split_cfa_float(fits *in, fits *cfa0, fits *cfa1, fits *cfa2, fits *cfa3) {
 			j++;
 		}
 	}
+
+	copy_fits_metadata(in, cfa0);
+	copy_fits_metadata(in, cfa1);
+	copy_fits_metadata(in, cfa2);
+	copy_fits_metadata(in, cfa3);
+
+	/* we remove Bayer header because not needed now */
+	clear_Bayer_information(cfa0);
+	clear_Bayer_information(cfa1);
+	clear_Bayer_information(cfa2);
+	clear_Bayer_information(cfa3);
 
 	return 0;
 }

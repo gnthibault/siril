@@ -318,6 +318,10 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 
 		if (!regargs->translation_only) {
 			if (regargs->x2upscale) {
+				/* updating pixel size if exist */
+				fit->pixel_size_x /= 2;
+				fit->pixel_size_y /= 2;
+
 				if (cvResizeGaussian(fit, fit->rx * 2, fit->ry * 2, OPENCV_NEAREST)) {
 					free_fitted_stars(stars);
 					return 1;
@@ -336,6 +340,10 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 	}
 	else {
 		if (regargs->x2upscale && !regargs->translation_only) {
+			/* updating pixel size if exist */
+			fit->pixel_size_x /= 2;
+			fit->pixel_size_y /= 2;
+
 			if (cvResizeGaussian(fit, fit->rx * 2, fit->ry * 2, OPENCV_NEAREST))
 				return 1;
 		}

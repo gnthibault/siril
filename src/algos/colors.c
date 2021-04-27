@@ -1193,6 +1193,7 @@ void on_extract_channel_button_ok_clicked(GtkButton *button, gpointer user_data)
 			free(args->channel[2]);
 			free(args);
 		} else {
+			copy_fits_metadata(&gfit, args->fit);
 			start_in_new_thread(extract_channels, args);
 		}
 	}
