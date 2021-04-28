@@ -773,7 +773,7 @@ static double mean_and_reject(struct stacking_args *args, struct _data_block *da
 		else {
 			if (args->apply_weight) {
 				WORD pmin = 65535, pmax = 0; /* min and max computed here instead of rejection step to avoid dealing with too many particular cases */
-				for (int frame = 0; frame < stack_size; ++frame) {
+				for (int frame = 0; frame < kept_pixels; ++frame) {
 					if (pmin > ((WORD*)data->stack)[frame]) pmin = ((WORD*)data->stack)[frame];
 					if (pmax < ((WORD*)data->stack)[frame]) pmax = ((WORD*)data->stack)[frame];
 				}
@@ -804,7 +804,7 @@ static double mean_and_reject(struct stacking_args *args, struct _data_block *da
 		else {
 			if (args->apply_weight) {
 				float pmin = 10000.0, pmax = -10000.0; /* min and max computed here instead of rejection step to avoid dealing with too many particular cases */
-				for (int frame = 0; frame < stack_size; ++frame) {
+				for (int frame = 0; frame < kept_pixels; ++frame) {
 					if (pmin > ((float*)data->stack)[frame]) pmin = ((float*)data->stack)[frame];
 					if (pmax < ((float*)data->stack)[frame]) pmax = ((float*)data->stack)[frame];
 				}
