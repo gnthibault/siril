@@ -50,6 +50,8 @@
 #include <glib.h> // g_get_tmp_dir
 #include <glib/gstdio.h>
 
+#include "gui/plot.h"
+
 #ifdef _WIN32
 #ifndef pclose
 #define pclose(f) _pclose(f)
@@ -149,7 +151,7 @@ gnuplot_ctrl * gnuplot_init(void)
     gnuplot_setstyle(handle, "points") ;
     handle->ntmp = 0 ;
 
-    handle->gnucmd = siril_popen(GNUPLOT_NAME, "w") ;
+    handle->gnucmd = siril_popen(siril_win_get_gnuplot_path(), "w") ;
     if (handle->gnucmd == NULL) {
         fprintf(stderr, "error starting gnuplot, is gnuplot or gnuplot.exe in your path?\n") ;
         free(handle) ;

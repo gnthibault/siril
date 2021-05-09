@@ -243,8 +243,10 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 }
 
 #ifdef _WIN32
+static gchar *possible_path[] = { "C:\\PROGRA~1\\gnuplot\\bin\\gnuplot.exe", "C:\\msys64\\mingw64\\bin\\gnuplot.exe" };
+static gchar *gnuplot_path = NULL;
+
 /* returns true if the gnuplot.exe exists in the wanted folder */
-static gchar *possible_path[] = { "C:\\Program Files\\gnuplot\\bin\\gnuplot.exe" };
 static gboolean gnuplot_is_available() {
 	size_t size, i = 0;
 	gboolean found = FALSE;
@@ -255,17 +257,31 @@ static gboolean gnuplot_is_available() {
 		i++;
 	} while (i < size && !found);
 
+	if (found)
+		gnuplot_path = possible_path[i];
+
 	return found;
 }
 #else
 /* returns true if the command gnuplot is available */
 static gboolean gnuplot_is_available() {
-	int retval = system(GNUPLOT_NAME" -e > /dev/null 2>&1");
+	gchar *str = g_strdup_printf("%s -e > /dev/null 2>&1", siril_win_get_gnuplot_path());
+
+	int retval = system(str);
+	g_free(str);
 	if (WIFEXITED(retval))
 		return 0 == WEXITSTATUS(retval);
 	return FALSE;
 }
 #endif
+
+gchar *siril_win_get_gnuplot_path() {
+#ifdef _WIN32
+	return gnuplot_path;
+#else
+	return "gnuplot";
+#endif
+}
 
 static int lightCurve(pldata *plot, sequence *seq, gchar *filename) {
 	int i, j, k, nbImages = 0, ret = 0;
