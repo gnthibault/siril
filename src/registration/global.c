@@ -467,15 +467,14 @@ int register_star_alignment(struct registration_args *regargs) {
 	if (nb_images > 0) {
 		/* The registration memory consumption, n is image size and m channel size.
 		 * First, a threshold is computed for star pixel value, using statistics:
-		 *	ushort data: O(m), data is duplicated for median
-		 *		computation if there are nil values, O(1) otherwise
-		 *	float data: O(1)
+		 *	O(m), data is duplicated for median computation if
+		 *	there are nil values, O(1) otherwise
 		 * Then, still in peaker(), image is filtered using wavelets, duplicating the
 		 * image channel to act as input and output of the filter (O(m)) and
 		 * wavelet_transform then allocates 3 times the size of the channel in float,
 		 * because we request 3 planes of wavelets, and pave_2d allocates it once more
 		 * for its working copy, so that makes O(5m as float).
-		 * Then, in the image is written by the generic function if rotation is enabled:
+		 * Then, the image is written by the generic function if rotation is enabled:
 		 * cvTransformImage is O(n) in mem for monochrome and O(2n) for color.
 		 * Since these three operations are in sequence, we need room only for the
 		 * biggest. In case of float color image, it's the rotation that takes more

@@ -559,7 +559,7 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 		set_cutoff_sliders_values();
 		set_display_mode();
 		redraw(com.cvport, REMAP_ALL);
-		
+
 		sequence_list_change_current();
 	}
 	else {
@@ -664,6 +664,7 @@ float get_normalized_pixel_value(int fits_index, float layer_pixel_value) {
 	double tmp = (double)layer_pixel_value;
 	if (!has_fit(0))
 		fits_index--;
+
 	tmp *= coeff->scale[fits_index];
 	tmp -= coeff->offset[fits_index];
 	return tmp;

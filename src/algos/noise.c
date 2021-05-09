@@ -63,7 +63,7 @@ gpointer noise(gpointer p) {
 	}
 
 	for (chan = 0; chan < args->fit->naxes[2]; chan++) {
-		imstats *stat = statistics(NULL, -1, args->fit, chan, NULL, STATS_NOISE, TRUE);
+		imstats *stat = statistics(NULL, -1, args->fit, chan, NULL, STATS_SIGMEAN, TRUE);
 		if (!stat) {
 			args->retval = 1;
 			siril_log_message(_("Error: statistics computation failed.\n"));

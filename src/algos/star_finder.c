@@ -56,7 +56,7 @@ static float compute_threshold(fits *fit, double ksigma, int layer, float *norm,
 		*bg = 0.0;
 		return 0;
 	}
-	threshold = (float)(stat->median + ksigma * stat->sigma);
+	threshold = (float)(stat->median + ksigma * stat->bgnoise);
 	*norm = stat->normValue;
 	*bg = stat->median;
 	free_stats(stat);
@@ -73,7 +73,7 @@ static gboolean is_star(fitted_PSF *result, star_finder_params *sf) {
 		return FALSE;
 	if ((result->x0 <= 0.0) || (result->y0 <= 0.0))
 		return FALSE;
-	if (result->sx > 200 || result->sy > 200)
+	if (result->sx > 3 * sf->radius || result->sy > 3 * sf->radius)
 		return FALSE;
 	if (result->fwhmx <= 0.0 || result->fwhmy <= 0.0)
 		return FALSE;
@@ -168,7 +168,7 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 	gettimeofday(&t_start, NULL);
 
 	/* running statistics on the input image is best as it caches them */
-	threshold = compute_threshold(fit, sf->sigma, layer, &norm, &bg);
+	threshold = compute_threshold(fit, sf->sigma * 6.0, layer, &norm, &bg);
 	if (norm == 0.0f)
 		return NULL;
 
@@ -183,8 +183,7 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 		siril_log_message(_("Failed to copy the image for processing\n"));
 		return NULL;
 	}
-
-	get_wavelet_layers(&wave_fit, WAVELET_SCALE, 2, TO_PAVE_BSPLINE, 0);
+    get_wavelet_layers(&wave_fit, WAVELET_SCALE, 2, TO_PAVE_BSPLINE, layer);
 
 	/* Build 2D representation of wavelet image upside-down */
 	wave_image = malloc(ny * sizeof(float *));

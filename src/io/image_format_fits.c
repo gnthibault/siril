@@ -496,6 +496,15 @@ char *copy_header(fits *fit) {
 	if (!header)
 		return NULL;
 
+	/* we need to test if text is ut8
+	 * indeed some header are not */
+	if (!g_utf8_validate(header, -1, NULL)) {
+		gchar *str = g_utf8_make_valid(header, -1);
+		free(header);
+		header = strdup(str);
+		g_free(str);
+	}
+
 	return header;
 }
 
@@ -1614,6 +1623,21 @@ int siril_fits_compress(fits *f) {
 		siril_log_message(_("Unknown FITS compression method in internal conversion\n"));
 		return 1;
 	}
+
+	/** In the doc: The default algorithm is called ``SUBTRACTIVE_DITHER_1''.
+	 * A second variation called ``SUBTRACTIVE_DITHER_2'' is also available,
+	 * which does the same thing except that any pixels with a value of 0.0 are not
+	 * dithered and instead the zero values are exactly preserved in the compressed image
+	 *
+	 * Here we need to use SUBTRACTIVE_DITHER in order to not have border artifacts at the
+	 * end of sracking with compressed images.
+	 */
+	if (fits_set_quantize_dither(f->fptr, SUBTRACTIVE_DITHER_2, &status)) {
+		report_fits_error(status);
+		return 1;
+	}
+	status = 0;
+
 	if (fits_set_compression_type(f->fptr, comp_type, &status)) {
 		report_fits_error(status);
 		return 1;

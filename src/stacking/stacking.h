@@ -60,6 +60,9 @@ struct normalization_coeff {
 	double *offset;
 	double *mul;
 	double *scale;
+	double *poffset[3];
+	double *pmul[3];
+	double *pscale[3];
 };
 
 
@@ -87,7 +90,7 @@ struct stacking_args {
 	int reglayer;		/* layer used for registration data */
 
 	gboolean apply_weight;			/* enable weights */
-	double *weights; 				/* computed weights*/ 
+	double *weights; 				/* computed weights for each (layer,image)*/
 
 	float (*sd_calculator)(const WORD *, const int); // internal, for ushort
 };
@@ -164,6 +167,7 @@ struct _data_block {
 	void *w_stack;	// stack for the winsorized rejection
 	void *o_stack;  // original unordered stack
 	float *xf, *yf, m_x, m_dx2;// data for the linear fit rejection
+	int layer;	// to identify layer for normalization
 };
 
 int stack_open_all_files(struct stacking_args *args, int *bitpix, int *naxis, long *naxes, GList **date_time, fits *fit);

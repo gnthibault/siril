@@ -330,6 +330,17 @@ float *ushort8_buffer_to_float(WORD *buffer, size_t ndata) {
 }
 
 /**
+ * Test equality between two double number
+ * @param a
+ * @param b
+ * @param epsilon
+ * @return
+ */
+gboolean test_double_eq(double a, double b, double epsilon) {
+	return (fabs(a - b) <= epsilon);
+}
+
+/**
  * change endianness of a 16 bit unsigned int
  * @param x value to convert
  * @return byte-swapped value
