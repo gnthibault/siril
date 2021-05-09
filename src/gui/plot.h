@@ -47,6 +47,6 @@ enum photmetry_source {
 	Y_POSITION
 };
 
-const gchar *siril_win_get_gnuplot_path();
+gchar *siril_win_get_gnuplot_path();
 
 #endif /* SRC_GUI_PLOT_H_ */

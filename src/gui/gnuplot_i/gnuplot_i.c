@@ -151,7 +151,11 @@ gnuplot_ctrl * gnuplot_init(void)
     gnuplot_setstyle(handle, "points") ;
     handle->ntmp = 0 ;
 
-    handle->gnucmd = siril_popen(siril_win_get_gnuplot_path(), "w") ;
+    char *path = siril_win_get_gnuplot_path();
+    handle->gnucmd = siril_popen(path, "w");
+#ifdef _WIN32
+    free(path);
+#endif
     if (handle->gnucmd == NULL) {
         fprintf(stderr, "error starting gnuplot, is gnuplot or gnuplot.exe in your path?\n") ;
         free(handle) ;
