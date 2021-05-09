@@ -243,7 +243,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 }
 
 #ifdef _WIN32
-static const gchar *possible_path[] = { "C:\\PROGRA~1\\gnuplot\\bin\\gnuplot.exe", "C:\\msys64\\mingw64\\bin\\wgnuplot.exe" };
+static const gchar *possible_path[] = { "C:\\PROGRA~1\\gnuplot\\bin\\gnuplot.exe", "C:\\msys64\\mingw64\\bin\\gnuplot.exe" };
 static const gchar *gnuplot_path = NULL;
 
 /* returns true if the gnuplot.exe exists in the wanted folder */
