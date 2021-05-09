@@ -277,7 +277,7 @@ static gboolean gnuplot_is_available() {
 
 gchar *siril_win_get_gnuplot_path() {
 #ifdef _WIN32
-	gchar *str = g_strdup_printf("%s -persist", gnuplot_path);
+	gchar *str = g_strdup_printf("\"%s -persist\"", gnuplot_path);
 	return str;
 #else
 	return "gnuplot";
