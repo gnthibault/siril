@@ -288,7 +288,7 @@ int stack_compute_parallel_blocks(struct _image_block **blocksptr, long max_numb
 
 		blocks[j].channel = channel;
 		blocks[j].start_row = row;
-		end = row + height_of_blocks - 1; 
+		end = row + height_of_blocks - 1;
 		if (remainder > 0) {
 			// just add one pixel from the remainder to the first blocks to
 			// avoid having all of them in the last block
@@ -324,8 +324,10 @@ static void stack_read_block_data(struct stacking_args *args, int use_regdata,
 		long *naxes, data_type itype, int thread_id) {
 
 	int ielem_size = itype == DATA_FLOAT ? sizeof(float) : sizeof(WORD);
+	/* store the layer info to retrieve normalization coeffs*/
+	data->layer = (int)my_block->channel;
 	/* Read the block from all images, store them in pix[image] */
-	for (int frame = 0; frame < args->nb_images_to_stack; ++frame){
+	for (int frame = 0; frame < args->nb_images_to_stack; ++frame) {
 		gboolean clear = FALSE, readdata = TRUE;
 		long offset = 0;
 		/* area in C coordinates, starting with 0, not cfitsio coordinates. */
@@ -537,7 +539,7 @@ void confirm_outliers(struct outliers *out, int N, double median, int *rejected,
 		guint64 rej[2]) {
 	int i = N - 1;
 
-	while (!out[i].out) {
+	while (!out[i].out && i >= 0) {
 		i--;
 	}
 	for (int j = i; j >= 0; j--) {
@@ -557,13 +559,31 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 	float median = 0.f;
 	int pixel, output, changed, n, r = 0;
 	int firstloop = 1;
-
+	int kept = 0, removed = 0;
 	WORD *stack = (WORD *)data->stack;
 	WORD *w_stack = (WORD *)data->w_stack;
 	int *rejected = (int *)data->rejected;
-	WORD *o_stack = (WORD *)data->o_stack;	
+	WORD *o_stack = (WORD *)data->o_stack;
 
 	memcpy(o_stack, stack, N * sizeof(WORD)); /* making a copy of unsorted stack to apply weights (before the median sorts in place)*/
+
+	/* remove null pixels */
+	for (int frame = 0; frame < N; frame++) {
+		if (stack[frame] > 0) {
+			if (frame != kept) {
+				stack[kept] = stack[frame];
+			}
+			kept++;
+		}
+	}
+	/* Preventing problems
+	   0: should not happen but just in case.
+	   1 or 2: no need to reject */
+	if (kept <= 2) {
+		return kept;
+	}
+	removed = N - kept;
+	N = kept;
 
 	/* prepare median and check that the stack is not mostly zero */
 	switch (args->type_of_rejection) {
@@ -726,7 +746,11 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 			quicksort_s(stack, N);
 			median = gsl_stats_ushort_median_from_sorted_data(stack, 1, N);
 
-			int max_outliers = (int) floor(N * args->sig[0]);
+			int max_outliers = (int) nb_frames * args->sig[0];
+			if (removed >= max_outliers) { /* more than max allowable have been already been removed, should not reject anymore*/
+				return kept;
+			}
+			max_outliers -= removed;
 			struct outliers *out = malloc(max_outliers * sizeof(struct outliers));
 
 			memcpy(w_stack, stack, N * sizeof(WORD));
@@ -737,7 +761,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 				int max_index = 0;
 
 				grubbs_stat(w_stack, size, &Gstat, &max_index);
-				out[iter].out = check_G_values(Gstat, args->critical_value[iter]);
+				out[iter].out = check_G_values(Gstat, args->critical_value[iter + removed]);
 				out[iter].x = w_stack[max_index];
 				out[iter].i = max_index;
 				remove_element(w_stack, max_index, size);
@@ -766,12 +790,14 @@ static double mean_and_reject(struct stacking_args *args, struct _data_block *da
 		int stack_size, data_type itype, guint64 crej[2]) {
 	double mean;
 
+	int layer = data->layer;
 	if (itype == DATA_USHORT) {
 		int kept_pixels = apply_rejection_ushort(data, stack_size, args, crej);
 		if (kept_pixels == 0)
 			mean = quickmedian(data->stack, stack_size);
 		else {
 			if (args->apply_weight) {
+				double *pweights = args->weights + layer * stack_size;
 				WORD pmin = 65535, pmax = 0; /* min and max computed here instead of rejection step to avoid dealing with too many particular cases */
 				for (int frame = 0; frame < kept_pixels; ++frame) {
 					if (pmin > ((WORD*)data->stack)[frame]) pmin = ((WORD*)data->stack)[frame];
@@ -783,9 +809,9 @@ static double mean_and_reject(struct stacking_args *args, struct _data_block *da
 
 				for (int frame = 0; frame < stack_size; ++frame) {
 					val = ((WORD*)data->o_stack)[frame];
-					if ((val >= pmin) && (val <= pmax)){
-						sum += (float)val * args->weights[frame];
-						norm += args->weights[frame];
+					if (val >= pmin && val <= pmax && val > 0) {
+						sum += (float)val * pweights[frame];
+						norm += pweights[frame];
 					}
 				}
 				mean = sum / norm;
@@ -803,6 +829,7 @@ static double mean_and_reject(struct stacking_args *args, struct _data_block *da
 			mean = quickmedian_float(data->stack, stack_size);
 		else {
 			if (args->apply_weight) {
+				double *pweights = args->weights + layer * stack_size;
 				float pmin = 10000.0, pmax = -10000.0; /* min and max computed here instead of rejection step to avoid dealing with too many particular cases */
 				for (int frame = 0; frame < kept_pixels; ++frame) {
 					if (pmin > ((float*)data->stack)[frame]) pmin = ((float*)data->stack)[frame];
@@ -813,9 +840,9 @@ static double mean_and_reject(struct stacking_args *args, struct _data_block *da
 				float val;
 				for (int frame = 0; frame < stack_size; ++frame) {
 					val = ((float*)data->o_stack)[frame];
-					if ((val >= pmin) && (val <= pmax)){
-						sum += val * args->weights[frame];
-						norm += args->weights[frame];
+					if (val >= pmin && val <= pmax && val != 0.f) {
+						sum += val * pweights[frame];
+						norm += pweights[frame];
 					}
 				}
 			mean = sum / norm;
@@ -841,22 +868,26 @@ int stack_median(struct stacking_args *args) {
 
 static int compute_weights(struct stacking_args *args) {
 	int nb_frames = args->nb_images_to_stack;
-	int reglayer;
-	double norm = 0.0;
-	args->weights = malloc(nb_frames * sizeof(double));
+	int nb_layers = args->seq->nb_layers;
 
-	reglayer = (args->reglayer == -1) ? 0 : args->reglayer;
-	for (int i = 0; i < args->nb_images_to_stack; i++) {
-		args->weights[i] = 1.f / (args->coeff.scale[i] * args->coeff.scale[i] * args->seq->stats[reglayer][i]->bgnoise * args->seq->stats[reglayer][i]->bgnoise);
-		norm += args->weights[i];
+	args->weights = malloc(nb_layers * nb_frames * sizeof(double));
+	double *pweights[3];
+
+	for (int layer = 0; layer < nb_layers; ++layer) {
+		double norm = 0.0;
+		pweights[layer] = args->weights + layer * nb_frames;
+		for (int i = 0; i < args->nb_images_to_stack; ++i) {
+			pweights[layer][i] = 1.f /
+				(args->coeff.pscale[layer][i] * args->coeff.pscale[layer][i] *
+				 args->seq->stats[layer][i]->bgnoise * args->seq->stats[layer][i]->bgnoise);
+			norm += pweights[layer][i];
+		}
+		norm /= (double) nb_frames;
+
+		for (int i = 0; i < args->nb_images_to_stack; i++) {
+			pweights[layer][i] /= norm;
+		}
 	}
-
-	norm /= (double) nb_frames;
-
-	for (int i = 0; i < args->nb_images_to_stack; i++) {
-		args->weights[i] /= norm;
-	}
-
 	return ST_OK;
 }
 
@@ -1114,13 +1145,13 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	if (itype == DATA_USHORT)
 		args->sd_calculator = nb_frames < 65536 ? siril_stats_ushort_sd_32 : siril_stats_ushort_sd_64;
 
-	if (args->apply_weight){
+	if (args->apply_weight) {
 		siril_log_message(_("Computing weights...\n"));
 		retval = compute_weights(args);
-		if(retval){
+		if(retval) {
 			retval = ST_GENERIC_ERROR;
 			goto free_and_close;
-		} 
+		}
 	}
 
 	siril_log_message(_("Starting stacking...\n"));
@@ -1167,6 +1198,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 #endif
 
 		/**** Step 3: iterate over the y and x of the image block and stack ****/
+		int layer = my_block->channel;
 		for (y = 0; y < my_block->height; y++)
 		{
 			/* index of the pixel in the result image
@@ -1237,11 +1269,19 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 						case ADDITIVE_SCALING:
 							// additive + scale (mul[frame] = 1)
 							if (itype == DATA_FLOAT) {
-								tmp = fpixel * args->coeff.scale[frame];
-								((float*)data->stack)[frame] = (float)(tmp - args->coeff.offset[frame]);
+								if (fpixel != 0.f) { // do not normalize null pixels to detect them later
+									tmp = fpixel * args->coeff.pscale[layer][frame];
+									((float*)data->stack)[frame] = (float)(tmp - args->coeff.poffset[layer][frame]);
+								} else {
+									((float*)data->stack)[frame] = 0.f;
+								}
 							} else {
-								tmp = (double)pixel * args->coeff.scale[frame];
-								((WORD *)data->stack)[frame] = round_to_WORD(tmp - args->coeff.offset[frame] * USHRT_MAX_SINGLE);
+								if (pixel > 0) { // do not normalize null pixels to detect them later
+									tmp = (double)pixel * args->coeff.pscale[layer][frame];
+									((WORD *)data->stack)[frame] = round_to_WORD(tmp - args->coeff.poffset[layer][frame] * USHRT_MAX_SINGLE);
+								} else {
+									((WORD *)data->stack)[frame] = 0;
+								}
 							}
 							break;
 						case MULTIPLICATIVE:
@@ -1249,11 +1289,11 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 						case MULTIPLICATIVE_SCALING:
 							// multiplicative + scale (offset[frame] = 0)
 							if (itype == DATA_FLOAT) {
-								tmp = fpixel * args->coeff.scale[frame];
-								((float*)data->stack)[frame] = (float)(tmp * args->coeff.mul[frame]);
+								tmp = fpixel * args->coeff.pscale[layer][frame];
+								((float*)data->stack)[frame] = (float)(tmp * args->coeff.pmul[layer][frame]);
 							} else {
-								tmp = (double)pixel * args->coeff.scale[frame];
-								((WORD *)data->stack)[frame] = round_to_WORD(tmp * args->coeff.mul[frame]);
+								tmp = (double)pixel * args->coeff.pscale[layer][frame];
+								((WORD *)data->stack)[frame] = round_to_WORD(tmp * args->coeff.pmul[layer][frame]);
 							}
 							break;
 					}
@@ -1322,6 +1362,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	/* copy result to gfit if success */
 	clearfits(&gfit);
 	copyfits(&fit, &gfit, CP_FORMAT, -1);
+
 	if (args->use_32bit_output) {
 		gfit.fdata = fit.fdata;
 		for (i = 0; i < fit.naxes[2]; i++)
@@ -1353,9 +1394,12 @@ free_and_close:
 	}
 	g_list_free_full(list_date, (GDestroyNotify) free_list_date);
 	if (blocks) free(blocks);
-	if (args->coeff.offset) free(args->coeff.offset);
-	if (args->coeff.mul) free(args->coeff.mul);
-	if (args->coeff.scale) free(args->coeff.scale);
+	if (args->normalize) {
+		free(args->coeff.offset);
+		free(args->coeff.scale);
+		free(args->coeff.mul);
+	}
+
 	if (args->weights) free(args->weights);
 	if (retval) {
 		/* if retval is set, gfit has not been modified */

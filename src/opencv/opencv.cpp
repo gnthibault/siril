@@ -550,7 +550,7 @@ static int cvTransformImage_ushort(fits *image, long width, long height, Homogra
 	convert_H_to_MatH(&Hom, H);
 
 	// OpenCV function
-	warpPerspective(in, out, H, Size(width, height), interpolation);
+	warpPerspective(in, out, H, Size(width, height), interpolation, BORDER_TRANSPARENT);
 
 	// saving result
 	size_t ndata = height * width;
@@ -618,7 +618,7 @@ static int cvTransformImage_float(fits *image, long width, long height, Homograp
 	convert_H_to_MatH(&Hom, H);
 
 	// OpenCV function
-	warpPerspective(in, out, H, Size(width, height), interpolation);
+	warpPerspective(in, out, H, Size(width, height), interpolation, BORDER_TRANSPARENT);
 
 	// saving result
 	size_t ndata = height * width;

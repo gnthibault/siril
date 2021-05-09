@@ -89,6 +89,7 @@ WORD *float_buffer_to_ushort(float *buffer, size_t ndata);
 float *uchar_buffer_to_float(BYTE *buffer, size_t ndata);
 float *ushort_buffer_to_float(WORD *buffer, size_t ndata);
 float *ushort8_buffer_to_float(WORD *buffer, size_t ndata);
+gboolean test_double_eq(double a, double b, double epsilon);
 uint16_t change_endianness16(uint16_t x);
 uint16_t cpu_to_le16(uint16_t x);
 uint16_t cpu_to_be16(uint16_t x);

@@ -70,7 +70,8 @@ static float evaluateNoiseOfCalibratedImage(fits *fit, fits *dark,
 	}
 
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
-		imstats *stat = statistics(NULL, -1, &fit_tmp, chan, &area, STATS_BASIC, FALSE);
+		/* STATS_SIGMEAN computes mean and normvalue */
+		imstats *stat = statistics(NULL, -1, &fit_tmp, chan, &area, STATS_SIGMEAN, FALSE);
 		if (!stat) {
 			siril_log_message(_("Error: statistics computation failed.\n"));
 			return -1.0;

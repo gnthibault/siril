@@ -45,6 +45,8 @@
 #include "statistics.h"
 #include "gui/progress_and_log.h"
 
+#define ACTIVATE_NULLCHECK_FLOAT 1
+
 // copies the area of an image into the memory buffer data
 static void select_area_float(fits *fit, float *data, int layer, rectangle *bounds) {
 	int i, j, k = 0;
@@ -131,6 +133,7 @@ static double siril_stats_float_bwmv(const float* data, const size_t n,
 	return bwmv;
 }
 
+#if 0
 int IKSS(float *data, size_t n, double *location, double *scale, gboolean multithread) {
 	size_t i, j;
 	double mad, s, s0, m;
@@ -178,6 +181,60 @@ int IKSS(float *data, size_t n, double *location, double *scale, gboolean multit
 	free(buffer);
 	return 0;
 }
+#endif
+
+int IKSSlite(float *data, size_t n, const float median, float mad, double *location, double *scale, gboolean multithread) {
+	size_t i, kept;
+	float xlow, xhigh;
+
+	xlow = median - 6.0 * mad;
+	xhigh = median + 6.0 * mad;
+
+	kept = 0;
+	// removing pixels outside of +/- 6mad from median
+	for (i = 0; i < n; i++) {
+		if ((data[i] >= xlow) && (data[i] <= xhigh)) {
+			if (i != kept) {
+				data[kept] = data[i];
+			}
+			kept++;
+		}
+	}
+	if (kept == 0)
+		return 1;
+
+	*location = histogram_median_float(data, kept, multithread);
+	mad = siril_stats_float_mad(data, kept, *location, multithread, NULL);
+	if (mad == 0.0f)
+		return 1;
+
+	*scale = sqrt(siril_stats_float_bwmv(data, kept, mad, *location, multithread)) *.991;
+	/* 0.991 factor is to keep consistency with IKSS scale */
+	return 0;
+}
+
+static float* reassign_to_non_null_data_float(float *data, size_t inputlen, size_t outputlen, int free_input) {
+	size_t i, j = 0;
+	float *ndata = malloc(outputlen * sizeof(float));
+	if (!ndata) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
+
+	for (i = 0; i < inputlen; i++) {
+		if (data[i] != 0.f) {
+			if (j >= outputlen) {
+				fprintf(stderr, "\n- stats MISMATCH in sizes (in: %zu, out: %zu), THIS IS A BUG: seqfile is wrong *********\n\n", inputlen, outputlen);
+				break;
+			}
+			ndata[j] = data[i];
+			j++;
+		}
+	}
+	if (free_input)
+		free(data);
+	return ndata;
+}
 
 static void siril_stats_float_minmax(float *min_out, float *max_out,
 		const float data[], const size_t n, gboolean multithread) {
@@ -210,7 +267,7 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 	imstats* stat = stats;
 	// median is included in STATS_BASIC but required to compute other data
 	int compute_median = (option & STATS_BASIC) || (option & STATS_AVGDEV) ||
-		(option & STATS_MAD) || (option & STATS_BWMV);
+		(option & STATS_MAD) || (option & STATS_BWMV) || (option & STATS_IKSS);
 
 	if (!stat) {
 		allocate_stats(&stat);
@@ -245,7 +302,7 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 	}
 
 	/* Calculation of min and max */
-	if ((option & (STATS_MINMAX | STATS_BASIC)) && (stat->min < 0. || stat->max < 0.)) {
+	if ((option & (STATS_MINMAX | STATS_BASIC)) && (stat->min == NULL_STATS || stat->max == NULL_STATS)) {
 		float min = 0, max = 0;
 		if (!data) {
 			if (stat_is_local) free(stat);
@@ -259,15 +316,15 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 	}
 
 	/* Calculation of ngoodpix, mean, sigma and background noise */
-	if ((option & (STATS_NOISE | STATS_BASIC)) && (stat->ngoodpix <= 0L || stat->mean < 0. ||
-			stat->sigma < 0. || stat->bgnoise < 0.)) {
+	if ((option & (STATS_SIGMEAN | STATS_BASIC)) && (stat->ngoodpix <= 0L || stat->mean == NULL_STATS ||
+			stat->sigma == NULL_STATS || stat->bgnoise == NULL_STATS)) {
 		int status = 0;
 		if (!data) {
 			if (stat_is_local) free(stat);
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing basic\n", stat, fit, layer);
-		siril_fits_img_stats_float(data, nx, ny, 0, 0.0f, &stat->ngoodpix,
+		siril_fits_img_stats_float(data, nx, ny, ACTIVATE_NULLCHECK_FLOAT, 0.0f, &stat->ngoodpix,
 				NULL, NULL, &stat->mean, &stat->sigma, &stat->bgnoise,
 				NULL, NULL, NULL, multithread, &status);
 		if (status) {
@@ -283,21 +340,21 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 		return NULL;
 	}
 
-#if 0
+
 	/* we exclude 0 if some computations remain to be done or copy data if
 	 * median has to be computed */
-	if (fit && (compute_median || (option & STATS_IKSS)) && stat->total != stat->ngoodpix) {
-		data = reassign_to_positive_data_float(data, stat->total, stat->ngoodpix, free_data);
+	if (ACTIVATE_NULLCHECK_FLOAT && fit && compute_median && stat->total != stat->ngoodpix) {
+		data = reassign_to_non_null_data_float(data, stat->total, stat->ngoodpix, free_data);
 		if (!data) {
 			if (stat_is_local) free(stat);
 			return NULL;
 		}
 		free_data = 1;
 	}
-#endif
+
 
 	/* Calculation of median */
-	if (compute_median && stat->median < 0.) {
+	if (compute_median && stat->median == NULL_STATS) {
 		if (!data) {
 			if (stat_is_local) free(stat);
 			return NULL;	// not in cache, don't compute
@@ -307,7 +364,7 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 	}
 
 	/* Calculation of average absolute deviation from the median */
-	if ((option & STATS_AVGDEV) && stat->avgDev < 0.) {
+	if ((option & STATS_AVGDEV) && stat->avgDev == NULL_STATS) {
 		if (!data) {
 			if (stat_is_local) free(stat);
 			return NULL;	// not in cache, don't compute
@@ -317,7 +374,7 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 	}
 
 	/* Calculation of median absolute deviation */
-	if (((option & STATS_MAD) || (option & STATS_BWMV)) && stat->mad < 0.) {
+	if (((option & STATS_MAD) || (option & STATS_BWMV) || (option & STATS_IKSS)) && stat->mad == NULL_STATS) {
 		if (!data) {
 			if (stat_is_local) free(stat);
 			return NULL;	// not in cache, don't compute
@@ -327,7 +384,7 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 	}
 
 	/* Calculation of Bidweight Midvariance */
-	if ((option & STATS_BWMV) && stat->sqrtbwmv < 0.) {
+	if ((option & STATS_BWMV) && stat->sqrtbwmv == NULL_STATS) {
 		if (!data) {
 			if (stat_is_local) free(stat);
 			return NULL;	// not in cache, don't compute
@@ -338,13 +395,13 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 	}
 
 	/* Calculation of IKSS. Only used for stacking normalization */
-	if ((option & STATS_IKSS) && (stat->location < 0. || stat->scale < 0.)) {
+	if ((option & STATS_IKSS) && (stat->location == NULL_STATS || stat->scale == NULL_STATS)) {
 		if (!data) {
 			if (stat_is_local) free(stat);
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing ikss\n", stat, fit, layer);
-		if (IKSS(data, stat->ngoodpix, &stat->location, &stat->scale, multithread)) {
+		if (IKSSlite(data, stat->ngoodpix, stat->median, stat->mad, &stat->location, &stat->scale, multithread)) {
 			if (stat_is_local) free(stat);
 			if (free_data) free(data);
 			return NULL;

@@ -103,7 +103,7 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 	double median = 0.0;
 	int pixel, output, changed, n, r = 0;
 	int firstloop = 1;
-
+	int kept = 0, removed = 0;
 	float *stack = (float*) data->stack;
 	float *w_stack = (float*) data->w_stack;
 	int *rejected = (int*) data->rejected;
@@ -113,6 +113,24 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 
 	memcpy(o_stack, stack, N * sizeof(float)); /* making a copy of unsorted stack to apply weights*/
 
+	/* remove null pixels */
+	for (int frame = 0; frame < N; frame++) {
+		if (stack[frame] != 0.f) {
+			if (frame != kept) {
+				stack[kept] = stack[frame];
+			} 
+			kept++;
+		}
+	}
+	/* Preventing problems
+	   0: should not happen but just in case.
+	   1 or 2: no need to reject */
+	if (kept <= 2) { 
+		return kept;
+	}
+	removed = N - kept;
+	N = kept;
+
 	/* prepare median and check that the stack is not mostly zero */
 	switch (args->type_of_rejection) {
 	case PERCENTILE:
@@ -121,8 +139,6 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 		if (median == 0.0)
 			return 0;
 		break;
-	case SIGMEDIAN:
-	case WINSORIZED:
 	default:
 		break;
 	}
@@ -270,7 +286,13 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 		quicksort_f(stack, N);
 		median = gsl_stats_float_median_from_sorted_data(stack, 1, N);
 
-		int max_outliers = (int) floor(N * args->sig[0]);
+		int max_outliers = (int) nb_frames * args->sig[0];
+		
+		if (removed >= max_outliers) {
+			/* more than max allowable have already been removed, should not reject anymore*/
+			return kept;
+		}
+		max_outliers -= removed;
 		struct outliers *out = malloc(max_outliers * sizeof(struct outliers));
 
 		memcpy(w_stack, stack, N * sizeof(float));
@@ -281,7 +303,7 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 			int max_index = 0;
 
 			grubbs_stat(w_stack, size, &Gstat, &max_index);
-			out[iter].out = check_G_values(Gstat, args->critical_value[iter]);
+			out[iter].out = check_G_values(Gstat, args->critical_value[iter + removed]);
 			out[iter].x = w_stack[max_index];
 			out[iter].i = max_index;
 			remove_element(w_stack, max_index, size);

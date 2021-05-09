@@ -508,14 +508,13 @@ void on_remove_all_button_clicked(GtkButton *button, gpointer user_data) {
 
 void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data) {
 	int nbstars = 0;
-	int layer = RLAYER;
+	int layer = com.cvport == RGB_VPORT ? GLAYER : com.cvport;
 	if (!single_image_is_loaded() && !sequence_is_loaded()) {
 		siril_log_color_message(_("Load an image first, aborted.\n"), "red");
 		return;
 	}
 	set_cursor_waiting(TRUE);
-	if (gfit.naxes[2] == 3)
-		layer = GLAYER;
+
 	delete_selected_area();
 	com.stars = peaker(&gfit, layer, &com.starfinder_conf, &nbstars, NULL, TRUE);
 	siril_log_message(_("Found %d stars in image, channel #%d\n"), nbstars, layer);

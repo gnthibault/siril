@@ -56,7 +56,7 @@
  * Deactivating this will take less memory and make a faster statistics
  * computation. ngoodpix will be equal to total if deactivated.
  * Set to 0 to deactivate or 1 to activate. */
-#define ACTIVATE_NULLCHECK 0
+#define ACTIVATE_NULLCHECK 1
 
 static void stats_set_default_values(imstats *stat);
 
@@ -220,7 +220,7 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 	imstats* stat = stats;
 	// median is included in STATS_BASIC but required to compute other data
 	int compute_median = (option & STATS_BASIC) || (option & STATS_AVGDEV) ||
-		(option & STATS_MAD) || (option & STATS_BWMV);
+		(option & STATS_MAD) || (option & STATS_BWMV) || (option & STATS_IKSS);
 
 	if (!stat) {
 		allocate_stats(&stat);
@@ -257,7 +257,7 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 	}
 
 	/* Calculation of min and max */
-	if ((option & (STATS_MINMAX | STATS_BASIC)) && (stat->min < 0. || stat->max < 0.)) {
+	if ((option & (STATS_MINMAX | STATS_BASIC)) && (stat->min == NULL_STATS || stat->max == NULL_STATS)) {
 		WORD min = 0, max = 0;
 		if (!data) {
 			if (stat_is_local) free(stat);
@@ -271,8 +271,8 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 	}
 
 	/* Calculation of ngoodpix, mean, sigma and background noise */
-	if ((option & (STATS_NOISE | STATS_BASIC)) && (stat->ngoodpix <= 0L || stat->mean < 0. ||
-			stat->sigma < 0. || stat->bgnoise < 0.)) {
+	if ((option & (STATS_SIGMEAN | STATS_BASIC)) && (stat->ngoodpix <= 0L || stat->mean == NULL_STATS ||
+			stat->sigma == NULL_STATS || stat->bgnoise == NULL_STATS)) {
 		int status = 0;
 		if (!data) {
 			if (stat_is_local) free(stat);
@@ -296,7 +296,7 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 
 	/* we exclude 0 if some computations remain to be done or copy data if
 	 * median has to be computed (this is deactivated in the ngoodpix computation) */
-	if (fit && (compute_median || (option & STATS_IKSS)) && stat->total != stat->ngoodpix) {
+	if (fit && compute_median && stat->total != stat->ngoodpix) {
 		data = reassign_to_non_null_data_ushort(data, stat->total, stat->ngoodpix, free_data);
 		if (!data) {
 			if (stat_is_local) free(stat);
@@ -306,7 +306,7 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 	}
 
 	/* Calculation of median */
-	if (compute_median && stat->median < 0.) {
+	if (compute_median && stat->median == NULL_STATS) {
 		if (!data) {
 			if (stat_is_local) free(stat);
 			return NULL;	// not in cache, don't compute
@@ -316,7 +316,7 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 	}
 
 	/* Calculation of average absolute deviation from the median */
-	if ((option & STATS_AVGDEV) && stat->avgDev < 0.) {
+	if ((option & STATS_AVGDEV) && stat->avgDev == NULL_STATS) {
 		if (!data) {
 			if (stat_is_local) free(stat);
 			return NULL;	// not in cache, don't compute
@@ -326,7 +326,7 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 	}
 
 	/* Calculation of median absolute deviation */
-	if (((option & STATS_MAD) || (option & STATS_BWMV)) && stat->mad < 0.) {
+	if (((option & STATS_MAD) || (option & STATS_BWMV) || (option & STATS_IKSS)) && stat->mad == NULL_STATS) {
 		if (!data) {
 			if (stat_is_local) free(stat);
 			return NULL;	// not in cache, don't compute
@@ -336,7 +336,7 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 	}
 
 	/* Calculation of Bidweight Midvariance */
-	if ((option & STATS_BWMV) && stat->sqrtbwmv < 0.) {
+	if ((option & STATS_BWMV) && stat->sqrtbwmv == NULL_STATS) {
 		if (!data) {
 			if (stat_is_local) free(stat);
 			return NULL;	// not in cache, don't compute
@@ -347,7 +347,7 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 	}
 
 	/* Calculation of IKSS. Only used for stacking normalization */
-	if ((option & STATS_IKSS) && (stat->location < 0. || stat->scale < 0.)) {
+	if ((option & STATS_IKSS) && (stat->location == NULL_STATS || stat->scale == NULL_STATS)) {
 		if (!data) {
 			if (stat_is_local) free(stat);
 			return NULL;	// not in cache, don't compute
@@ -370,7 +370,9 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 		for (i = 0; i < stat->ngoodpix; i++) {
 			newdata[i] = (float) data[i] * invertNormValue;
 		}
-		if (IKSS(newdata, stat->ngoodpix, &stat->location, &stat->scale, multithread)) {
+		float med = (float)(stat->median) * invertNormValue;
+		float mad = (float)(stat->mad) * invertNormValue;
+		if (IKSSlite(newdata, stat->ngoodpix, med, mad, &stat->location, &stat->scale, multithread)) {
 			if (stat_is_local) free(stat);
 			if (free_data) free(data);
 			free(newdata);
@@ -616,7 +618,7 @@ void full_stats_invalidation_from_fit(fits *fit) {
 static void stats_set_default_values(imstats *stat) {
 	stat->total = -1L;
 	stat->ngoodpix = -1L;
-	stat->mean = stat->avgDev = stat->median = stat->sigma = stat->bgnoise = stat->min = stat->max = stat->normValue = stat->mad = stat->sqrtbwmv = stat->location = stat->scale = -1.0;
+	stat->mean = stat->avgDev = stat->median = stat->sigma = stat->bgnoise = stat->min = stat->max = stat->normValue = stat->mad = stat->sqrtbwmv = stat->location = stat->scale = NULL_STATS;
 }
 
 /* allocates an imstat structure and initializes it with default values that
@@ -692,17 +694,17 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 		int new_index = i * s_args->seq->nb_layers;
 
 		if (fit->type == DATA_USHORT) {
-			if (s_args->option == STATS_BASIC) {
-				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\n",
-						i + 1,
-						layer,
-						stat->mean / USHRT_MAX_DOUBLE,
-						stat->median / USHRT_MAX_DOUBLE,
-						stat->sigma / USHRT_MAX_DOUBLE,
-						stat->min / USHRT_MAX_DOUBLE,
-						stat->max / USHRT_MAX_DOUBLE,
-						stat->bgnoise / USHRT_MAX_DOUBLE
-				);
+			if (s_args->option == (STATS_BASIC)) {
+			 	s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\n",
+			 			i + 1,
+			 			layer,
+			 			stat->mean / USHRT_MAX_DOUBLE,
+			 			stat->median / USHRT_MAX_DOUBLE,
+			 			stat->sigma / USHRT_MAX_DOUBLE,
+			 			stat->min / USHRT_MAX_DOUBLE,
+			 			stat->max / USHRT_MAX_DOUBLE,
+			 			stat->bgnoise / USHRT_MAX_DOUBLE
+			 	);
 			} else {
 				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\n",
 						i + 1,
@@ -719,17 +721,17 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 				);
 			}
 		} else {
-			if (s_args->option == STATS_BASIC) {
-				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\n",
-						i + 1,
-						layer,
-						stat->mean,
-						stat->median,
-						stat->sigma,
-						stat->min,
-						stat->max,
-						stat->bgnoise
-				);
+			if (s_args->option == (STATS_BASIC)) {
+			 	s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\n",
+			 			i + 1,
+			 			layer,
+			 			stat->mean,
+			 			stat->median,
+			 			stat->sigma,
+			 			stat->min,
+			 			stat->max,
+			 			stat->bgnoise
+			 	);
 			} else {
 				s_args->list[new_index + layer] = g_strdup_printf("%d\t%d\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\t%e\n",
 						i + 1,
@@ -773,7 +775,7 @@ static int stat_finalize_hook(struct generic_seq_args *args) {
 		return 1;
 	}
 	const gchar *header;
-	if (s_args->option == STATS_BASIC) {
+	if (s_args->option == (STATS_BASIC)) {
 		header = "image\tchan\tmean\tmedian\tsigma\tmin\tmax\tnoise\n";
 	} else {
 		header = "image\tchan\tmean\tmedian\tsigma\tmin\tmax\tnoise\tavgDev\tmad\tsqrtbwmv\n";

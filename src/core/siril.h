@@ -239,8 +239,8 @@ typedef enum {
 typedef enum {
 	OPENCV_NEAREST = 0,
 	OPENCV_LINEAR = 1,
-	OPENCV_AREA = 2,
-	OPENCV_CUBIC = 3,
+	OPENCV_CUBIC = 2,
+	OPENCV_AREA = 3,
 	OPENCV_LANCZOS4 = 4,
 	OPENCV_INTER_MAX = 7
 } opencv_interpolation;

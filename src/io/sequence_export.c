@@ -105,6 +105,7 @@ static gpointer export_sequence(gpointer ptr) {
 	fitseq *fitseq_file = NULL;
 	GSList *timestamp = NULL;
 	char *filter_descr;
+	int nb_frames = 0;
 	GDateTime *strTime;
 #ifdef HAVE_FFMPEG
 	struct mp4_struct *mp4_file = NULL;
@@ -249,7 +250,7 @@ static gpointer export_sequence(gpointer ptr) {
 	if (output_bitpix == FLOAT_IMG)
 		output_bitpix = com.pref.force_to_16bit ? USHORT_IMG : FLOAT_IMG;
 
-	int nb_frames = compute_nb_filtered_images(args->seq,
+	nb_frames = compute_nb_filtered_images(args->seq,
 			args->filtering_criterion, args->filtering_parameter);
 	filter_descr = describe_filter(args->seq, args->filtering_criterion,
 			args->filtering_parameter);
@@ -262,7 +263,7 @@ static gpointer export_sequence(gpointer ptr) {
 		stackargs.seq = args->seq;
 		stackargs.filtering_criterion = args->filtering_criterion;
 		stackargs.filtering_parameter = args->filtering_parameter;
-		stackargs.nb_images_to_stack = nb_frames; 
+		stackargs.nb_images_to_stack = nb_frames;
 		stackargs.normalize = ADDITIVE_SCALING;
 		stackargs.reglayer = reglayer;
 
@@ -273,6 +274,12 @@ static gpointer export_sequence(gpointer ptr) {
 		do_normalization(&stackargs);
 		coeff.offset = stackargs.coeff.offset;
 		coeff.scale = stackargs.coeff.scale;
+		for (int i = 0; i < nb_frames; ++i) {
+			for (int layer = 0; layer < args->seq->nb_layers; ++layer) {
+				coeff.poffset[layer][i] = stackargs.coeff.poffset[layer][i];
+				coeff.pscale[layer][i] = stackargs.coeff.pscale[layer][i];
+			}
+		}
 		free(stackargs.coeff.mul);
 
 		// and dispose them, because we don't need them anymore
@@ -400,17 +407,21 @@ static gpointer export_sequence(gpointer ptr) {
 							WORD pixel = fit.pdata[layer][x + y * fit.rx];
 							if (args->normalize) {
 								double tmp = (double) pixel;
-								tmp *= coeff.scale[i];
-								tmp -= (coeff.offset[i] * USHRT_MAX_DOUBLE);
-								pixel = round_to_WORD(tmp);
+								if (pixel > 0) { // do not offset null pixels
+									tmp *= coeff.pscale[layer][i];
+									tmp -= (coeff.poffset[layer][i] * USHRT_MAX_DOUBLE);
+									pixel = round_to_WORD(tmp);
+								}
 							}
 							destfit->pdata[layer][nx + ny * fit.rx] = pixel;
 						}
 						else if (fit.type == DATA_FLOAT) {
 							float pixel = fit.fpdata[layer][x + y * fit.rx];
 							if (args->normalize) {
-								pixel *= (float) coeff.scale[i];
-								pixel -= (float) coeff.offset[i];
+								if (pixel != 0.f) { // do not offset null pixels
+									pixel *= (float) coeff.pscale[layer][i];
+									pixel -= (float) coeff.poffset[layer][i];
+								}
 							}
 							if (destfit->type == DATA_FLOAT) {
 								destfit->fpdata[layer][nx + ny * fit.rx] = pixel;
@@ -614,7 +625,7 @@ void on_checkAviResize_toggled(GtkToggleButton *togglebutton, gpointer user_data
 
 void update_export_crop_label() {
 	static GtkLabel *label = NULL;
-	if (!label) 
+	if (!label)
 		label = GTK_LABEL(lookup_widget("exportLabel"));
 	if (com.selection.w && com.selection.h)
 		gtk_label_set_text(label, _("Cropping to selection"));
