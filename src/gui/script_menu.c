@@ -199,8 +199,10 @@ int initialize_script_menu() {
 		list = search_script(s->data);
 		if (list) {
 			GSList *l;
-			gtk_widget_show(menuscript);
-			gtk_menu_button_set_popup(GTK_MENU_BUTTON(menuscript), menu);
+			if (!gtk_widget_get_visible(menuscript)) {
+				gtk_widget_show(menuscript);
+				gtk_menu_button_set_popup(GTK_MENU_BUTTON(menuscript), menu);
+			}
 			/* write separator but not for the first one */
 			if (nb_item != 0) {
 				GtkWidget *separator = gtk_separator_menu_item_new();
