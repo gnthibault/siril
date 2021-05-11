@@ -869,6 +869,7 @@ int stack_median(struct stacking_args *args) {
 static int compute_weights(struct stacking_args *args) {
 	int nb_frames = args->nb_images_to_stack;
 	int nb_layers = args->seq->nb_layers;
+	int idx = 0;
 
 	args->weights = malloc(nb_layers * nb_frames * sizeof(double));
 	double *pweights[3];
@@ -877,9 +878,10 @@ static int compute_weights(struct stacking_args *args) {
 		double norm = 0.0;
 		pweights[layer] = args->weights + layer * nb_frames;
 		for (int i = 0; i < args->nb_images_to_stack; ++i) {
+			idx = args->image_indices[i];
 			pweights[layer][i] = 1.f /
 				(args->coeff.pscale[layer][i] * args->coeff.pscale[layer][i] *
-				 args->seq->stats[layer][i]->bgnoise * args->seq->stats[layer][i]->bgnoise);
+				 args->seq->stats[layer][idx]->bgnoise * args->seq->stats[layer][idx]->bgnoise);
 			norm += pweights[layer][i];
 		}
 		norm /= (double) nb_frames;
