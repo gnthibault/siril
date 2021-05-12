@@ -420,9 +420,10 @@ int preprocess_single_image(struct preprocessing_data *args) {
 	return ret;
 }
 
-static void test_for_master_files(struct preprocessing_data *args) {
+static gboolean test_for_master_files(struct preprocessing_data *args) {
 	GtkToggleButton *tbutton;
 	GtkEntry *entry;
+	gboolean has_error = FALSE;
 
 	tbutton = GTK_TOGGLE_BUTTON(lookup_widget("useoffset_button"));
 	if (gtk_toggle_button_get_active(tbutton)) {
@@ -445,13 +446,14 @@ static void test_for_master_files(struct preprocessing_data *args) {
 					args->use_bias = TRUE;
 				}
 
-			} else error = _("NOT USING OFFSET: cannot open the file\n");
+			} else error = _("NOT USING OFFSET: cannot open the file");
 			if (error) {
-				siril_log_message("%s\n", error);
+				siril_log_color_message("%s\n", "red", error);
 				set_progress_bar_data(error, PROGRESS_DONE);
 				free(args->bias);
 				gtk_entry_set_text(entry, "");
 				args->use_bias = FALSE;
+				has_error = TRUE;
 			}
 		}
 	}
@@ -477,13 +479,14 @@ static void test_for_master_files(struct preprocessing_data *args) {
 					args->use_dark = TRUE;
 				}
 
-			} else error = _("NOT USING DARK: cannot open the file\n");
+			} else error = _("NOT USING DARK: cannot open the file");
 			if (error) {
-				siril_log_message("%s\n", error);
+				siril_log_color_message("%s\n", "red", error);
 				set_progress_bar_data(error, PROGRESS_DONE);
 				free(args->dark);
 				gtk_entry_set_text(entry, "");
 				args->use_dark = FALSE;
+				has_error = TRUE;
 			}
 		}
 
@@ -533,13 +536,14 @@ static void test_for_master_files(struct preprocessing_data *args) {
 					args->use_flat = TRUE;
 				}
 
-			} else error = _("NOT USING FLAT: cannot open the file\n");
+			} else error = _("NOT USING FLAT: cannot open the file");
 			if (error) {
-				siril_log_message("%s\n", error);
+				siril_log_color_message("%s\n", "red", error);
 				set_progress_bar_data(error, PROGRESS_DONE);
 				free(args->flat);
 				gtk_entry_set_text(entry, "");
 				args->use_flat = FALSE;
+				has_error = TRUE;
 			}
 
 			if (args->use_flat) {
@@ -552,6 +556,7 @@ static void test_for_master_files(struct preprocessing_data *args) {
 			}
 		}
 	}
+	return has_error;
 }
 
 void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
@@ -570,7 +575,10 @@ void on_prepro_button_clicked(GtkButton *button, gpointer user_data) {
 	GtkComboBox *output_type = GTK_COMBO_BOX(lookup_widget("prepro_output_type_combo"));
 
 	struct preprocessing_data *args = calloc(1, sizeof(struct preprocessing_data));
-	test_for_master_files(args);	// sets most properties
+	if (test_for_master_files(args)) {
+		siril_log_color_message(_("Some errors have been detected, Please check the logs.\n"), "red");
+		return;
+	}
 	if (!args->use_bias && !args->use_dark && !args->use_flat)
 		return;
 

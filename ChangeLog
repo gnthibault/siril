@@ -9,7 +9,11 @@ siril xxxxxxx
 * Update sampling information after channel extraction and drizzle
 * Fixed bands appearing on mean stacking for CFA SER sequences
 * Fixed bug in FFT filter
-* Fixed bug in normalization for 16b images
+* Fixed bug in statistics and normalization for 16b images
+* Added weighted mean stacking based on bgnoise
+* Changed handling of zero values in statistics, global registration, normalization and stacking
+* Added independent normalization of each channel for color images
+* Added faster location and scale estimators to replace IKSS with similar accuracy
 
 siril 0.99.8.1 (1.0.0~beta4)
 02/13/21
