@@ -197,7 +197,7 @@ static gpointer export_sequence(gpointer ptr) {
 
 		case EXPORT_MP4:
 		case EXPORT_MP4_H265:
-		case EXPORT_WEBM:
+		case EXPORT_WEBM_VP9:
 #ifndef HAVE_FFMPEG
 			siril_log_message(_("MP4 output is not supported because siril was not compiled with ffmpeg support.\n"));
 			retval = -1;
@@ -205,7 +205,7 @@ static gpointer export_sequence(gpointer ptr) {
 #else
 			/* resampling is managed by libswscale */
 			snprintf(dest, 256, "%s.%s", args->basename,
-					args->output == EXPORT_WEBM ? "webm" : "mp4");
+					args->output == EXPORT_WEBM_VP9 ? "webm" : "mp4");
 
 			if (in_width % 32 || out_height % 2 || out_width % 2) {
 				siril_log_message(_("Film output needs to have a width that is a multiple of 32 and an even height, resizing selection.\n"));
@@ -473,7 +473,7 @@ static gpointer export_sequence(gpointer ptr) {
 #ifdef HAVE_FFMPEG
 			case EXPORT_MP4:
 			case EXPORT_MP4_H265:
-			case EXPORT_WEBM:
+			case EXPORT_WEBM_VP9:
 				// an equivalent to fits_to_uint8 is called in there (fill_rgb_image)...
 				retval = mp4_add_frame(mp4_file, destfit);
 				break;
@@ -515,7 +515,7 @@ free_and_reset_progress_bar:
 			break;
 		case EXPORT_MP4:
 		case EXPORT_MP4_H265:
-		case EXPORT_WEBM:
+		case EXPORT_WEBM_VP9:
 #ifdef HAVE_FFMPEG
 			if (mp4_file) {
 				mp4_close(mp4_file);
@@ -563,12 +563,12 @@ void on_buttonExportSeq_clicked(GtkButton *button, gpointer user_data) {
 	if (args->crop)
 		memcpy(&args->crop_area, &com.selection, sizeof(rectangle));
 
-	if (args->output == EXPORT_AVI || args->output == EXPORT_MP4 || args->output == EXPORT_MP4_H265 || args->output == EXPORT_WEBM) {
+	if (args->output == EXPORT_AVI || args->output == EXPORT_MP4 || args->output == EXPORT_MP4_H265 || args->output == EXPORT_WEBM_VP9) {
 		GtkEntry *fpsEntry = GTK_ENTRY(lookup_widget("entryAviFps"));
 		args->film_fps = round_to_int(g_ascii_strtod(gtk_entry_get_text(fpsEntry), NULL));
 		if (args->film_fps <= 0) args->film_fps = 1;
 	}
-	if (args->output == EXPORT_MP4 || args->output == EXPORT_MP4_H265 || args->output == EXPORT_WEBM) {
+	if (args->output == EXPORT_MP4 || args->output == EXPORT_MP4_H265 || args->output == EXPORT_WEBM_VP9) {
 		GtkAdjustment *adjQual = GTK_ADJUSTMENT(gtk_builder_get_object(builder,"adjustment3"));
 		GtkToggleButton *checkResize = GTK_TOGGLE_BUTTON(lookup_widget("checkAviResize"));
 		args->film_quality = (int)gtk_adjustment_get_value(adjQual);

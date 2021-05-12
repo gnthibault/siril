@@ -16,7 +16,7 @@ typedef enum {
 	EXPORT_AVI,
 	EXPORT_MP4,
 	EXPORT_MP4_H265,
-	EXPORT_WEBM
+	EXPORT_WEBM_VP9
 } export_format;
 
 struct mp4_struct {

@@ -46,11 +46,6 @@
 
 #define SCALE_FLAGS SWS_BICUBIC
 
-/* Formats and codecs:
- * mp4 output should use AV_CODEC_ID_H264 codec
- * webm output should use AV_CODEC_ID_VP8 codec, default is VP9
- */
-
 
 static void log_packet(const AVFormatContext *fmt_ctx, const AVPacket *pkt)
 {
@@ -437,26 +432,32 @@ struct mp4_struct *mp4_create(const char *filename, int dst_w, int dst_h, int fp
 	video_st->fmt = video_st->oc->oformat;
 	/* disable unwanted features, is this the correct way? */
 	video_st->fmt->audio_codec = AV_CODEC_ID_NONE;
+	/* Calculating bitrate: it depends on the codec and the amount of image data.
+	 * For h264, the Kush gauge is widely used, giving a bitrate of :
+	 * pixel count x framerate x motion factor x 0.07
+	 * with motion factor: 1 - 4 depending on how much pixels change between frames.
+	 * We can use that as a quality factor (1 - 5)
+	 * For other codecs, we can change the constant factor of 0.07 to an estimated quality
+	 * difference, for example 0.45 for h265 and 0.4 for VP9 */
 	switch(type) {
-	case EXPORT_WEBM:
-		/* force VP8 codec for webm, VP9 is not supported by Opera 12 */
-		video_st->fmt->video_codec = AV_CODEC_ID_VP8;
+	case EXPORT_WEBM_VP9:
+		video_st->fmt->video_codec = AV_CODEC_ID_VP9;
+		video_st->bitrate = (int64_t)(0.04f * (float) dst_w * (float) dst_h * (float) fps * (float) quality);
 		break;
 	case EXPORT_MP4:
 		video_st->fmt->video_codec = AV_CODEC_ID_H264;
+		video_st->bitrate = (int64_t)(0.07f * (float) dst_w * (float) dst_h * (float) fps * (float) quality);
 		break;
 	case EXPORT_MP4_H265:
 		video_st->fmt->video_codec = AV_CODEC_ID_H265;
+		video_st->bitrate = (int64_t)(0.045f * (float) dst_w * (float) dst_h * (float) fps * (float) quality);
 		break;
 	default:
-		printf("mp4_create: Should not happen\n");
+		fprintf(stderr, "mp4_create: unknown type, should not happen\n");
+		return NULL;
 	}
 	video_st->src_w = src_w;
 	video_st->src_h = src_h;
-	/* Kush gauge: pixel count x framerate x motion factor x 0.07 = bit rate
-	 * with motion factor: 1 - 4 depending on how much pixels change between frames.
-	 * We can use that as a quality factor (1 - 5) */
-	video_st->bitrate = (int64_t)(0.07f * (float) dst_w * (float) dst_h * (float) fps * (float) quality);
 
 	/* Add the video stream and initialize the codecs. */
 	if (video_st->fmt->video_codec != AV_CODEC_ID_NONE) {
