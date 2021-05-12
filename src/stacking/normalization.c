@@ -49,6 +49,7 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 	gboolean fit_is_open = FALSE;
 	fits fit = { 0 };
 
+
 	for (int layer = 0; layer < args->seq->nb_layers; ++layer) {
 		// try with no fit passed: fails if data is needed because data is not cached
 		if (!(stat = statistics(args->seq, args->image_indices[i], NULL, layer, NULL, STATS_NORM, multithread))) {
@@ -64,8 +65,16 @@ static int _compute_normalization_for_image(struct stacking_args *args, int i, i
 				return ST_GENERIC_ERROR;
 		}
 
+		/* deal with the conversion of offset to the correct range depending
+           on what was returned by statistics . This is done on each layer of each frame
+		   just in case stats were not consistent in the seq file. */
+		double conversionfactor = 1.0;
+		if (!(args->seq->bitpix == FLOAT_IMG) && (stat->normValue == 1.)) {
+			conversionfactor = (args->seq->bitpix ==  BYTE_IMG) ? UCHAR_MAX_DOUBLE : USHRT_MAX_DOUBLE;
+		}
+
 		double sc = stat->scale;
-		double loc = stat->location;
+		double loc = stat->location * conversionfactor;
 
 		switch (mode) {
 		default:

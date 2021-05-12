@@ -266,6 +266,7 @@ static gpointer export_sequence(gpointer ptr) {
 		stackargs.nb_images_to_stack = nb_frames;
 		stackargs.normalize = ADDITIVE_SCALING;
 		stackargs.reglayer = reglayer;
+		stackargs.use_32bit_output = (output_bitpix == FLOAT_IMG);
 
 		// build image indices used by normalization
 		if (stack_fill_list_of_unfiltered_images(&stackargs))
@@ -274,8 +275,10 @@ static gpointer export_sequence(gpointer ptr) {
 		do_normalization(&stackargs);
 		coeff.offset = stackargs.coeff.offset;
 		coeff.scale = stackargs.coeff.scale;
-		for (int i = 0; i < nb_frames; ++i) {
-			for (int layer = 0; layer < args->seq->nb_layers; ++layer) {
+		for (int layer = 0; layer < args->seq->nb_layers; ++layer) {
+			coeff.poffset[layer] = stackargs.coeff.poffset[layer];
+			coeff.pscale[layer] = stackargs.coeff.pscale[layer];
+		    for (int i = 0; i < nb_frames; ++i) {
 				coeff.poffset[layer][i] = stackargs.coeff.poffset[layer][i];
 				coeff.pscale[layer][i] = stackargs.coeff.pscale[layer][i];
 			}

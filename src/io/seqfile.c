@@ -148,7 +148,12 @@ sequence * readseqfile(const char *name){
 					if (nbl_backup > 0 && ser_is_cfa(seq->ser_file)) {
 						if (com.pref.debayer.open_debayer)
 							seq->nb_layers = nbl_backup;
-						else seq->nb_layers = 1;
+						else {
+							siril_log_color_message(_("You are opening a SER file in CFA monochrome mode"
+									" while statistics has been saved for the three channels. "
+									" Unwanted behaviors could occur.\n"), "salmon");
+							seq->nb_layers = 1;
+						}
 					}
 					// else if nbl_backup is 3 but opening debayer is not
 					// enabled, we keep 1 in the nb_layers, which will be set in

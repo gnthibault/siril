@@ -1280,7 +1280,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 							} else {
 								if (pixel > 0) { // do not normalize null pixels to detect them later
 									tmp = (double)pixel * args->coeff.pscale[layer][frame];
-									((WORD *)data->stack)[frame] = round_to_WORD(tmp - args->coeff.poffset[layer][frame] * USHRT_MAX_SINGLE);
+									((WORD *)data->stack)[frame] = round_to_WORD(tmp - args->coeff.poffset[layer][frame]);
 								} else {
 									((WORD *)data->stack)[frame] = 0;
 								}
