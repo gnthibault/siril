@@ -692,45 +692,55 @@ static gboolean g_signal_handlers_is_blocked_by_func(gpointer instance, GFunc fu
 
 void on_combo_export_preset_changed(GtkComboBox *box, gpointer user_data) {
 	int preset = gtk_combo_box_get_active(box);
-	GtkEntry *widthEntry = GTK_ENTRY(lookup_widget("entryAviWidth"));
-	GtkEntry *heightEntry = GTK_ENTRY(lookup_widget("entryAviHeight"));
+	GtkWidget *widthEntry = lookup_widget("entryAviWidth");
+	GtkWidget *heightEntry = lookup_widget("entryAviHeight");
 
 	switch(preset) {
 	default:
 	case PRESET_RATIO:
-		if (g_signal_handlers_is_blocked_by_func(widthEntry, (GFunc) on_entryAviWidth_changed, NULL)) {
-			g_signal_handlers_unblock_by_func(widthEntry, on_entryAviWidth_changed, NULL);
-			g_signal_handlers_unblock_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+		if (g_signal_handlers_is_blocked_by_func(GTK_ENTRY(widthEntry), (GFunc) on_entryAviWidth_changed, NULL)) {
+			g_signal_handlers_unblock_by_func(GTK_ENTRY(widthEntry), on_entryAviWidth_changed, NULL);
+			g_signal_handlers_unblock_by_func(GTK_ENTRY(heightEntry), on_entryAviHeight_changed, NULL);
 		}
+		gtk_widget_set_sensitive(widthEntry, TRUE);
+		gtk_widget_set_sensitive(heightEntry, TRUE);
 		break;
 	case PRESET_FREE:
-		if (!g_signal_handlers_is_blocked_by_func(widthEntry, (GFunc) on_entryAviWidth_changed, NULL)) {
-			g_signal_handlers_block_by_func(widthEntry, on_entryAviWidth_changed, NULL);
-			g_signal_handlers_block_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+		if (!g_signal_handlers_is_blocked_by_func(GTK_ENTRY(widthEntry), (GFunc) on_entryAviWidth_changed, NULL)) {
+			g_signal_handlers_block_by_func(GTK_ENTRY(widthEntry), on_entryAviWidth_changed, NULL);
+			g_signal_handlers_block_by_func(GTK_ENTRY(heightEntry), on_entryAviHeight_changed, NULL);
 		}
+		gtk_widget_set_sensitive(widthEntry, TRUE);
+		gtk_widget_set_sensitive(heightEntry, TRUE);
 		break;
 	case PRESET_FULLHD:
-		g_signal_handlers_block_by_func(widthEntry, on_entryAviWidth_changed, NULL);
-		g_signal_handlers_block_by_func(heightEntry, on_entryAviHeight_changed, NULL);
-		gtk_entry_set_text(widthEntry, "1920");
-		gtk_entry_set_text(heightEntry, "1080");
-		g_signal_handlers_unblock_by_func(widthEntry, on_entryAviWidth_changed, NULL);
-		g_signal_handlers_unblock_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+		g_signal_handlers_block_by_func(GTK_ENTRY(widthEntry), on_entryAviWidth_changed, NULL);
+		g_signal_handlers_block_by_func(GTK_ENTRY(heightEntry), on_entryAviHeight_changed, NULL);
+		gtk_entry_set_text(GTK_ENTRY(widthEntry), "1920");
+		gtk_entry_set_text(GTK_ENTRY(heightEntry), "1080");
+		gtk_widget_set_sensitive(widthEntry, FALSE);
+		gtk_widget_set_sensitive(heightEntry, FALSE);
+		g_signal_handlers_unblock_by_func(GTK_ENTRY(widthEntry), on_entryAviWidth_changed, NULL);
+		g_signal_handlers_unblock_by_func(GTK_ENTRY(heightEntry), on_entryAviHeight_changed, NULL);
 		break;
 	case PRESET_4K:
-		g_signal_handlers_block_by_func(widthEntry, on_entryAviWidth_changed, NULL);
-		g_signal_handlers_block_by_func(heightEntry, on_entryAviHeight_changed, NULL);
-		gtk_entry_set_text(widthEntry, "3840");
-		gtk_entry_set_text(heightEntry, "2160");
-		g_signal_handlers_unblock_by_func(widthEntry, on_entryAviWidth_changed, NULL);
-		g_signal_handlers_unblock_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+		g_signal_handlers_block_by_func(GTK_ENTRY(widthEntry), on_entryAviWidth_changed, NULL);
+		g_signal_handlers_block_by_func(GTK_ENTRY(heightEntry), on_entryAviHeight_changed, NULL);
+		gtk_entry_set_text(GTK_ENTRY(widthEntry), "3840");
+		gtk_entry_set_text(GTK_ENTRY(heightEntry), "2160");
+		gtk_widget_set_sensitive(widthEntry, FALSE);
+		gtk_widget_set_sensitive(heightEntry, FALSE);
+		g_signal_handlers_unblock_by_func(GTK_ENTRY(widthEntry), on_entryAviWidth_changed, NULL);
+		g_signal_handlers_unblock_by_func(GTK_ENTRY(heightEntry), on_entryAviHeight_changed, NULL);
 		break;
 	case PRESET_8K:
-		g_signal_handlers_block_by_func(widthEntry, on_entryAviWidth_changed, NULL);
-		g_signal_handlers_block_by_func(heightEntry, on_entryAviHeight_changed, NULL);
-		gtk_entry_set_text(widthEntry, "7680");
-		gtk_entry_set_text(heightEntry, "4320");
-		g_signal_handlers_unblock_by_func(widthEntry, on_entryAviWidth_changed, NULL);
-		g_signal_handlers_unblock_by_func(heightEntry, on_entryAviHeight_changed, NULL);
+		g_signal_handlers_block_by_func(GTK_ENTRY(widthEntry), on_entryAviWidth_changed, NULL);
+		g_signal_handlers_block_by_func(GTK_ENTRY(heightEntry), on_entryAviHeight_changed, NULL);
+		gtk_entry_set_text(GTK_ENTRY(widthEntry), "7680");
+		gtk_entry_set_text(GTK_ENTRY(heightEntry), "4320");
+		gtk_widget_set_sensitive(widthEntry, FALSE);
+		gtk_widget_set_sensitive(heightEntry, FALSE);
+		g_signal_handlers_unblock_by_func(GTK_ENTRY(widthEntry), on_entryAviWidth_changed, NULL);
+		g_signal_handlers_unblock_by_func(GTK_ENTRY(heightEntry), on_entryAviHeight_changed, NULL);
 	}
 }
