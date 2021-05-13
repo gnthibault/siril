@@ -1397,7 +1397,7 @@ int process_bg(int nb){
 		} else if (gfit.type == DATA_FLOAT) {
 			us_bg = float_to_ushort_range(bg);
 		} else return 1;
-		siril_log_message(_("Background value (channel: #%d): %d (%lf)\n"), layer, us_bg, bg);
+		siril_log_message(_("Background value (channel: #%d): %d (%.3e)\n"), layer, us_bg, bg);
 	}
 	return 0;
 }
