@@ -9,6 +9,7 @@ struct preprocessing_data {
 	struct timeval t_start;
 	gboolean use_bias, use_dark, use_flat;
 	fits *bias, *dark, *flat;
+	float bias_level;
 	gboolean fix_xtrans;
 	gboolean use_dark_optim, use_cosmetic_correction;
 	gboolean is_sequence;
@@ -28,6 +29,7 @@ struct preprocessing_data {
 };
 
 int preprocess_single_image(struct preprocessing_data *args);
+int evaluateoffsetlevel(const char* expression);
 void start_sequence_preprocessing(struct preprocessing_data *prepro);
 
 #endif

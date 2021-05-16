@@ -60,6 +60,8 @@ static char *BinY[] = { "YBINNING", "BINY", NULL };
 static char *Focal[] = { "FOCAL", "FOCALLEN", NULL };
 static char *CCD_TEMP[] = { "CCD-TEMP", "CCD_TEMP", "CCDTEMP", "TEMPERAT", NULL };
 static char *Exposure[] = { "EXPTIME", "EXPOSURE", NULL };
+static char *Cvf[] = { "CVF", "EGAIN", NULL };
+static char *OffsetLevel[] = { "OFFSET", "BLKLEVEL", NULL };  //Used for synthetic offset
 static int CompressionMethods[] = { RICE_1, GZIP_1, GZIP_2, HCOMPRESS_1};
 
 #define __tryToFindKeywords(fptr, type, keywords, value) \
@@ -344,9 +346,12 @@ void read_fits_header(fits *fit) {
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "ISOSPEED", &(fit->iso_speed), NULL, &status);	// Non-standard keywords used in MaxIm DL
 
-	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CVF", &(fit->cvf), NULL, &status);
+	__tryToFindKeywords(fit->fptr, TDOUBLE, Cvf, &fit->cvf); // conversion gain in e-/ADU
 
+	status = 0;
+	fits_read_key(fit->fptr, TUSHORT, "GAIN", &(fit->key_gain), NULL, &status);  // Gain setting from camera
+
+    __tryToFindKeywords(fit->fptr, TUSHORT, OffsetLevel, &fit->key_offset); // Offset setting from camera
 	/*******************************************************************
 	 * ******************* PLATE SOLVING KEYWORDS **********************
 	 * ****************************************************************/
@@ -1123,6 +1128,16 @@ void save_fits_header(fits *fit) {
 				"Y offset of Bayer array", &status);
 
 	}
+
+	status = 0;
+	if (fit->key_gain > 0.)
+		fits_update_key(fit->fptr, TUSHORT, "GAIN", &(fit->key_gain),
+				"Camera gain", &status);
+
+	status = 0;
+	if (fit->key_offset > 0.)
+		fits_update_key(fit->fptr, TUSHORT, "OFFSET", &(fit->key_offset),
+				"Camera offset", &status);
 
 	status = 0;
 	if (fit->cvf > 0.)
@@ -2040,6 +2055,8 @@ int copy_fits_metadata(fits *from, fits *to) {
 	to->aperture = from->aperture;
 	to->ccd_temp = from->ccd_temp;
 	to->cvf = from->cvf;
+	to->key_gain = from->key_gain;
+	to->key_offset = from->key_offset;	
 	to->dft.norm[0] = from->dft.norm[0];
 	to->dft.norm[1] = from->dft.norm[1];
 	to->dft.norm[2] = from->dft.norm[2];

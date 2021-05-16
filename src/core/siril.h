@@ -63,8 +63,8 @@
 #define SHRT_MAX_SINGLE ((float)SHRT_MAX)
 #define UCHAR_MAX_DOUBLE ((double)UCHAR_MAX)
 #define UCHAR_MAX_SINGLE ((float)UCHAR_MAX)
-#define INV_USHRT_MAX_SINGLE .000015259022f	// 1/255
-#define INV_UCHAR_MAX_SINGLE .0039215686f	// 1/65535
+#define INV_USHRT_MAX_SINGLE .000015259022f	 // 1/65535
+#define INV_UCHAR_MAX_SINGLE .0039215686f	 // 1/255
 
 #define BYTES_IN_A_MB 1048576	// 1024
 
@@ -414,6 +414,7 @@ struct ffit {
 	/* data obtained from FITS or RAW files */
 	double focal_length, iso_speed, exposure, aperture, ccd_temp;
 	double cvf; // Conversion factor (e-/adu)
+	int key_gain, key_offset; // Gain, Offset values read in camera headers.
 
 	/* Plate Solving data */
 	wcs_info wcsdata;	// data from the header
