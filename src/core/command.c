@@ -1489,15 +1489,19 @@ int process_thresh(int nb){
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
-
+	int maxlevel = (gfit.orig_bitpix == BYTE_IMG) ? UCHAR_MAX : USHRT_MAX;
 	lo = g_ascii_strtoull(word[1], NULL, 10);
-	if (lo < 0 || lo > USHRT_MAX) {
-		siril_log_message(_("replacement value is out of range (0 - %d)\n"), USHRT_MAX);
+	if (lo < 0 || lo > maxlevel) {
+		siril_log_message(_("replacement value is out of range (0 - %d)\n"), maxlevel);
 		return 1;
 	}
 	hi = g_ascii_strtoull(word[2], NULL, 10);
-	if (hi < 0 || hi > USHRT_MAX) {
-		siril_log_message(_("replacement value is out of range (0 - %d)\n"), USHRT_MAX);
+	if (hi < 0 || hi > maxlevel) {
+		siril_log_message(_("replacement value is out of range (0 - %d)\n"), maxlevel);
+		return 1;
+	}
+	if (lo >= hi) {
+		siril_log_message(_("lo must be strictly smaller than hi\n"));
 		return 1;
 	}
 	threshlo(&gfit, lo);
@@ -1515,10 +1519,10 @@ int process_threshlo(int nb){
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
-
+	int maxlevel = (gfit.orig_bitpix == BYTE_IMG) ? UCHAR_MAX : USHRT_MAX;
 	lo = g_ascii_strtoull(word[1], NULL, 10);
-	if (lo < 0 || lo > USHRT_MAX) {
-		siril_log_message(_("replacement value is out of range (0 - %d)\n"), USHRT_MAX);
+	if (lo < 0 || lo > maxlevel) {
+		siril_log_message(_("replacement value is out of range (0 - %d)\n"), maxlevel);
 		return 1;
 	}
 	threshlo(&gfit, lo);
@@ -1535,10 +1539,10 @@ int process_threshhi(int nb){
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
-
+	int maxlevel = (gfit.orig_bitpix == BYTE_IMG) ? UCHAR_MAX : USHRT_MAX;
 	hi = g_ascii_strtoull(word[1], NULL, 10);
-	if (hi < 0 || hi > USHRT_MAX) {
-		siril_log_message(_("replacement value is out of range (0 - %d)\n"), USHRT_MAX);
+	if (hi < 0 || hi > maxlevel) {
+		siril_log_message(_("replacement value is out of range (0 - %d)\n"), maxlevel);
 		return 1;
 	}
 	threshhi(&gfit, hi);
@@ -1568,8 +1572,9 @@ int process_nozero(int nb){
 	}
 
 	level = g_ascii_strtoull(word[1], NULL, 10);
-	if (level < 0 || level > USHRT_MAX) {
-		siril_log_message(_("replacement value is out of range (0 - %d)\n"), USHRT_MAX);
+	int maxlevel = (gfit.orig_bitpix == BYTE_IMG) ? UCHAR_MAX : USHRT_MAX;
+	if (level < 0 || level > maxlevel) {
+		siril_log_message(_("replacement value is out of range (0 - %d)\n"), maxlevel);
 		return 1;
 	}
 	nozero(&gfit, (WORD)level);
@@ -1676,7 +1681,11 @@ int process_fill2(int nb){
 	} else {
 		memcpy(&area, &com.selection, sizeof(rectangle));
 	}
-	fill(&gfit, level, &area);
+	int retval = fill(&gfit, level, &area);
+	if (retval) {
+		siril_log_message(_("Wrong parameters.\n"));
+		return 1;
+	}
 	area.x = gfit.rx - area.x - area.w;
 	area.y = gfit.ry - area.y - area.h;
 	fill(&gfit, level, &area);
@@ -1996,7 +2005,11 @@ int process_fill(int nb){
 		memcpy(&area, &com.selection, sizeof(rectangle));
 	}
 	level = g_ascii_strtoull(word[1], NULL, 10);
-	fill(&gfit, level, &area);
+	int retval = fill(&gfit, level, &area);
+	if (retval) {
+		siril_log_message(_("Wrong parameters.\n"));
+		return 1;
+	}
 	redraw(com.cvport, REMAP_ALL);
 	return 0;
 }
@@ -3654,18 +3667,43 @@ int process_preprocess(int nb) {
 
 	args = calloc(1, sizeof(struct preprocessing_data));
 	args->ppprefix = "pp_";
+	args->bias_level = FLT_MAX;
 	
 	/* checking for options */
 	for (i = 2; i < nb; i++) {
 		if (word[i]) {
 			if (g_str_has_prefix(word[i], "-bias=")) {
-				args->bias = calloc(1, sizeof(fits));
-				if (!readfits(word[i] + 6, args->bias, NULL, !com.pref.force_to_16bit)) {
-					args->use_bias = TRUE;
+				gchar *expression = g_shell_unquote(word[i] + 6, NULL);
+				if (expression[0] == '=') {
+					int offsetlevel = evaluateoffsetlevel(expression+1);
+					if (!offsetlevel) {
+						siril_log_message(_("The offset value could not be parsed from expression: %s, aborting.\n"), expression +1);
+						g_free(expression);
+						retvalue = 1;
+						break;
+					} else {
+						g_free(expression);
+						siril_log_message(_("Synthetic offset: Level = %d\n"), offsetlevel);
+						int maxlevel = (gfit.orig_bitpix == BYTE_IMG) ? UCHAR_MAX : USHRT_MAX;
+						if ((offsetlevel > maxlevel) || (offsetlevel < -maxlevel) ) {   // not excluding all neg values here to allow defining a pedestal
+							siril_log_message(_("The offset value is out of allowable bounds [-%d,%d], aborting.\n"), maxlevel, maxlevel);
+							retvalue = 1;
+							break;
+						} else {
+							args->bias_level = (float)offsetlevel * INV_USHRT_MAX_SINGLE; //converting to [0 1] to use with soper
+							args->use_bias = TRUE;
+						}
+					}
 				} else {
-					retvalue = 1;
-					free(args->bias);
-					break;
+					g_free(expression);
+					args->bias = calloc(1, sizeof(fits));
+					if (!readfits(word[i] + 6, args->bias, NULL, !com.pref.force_to_16bit)) {
+						args->use_bias = TRUE;
+					} else {
+						retvalue = 1;
+						free(args->bias);
+						break;
+					}
 				}
 			} else if (g_str_has_prefix(word[i], "-dark=")) {
 				args->dark = calloc(1, sizeof(fits));

@@ -260,6 +260,11 @@ int fill(fits *fit, int level, rectangle *arearg) {
 	}
 	for (int layer = 0; layer < fit->naxes[2]; ++layer) {
 		if (fit->type == DATA_USHORT) {
+			int maxlevel = (fit->orig_bitpix == BYTE_IMG) ? UCHAR_MAX : USHRT_MAX;
+			if ((level > maxlevel) || (level < 0)) {
+				siril_log_message(_("Fill value must be in the range [0,%d]\n"), maxlevel);
+				return 1;
+			}
 			WORD *buf = fit->pdata[layer]
 					+ (fit->ry - area.y - area.h) * fit->rx + area.x;
 			int stridebuf = fit->rx - area.w;
@@ -273,12 +278,34 @@ int fill(fits *fit, int level, rectangle *arearg) {
 			float *buf = fit->fpdata[layer]
 					+ (fit->ry - area.y - area.h) * fit->rx + area.x;
 			int stridebuf = fit->rx - area.w;
+			float flevel = level * INV_USHRT_MAX_SINGLE;
 			for (int i = 0; i < area.h; ++i) {
 				for (int j = 0; j < area.w; ++j) {
-					*buf++ = level;
+					*buf++ = flevel;
 				}
 				buf += stridebuf;
 			}
+		}
+	}
+	invalidate_stats_from_fit(fit);
+	return 0;
+}
+
+static int off_uchar(fits *fit, float level) {
+	WORD *buf[3] = { fit->pdata[RLAYER], fit->pdata[GLAYER],
+			fit->pdata[BLAYER] };
+	g_assert(fit->naxes[2] <= 3);
+	if (level == 0)
+		return 0;
+	if (level < -UCHAR_MAX)
+		level = -UCHAR_MAX;
+	else if (level > UCHAR_MAX)
+		level = UCHAR_MAX;
+	size_t i, n = fit->naxes[0] * fit->naxes[1];
+	for (i = 0; i < n; ++i) {
+		for (int layer = 0; layer < fit->naxes[2]; ++layer) {
+			float val = (float)buf[layer][i];
+			buf[layer][i] = (WORD)roundf_to_BYTE(val + level);
 		}
 	}
 	invalidate_stats_from_fit(fit);
@@ -329,6 +356,7 @@ static int off_float(fits *fit, float level) {
 
 int off(fits *fit, float level) {
 	if (fit->type == DATA_USHORT) {
+		if (fit->orig_bitpix == BYTE_IMG) return off_uchar(fit, level);
 		return off_ushort(fit, level);
 	} else if (fit->type == DATA_FLOAT) {
 		level /= USHRT_MAX_SINGLE;

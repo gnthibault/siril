@@ -125,7 +125,9 @@ static int preprocess(fits *raw, struct preprocessing_data *args) {
 	int ret = 0;
 
 	if (args->use_bias) {
-		ret = imoper(raw, args->bias, OPER_SUB, args->allow_32bit_output);
+		if (args->bias_level < FLT_MAX) { // an offset level has been defined
+			ret = soper(raw, args->bias_level, OPER_SUB, args->allow_32bit_output);
+		} else ret = imoper(raw, args->bias, OPER_SUB, args->allow_32bit_output);
 	}
 
 	/* if dark optimization, the master-dark has already been subtracted */
@@ -420,10 +422,42 @@ int preprocess_single_image(struct preprocessing_data *args) {
 	return ret;
 }
 
+int evaluateoffsetlevel(const char* expression) {
+	// try to find an occurence of *
+	// If none -> the level is just an integer to evaluate
+	// If found -> Try to find $ sign to read the offset value and its multiplier
+
+	gchar *expressioncpy = g_strdup(expression);
+	gchar *mulsignpos = g_strrstr (expressioncpy, (gchar*)"*");
+	int offsetlevel, multiplier;
+	if (!mulsignpos) {
+		offsetlevel = g_ascii_strtoull(expressioncpy, NULL, 10);
+		if (!offsetlevel) goto free_on_error;
+		if (expressioncpy) g_free(expressioncpy);
+		return offsetlevel;
+	}
+	mulsignpos[0] = '\0';
+	mulsignpos += 1;
+	if (!((expressioncpy[0] == '$') || (mulsignpos[0] == '$'))) goto free_on_error; //found a * char but none of the words start with a $
+	if (expressioncpy[0] == '$') {
+		multiplier = g_ascii_strtoull(mulsignpos, NULL, 10);
+	} else {
+		multiplier = g_ascii_strtoull(expressioncpy, NULL, 10);
+	}
+	if (!multiplier) goto free_on_error; // multiplier not parsed
+	offsetlevel = (int)(multiplier * gfit.key_offset);
+	if (expressioncpy) g_free(expressioncpy);
+	return offsetlevel;
+free_on_error:
+	if (expressioncpy) g_free(expressioncpy);
+	return 0;
+}
+
 static gboolean test_for_master_files(struct preprocessing_data *args) {
 	GtkToggleButton *tbutton;
 	GtkEntry *entry;
 	gboolean has_error = FALSE;
+	args->bias_level = FLT_MAX;
 
 	tbutton = GTK_TOGGLE_BUTTON(lookup_widget("useoffset_button"));
 	if (gtk_toggle_button_get_active(tbutton)) {
@@ -434,19 +468,37 @@ static gboolean test_for_master_files(struct preprocessing_data *args) {
 			gtk_toggle_button_set_active(tbutton, FALSE);
 		} else {
 			const char *error = NULL;
-			set_progress_bar_data(_("Opening offset image..."), PROGRESS_NONE);
-			args->bias = calloc(1, sizeof(fits));
-			if (!readfits(filename, args->bias, NULL, !com.pref.force_to_16bit)) {
-				if (args->bias->naxes[2] != gfit.naxes[2]) {
-					error = _("NOT USING OFFSET: number of channels is different");
-				} else if (args->bias->naxes[0] != gfit.naxes[0] ||
-						args->bias->naxes[1] != gfit.naxes[1]) {
-					error = _("NOT USING OFFSET: image dimensions are different");
+            if (filename[0] == '=') { // offset is specified as a level not a file
+			    set_progress_bar_data(_("Checking offset level..."), PROGRESS_NONE);
+				int offsetlevel = evaluateoffsetlevel(filename + 1);
+				if (!offsetlevel) {
+					error = _("NOT USING OFFSET: the offset value could not be parsed");
+					args->use_bias = FALSE;
 				} else {
-					args->use_bias = TRUE;
+					siril_log_message(_("Synthetic offset: Level = %d\n"),offsetlevel);
+					int maxlevel = (gfit.orig_bitpix == BYTE_IMG) ? UCHAR_MAX : USHRT_MAX;
+					if ((offsetlevel > maxlevel) || (offsetlevel < -maxlevel) ) {   // not excluding all neg values here to allow defining a pedestal
+						error = _("NOT USING OFFSET: the offset value is not consistent with image bitdepth");
+						args->use_bias = FALSE;
+					} else {
+						args->bias_level = (float)offsetlevel * INV_USHRT_MAX_SINGLE; //converting to [0 1] to use with soper
+						args->use_bias = TRUE;
+					}
 				}
-
-			} else error = _("NOT USING OFFSET: cannot open the file");
+            } else {
+				args->bias = calloc(1, sizeof(fits));
+				set_progress_bar_data(_("Opening offset image..."), PROGRESS_NONE);
+				if (!readfits(filename, args->bias, NULL, !com.pref.force_to_16bit)) {
+					if (args->bias->naxes[2] != gfit.naxes[2]) {
+						error = _("NOT USING OFFSET: number of channels is different");
+					} else if (args->bias->naxes[0] != gfit.naxes[0] ||
+							args->bias->naxes[1] != gfit.naxes[1]) {
+						error = _("NOT USING OFFSET: image dimensions are different");
+					} else {
+						args->use_bias = TRUE;
+					}
+				} else error = _("NOT USING OFFSET: cannot open the file");
+			}
 			if (error) {
 				siril_log_color_message("%s\n", "red", error);
 				set_progress_bar_data(error, PROGRESS_DONE);
