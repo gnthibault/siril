@@ -517,6 +517,21 @@ void on_show_preview_button_toggled(GtkToggleButton *togglebutton, gpointer user
 	gtk_widget_set_sensitive(box, gtk_toggle_button_get_active(togglebutton));
 }
 
+void bias_text_insert(GtkEntry *entry, const gchar *text, gint length,
+		gint *position, gpointer data) {
+	GtkEditable *editable = GTK_EDITABLE(entry);
+
+	if (*position == 0 && text[0] != '=') {
+		g_signal_handlers_block_by_func(G_OBJECT (editable), G_CALLBACK (bias_text_insert), data);
+		gchar *new_str = g_strdup_printf("=%s", text);
+		gtk_editable_insert_text(editable, new_str, length + 1, position);
+		g_free(new_str);
+		g_signal_handlers_unblock_by_func(G_OBJECT (editable), G_CALLBACK (bias_text_insert), data);
+		g_signal_stop_emission_by_name(G_OBJECT(editable), "insert_text");
+	}
+
+}
+
 void on_clear_bias_entry_clicked(GtkButton *button, gpointer user_data) {
 	gtk_file_chooser_unselect_all((GtkFileChooser *)user_data);
 }

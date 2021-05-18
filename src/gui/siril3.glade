@@ -19500,6 +19500,7 @@ The technique gives very good compression for astronomical images and is relativ
                                     <property name="can-focus">True</property>
                                     <property name="tooltip-text" translatable="yes">Instead of an image, you can also specify a uniform level to be subtracted, starting with an "=" sign, such as =256 or =64*$OFFSET</property>
                                     <property name="text">=</property>
+                                    <signal name="insert-text" handler="bias_text_insert" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left-attach">1</property>
