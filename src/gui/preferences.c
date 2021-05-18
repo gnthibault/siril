@@ -69,6 +69,8 @@ static preferences pref_init = {
 		},
 		.prepro_bias_lib = NULL,
 		.use_bias_lib = FALSE,
+		.prepro_bias_synth = NULL,
+		.use_bias_synth = FALSE,
 		.prepro_dark_lib = NULL,
 		.use_dark_lib = FALSE,
 		.prepro_flat_lib = NULL,
@@ -218,6 +220,17 @@ static void update_prepro_preferences() {
 		com.pref.prepro_bias_lib = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(lookup_widget("filechooser_bias_lib")));
 	}
 	com.pref.use_bias_lib = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_pref_bias")));
+
+	if (com.pref.prepro_bias_synth) {
+		g_free(com.pref.prepro_bias_synth);
+	}
+	const gchar *entry = gtk_entry_get_text(GTK_ENTRY(lookup_widget("bias_synth_entry")));
+
+	if (entry) {
+		com.pref.prepro_bias_synth = g_strdup(entry);
+		com.pref.use_bias_synth = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_pref_bias_bis")));
+	}
+
 	if (com.pref.prepro_dark_lib) {
 		g_free(com.pref.prepro_dark_lib);
 		com.pref.prepro_dark_lib = gtk_file_chooser_get_filename(GTK_FILE_CHOOSER(lookup_widget("filechooser_dark_lib")));
@@ -323,9 +336,8 @@ static void update_misc_preferences() {
 	com.pref.check_update = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("miscAskUpdateStartup")));
 }
 
-void on_checkbutton_cam_toggled(GtkButton *button, gpointer user_data) {
+void on_checkbutton_cam_toggled(GtkToggleButton *cam_button, gpointer user_data) {
 	GtkToggleButton *auto_button = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_auto"));
-	GtkToggleButton *cam_button = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_cam"));
 
 	if (gtk_toggle_button_get_active(auto_button)) {
 		g_signal_handlers_block_by_func(auto_button, on_checkbutton_auto_toggled, NULL);
@@ -335,8 +347,7 @@ void on_checkbutton_cam_toggled(GtkButton *button, gpointer user_data) {
 	}
 }
 
-void on_checkbutton_auto_toggled(GtkButton *button, gpointer user_data) {
-	GtkToggleButton *auto_button = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_auto"));
+void on_checkbutton_auto_toggled(GtkToggleButton *auto_button, gpointer user_data) {
 	GtkToggleButton *cam_button = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_cam"));
 
 	if (gtk_toggle_button_get_active(cam_button)) {
@@ -532,6 +543,28 @@ void on_reload_script_button_clicked(GtkButton *button, gpointer user_data) {
 	}
 }
 
+void on_check_button_pref_bias_bis_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+	GtkToggleButton *bias_button = GTK_TOGGLE_BUTTON(lookup_widget("check_button_pref_bias"));
+
+	if (gtk_toggle_button_get_active(bias_button)) {
+		g_signal_handlers_block_by_func(bias_button, on_check_button_pref_bias_toggled, NULL);
+		gtk_toggle_button_set_active(bias_button, FALSE);
+		g_signal_handlers_unblock_by_func(bias_button, on_check_button_pref_bias_toggled, NULL);
+		gtk_toggle_button_set_active(togglebutton, TRUE);
+	}
+}
+
+void on_check_button_pref_bias_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+	GtkToggleButton *bias_button_bis = GTK_TOGGLE_BUTTON(lookup_widget("check_button_pref_bias_bis"));
+
+	if (gtk_toggle_button_get_active(bias_button_bis)) {
+		g_signal_handlers_block_by_func(bias_button_bis, on_check_button_pref_bias_bis_toggled, NULL);
+		gtk_toggle_button_set_active(bias_button_bis, FALSE);
+		g_signal_handlers_unblock_by_func(bias_button_bis, on_check_button_pref_bias_bis_toggled, NULL);
+		gtk_toggle_button_set_active(togglebutton, TRUE);
+	}
+}
+
 void on_spinInner_value_changed(GtkSpinButton *inner, gpointer user_data) {
 	GtkSpinButton *outer;
 	double in, out;
@@ -605,6 +638,14 @@ static void set_preferences_ui(preferences *pref) {
 
 		gtk_file_chooser_set_filename(button, pref->prepro_bias_lib);
 		gtk_toggle_button_set_active(toggle, pref->use_bias_lib);
+	}
+
+	if (pref->prepro_bias_synth) {
+		GtkEntry *entry = GTK_ENTRY(lookup_widget("bias_synth_entry"));
+		GtkToggleButton *toggle = GTK_TOGGLE_BUTTON(lookup_widget("check_button_pref_bias_bis"));
+
+		gtk_entry_set_text(entry, pref->prepro_bias_synth);
+		gtk_toggle_button_set_active(toggle, pref->use_bias_synth);
 	}
 
 	if (pref->prepro_dark_lib && (g_file_test(pref->prepro_dark_lib, G_FILE_TEST_EXISTS))) {

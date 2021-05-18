@@ -544,6 +544,8 @@ struct pref_struct {
 	rectangle xtrans_sample; // if no xtrans model found, use these values
 	gchar *prepro_bias_lib;
 	gboolean use_bias_lib;
+	gchar *prepro_bias_synth;
+	gboolean use_bias_synth;
 	gchar *prepro_dark_lib;
 	gboolean use_dark_lib;
 	gchar *prepro_flat_lib;

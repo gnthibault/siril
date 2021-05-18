@@ -832,6 +832,12 @@ void initialize_FITS_name_entries() {
 		}
 	}
 
+	if (com.pref.prepro_bias_synth) {
+		if (com.pref.use_bias_synth) {
+			str[0] = g_strdup_printf("%s", com.pref.prepro_bias_synth);
+		}
+	}
+
 	if (com.pref.prepro_dark_lib && (g_file_test(com.pref.prepro_dark_lib, G_FILE_TEST_EXISTS))) {
 		if (com.pref.use_dark_lib) {
 			str[1] = g_strdup_printf("%s", com.pref.prepro_dark_lib);

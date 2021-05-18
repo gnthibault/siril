@@ -77,7 +77,10 @@ void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 
 void on_spin_w_changed(GtkSpinButton *spinbutton, gpointer user_data);
 
-void on_checkbutton_cam_toggled(GtkButton *button, gpointer user_data);
-void on_checkbutton_auto_toggled(GtkButton *button, gpointer user_data);
+void on_check_button_pref_bias_toggled(GtkToggleButton *togglebutton, gpointer user_data);
+void on_check_button_pref_bias_bis_toggled(GtkToggleButton *togglebutton, gpointer user_data);
+
+void on_checkbutton_cam_toggled(GtkToggleButton *button, gpointer user_data);
+void on_checkbutton_auto_toggled(GtkToggleButton *button, gpointer user_data);
 
 #endif

@@ -95,20 +95,29 @@ static int readinitfile() {
 	/* Preprocessing settings */
 	config_setting_t *prepro_setting = config_lookup(&config, keywords[PRE]);
 	if (prepro_setting) {
-		const char *bias = NULL, *dark = NULL, *flat = NULL;
+		const char *bias = NULL, *bias_synth = NULL, *dark = NULL, *flat = NULL;
 
 		config_setting_lookup_bool(prepro_setting, "cfa", &com.pref.prepro_cfa);
 		config_setting_lookup_bool(prepro_setting, "equalize_cfa", &com.pref.prepro_equalize_cfa);
 		config_setting_lookup_bool(prepro_setting, "fix_xtrans", &com.pref.fix_xtrans);
+
 		config_setting_lookup_string(prepro_setting, "bias_lib", &bias);
 		com.pref.prepro_bias_lib = g_strdup(bias);
 		config_setting_lookup_bool(prepro_setting, "use_bias_lib", &com.pref.use_bias_lib);
+
+
+		config_setting_lookup_string(prepro_setting, "bias_synth", &bias_synth);
+		com.pref.prepro_bias_synth = g_strdup(bias_synth);
+		config_setting_lookup_bool(prepro_setting, "use_bias_synth", &com.pref.use_bias_synth);
+
 		config_setting_lookup_string(prepro_setting, "dark_lib", &dark);
 		com.pref.prepro_dark_lib = g_strdup(dark);
 		config_setting_lookup_bool(prepro_setting, "use_dark_lib", &com.pref.use_dark_lib);
+
 		config_setting_lookup_string(prepro_setting, "flat_lib", &flat);
 		com.pref.prepro_flat_lib = g_strdup(flat);
 		config_setting_lookup_bool(prepro_setting, "use_flat_lib", &com.pref.use_flat_lib);
+
 		prepro_setting = config_lookup(&config, "prepro-settings.xtrans_af");
 		if (prepro_setting != NULL) {
 			com.pref.xtrans_af.x = config_setting_get_int_elem(prepro_setting, 0);
@@ -366,6 +375,11 @@ static void _save_preprocessing(config_t *config, config_setting_t *root) {
 	config_setting_set_string(prepro_setting, com.pref.prepro_bias_lib);
 	prepro_setting = config_setting_add(prepro_group, "use_bias_lib", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(prepro_setting, com.pref.use_bias_lib);
+
+	prepro_setting = config_setting_add(prepro_group, "bias_synth", CONFIG_TYPE_STRING);
+	config_setting_set_string(prepro_setting, com.pref.prepro_bias_synth);
+	prepro_setting = config_setting_add(prepro_group, "use_bias_synth", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(prepro_setting, com.pref.use_bias_synth);
 
 	prepro_setting = config_setting_add(prepro_group, "dark_lib", CONFIG_TYPE_STRING);
 	config_setting_set_string(prepro_setting, com.pref.prepro_dark_lib);

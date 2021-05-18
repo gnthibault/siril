@@ -19301,7 +19301,7 @@ The technique gives very good compression for astronomical images and is relativ
                             <property name="valign">center</property>
                             <property name="left-padding">12</property>
                             <child>
-                              <!-- n-columns=4 n-rows=3 -->
+                              <!-- n-columns=4 n-rows=4 -->
                               <object class="GtkGrid">
                                 <property name="visible">True</property>
                                 <property name="can-focus">False</property>
@@ -19331,7 +19331,7 @@ The technique gives very good compression for astronomical images and is relativ
                                   </object>
                                   <packing>
                                     <property name="left-attach">1</property>
-                                    <property name="top-attach">1</property>
+                                    <property name="top-attach">2</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -19345,7 +19345,7 @@ The technique gives very good compression for astronomical images and is relativ
                                   </object>
                                   <packing>
                                     <property name="left-attach">1</property>
-                                    <property name="top-attach">2</property>
+                                    <property name="top-attach">3</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -19387,7 +19387,7 @@ The technique gives very good compression for astronomical images and is relativ
                                   </object>
                                   <packing>
                                     <property name="left-attach">2</property>
-                                    <property name="top-attach">1</property>
+                                    <property name="top-attach">2</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -19408,7 +19408,7 @@ The technique gives very good compression for astronomical images and is relativ
                                   </object>
                                   <packing>
                                     <property name="left-attach">2</property>
-                                    <property name="top-attach">2</property>
+                                    <property name="top-attach">3</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -19423,7 +19423,7 @@ The technique gives very good compression for astronomical images and is relativ
                                   </object>
                                   <packing>
                                     <property name="left-attach">3</property>
-                                    <property name="top-attach">2</property>
+                                    <property name="top-attach">3</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -19438,7 +19438,7 @@ The technique gives very good compression for astronomical images and is relativ
                                   </object>
                                   <packing>
                                     <property name="left-attach">3</property>
-                                    <property name="top-attach">1</property>
+                                    <property name="top-attach">2</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -19450,6 +19450,7 @@ The technique gives very good compression for astronomical images and is relativ
                                     <property name="tooltip-text" translatable="yes">Use the chosen master as default file in the pre-processing tab</property>
                                     <property name="halign">start</property>
                                     <property name="draw-indicator">True</property>
+                                    <signal name="toggled" handler="on_check_button_pref_bias_toggled" swapped="no"/>
                                   </object>
                                   <packing>
                                     <property name="left-attach">3</property>
@@ -19465,7 +19466,7 @@ The technique gives very good compression for astronomical images and is relativ
                                   </object>
                                   <packing>
                                     <property name="left-attach">0</property>
-                                    <property name="top-attach">2</property>
+                                    <property name="top-attach">3</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -19478,6 +19479,7 @@ The technique gives very good compression for astronomical images and is relativ
                                   <packing>
                                     <property name="left-attach">0</property>
                                     <property name="top-attach">0</property>
+                                    <property name="height">2</property>
                                   </packing>
                                 </child>
                                 <child>
@@ -19489,8 +19491,39 @@ The technique gives very good compression for astronomical images and is relativ
                                   </object>
                                   <packing>
                                     <property name="left-attach">0</property>
+                                    <property name="top-attach">2</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkEntry" id="bias_synth_entry">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="tooltip-text" translatable="yes">Instead of an image, you can also specify a uniform level to be substracted, starting with an "=" sign, such as =256 or =64*$OFFSET</property>
+                                    <property name="text" translatable="yes">=</property>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">1</property>
                                     <property name="top-attach">1</property>
                                   </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkCheckButton" id="check_button_pref_bias_bis">
+                                    <property name="label" translatable="yes">Use it as default</property>
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">True</property>
+                                    <property name="receives-default">False</property>
+                                    <property name="tooltip-text" translatable="yes">Use the chosen level as default synthetic master in the pre-processing tab</property>
+                                    <property name="halign">start</property>
+                                    <property name="draw-indicator">True</property>
+                                    <signal name="toggled" handler="on_check_button_pref_bias_bis_toggled" swapped="no"/>
+                                  </object>
+                                  <packing>
+                                    <property name="left-attach">3</property>
+                                    <property name="top-attach">1</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <placeholder/>
                                 </child>
                               </object>
                             </child>
