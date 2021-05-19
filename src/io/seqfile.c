@@ -149,9 +149,6 @@ sequence * readseqfile(const char *name){
 						if (com.pref.debayer.open_debayer)
 							seq->nb_layers = nbl_backup;
 						else {
-							siril_log_color_message(_("You are opening a SER file in CFA monochrome mode"
-									" while statistics has been saved for the three channels."
-									" Unwanted behaviors could occur.\n"), "salmon");
 							seq->nb_layers = 1;
 						}
 					}
