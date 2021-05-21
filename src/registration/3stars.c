@@ -146,7 +146,7 @@ static void start_seqpsf() {
 	args->image_hook = seqpsf_image_hook;
 	args->idle_function = _3stars_seqpsf_end;
 	args->stop_on_error = FALSE;
-	args->description = _("PSF on area for 3 stars");
+	args->description = _("PSF on area for 2 or 3 stars");
 	args->upscale_ratio = 1.0;
 	args->user = spsfargs;
 	args->already_in_a_thread = FALSE;
@@ -171,7 +171,7 @@ void on_select_star_button_clicked(GtkButton *button, gpointer user_data) {
 		three_buttons[2] = lookup_widget("pickstar3");
 	}
 	if (!com.selection.w || !com.selection.h) {
-		update_label(_("draw a selection around the star"));
+		update_label(_("Draw a selection around the star"));
 		return;
 	}
 	GtkWidget *widget = GTK_WIDGET(button);
