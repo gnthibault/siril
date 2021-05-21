@@ -12,6 +12,7 @@ struct fwhm_struct {
 	double x0, y0; /* coordinates of the peak */
 	double sx, sy; /* Size of the fitted function on the x and y axis in PSF coordinates */
 	double fwhmx, fwhmy; /* FWHM in x and y axis */
+	double fwhmx_arcsec, fwhmy_arcsec; /* FWHM in x and y axis in arc second */
 	double angle; /* angle of the axis x,y with respect to the image's */
 	double mag; /* magnitude of the star : this parameter is not fitted but calculated with the vector G and the parameter B */
 	double s_mag; /* error on the magnitude */
@@ -40,12 +41,13 @@ struct PSF_data {
 	double rmse;
 };
 
-double psf_get_fwhm(fits *, int, double *);
+double psf_get_fwhm(fits *fit, int layer, rectangle *selection, double *roundness);
 fitted_PSF *psf_get_minimisation(fits *, int, rectangle *, gboolean, gboolean, gboolean);
 fitted_PSF *psf_global_minimisation(gsl_matrix *, double, gboolean, gboolean, gboolean);
 void psf_display_result(fitted_PSF *, rectangle *);
 void fwhm_to_arcsec_if_needed(fits*, fitted_PSF*);
 void fwhm_to_pixels(fitted_PSF *result);
+gboolean get_fwhm_as_arcsec_if_possible(fitted_PSF *star, double *fwhmx, double *fwhmy, char **unit);
 double convert_single_fwhm_to_pixels(double fwhm, double s);
 
 fitted_PSF *duplicate_psf(fitted_PSF *);

@@ -435,6 +435,136 @@ int cvRotateImage(fits *image, point center, double angle, int interpolation, in
 	return -1;
 }
 
+int cvAffineTransformation(fits *image, pointf *refpoints, pointf *curpoints, int nb_points, gboolean upscale2x, int interpolation) {
+	// see https://docs.opencv.org/3.4/d4/d61/tutorial_warp_affine.html
+	std::vector<Point2f> ref;
+	std::vector<Point2f> cur;
+
+	/* build vectors with lists of 3 stars. */
+	for (int i = 0; i < nb_points; i++) {
+		ref.push_back(Point2f(refpoints[i].x, image->ry - refpoints[i].y - 1));
+		if (upscale2x)
+			cur.push_back(Point2f(curpoints[i].x * 0.5f, (image->ry - curpoints[i].y - 1) * 0.5f));
+		else cur.push_back(Point2f(curpoints[i].x, image->ry - curpoints[i].y - 1));
+	}
+
+	Mat m = estimateAffinePartial2D(cur, ref);
+	//std::cout << m << std::endl;
+
+	/* test that m is not a zero matrix */
+	if (countNonZero(m) < 1) {
+		siril_log_color_message(_("Singular Matrix. Cannot compute Affine Transformation.\n"), "red");
+		return -1;
+	}
+
+	/* convert image */
+	Mat in, out;
+	WORD *bgrbgr_ushort = NULL;
+	float *bgrbgr_float = NULL;
+	int target_rx = image->rx, target_ry = image->ry;
+	if (upscale2x) {
+		target_rx *= 2;
+		target_ry *= 2;
+	}
+
+	if (image->naxes[2] != 1 && image->naxes[2] != 3) {
+		siril_log_message(_("Transformation is not supported for images with %ld channels\n"), image->naxes[2]);
+		return -1;
+	}
+	if (image->type == DATA_USHORT) {
+		if (image->naxes[2] == 1) {
+			in = Mat(image->ry, image->rx, CV_16UC1, image->data);
+			out = Mat(target_ry, target_rx, CV_16UC1);
+		}
+		else if (image->naxes[2] == 3) {
+			bgrbgr_ushort = fits_to_bgrbgr_ushort(image);
+			in = Mat(image->ry, image->rx, CV_16UC3, bgrbgr_ushort);
+			out = Mat(target_ry, target_rx, CV_16UC3);
+		}
+	}
+	else if (image->type == DATA_FLOAT) {
+		if (image->naxes[2] == 1) {
+			in = Mat(image->ry, image->rx, CV_32FC1, image->fdata);
+			out = Mat(target_ry, target_rx, CV_32FC1);
+		}
+		else if (image->naxes[2] == 3) {
+			bgrbgr_float = fits_to_bgrbgr_float(image);
+			in = Mat(image->ry, image->rx, CV_32FC3, bgrbgr_float);
+			out = Mat(target_ry, target_rx, CV_32FC3);
+		}
+	}
+	else return -1;
+
+	warpAffine(in, out, m, out.size(), interpolation, BORDER_TRANSPARENT);
+
+	/* store result */
+	std::vector<Mat> channel(3);
+	split(out, channel);
+
+	size_t ndata = target_rx * target_ry;
+	if (image->type == DATA_USHORT) {
+		size_t data_size = ndata * sizeof(WORD);
+		WORD *newdata = (WORD*) realloc(image->data, data_size * image->naxes[2]);
+		if (!newdata) {
+			PRINT_ALLOC_ERR;
+			return 1;
+		}
+		image->data = newdata;
+
+		if (image->naxes[2] == 3) {
+			memcpy(image->data, channel[2].data, data_size);
+			memcpy(image->data + ndata, channel[1].data, data_size);
+			memcpy(image->data + ndata * 2, channel[0].data, data_size);
+			image->pdata[RLAYER] = image->data;
+			image->pdata[GLAYER] = image->data + ndata;
+			image->pdata[BLAYER] = image->data + ndata * 2;
+		} else {
+			memcpy(image->data, channel[0].data, data_size);
+			image->pdata[RLAYER] = image->data;
+			image->pdata[GLAYER] = image->data;
+			image->pdata[BLAYER] = image->data;
+		}
+	} else {
+		size_t data_size = ndata * sizeof(float);
+		float *newdata = (float *) realloc(image->fdata, data_size * image->naxes[2]);
+		if (!newdata) {
+			PRINT_ALLOC_ERR;
+			return 1;
+		}
+		image->fdata = newdata;
+
+
+		if (image->naxes[2] == 3) {
+			memcpy(image->fdata, channel[2].data, data_size);
+			memcpy(image->fdata + ndata, channel[1].data, data_size);
+			memcpy(image->fdata + ndata * 2, channel[0].data, data_size);
+			image->fpdata[RLAYER] = image->fdata;
+			image->fpdata[GLAYER] = image->fdata + ndata;
+			image->fpdata[BLAYER] = image->fdata + ndata * 2;
+		} else {
+			memcpy(image->fdata, channel[0].data, data_size);
+			image->fpdata[RLAYER] = image->fdata;
+			image->fpdata[GLAYER] = image->fdata;
+			image->fpdata[BLAYER] = image->fdata;
+		}
+	}
+	image->rx = out.cols;
+	image->ry = out.rows;
+	image->naxes[0] = image->rx;
+	image->naxes[1] = image->ry;
+	invalidate_stats_from_fit(image);
+
+	/* free data */
+	if (bgrbgr_ushort) delete[] bgrbgr_ushort;
+	if (bgrbgr_float) delete[] bgrbgr_float;
+	in.release();
+	out.release();
+	channel[0].release();
+	channel[1].release();
+	channel[2].release();
+	return 0;
+}
+
 static void convert_H_to_MatH(Homography *from, Mat &to) {
 	to.at<double>(0, 0) = from->h00;
 	to.at<double>(0, 1) = from->h01;

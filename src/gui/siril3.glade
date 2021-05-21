@@ -13627,7 +13627,7 @@ FITS sequence: one FITS file for the whole sequence.</property>
                             <property name="can-focus">False</property>
                             <property name="border-width">12</property>
                             <property name="orientation">vertical</property>
-                            <property name="spacing">1</property>
+                            <property name="spacing">5</property>
                             <child>
                               <object class="GtkLabel" id="label13">
                                 <property name="visible">True</property>
@@ -14136,12 +14136,138 @@ WARNING: no new sequence is built, registration data is stored in the original s
                                   </packing>
                                 </child>
                                 <child>
-                                  <object class="GtkBox" id="box_reg">
+                                  <object class="GtkBox">
                                     <property name="visible">True</property>
                                     <property name="can-focus">False</property>
-                                    <property name="orientation">vertical</property>
+                                    <property name="spacing">10</property>
                                     <child>
-                                      <placeholder/>
+                                      <object class="GtkButton" id="pickstar1">
+                                        <property name="label" translatable="yes">Pick 1st star</property>
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="receives-default">True</property>
+                                        <property name="valign">center</property>
+                                        <signal name="clicked" handler="on_select_star_button_clicked" swapped="no"/>
+                                        <style>
+                                          <class name="suggested-action"/>
+                                        </style>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">0</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="pickstar2">
+                                        <property name="label" translatable="yes">Pick 2nd star</property>
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="receives-default">True</property>
+                                        <property name="valign">center</property>
+                                        <signal name="clicked" handler="on_select_star_button_clicked" swapped="no"/>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">1</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <object class="GtkButton" id="pickstar3">
+                                        <property name="label" translatable="yes">Pick 3rd star</property>
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">True</property>
+                                        <property name="receives-default">True</property>
+                                        <property name="valign">center</property>
+                                        <signal name="clicked" handler="on_select_star_button_clicked" swapped="no"/>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="position">2</property>
+                                      </packing>
+                                    </child>
+                                    <child>
+                                      <!-- n-columns=2 n-rows=3 -->
+                                      <object class="GtkGrid">
+                                        <property name="visible">True</property>
+                                        <property name="can-focus">False</property>
+                                        <property name="row-spacing">5</property>
+                                        <property name="column-spacing">10</property>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="label" translatable="yes">Star #1:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">0</property>
+                                            <property name="top-attach">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="label" translatable="yes">Star #2:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">0</property>
+                                            <property name="top-attach">1</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkLabel">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="label" translatable="yes">Star #3:</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">0</property>
+                                            <property name="top-attach">2</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkImage" id="3stars-image1">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="icon-name">gtk-no</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">1</property>
+                                            <property name="top-attach">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkImage" id="3stars-image2">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="icon-name">gtk-no</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">1</property>
+                                            <property name="top-attach">1</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkImage" id="3stars-image3">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="icon-name">gtk-no</property>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">1</property>
+                                            <property name="top-attach">2</property>
+                                          </packing>
+                                        </child>
+                                      </object>
+                                      <packing>
+                                        <property name="expand">False</property>
+                                        <property name="fill">True</property>
+                                        <property name="pack-type">end</property>
+                                        <property name="position">3</property>
+                                      </packing>
                                     </child>
                                   </object>
                                   <packing>
@@ -14156,6 +14282,30 @@ WARNING: no new sequence is built, registration data is stored in the original s
                                   </object>
                                   <packing>
                                     <property name="position">2</property>
+                                    <property name="tab-fill">False</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkBox" id="box_reg">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="orientation">vertical</property>
+                                    <child>
+                                      <placeholder/>
+                                    </child>
+                                  </object>
+                                  <packing>
+                                    <property name="position">3</property>
+                                  </packing>
+                                </child>
+                                <child type="tab">
+                                  <object class="GtkLabel">
+                                    <property name="visible">True</property>
+                                    <property name="can-focus">False</property>
+                                    <property name="label" translatable="yes">page 4</property>
+                                  </object>
+                                  <packing>
+                                    <property name="position">3</property>
                                     <property name="tab-fill">False</property>
                                   </packing>
                                 </child>

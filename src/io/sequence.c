@@ -1464,20 +1464,6 @@ void enforce_area_in_image(rectangle *area, sequence *seq) {
  *                               |_|_|                              *
  ********************************************************************/
 
-struct seqpsf_args {
-	gboolean for_registration;
-	framing_mode framing;
-
-	/* The seqpsf result for each image, list of seqpsf_data */
-	GSList *list;
-};
-
-struct seqpsf_data {
-	int image_index;
-	fitted_PSF *psf;
-	double exposure;
-};
-
 /* Computes FWHM for a sequence image.
  * area is the area from which fit was extracted from the full frame.
  * when the framing is set to follow star, args->area is centered on the found star
@@ -1704,7 +1690,7 @@ void free_reference_image() {
 }
 
 /* returns the number of images of the sequence that can fit into memory based
- * on the configured memory ratio. It can return -1 if there is no memory limit enforced. */
+ * on the configured memory ratio */
 int compute_nb_images_fit_memory(sequence *seq, double factor, gboolean force_float, unsigned int *MB_per_image, int *max_mem_MB) {
 	int max_memory_MB = get_max_memory_in_MB();
 	if (factor < 1.0 || factor > 2.0) {

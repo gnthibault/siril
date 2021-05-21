@@ -152,6 +152,7 @@ src_files = [
   'gui/statistics_list.c',
   'gui/utils.c',
   
+  'registration/3stars.c',
   'registration/comet.c',
   'registration/global.c',
   'registration/matching/match.c',

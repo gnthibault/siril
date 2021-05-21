@@ -222,6 +222,7 @@ siril_common_SOURCES = \
 	io/ser.h \
 	io/single_image.c \
 	io/single_image.h \
+	registration/3stars.c \
 	registration/comet.c \
 	registration/global.c \
 	registration/matching/match.c \

@@ -144,3 +144,13 @@ void set_GUI_DiskSpace(gint64 space, const gchar *label) {
 	set_label_text_from_main_thread(label, str);
 	g_free(str);
 }
+
+void set_suggested(GtkWidget *widget) {
+	gtk_style_context_add_class(gtk_widget_get_style_context(widget),
+			GTK_STYLE_CLASS_SUGGESTED_ACTION);
+}
+
+void unset_suggested(GtkWidget *widget) {
+	gtk_style_context_remove_class(gtk_widget_get_style_context(widget),
+			GTK_STYLE_CLASS_SUGGESTED_ACTION);
+}

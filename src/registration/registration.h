@@ -2,8 +2,10 @@
 #define _REGISTRATION_H_
 
 #include "core/siril.h"
+#include "algos/PSF.h"
+#include "core/processing.h"
 
-#define NUMBER_OF_METHODS 6
+#define NUMBER_OF_METHODS 7
 
 struct registration_args;
 typedef int (*registration_function)(struct registration_args *);
@@ -52,6 +54,7 @@ typedef enum {
 typedef enum {
 	REG_PAGE_GLOBAL,
 	REG_PAGE_COMET,
+	REG_PAGE_3_STARS,
 	REG_PAGE_MISC
 } reg_notebook_page;
 
@@ -72,6 +75,8 @@ int register_shift_fwhm(struct registration_args *args);
 int register_star_alignment(struct registration_args *args);
 int register_ecc(struct registration_args *args);
 int register_comet(struct registration_args *regargs);
+int register_3stars(struct registration_args *regargs);
+
 pointf get_velocity();
 void update_reg_interface(gboolean dont_change_reg_radio);
 void compute_fitting_selection(rectangle *area, int hsteps, int vsteps, int preserve_square);
@@ -82,5 +87,21 @@ gpointer register_thread_func(gpointer p);
 
 /** getter */
 int get_registration_layer(sequence *seq);
+
+
+/**** star alignment (global and 3-star) registration ****/
+
+struct star_align_data {
+	struct registration_args *regargs;
+	regdata *current_regdata;
+	fitted_PSF **refstars;
+	int fitted_stars;
+	BYTE *success;
+	point ref;
+};
+
+regdata *star_align_get_current_regdata(struct registration_args *regargs);
+int star_align_prepare_results(struct generic_seq_args *args);
+int star_align_finalize_hook(struct generic_seq_args *args);
 
 #endif

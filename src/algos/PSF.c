@@ -382,6 +382,8 @@ static fitted_PSF *psf_minimiz_no_angle(gsl_matrix* z, double background) {
 	psf->sy = FIT(5);
 	psf->fwhmx = sqrt(FIT(4) / 2.) * 2 * sqrt(log(2.) * 2);	//Set the real FWHMx with regards to the Sx parameter
 	psf->fwhmy = sqrt(FIT(5) / 2.) * 2 * sqrt(log(2.) * 2);	//Set the real FWHMy with regards to the Sy parameter
+	psf->fwhmx_arcsec = -1.0;
+	psf->fwhmy_arcsec = -1.0;
 	psf->angle = 0;	//The angle is not fitted here
 	// Units
 	psf->units = "px";
@@ -551,10 +553,10 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf, gboolean fo
 
 /******************************************************************************/
 
-/* Returns the largest FWHM.
+/* Returns the largest FWHM in pixels
  * The optional output parameter roundness is the ratio between the two axis FWHM */
-double psf_get_fwhm(fits *fit, int layer, double *roundness) {
-	fitted_PSF *result = psf_get_minimisation(fit, layer, &com.selection, FALSE, TRUE, TRUE);
+double psf_get_fwhm(fits *fit, int layer, rectangle *selection, double *roundness) {
+	fitted_PSF *result = psf_get_minimisation(fit, layer, selection, FALSE, TRUE, TRUE);
 	if (result == NULL) {
 		*roundness = 0.0;
 		return 0.0;
@@ -757,8 +759,8 @@ void fwhm_to_arcsec_if_needed(fits* fit, fitted_PSF *result) {
 	bin_X = fit->unbinned ? (double) fit->binning_x : 1.0;
 	bin_Y = fit->unbinned ? (double) fit->binning_y : 1.0;
 
-	result->fwhmx = fwhmx * (radian_conversion * (double)fit->pixel_size_x / fit->focal_length) * bin_X;
-	result->fwhmy = fwhmy * (radian_conversion * (double)fit->pixel_size_y / fit->focal_length) * bin_Y;
+	result->fwhmx_arcsec = fwhmx * (radian_conversion * (double)fit->pixel_size_x / fit->focal_length) * bin_X;
+	result->fwhmy_arcsec = fwhmy * (radian_conversion * (double)fit->pixel_size_y / fit->focal_length) * bin_Y;
 	result->units = "\"";
 }
 
@@ -766,6 +768,25 @@ void fwhm_to_pixels(fitted_PSF *result) {
 	result->fwhmx = sqrt(result->sx * 0.5) * _2_SQRT_2_LOG2;
 	result->fwhmy = sqrt(result->sy * 0.5) * _2_SQRT_2_LOG2;
 	result->units = "px";
+}
+
+// returns boolean if it was possible (true if arcsec)
+gboolean get_fwhm_as_arcsec_if_possible(fitted_PSF *star, double *fwhmx, double *fwhmy, char **unit) {
+	if (!strcmp(star->units, "px")) {
+		*fwhmx = star->fwhmx;
+		*fwhmy = star->fwhmy;
+		*unit = star->units;
+		return FALSE;
+	}
+	if (star->fwhmx_arcsec <= 0.0) {
+		fprintf(stderr, "FWHM wrongly stored as arcsec\n");
+		star->units = "px";
+		return get_fwhm_as_arcsec_if_possible(star, fwhmx, fwhmy, unit);
+	}
+	*fwhmx = star->fwhmx_arcsec;
+	*fwhmy = star->fwhmy_arcsec;
+	*unit = star->units;
+	return TRUE;
 }
 
 double convert_single_fwhm_to_pixels(double fwhm, double s) {

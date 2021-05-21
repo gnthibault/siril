@@ -3,6 +3,8 @@
 
 #include <stdint.h>
 #include "../core/siril.h"
+#include "../core/processing.h"
+#include "../algos/PSF.h"
 
 void populate_seqcombo(const gchar *realname);
 int	read_single_sequence(char *realname, image_type imagetype);
@@ -37,6 +39,20 @@ typedef enum {
 	REGISTERED_FRAME
 } framing_mode;
 
+struct seqpsf_args {
+	gboolean for_registration;
+	framing_mode framing;
+
+	/* The seqpsf result for each image, list of seqpsf_data */
+	GSList *list;
+};
+
+struct seqpsf_data {
+	int image_index;
+	fitted_PSF *psf;
+	double exposure;
+};
+
 int	sequence_find_refimage(sequence *seq);
 void	check_or_allocate_regparam(sequence *seq, int layer);
 void	set_shifts(sequence *seq, int frame, int layer, float shiftx, float shifty, gboolean data_is_top_down);
@@ -49,6 +65,7 @@ void	enforce_area_in_image(rectangle *area, sequence *seq);
 
 int seqpsf(sequence *seq, int layer, gboolean for_registration, gboolean regall,
 		framing_mode framing, gboolean run_in_thread);
+int seqpsf_image_hook(struct generic_seq_args *args, int out_index, int index, fits *fit, rectangle *area);
 void free_reference_image();
 
 /* in export.c now */

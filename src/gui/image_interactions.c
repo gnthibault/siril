@@ -123,30 +123,26 @@ static gboolean clamp2image(pointi* pt) {
 	return x_inside && y_inside;
 }
 
-/*
- * Selection static functions
- */
-
-/* selection zone event management */
 #define MAX_CALLBACKS_PER_EVENT 10
-static selection_update_callback _registered_callbacks[MAX_CALLBACKS_PER_EVENT];
-static int _nb_registered_callbacks = 0;
+/* selection zone event management */
+static selection_update_callback _registered_selection_callbacks[MAX_CALLBACKS_PER_EVENT];
+static int _nb_selection_callbacks = 0;
 
 void register_selection_update_callback(selection_update_callback f) {
-	if (_nb_registered_callbacks < MAX_CALLBACKS_PER_EVENT) {
-		_registered_callbacks[_nb_registered_callbacks] = f;
-		_nb_registered_callbacks++;
+	if (_nb_selection_callbacks < MAX_CALLBACKS_PER_EVENT) {
+		_registered_selection_callbacks[_nb_selection_callbacks] = f;
+		_nb_selection_callbacks++;
 	}
 }
 
 void unregister_selection_update_callback(selection_update_callback f) {
 	int i;
-	for (i = 0; i < _nb_registered_callbacks; ++i) {
-		if (_registered_callbacks[i] == f) {
-			_registered_callbacks[i] =
-				_registered_callbacks[_nb_registered_callbacks];
-			_registered_callbacks[_nb_registered_callbacks] = NULL;
-			_nb_registered_callbacks--;
+	for (i = 0; i < _nb_selection_callbacks; ++i) {
+		if (_registered_selection_callbacks[i] == f) {
+			_registered_selection_callbacks[i] =
+				_registered_selection_callbacks[_nb_selection_callbacks];
+			_registered_selection_callbacks[_nb_selection_callbacks] = NULL;
+			_nb_selection_callbacks--;
 			return;
 		}
 	}
@@ -157,11 +153,12 @@ static void new_selection_zone() {
 	int i;
 	siril_debug_print("selection: %d,%d,\t%dx%d (%lf)\n", com.selection.x, com.selection.y,
 			com.selection.w, com.selection.h, com.ratio);
-	for (i = 0; i < _nb_registered_callbacks; ++i) {
-		_registered_callbacks[i]();
+	for (i = 0; i < _nb_selection_callbacks; ++i) {
+		_registered_selection_callbacks[i]();
 	}
 	redraw(com.cvport, REMAP_NONE);
 }
+
 
 void delete_selected_area() {
 	memset(&com.selection, 0, sizeof(rectangle));
