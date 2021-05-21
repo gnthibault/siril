@@ -54,7 +54,7 @@ gpointer generic_sequence_worker(gpointer p) {
 	set_progress_bar_data(NULL, PROGRESS_RESET);
 	gettimeofday(&t_start, NULL);
 
-	if (args->nb_filtered_images > 0)	// XXX can it be zero?
+	if (args->nb_filtered_images > 0)
 		nb_frames = args->nb_filtered_images;
 	else {
 		nb_frames = compute_nb_filtered_images(args->seq, args->filtering_criterion, args->filtering_parameter);
@@ -67,6 +67,21 @@ gpointer generic_sequence_worker(gpointer p) {
 	}
 	nb_framesf = (float)nb_frames + 0.3f;	// leave margin for rounding errors and post processing
 	args->retval = 0;
+
+#ifdef _OPENMP
+	if (args->max_thread < 1) {
+		if (args->compute_mem_limits_hook)
+			args->max_thread = args->compute_mem_limits_hook(args, FALSE);
+		else args->max_thread = seq_compute_mem_limits(args, FALSE);
+	}
+	if (args->max_thread < 1) {
+		args->retval = 1;
+		goto the_end;
+	}
+	if (args->compute_mem_limits_hook)
+		siril_log_message(_("%s: with the current memory and thread limits, up to %d thread(s) can be used\n"),
+				args->description, args->max_thread);
+#endif
 
 	if (args->prepare_hook && args->prepare_hook(args)) {
 		siril_log_message(_("Preparing sequence processing failed.\n"));
@@ -128,8 +143,6 @@ gpointer generic_sequence_worker(gpointer p) {
 	if (have_seqwriter)
 		omp_set_schedule(omp_sched_dynamic, 1);
 	else omp_set_schedule(omp_sched_guided, 0);
-	if (args->max_thread <= 0)
-		args->max_thread = com.max_thread;
 #ifdef HAVE_FFMS2
 	// we don't want to enable parallel processing for films, as ffms2 is not thread-safe
 #pragma omp parallel for num_threads(args->max_thread) private(input_idx) schedule(runtime) \
@@ -325,6 +338,51 @@ gboolean end_generic_sequence(gpointer p) {
 	return end_generic(NULL);
 }
 
+/* a function that computes how many images can be processed in parallel, with
+ * regard to how many of them can fit in memory.
+ * If for_writer is true, the call is for how many images can be stored in the
+ * queue, bearing in mind that as many as what the function returns when it's
+ * false may already be allocated.
+ */
+int seq_compute_mem_limits(struct generic_seq_args *args, gboolean for_writer) {
+	unsigned int MB_per_image; int MB_avail;
+	int limit = compute_nb_images_fit_memory(args->seq, args->upscale_ratio, args->force_float, &MB_per_image, &MB_avail);
+	if (limit == 0) {
+		gchar *mem_per_image = g_format_size_full(MB_per_image * BYTES_IN_A_MB, G_FORMAT_SIZE_IEC_UNITS);
+		gchar *mem_available = g_format_size_full(MB_avail * BYTES_IN_A_MB, G_FORMAT_SIZE_IEC_UNITS);
+
+		siril_log_color_message(_("%s: not enough memory to do this operation (%s required per image, %s considered available)\n"),
+				"red", args->description, mem_per_image, mem_available);
+
+		g_free(mem_per_image);
+		g_free(mem_available);
+	} else {
+#ifdef _OPENMP
+		if (for_writer) {
+			/* we already have allowed limit [1, max_thread] for
+			 * the non-writer case */
+			limit -= com.max_thread;
+			if (limit < 0) limit = 0;
+			int max_queue_size = com.max_thread * 3;
+			if (limit > max_queue_size)
+				limit = max_queue_size;
+		}
+		else if (limit > com.max_thread)
+			limit = com.max_thread;
+#else
+		if (for_writer) {
+			limit--;
+			if (limit < 0) limit = 0;
+			if (limit > 3)
+				limit = 3;
+		} else {
+			limit = 1;
+		}
+#endif
+	}
+	return limit;
+}
+
 int seq_prepare_hook(struct generic_seq_args *args) {
 	int retval = 0;
 	g_assert(args->has_output); // don't call this hook otherwise
@@ -367,12 +425,11 @@ int seq_prepare_hook(struct generic_seq_args *args) {
 
 int seq_prepare_writer(struct generic_seq_args *args) {
 	int limit = 0;
-#ifdef _OPENMP
-	limit = compute_nb_images_fit_memory(args->seq, args->upscale_ratio, args->force_float, NULL, NULL);
-	if (limit < 0)
-		limit = com.max_thread * 3; // we still don't want an impossible build-up of images to write
-	else if (limit == 0) {
-		siril_log_color_message(_("Configured memory limits do not seem to allow these images to be processed, aborting\n"), "red");
+	if (args->compute_mem_limits_hook)
+		limit = args->compute_mem_limits_hook(args, TRUE);
+	else limit = seq_compute_mem_limits(args, TRUE); // the default
+
+	if (limit == 0) {
 		if (args->force_ser_output || args->seq->type == SEQ_SER) {
 			ser_close_file(args->new_ser);
 			free(args->new_ser);
@@ -384,13 +441,7 @@ int seq_prepare_writer(struct generic_seq_args *args) {
 			args->new_fitseq = NULL;
 		}
 		return 1;
-	} else {
-		// there doesn't seem to be any interest in having a larger queue
-		int max_queue_size = com.max_thread * 3;
-		if (limit > max_queue_size)
-			limit = max_queue_size;
 	}
-#endif
 	seqwriter_set_max_active_blocks(limit);
 	return 0;
 }

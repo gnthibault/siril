@@ -39,6 +39,8 @@ struct generic_seq_args {
 
 	/** function called to compute the required disk size if has_output */
 	gint64 (*compute_size_hook)(struct generic_seq_args *, int);
+	/** function called to compute how many images fit in memory in parallel */
+	int (*compute_mem_limits_hook)(struct generic_seq_args *, gboolean);
 	/** function called before iterating through the sequence */
 	int (*prepare_hook)(struct generic_seq_args *);
 	/** function called for each image with image index in sequence, number
@@ -105,6 +107,8 @@ struct generic_seq_args {
 gpointer generic_sequence_worker(gpointer p);
 gboolean end_generic_sequence(gpointer p);
 
+/* default functions for some hooks */
+int seq_compute_mem_limits(struct generic_seq_args *args, gboolean for_writer);
 int seq_prepare_hook(struct generic_seq_args *args);
 int seq_prepare_writer(struct generic_seq_args *args);
 int seq_finalize_hook(struct generic_seq_args *args);

@@ -116,14 +116,17 @@ void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		coordinates = g_strdup_printf("x0=%.2fpx\n\t\ty0=%.2fpx", x, y);
 	}
 
+	double fwhmx, fwhmy;
+	char *units;
+	get_fwhm_as_arcsec_if_possible(result, &fwhmx, &fwhmy, &units);
 	msg = g_strdup_printf(_("Centroid Coordinates:\n\t\t%s\n\n"
 				"Full Width Half Maximum:\n\t\tFWHMx=%.2f%s\n\t\tFWHMy=%.2f%s\n\n"
 				"Angle:\n\t\t%0.2fdeg\n\n"
 				"Background Value:\n\t\tB=%.6f\n\n"
 				"Maximal Intensity:\n\t\tA=%.6f\n\n"
 				"Magnitude (%s):\n\t\tm=%.4f\u00B1%.4f\n\n"
-				"RMSE:\n\t\tRMSE=%.3e"), coordinates, result->fwhmx,
-			result->units, result->fwhmy, result->units, result->angle, result->B,
+				"RMSE:\n\t\tRMSE=%.3e"),
+			coordinates, fwhmx, units, fwhmy, units, result->angle, result->B,
 			result->A, str, result->mag + com.magOffset, result->s_mag, result->rmse);
 	show_data_dialog(msg, "PSF Results", url);
 	g_free(coordinates);

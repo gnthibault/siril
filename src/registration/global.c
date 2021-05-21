@@ -53,14 +53,82 @@
 static void create_output_sequence_for_global_star(struct registration_args *args);
 static void print_alignment_results(Homography H, int filenum, float FWHMx, float FWHMy, char *units);
 
-struct star_align_data {
-	struct registration_args *regargs;
+regdata *star_align_get_current_regdata(struct registration_args *regargs) {
 	regdata *current_regdata;
-	fitted_PSF **refstars;
-	int fitted_stars;
-	BYTE *success;
-	point ref;
-};
+	if (regargs->seq->regparam[regargs->layer]) {
+		siril_log_message(
+				_("Recomputing already existing registration for this layer\n"));
+		current_regdata = regargs->seq->regparam[regargs->layer];
+		/* we reset all values as we may register different images */
+		memset(current_regdata, 0, regargs->seq->number * sizeof(regdata));
+	} else {
+		current_regdata = calloc(regargs->seq->number, sizeof(regdata));
+		if (current_regdata == NULL) {
+			PRINT_ALLOC_ERR;
+			return NULL;
+		}
+		regargs->seq->regparam[regargs->layer] = current_regdata;
+	}
+	return current_regdata;
+}
+
+int star_align_prepare_results(struct generic_seq_args *args) {
+	struct star_align_data *sadata = args->user;
+	struct registration_args *regargs = sadata->regargs;
+
+	if (!regargs->translation_only) {
+		// allocate destination sequence data
+		regargs->imgparam = calloc(args->nb_filtered_images, sizeof(imgdata));
+		regargs->regparam = calloc(args->nb_filtered_images, sizeof(regdata));
+		if (!regargs->imgparam  || !regargs->regparam) {
+			PRINT_ALLOC_ERR;
+			return 1;
+		}
+
+		if (args->seq->type == SEQ_SER) {
+			/* copied from seq_prepare_hook with one variation */
+			args->new_ser = malloc(sizeof(struct ser_struct));
+			if (!args->new_ser) {
+				PRINT_ALLOC_ERR;
+				return 1;
+			}
+
+			char dest[256];
+			const char *ptr = strrchr(args->seq->seqname, G_DIR_SEPARATOR);
+			if (ptr)
+				snprintf(dest, 255, "%s%s.ser", regargs->prefix, ptr + 1);
+			else
+				snprintf(dest, 255, "%s%s.ser", regargs->prefix, args->seq->seqname);
+
+			/* Here the last argument is NULL because we do not want copy SER file
+			 * from the original. Indeed in the demosaicing case this would lead to
+			 * a wrong file (B&W and not in RAW data). Moreover, header informations
+			 * (like fps, local and UTC time, ...) have no sense now since some frames
+			 * could be removed from the sequence.
+			 */
+			if (ser_create_file(dest, args->new_ser, TRUE, NULL)) {
+				free(args->new_ser);
+				args->new_ser = NULL;
+				return 1;
+			}
+
+			if (seq_prepare_writer(args))
+				return 1;
+		}
+		else if (args->seq->type == SEQ_FITSEQ) {
+			if (seq_prepare_hook(args))
+				return 1;
+		}
+	}
+
+	sadata->success = calloc(args->nb_filtered_images, sizeof(BYTE));
+	if (!sadata->success) {
+		PRINT_ALLOC_ERR;
+		return 1;
+	}
+	return 0;
+}
+
 
 static int star_align_prepare_hook(struct generic_seq_args *args) {
 	struct star_align_data *sadata = args->user;
@@ -70,21 +138,9 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	fits fit = { 0 };
 	int i, nb_stars = 0;
 
-	if (args->seq->regparam[regargs->layer]) {
-		siril_log_message(
-				_("Recomputing already existing registration for this layer\n"));
-		sadata->current_regdata = args->seq->regparam[regargs->layer];
-		/* we reset all values as we may register different images */
-		memset(sadata->current_regdata, 0, args->seq->number * sizeof(regdata));
-	} else {
-		sadata->current_regdata = calloc(args->seq->number, sizeof(regdata));
-		if (sadata->current_regdata == NULL) {
-			PRINT_ALLOC_ERR;
-			return -2;
-		}
-		args->seq->regparam[regargs->layer] = sadata->current_regdata;
-	}
-
+	sadata->current_regdata = star_align_get_current_regdata(regargs);
+	if (!sadata->current_regdata) return -2;
+	
 	/* first we're looking for stars in reference image */
 	if (seq_read_frame(args->seq, regargs->reference_image, &fit, FALSE, -1)) {
 		siril_log_message(_("Could not load reference image\n"));
@@ -169,58 +225,8 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	sadata->current_regdata[regargs->reference_image].roundness = FWHMy/FWHMx;
 	sadata->current_regdata[regargs->reference_image].fwhm = FWHMx;
 	sadata->current_regdata[regargs->reference_image].weighted_fwhm = FWHMx;
-	
-	if (!regargs->translation_only) {
-		// allocate destination sequence data
-		regargs->imgparam = calloc(args->nb_filtered_images, sizeof(imgdata));
-		regargs->regparam = calloc(args->nb_filtered_images, sizeof(regdata));
-		if (!regargs->imgparam  || !regargs->regparam) {
-			PRINT_ALLOC_ERR;
-			return 1;
-		}
 
-		if (args->seq->type == SEQ_SER) {
-			/* copied from seq_prepare_hook with one variation */
-			args->new_ser = malloc(sizeof(struct ser_struct));
-			if (!args->new_ser) {
-				PRINT_ALLOC_ERR;
-				return 1;
-			}
-
-			char dest[256];
-			const char *ptr = strrchr(args->seq->seqname, G_DIR_SEPARATOR);
-			if (ptr)
-				snprintf(dest, 255, "%s%s.ser", regargs->prefix, ptr + 1);
-			else
-				snprintf(dest, 255, "%s%s.ser", regargs->prefix, args->seq->seqname);
-
-			/* Here the last argument is NULL because we do not want copy SER file
-			 * from the original. Indeed in the demosaicing case this would lead to
-			 * a wrong file (B&W and not in RAW data). Moreover, header informations
-			 * (like fps, local and UTC time, ...) have no sense now since some frames
-			 * could be removed from the sequence.
-			 */
-			if (ser_create_file(dest, args->new_ser, TRUE, NULL)) {
-				free(args->new_ser);
-				args->new_ser = NULL;
-				return 1;
-			}
-
-			if (seq_prepare_writer(args))
-				return 1;
-		}
-		else if (args->seq->type == SEQ_FITSEQ) {
-			if (seq_prepare_hook(args))
-				return 1;
-		}
-}
-
-	sadata->success = calloc(args->nb_filtered_images, sizeof(BYTE));
-	if (!sadata->success) {
-		PRINT_ALLOC_ERR;
-		return 1;
-	}
-	return 0;
+	return star_align_prepare_results(args);
 }
 
 /* reads the image, searches for stars in it, tries to match them with
@@ -365,7 +371,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 	return 0;
 }
 
-static int star_align_finalize_hook(struct generic_seq_args *args) {
+int star_align_finalize_hook(struct generic_seq_args *args) {
 	struct star_align_data *sadata = args->user;
 	struct registration_args *regargs = sadata->regargs;
 	int i, failed = 0;
@@ -445,26 +451,10 @@ static int star_align_finalize_hook(struct generic_seq_args *args) {
 	// it here because it's still used in the generic processing function.
 }
 
-int register_star_alignment(struct registration_args *regargs) {
-	struct generic_seq_args *args = create_default_seqargs(regargs->seq);
-	if (!regargs->process_all_frames) {
-		args->filtering_criterion = seq_filter_included;
-		args->nb_filtered_images = regargs->seq->selnum;
-	}
-	args->prepare_hook = star_align_prepare_hook;
-	args->image_hook = star_align_image_hook;
-	args->finalize_hook = star_align_finalize_hook;
-	args->stop_on_error = FALSE;
-	args->description = _("Global star registration");
-	args->has_output = !regargs->translation_only;
-	args->output_type = get_data_type(args->seq->bitpix);
-	args->upscale_ratio = regargs->x2upscale ? 2.0 : 1.0;
-	args->new_seq_prefix = regargs->prefix;
-	args->load_new_sequence = TRUE;
-	args->already_in_a_thread = TRUE;
+int star_align_compute_mem_limits(struct generic_seq_args *args, gboolean for_writer) {
 	unsigned int MB_per_image; int MB_avail;
-	int nb_images = compute_nb_images_fit_memory(regargs->seq, args->upscale_ratio, FALSE, &MB_per_image, &MB_avail);
-	if (nb_images > 0) {
+	int limit = compute_nb_images_fit_memory(args->seq, args->upscale_ratio, args->force_float, &MB_per_image, &MB_avail);
+	if (limit == 0) {
 		/* The registration memory consumption, n is image size and m channel size.
 		 * First, a threshold is computed for star pixel value, using statistics:
 		 *	O(m), data is duplicated for median computation if
@@ -483,33 +473,73 @@ int register_star_alignment(struct registration_args *regargs) {
 		 * Don't forget that this is in addition to the image being already read.
 		 */
 		unsigned int required;
-		if (args->has_output && regargs->seq->nb_layers == 3 &&
-				get_data_type(regargs->seq->bitpix) == DATA_FLOAT)
+		if (args->has_output && args->seq->nb_layers == 3 &&
+				get_data_type(args->seq->bitpix) == DATA_FLOAT)
 			required = MB_per_image * 3;
 		else {
-			unsigned int MB_per_channel = regargs->seq->nb_layers == 1 ? MB_per_image : MB_per_image / 3;
-			unsigned int float_multiplier = get_data_type(regargs->seq->bitpix) == DATA_FLOAT ? 1 : 2;
+			unsigned int MB_per_channel = args->seq->nb_layers == 1 ? MB_per_image : MB_per_image / 3;
+			unsigned int float_multiplier = get_data_type(args->seq->bitpix) == DATA_FLOAT ? 1 : 2;
 			required = MB_per_image + 5 * MB_per_channel * float_multiplier;
 		}
-		args->max_thread = MB_avail / required;
-		siril_debug_print("Memory required per thread: %u MB, limiting to %d threads\n", required, args->max_thread);
+		limit = MB_avail / required;
+		siril_debug_print("Memory required per thread: %u MB, limiting to %d threads\n",
+				required, limit); 
 	}
 
-	if (args->max_thread > com.max_thread || args->max_thread < 0)
-		args->max_thread = com.max_thread;
-	if (args->max_thread == 0) {
+	if (limit == 0) {
 		gchar *mem_per_image = g_format_size_full(MB_per_image * BYTES_IN_A_MB, G_FORMAT_SIZE_IEC_UNITS);
 		gchar *mem_available = g_format_size_full(MB_avail * BYTES_IN_A_MB, G_FORMAT_SIZE_IEC_UNITS);
 
-		siril_log_color_message(_("Not enough memory to do this operation (%s required per image, %s considered available)\n"),
-				"red", mem_per_image, mem_available);
+		siril_log_color_message(_("%s: not enough memory to do this operation (%s required per image, %s considered available)\n"),
+				"red", args->description, mem_per_image, mem_available);
 
 		g_free(mem_per_image);
 		g_free(mem_available);
-		free(args);
-		return -1;
+	} else {
+#ifdef _OPENMP
+		if (for_writer) {
+			/* we already have allowed limit [1, max_thread] for
+			 * the non-writer case */
+			limit -= com.max_thread;
+			if (limit < 0) limit = 0;
+			int max_queue_size = com.max_thread * 3;
+			if (limit > max_queue_size)
+				limit = max_queue_size;
+		}
+		else if (limit > com.max_thread)
+			limit = com.max_thread;
+#else
+		if (for_writer) {
+			limit--;
+			if (limit < 0) limit = 0;
+			if (limit > 3)
+				limit = 3;
+		} else {
+			limit = 1;
+		}
+#endif
 	}
-	siril_log_message(_("With the current memory and thread limits, up to %d thread(s) can be used for registration\n"), args->max_thread);
+	return limit;
+}
+
+int register_star_alignment(struct registration_args *regargs) {
+	struct generic_seq_args *args = create_default_seqargs(regargs->seq);
+	if (!regargs->process_all_frames) {
+		args->filtering_criterion = seq_filter_included;
+		args->nb_filtered_images = regargs->seq->selnum;
+	}
+	args->compute_mem_limits_hook = star_align_compute_mem_limits;
+	args->prepare_hook = star_align_prepare_hook;
+	args->image_hook = star_align_image_hook;
+	args->finalize_hook = star_align_finalize_hook;
+	args->stop_on_error = FALSE;
+	args->description = _("Global star registration");
+	args->has_output = !regargs->translation_only;
+	args->output_type = get_data_type(args->seq->bitpix);
+	args->upscale_ratio = regargs->x2upscale ? 2.0 : 1.0;
+	args->new_seq_prefix = regargs->prefix;
+	args->load_new_sequence = TRUE;
+	args->already_in_a_thread = TRUE;
 
 	struct star_align_data *sadata = calloc(1, sizeof(struct star_align_data));
 	if (!sadata) {
@@ -520,6 +550,7 @@ int register_star_alignment(struct registration_args *regargs) {
 	args->user = sadata;
 
 	generic_sequence_worker(args);
+
 	regargs->retval = args->retval;
 	free(args);
 	return regargs->retval;

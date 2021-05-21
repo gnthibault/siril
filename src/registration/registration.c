@@ -61,6 +61,8 @@ static char *tooltip_text[] = { N_("<b>One Star Registration</b>: This is the si
 		"Because only one star is concerned for register, images are aligned using shifting "
 		"(at a fraction of pixel). No rotation or scaling are performed. "
 		"Shifts at pixel precision are saved in seq file."),
+		N_("<b>Two or Three Stars Registration</b>: This method looks like the one star registration except one need to select "
+		"two or three stars. This is very useful for field with a few stars."),
 		N_("<b>Global Star Alignment</b>: This is a more powerful and accurate algorithm (but also slower) "
 		"to perform deep-sky images. The global matching is based on triangle similarity method for automatically "
 		"identify common stars in each image. "
@@ -104,6 +106,8 @@ void initialize_registration_methods() {
 
 	reg_methods[i++] = new_reg_method(_("One Star Registration (deep-sky)"),
 			&register_shift_fwhm, REQUIRES_ANY_SELECTION, REGTYPE_DEEPSKY);
+	reg_methods[i++] = new_reg_method(_("Two or Three Stars Registration (deep-sky)"),
+			&register_3stars, REQUIRES_NO_SELECTION, REGTYPE_DEEPSKY);
 	reg_methods[i++] = new_reg_method(_("Global Star Alignment (deep-sky)"),
 			&register_star_alignment, REQUIRES_NO_SELECTION, REGTYPE_DEEPSKY);
 	reg_methods[i++] = new_reg_method(_("Image Pattern Alignment (planetary - full disk)"),
@@ -730,8 +734,6 @@ void update_reg_interface(gboolean dont_change_reg_radio) {
 	/* initialize default */
 	gtk_notebook_set_current_page(notebook_reg, REG_PAGE_MISC);
 	gtk_widget_set_visible(cumul_data, FALSE);
-	gtk_widget_set_sensitive(go_register, FALSE);
-	gtk_label_set_text(labelreginfo, _("Load a sequence first"));
 
 	/* getting the selected registration method */
 	method = get_selected_registration_method();
@@ -739,17 +741,27 @@ void update_reg_interface(gboolean dont_change_reg_radio) {
 	/* number of registered image */
 	nb_images_reg = gtk_toggle_button_get_active(reg_all) ? com.seq.number : com.seq.selnum;
 
-	if (method && ((nb_images_reg > 1 && selection_is_done)	|| (nb_images_reg > 1 && method->sel == REQUIRES_NO_SELECTION))) {
+	if (method && nb_images_reg > 1 && (selection_is_done || method->sel == REQUIRES_NO_SELECTION)) {
 		if (method->method_ptr == &register_star_alignment) {
 			gtk_notebook_set_current_page(notebook_reg, REG_PAGE_GLOBAL);
 		} else if (method->method_ptr == &register_comet) {
 			gtk_notebook_set_current_page(notebook_reg, REG_PAGE_COMET);
+		} else if (method->method_ptr == &register_3stars) {
+			gtk_notebook_set_current_page(notebook_reg, REG_PAGE_3_STARS);
 		}
 		gtk_widget_set_visible(follow, method->method_ptr == &register_shift_fwhm);
 		gtk_widget_set_visible(cumul_data, method->method_ptr == &register_comet);
-		gtk_widget_set_sensitive(go_register, TRUE);
-		gtk_label_set_text(labelreginfo, "");
+		if (method->method_ptr == &register_3stars && com.seq.current != 0)
+			gtk_label_set_text(labelreginfo, _("Make sure you load the first image"));
+		else if (gfit.naxes[2] == 1 && gfit.bayer_pattern[0] != '\0')
+			gtk_label_set_text(labelreginfo, _("Debayer the sequence for registration"));
+		else gtk_label_set_text(labelreginfo, "");
+		// the 3 stars method has special GUI requirements
+		if (method->method_ptr != &register_3stars) {
+			gtk_widget_set_sensitive(go_register, TRUE);
+		}
 	} else {
+		gtk_widget_set_sensitive(go_register, FALSE);
 		if (nb_images_reg <= 1 && !selection_is_done) {
 			if (sequence_is_loaded()) {
 				if (method && method->sel == REQUIRES_NO_SELECTION) {
@@ -757,6 +769,9 @@ void update_reg_interface(gboolean dont_change_reg_radio) {
 				} else {
 					gtk_label_set_text(labelreginfo, _("Select an area in image first, and select images in the sequence"));
 				}
+			}
+			else {
+				gtk_label_set_text(labelreginfo, _("Load a sequence first"));
 			}
 		} else if (nb_images_reg <= 1) {
 			gtk_label_set_text(labelreginfo, _("Select images in the sequence"));

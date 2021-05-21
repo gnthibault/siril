@@ -206,19 +206,26 @@ static void display_PSF(fitted_PSF **result) {
 		int i = 0;
 		double FWHMx = 0.0, FWHMy = 0.0, B = 0.0, A = 0.0, r = 0.0, angle = 0.0,
 				rmse = 0.0;
+		gboolean unit_is_arcsec;
 
 		while (result[i]) {
-			B += result[i]->B;
-			A += result[i]->A;
-			FWHMx += result[i]->fwhmx;
-			FWHMy += result[i]->fwhmy;
-			angle += result[i]->angle;
-			rmse += result[i]->rmse;
-			if (i > 1 && (strcmp(result[i]->units, result[i - 1]->units))) {
+			double fwhmx, fwhmy;
+			char *unit;
+			gboolean is_as = get_fwhm_as_arcsec_if_possible(result[i], &fwhmx, &fwhmy, &unit);
+			if (i == 0)
+				unit_is_arcsec = is_as;
+			else if (is_as != unit_is_arcsec) {
 				siril_message_dialog(GTK_MESSAGE_ERROR, _("Error"),
-						_("Stars must have the same units."));
+						_("Stars FWHM must have the same units."));
 				return;
 			}
+
+			B += result[i]->B;
+			A += result[i]->A;
+			FWHMx += fwhmx;
+			FWHMy += fwhmy;
+			angle += result[i]->angle;
+			rmse += result[i]->rmse;
 			i++;
 		}
 		if (i <= 0) return;

@@ -597,12 +597,7 @@ static void draw_stars(const draw_data_t* dd) {
 		cairo_set_line_width(cr, 1.5 / dd->zoom);
 
 		while (com.stars[i]) {
-			double size = com.stars[i]->fwhmx;
-			if (com.stars[i]->units[0] == '\"') {
-				size = convert_single_fwhm_to_pixels(com.stars[i]->fwhmx, com.stars[i]->sx);
-			}
-			size *= 2; // in order to be sure to contain stars
-
+			double size = com.stars[i]->fwhmx * 2.0;
 			if (i == com.selected_star) {
 				// We draw horizontal and vertical lines to show the star
 				cairo_set_line_width(cr, 2.0 / dd->zoom);
@@ -634,11 +629,7 @@ static void draw_stars(const draw_data_t* dd) {
 			cairo_set_line_width(cr, 2.0 / dd->zoom);
 			fitted_PSF *the_psf = com.seq.photometry[i][com.seq.current];
 			if (the_psf) {
-				double size = the_psf->fwhmx;
-				if (the_psf->units[0] == '\"') {
-					size = convert_single_fwhm_to_pixels(the_psf->fwhmx, the_psf->sx);
-				}
-				size *= 2; // in order to be sure to contain stars
+				double size = the_psf->fwhmx * 2.0;
 				cairo_arc(cr, the_psf->xpos, the_psf->ypos, size, 0., 2. * M_PI);
 				cairo_stroke(cr);
 				cairo_arc(cr, the_psf->xpos, the_psf->ypos, com.pref.phot_set.inner, 0.,

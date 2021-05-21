@@ -39,4 +39,7 @@ GtkWidget* popover_new_with_image(GtkWidget *widget, const gchar *text, GdkPixbu
 void set_GUI_MEM(guint64 used, const gchar *label);
 void set_GUI_DiskSpace(gint64 mem, const gchar *label);
 
+void set_suggested(GtkWidget *widget);
+void unset_suggested(GtkWidget *widget);
+
 #endif /* SRC_GUI_UTILS_H_ */

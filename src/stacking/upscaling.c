@@ -83,26 +83,6 @@ void remove_tmp_drizzle_files(struct stacking_args *args) {
 	}
 }
 
-static int upscale_get_max_number_of_threads(sequence *seq) {
-	if (seq->nb_layers < 0) {
-		fprintf(stderr, "SEQUENCE UNINITIALIZED\n");
-		return 0;
-	}
-	int max_memory_MB;
-	unsigned int MB_per_image;
-	int nb_threads = compute_nb_images_fit_memory(seq, seq->upscale_at_stacking, FALSE, &MB_per_image, &max_memory_MB);
-	if (nb_threads < 0)
-		return com.max_thread;
-	if (nb_threads == 0) {
-		siril_log_color_message(_("Your system does not have enough memory to up-scale the images for `drizzle' operation (%d MB free for %d MB required)\n"), "red", max_memory_MB, MB_per_image);
-		return 0;
-	}
-	if (nb_threads > com.max_thread)
-		nb_threads = com.max_thread;
-	siril_log_message(_("With the current memory and thread (%d) limits, up to %d thread(s) can be used for sequence up-scaling\n"), com.max_thread, nb_threads);
-	return nb_threads;
-}
-
 /*****************************************************************
  *      UP-SCALING A SEQUENCE: GENERIC FUNCTION IMPLEMENTATION   *
  *****************************************************************/
@@ -137,16 +117,6 @@ int upscale_sequence(struct stacking_args *stackargs) {
 	if (stackargs->seq->upscale_at_stacking <= 1.05)
 		return 0;
 
-	// check memory first
-	int nb_threads = upscale_get_max_number_of_threads(stackargs->seq);
-	if (nb_threads == 0) {
-		siril_log_color_message(_("Stacking will be done without up-scaling (disabling 'drizzle')\n"), "red");
-		stackargs->seq->upscale_at_stacking = 1.0;
-		return 0;
-	}
-	int backup_max_thread = com.max_thread;
-	com.max_thread = nb_threads;
-
 	struct generic_seq_args *args = create_default_seqargs(stackargs->seq);
 	struct upscale_args *upargs = malloc(sizeof(struct upscale_args));
 
@@ -176,6 +146,15 @@ int upscale_sequence(struct stacking_args *stackargs) {
 	args->user = upargs;
 	args->already_in_a_thread = TRUE;
 
+	// check memory here, failure is not an error
+	int nb_threads = seq_compute_mem_limits(args, FALSE);
+	if (nb_threads == 0) {
+		siril_log_color_message(_("Stacking will be done without up-scaling (disabling 'drizzle')\n"), "red");
+		stackargs->seq->upscale_at_stacking = 1.0;
+		return 0;
+	}
+	args->max_thread = nb_threads;
+
 	remove_tmp_drizzle_files(stackargs);
 
 	generic_sequence_worker(args);
@@ -183,7 +162,6 @@ int upscale_sequence(struct stacking_args *stackargs) {
 	stackargs->retval = args->retval;
 	free(upargs);
 	free(args);
-	com.max_thread = backup_max_thread;
 
 	if (!stackargs->retval) {
 		gchar *basename = g_path_get_basename(stackargs->seq->seqname);
