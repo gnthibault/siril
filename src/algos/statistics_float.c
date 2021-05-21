@@ -260,7 +260,7 @@ static void siril_stats_float_minmax(float *min_out, float *max_out,
 
 /* this function tries to get the requested stats from the passed stats,
  * computes them and stores them in it if they have not already been */
-imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, int option, imstats *stats, gboolean multithread) {
+imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, int option, imstats *stats, int bitpix, gboolean multithread) {
 	int nx, ny;
 	float *data = NULL;
 	int stat_is_local = 0, free_data = 0;
@@ -301,6 +301,19 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 		}
 	}
 
+	/* We need to convert stats to the bitdepth of the orginal images
+	 * to make sure they are logged in a consistent manner and no mixing 16b/32b can occur in the seq file
+	 * - if from fit, the original fit bitpix is passed as argument
+	 * - if from cache, so from seq file, we take it from seq->bitpix and pass it as argument
+	 * This is really important because we can compute float statistics from ushort images.
+	 * Fixes https://gitlab.com/free-astro/siril/-/issues/700
+	 */
+
+	if (stat->normValue == NULL_STATS) {
+		if (bitpix == FLOAT_IMG) stat->normValue = 1.f;
+		else stat->normValue = (bitpix == BYTE_IMG) ? UCHAR_MAX_DOUBLE : USHRT_MAX_DOUBLE;
+	}
+
 	/* Calculation of min and max */
 	if ((option & (STATS_MINMAX | STATS_BASIC)) && (stat->min == NULL_STATS || stat->max == NULL_STATS)) {
 		float min = 0, max = 0;
@@ -310,9 +323,8 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing minmax\n", stat, fit, layer);
 		siril_stats_float_minmax(&min, &max, data, stat->total, multithread);
-		stat->min = (double)min;
-		stat->max = (double)max;
-		stat->normValue = 1.0;
+		stat->min = (double)min * stat->normValue;
+		stat->max = (double)max * stat->normValue;
 	}
 
 	/* Calculation of ngoodpix, mean, sigma and background noise */
@@ -333,6 +345,9 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 			siril_log_message("fits_img_stats_float failed\n");
 			return NULL;
 		}
+		stat->mean *= stat->normValue;
+		stat->sigma *= stat->normValue;
+		stat->bgnoise *= stat->normValue;
 	}
 	if (stat->ngoodpix == 0L) {
 		if (free_data) free(data);
@@ -360,7 +375,7 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing median\n", stat, fit, layer);
-		stat->median = histogram_median_float(data, stat->ngoodpix, multithread);
+		stat->median = histogram_median_float(data, stat->ngoodpix, multithread) * stat->normValue;
 	}
 
 	/* Calculation of average absolute deviation from the median */
@@ -370,7 +385,7 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing absdev\n", stat, fit, layer);
-		stat->avgDev = gsl_stats_float_absdev_m(data, 1, stat->ngoodpix, stat->median);
+		stat->avgDev = gsl_stats_float_absdev_m(data, 1, stat->ngoodpix, stat->median / stat->normValue) * stat->normValue;
 	}
 
 	/* Calculation of median absolute deviation */
@@ -380,7 +395,7 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing mad\n", stat, fit, layer);
-		stat->mad = siril_stats_float_mad(data, stat->ngoodpix, stat->median, multithread, NULL);
+		stat->mad = siril_stats_float_mad(data, stat->ngoodpix, stat->median / stat->normValue, multithread, NULL) * stat->normValue;
 	}
 
 	/* Calculation of Bidweight Midvariance */
@@ -390,8 +405,8 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing bimid\n", stat, fit, layer);
-		double bwmv = siril_stats_float_bwmv(data, stat->ngoodpix, stat->mad, stat->median, multithread);
-		stat->sqrtbwmv = sqrt(bwmv);
+		double bwmv = siril_stats_float_bwmv(data, stat->ngoodpix, stat->mad / stat->normValue, stat->median / stat->normValue, multithread);
+		stat->sqrtbwmv = sqrt(bwmv) * stat->normValue;
 	}
 
 	/* Calculation of IKSS. Only used for stacking normalization */
@@ -401,11 +416,14 @@ imstats* statistics_internal_float(fits *fit, int layer, rectangle *selection, i
 			return NULL;	// not in cache, don't compute
 		}
 		siril_debug_print("- stats %p fit %p (%d): computing ikss\n", stat, fit, layer);
-		if (IKSSlite(data, stat->ngoodpix, stat->median, stat->mad, &stat->location, &stat->scale, multithread)) {
+		if (IKSSlite(data, stat->ngoodpix, stat->median / stat->normValue, stat->mad / stat->normValue, &stat->location, &stat->scale, multithread)) {
 			if (stat_is_local) free(stat);
 			if (free_data) free(data);
-			return NULL;
+			return
+			 NULL;
 		}
+		stat->location *= stat->normValue;
+		stat->scale *= stat->normValue;
 	}
 
 	if (free_data) free(data);

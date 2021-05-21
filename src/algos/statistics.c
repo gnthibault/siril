@@ -217,8 +217,6 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 	int nx, ny;
 	WORD *data = NULL;
 	int stat_is_local = 0, free_data = 0;
-	double conversionfactor;
-	int bpix;
 	imstats* stat = stats;
 	// median is included in STATS_BASIC but required to compute other data
 	int compute_median = (option & STATS_BASIC) || (option & STATS_AVGDEV) ||
@@ -254,70 +252,42 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 			if (stat_is_local) free(stat);
 			return NULL;
 		}
-		if (stat->normValue == NULL_STATS) {
-			stat->normValue = (fit->bitpix == BYTE_IMG) ? UCHAR_MAX_DOUBLE : USHRT_MAX_DOUBLE;
-		}
 	}
 
-	/* We need to know what is the bitdepth of the sequence where stats was computed
-	 * - if from fit, it is easy we just look the fit bitpix
-	 * - if from cache, so from seq file, we take it from se->bitpix given in argument
-	 * This is really important because we can compute float statistics from ushort images.
-	 * Fixes https://gitlab.com/free-astro/siril/-/issues/700
-	 */
-
-	bpix = (fit) ? fit->bitpix : bitpix;
-
-	if (stat->normValue > 1.0) {
-		conversionfactor = 1.0;
-	} else {
-		conversionfactor = (bpix == BYTE_IMG) ? UCHAR_MAX_DOUBLE : USHRT_MAX_DOUBLE;
-		stat->normValue = conversionfactor;
+	if (stat->normValue == NULL_STATS) {
+		stat->normValue = (bitpix == BYTE_IMG) ? UCHAR_MAX_DOUBLE : USHRT_MAX_DOUBLE;
 	}
 
 	/* Calculation of min and max */
-	if ((stat->min == NULL_STATS || stat->max == NULL_STATS)) {
-		if (option & (STATS_MINMAX | STATS_BASIC)){
-			WORD min = 0, max = 0;
-			if (!data) {
-				if (stat_is_local) free(stat);
-				return NULL;	// not in cache, don't compute
-			}
-			siril_debug_print("- stats %p fit %p (%d): computing minmax\n", stat, fit, layer);
-			siril_stats_ushort_minmax(&min, &max, data, stat->total, multithread);
-
-			stat->min = (double) min;
-			stat->max = (double) max;
+	if ((option & (STATS_MINMAX | STATS_BASIC)) && (stat->min == NULL_STATS || stat->max == NULL_STATS)) {
+		WORD min = 0, max = 0;
+		if (!data) {
+			if (stat_is_local) free(stat);
+			return NULL;	// not in cache, don't compute
 		}
-	} else {
-			stat->min *= conversionfactor;
-			stat->max *= conversionfactor;
+		siril_debug_print("- stats %p fit %p (%d): computing minmax\n", stat, fit, layer);
+		siril_stats_ushort_minmax(&min, &max, data, stat->total, multithread);
+		stat->min = (double) min;
+		stat->max = (double) max;
 	}
 
 	/* Calculation of ngoodpix, mean, sigma and background noise */
-	if ((stat->ngoodpix <= 0L || stat->mean == NULL_STATS ||
+	if ((option & (STATS_SIGMEAN | STATS_BASIC)) && (stat->ngoodpix <= 0L || stat->mean == NULL_STATS ||
 		stat->sigma == NULL_STATS || stat->bgnoise == NULL_STATS)) {
-		if (option & (STATS_SIGMEAN | STATS_BASIC)) {
-
-			int status = 0;
-			if (!data) {
-				if (stat_is_local) free(stat);
-				return NULL;	// not in cache, don't compute
-			}
-			siril_debug_print("- stats %p fit %p (%d): computing basic\n", stat, fit, layer);
-			siril_fits_img_stats_ushort(data, nx, ny, ACTIVATE_NULLCHECK, 0, &stat->ngoodpix,
-					NULL, NULL, &stat->mean, &stat->sigma, &stat->bgnoise,
-					NULL, NULL, NULL, multithread, &status);
-			if (status) {
-				if (free_data) free(data);
-				if (stat_is_local) free(stat);
-				return NULL;
-			}
+		int status = 0;
+		if (!data) {
+			if (stat_is_local) free(stat);
+			return NULL;	// not in cache, don't compute
 		}
-	} else {
-		stat->mean *= conversionfactor;
-		stat->sigma *= conversionfactor;
-		stat->bgnoise *= conversionfactor;
+		siril_debug_print("- stats %p fit %p (%d): computing basic\n", stat, fit, layer);
+		siril_fits_img_stats_ushort(data, nx, ny, ACTIVATE_NULLCHECK, 0, &stat->ngoodpix,
+				NULL, NULL, &stat->mean, &stat->sigma, &stat->bgnoise,
+				NULL, NULL, NULL, multithread, &status);
+		if (status) {
+			if (free_data) free(data);
+			if (stat_is_local) free(stat);
+			return NULL;
+		}
 	}
 
 	if (stat->ngoodpix == 0L) {
@@ -338,106 +308,84 @@ static imstats* statistics_internal_ushort(fits *fit, int layer, rectangle *sele
 	}
 
 	/* Calculation of median */
-	if (stat->median == NULL_STATS) {
-		if (compute_median) {
-			if (!data) {
-				if (stat_is_local) free(stat);
-				return NULL;	// not in cache, don't compute
-			}
-			siril_debug_print("- stats %p fit %p (%d): computing median\n", stat, fit, layer);
-			stat->median = histogram_median(data, stat->ngoodpix, multithread);
+	if (compute_median && stat->median == NULL_STATS) {
+		if (!data) {
+			if (stat_is_local) free(stat);
+			return NULL;	// not in cache, don't compute
 		}
-	} else {
-		stat->median *= conversionfactor;
+		siril_debug_print("- stats %p fit %p (%d): computing median\n", stat, fit, layer);
+		stat->median = histogram_median(data, stat->ngoodpix, multithread);
 	}
 
 	/* Calculation of average absolute deviation from the median */
-	if (stat->avgDev == NULL_STATS) {
-		if (option & STATS_AVGDEV) {
-			if (!data) {
-				if (stat_is_local) free(stat);
-				return NULL;	// not in cache, don't compute
-			}
-			siril_debug_print("- stats %p fit %p (%d): computing absdev\n", stat, fit, layer);
-			stat->avgDev = gsl_stats_ushort_absdev_m(data, 1, stat->ngoodpix, stat->median);
+	if ((option & STATS_AVGDEV) && stat->avgDev == NULL_STATS) {
+		if (!data) {
+			if (stat_is_local) free(stat);
+			return NULL;	// not in cache, don't compute
 		}
-	} else {
-		stat->avgDev *= conversionfactor;
+		siril_debug_print("- stats %p fit %p (%d): computing absdev\n", stat, fit, layer);
+		stat->avgDev = gsl_stats_ushort_absdev_m(data, 1, stat->ngoodpix, stat->median);
 	}
 
-
 	/* Calculation of median absolute deviation */
-	if (stat->mad == NULL_STATS) {
-		if ((option & STATS_MAD) || (option & STATS_BWMV) || (option & STATS_IKSS)) {
-			if (!data) {
-				if (stat_is_local) free(stat);
-				return NULL;	// not in cache, don't compute
-			}
-			siril_debug_print("- stats %p fit %p (%d): computing mad\n", stat, fit, layer);
-			stat->mad = siril_stats_ushort_mad(data, stat->ngoodpix, stat->median, multithread);
+	if (((option & STATS_MAD) || (option & STATS_BWMV) || (option & STATS_IKSS)) && stat->mad == NULL_STATS) {
+		if (!data) {
+			if (stat_is_local) free(stat);
+			return NULL;	// not in cache, don't compute
 		}
-	} else {
-		stat->mad *= conversionfactor;
+		siril_debug_print("- stats %p fit %p (%d): computing mad\n", stat, fit, layer);
+		stat->mad = siril_stats_ushort_mad(data, stat->ngoodpix, stat->median, multithread);
 	}
 
 	/* Calculation of Bidweight Midvariance */
-	if (stat->sqrtbwmv == NULL_STATS) {
-		if (option & STATS_BWMV) {
-			if (!data) {
-				if (stat_is_local) free(stat);
-				return NULL;	// not in cache, don't compute
-			}
-			siril_debug_print("- stats %p fit %p (%d): computing bimid\n", stat, fit, layer);
-			double bwmv = siril_stats_ushort_bwmv(data, stat->ngoodpix, stat->mad, stat->median);
-			stat->sqrtbwmv = sqrt(bwmv);
+	if ((option & STATS_BWMV) && stat->sqrtbwmv == NULL_STATS) {
+		if (!data) {
+			if (stat_is_local) free(stat);
+			return NULL;	// not in cache, don't compute
 		}
-	} else {
-		stat->sqrtbwmv *= conversionfactor;
+		siril_debug_print("- stats %p fit %p (%d): computing bimid\n", stat, fit, layer);
+		double bwmv = siril_stats_ushort_bwmv(data, stat->ngoodpix, stat->mad, stat->median);
+		stat->sqrtbwmv = sqrt(bwmv);
 	}
 
+
 	/* Calculation of IKSS. Only used for stacking normalization */
-	if (stat->location == NULL_STATS || stat->scale == NULL_STATS) {
-		if (option & STATS_IKSS) {
-			if (!data) {
-				if (stat_is_local) free(stat);
-				return NULL;	// not in cache, don't compute
-			}
-			siril_debug_print("- stats %p fit %p (%d): computing ikss\n", stat, fit, layer);
-			size_t i;
-			float *newdata = malloc(stat->ngoodpix * sizeof(float));
-			if (!newdata) {
-				if (stat_is_local) free(stat);
-				if (free_data) free(data);
-				PRINT_ALLOC_ERR;
-				return NULL;
-			}
-			double normValue = (fit->bitpix == BYTE_IMG) ? UCHAR_MAX_DOUBLE : USHRT_MAX_DOUBLE;
-			/* we convert in the [0, 1] range */
-			float invertNormValue = (float)(1.0 / normValue);
+	if ((option & STATS_IKSS) && (stat->location == NULL_STATS || stat->scale == NULL_STATS)) {
+		if (!data) {
+			if (stat_is_local) free(stat);
+			return NULL;	// not in cache, don't compute
+		}
+		siril_debug_print("- stats %p fit %p (%d): computing ikss\n", stat, fit, layer);
+		size_t i;
+		float *newdata = malloc(stat->ngoodpix * sizeof(float));
+		if (!newdata) {
+			if (stat_is_local) free(stat);
+			if (free_data) free(data);
+			PRINT_ALLOC_ERR;
+			return NULL;
+		}
+		double normValue = (fit->bitpix == BYTE_IMG) ? UCHAR_MAX_DOUBLE : USHRT_MAX_DOUBLE;
+		/* we convert in the [0, 1] range */
+		float invertNormValue = (float)(1.0 / normValue);
 #ifdef _OPENMP
 #pragma omp parallel for num_threads(com.max_thread) if (multithread) private(i) schedule(static)
 #endif
-			for (i = 0; i < stat->ngoodpix; i++) {
-				newdata[i] = (float) data[i] * invertNormValue;
-			}
-			float med = (float)(stat->median) * invertNormValue;
-			float mad = (float)(stat->mad) * invertNormValue;
-			if (IKSSlite(newdata, stat->ngoodpix, med, mad, &stat->location, &stat->scale, multithread)) {
-				if (stat_is_local) free(stat);
-				if (free_data) free(data);
-				free(newdata);
-				return NULL;
-			}
-			/* go back to the original range */
-			stat->location *= normValue;
-			stat->scale *= normValue;
-			free(newdata);
+		for (i = 0; i < stat->ngoodpix; i++) {
+			newdata[i] = (float) data[i] * invertNormValue;
 		}
-	} else {
-		stat->location *= conversionfactor;
-		stat->scale *= conversionfactor;
+		float med = (float)(stat->median) * invertNormValue;
+		float mad = (float)(stat->mad) * invertNormValue;
+		if (IKSSlite(newdata, stat->ngoodpix, med, mad, &stat->location, &stat->scale, multithread)) {
+			if (stat_is_local) free(stat);
+			if (free_data) free(data);
+			free(newdata);
+			return NULL;
+		}
+		/* go back to the original range */
+		stat->location *= normValue;
+		stat->scale *= normValue;
+		free(newdata);
 	}
-
 
 	if (free_data) free(data);
 	return stat;
@@ -448,10 +396,10 @@ static imstats* statistics_internal(fits *fit, int layer, rectangle *selection, 
 		if (fit->type == DATA_USHORT)
 			return statistics_internal_ushort(fit, layer, selection, option, stats, bitpix, multithread);
 		if (fit->type == DATA_FLOAT)
-			return statistics_internal_float(fit, layer, selection, option, stats, multithread);
+			return statistics_internal_float(fit, layer, selection, option, stats, bitpix, multithread);
 	}
 	if (bitpix == FLOAT_IMG)
-		return statistics_internal_float(fit, layer, selection, option, stats, multithread);
+		return statistics_internal_float(fit, layer, selection, option, stats, bitpix, multithread);
 	return statistics_internal_ushort(fit, layer, selection, option, stats, bitpix, multithread);
 }
 
