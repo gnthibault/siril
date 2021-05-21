@@ -412,7 +412,7 @@ static gpointer export_sequence(gpointer ptr) {
 								double tmp = (double) pixel;
 								if (pixel > 0) { // do not offset null pixels
 									tmp *= coeff.pscale[layer][i];
-									tmp -= (coeff.poffset[layer][i] * USHRT_MAX_DOUBLE);
+									tmp -= (coeff.poffset[layer][i]);
 									pixel = round_to_WORD(tmp);
 								}
 							}
@@ -429,7 +429,7 @@ static gpointer export_sequence(gpointer ptr) {
 							if (destfit->type == DATA_FLOAT) {
 								destfit->fpdata[layer][nx + ny * fit.rx] = pixel;
 							} else {
-								destfit->pdata[layer][nx + ny * fit.rx] = roundf_to_WORD(pixel * USHRT_MAX_SINGLE);
+								destfit->pdata[layer][nx + ny * fit.rx] = roundf_to_WORD(pixel);
 							}
 						} else {
 							retval = -1;
