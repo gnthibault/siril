@@ -328,8 +328,7 @@ static int affine_transform_compute_mem_limits(struct generic_seq_args *args, gb
 		if (args->seq->nb_layers == 3)
 			required = MB_per_image * 3;
 		else required = MB_per_image;
-		args->max_thread = MB_avail / required;
-		siril_debug_print("Memory required per thread: %u MB, limiting to %d threads\n", required, args->max_thread);
+		limit = MB_avail / required;
 	}
 
 	if (limit == 0) {
@@ -354,6 +353,7 @@ static int affine_transform_compute_mem_limits(struct generic_seq_args *args, gb
 		}
 		else if (limit > com.max_thread)
 			limit = com.max_thread;
+		siril_debug_print("Memory required per thread: %u MB, limiting to %d threads\n", required, args->max_thread);
 #else
 		if (for_writer) {
 			limit--;
