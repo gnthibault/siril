@@ -353,7 +353,7 @@ static int affine_transform_compute_mem_limits(struct generic_seq_args *args, gb
 		}
 		else if (limit > com.max_thread)
 			limit = com.max_thread;
-		siril_debug_print("Memory required per thread: %u MB, limiting to %d threads\n", required, args->max_thread);
+		siril_debug_print("Memory required per thread: %u MB, limiting to %d threads\n", required, limit);
 #else
 		if (for_writer) {
 			limit--;
