@@ -319,12 +319,12 @@ static int affine_transform_hook(struct generic_seq_args *args, int out_index, i
 static int affine_transform_compute_mem_limits(struct generic_seq_args *args, gboolean for_writer) {
 	unsigned int MB_per_image; int MB_avail;
 	int limit = compute_nb_images_fit_memory(args->seq, args->upscale_ratio, FALSE, &MB_per_image, &MB_avail);
+	unsigned int required = 0;
 	if (limit > 0) {
 		/* The registration memory consumption, n is image size:
 		 * for monochrome images O(n), O(2n) for color
 		 * Don't forget that this is in addition to the image being already read.
 		 */
-		unsigned int required;
 		if (args->seq->nb_layers == 3)
 			required = MB_per_image * 3;
 		else required = MB_per_image;
