@@ -452,9 +452,10 @@ int star_align_finalize_hook(struct generic_seq_args *args) {
 }
 
 int star_align_compute_mem_limits(struct generic_seq_args *args, gboolean for_writer) {
-	unsigned int MB_per_image; int MB_avail;
+	unsigned int MB_per_image, MB_avail;
 	int limit = compute_nb_images_fit_memory(args->seq, args->upscale_ratio, args->force_float, &MB_per_image, &MB_avail);
-	if (limit == 0) {
+	unsigned int required = MB_per_image;
+	if (limit > 0) {
 		/* The registration memory consumption, n is image size and m channel size.
 		 * First, a threshold is computed for star pixel value, using statistics:
 		 *	O(m), data is duplicated for median computation if
@@ -472,7 +473,6 @@ int star_align_compute_mem_limits(struct generic_seq_args *args, gboolean for_wr
 		 * O(10m) when it's ushort.
 		 * Don't forget that this is in addition to the image being already read.
 		 */
-		unsigned int required;
 		if (args->has_output && args->seq->nb_layers == 3 &&
 				get_data_type(args->seq->bitpix) == DATA_FLOAT)
 			required = MB_per_image * 3;
@@ -481,42 +481,41 @@ int star_align_compute_mem_limits(struct generic_seq_args *args, gboolean for_wr
 			unsigned int float_multiplier = get_data_type(args->seq->bitpix) == DATA_FLOAT ? 1 : 2;
 			required = MB_per_image + 5 * MB_per_channel * float_multiplier;
 		}
-		limit = MB_avail / required;
-		siril_debug_print("Memory required per thread: %u MB, limiting to %d threads\n",
-				required, limit); 
+		int thread_limit = MB_avail / required;
+		if (thread_limit > com.max_thread)
+			thread_limit = com.max_thread;
+
+		if (for_writer) {
+			/* we allow the already allocated thread_limit images,
+			 * plus how many images can be stored in what remains
+			 * unused by the main processing */
+			limit = thread_limit + (MB_avail - required * thread_limit) / MB_per_image;
+		} else limit = thread_limit;
 	}
 
 	if (limit == 0) {
-		gchar *mem_per_image = g_format_size_full(MB_per_image * BYTES_IN_A_MB, G_FORMAT_SIZE_IEC_UNITS);
+		gchar *mem_per_thread = g_format_size_full(required * BYTES_IN_A_MB, G_FORMAT_SIZE_IEC_UNITS);
 		gchar *mem_available = g_format_size_full(MB_avail * BYTES_IN_A_MB, G_FORMAT_SIZE_IEC_UNITS);
 
-		siril_log_color_message(_("%s: not enough memory to do this operation (%s required per image, %s considered available)\n"),
-				"red", args->description, mem_per_image, mem_available);
+		siril_log_color_message(_("%s: not enough memory to do this operation (%s required per thread, %s considered available)\n"),
+				"red", args->description, mem_per_thread, mem_available);
 
-		g_free(mem_per_image);
+		g_free(mem_per_thread);
 		g_free(mem_available);
 	} else {
 #ifdef _OPENMP
 		if (for_writer) {
-			/* we already have allowed limit [1, max_thread] for
-			 * the non-writer case */
-			limit -= com.max_thread;
-			if (limit < 0) limit = 0;
 			int max_queue_size = com.max_thread * 3;
 			if (limit > max_queue_size)
 				limit = max_queue_size;
 		}
-		else if (limit > com.max_thread)
-			limit = com.max_thread;
+		siril_debug_print("Memory required per thread: %u MB, per image: %u MB, limiting to %d threads\n",
+				required, MB_per_image, limit);
 #else
-		if (for_writer) {
-			limit--;
-			if (limit < 0) limit = 0;
-			if (limit > 3)
-				limit = 3;
-		} else {
+		if (!for_writer)
 			limit = 1;
-		}
+		else if (limit > 3)
+			limit = 3;
 #endif
 	}
 	return limit;

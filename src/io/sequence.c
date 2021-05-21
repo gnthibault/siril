@@ -1691,7 +1691,7 @@ void free_reference_image() {
 
 /* returns the number of images of the sequence that can fit into memory based
  * on the configured memory ratio */
-int compute_nb_images_fit_memory(sequence *seq, double factor, gboolean force_float, unsigned int *MB_per_image, int *max_mem_MB) {
+int compute_nb_images_fit_memory(sequence *seq, double factor, gboolean force_float, unsigned int *MB_per_image, unsigned int *max_mem_MB) {
 	int max_memory_MB = get_max_memory_in_MB();
 	if (factor < 1.0 || factor > 2.0) {
 		fprintf(stderr, "############ FACTOR UNINIT (set to 1) ############\n");

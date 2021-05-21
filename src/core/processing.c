@@ -338,14 +338,14 @@ gboolean end_generic_sequence(gpointer p) {
 	return end_generic(NULL);
 }
 
-/* a function that computes how many images can be processed in parallel, with
- * regard to how many of them can fit in memory.
- * If for_writer is true, the call is for how many images can be stored in the
- * queue, bearing in mind that as many as what the function returns when it's
- * false may already be allocated.
+/* If for_writer is false, it computes how many images can be processed in
+ * parallel, with regard to how many of them can fit in memory. It returns at
+ * most com.max_thread.
+ * If for_writer is true, it computes how many images can be stored in the
+ * queue. It returns at most 3 times com.max_thread.
  */
 int seq_compute_mem_limits(struct generic_seq_args *args, gboolean for_writer) {
-	unsigned int MB_per_image; int MB_avail;
+	unsigned int MB_per_image, MB_avail;
 	int limit = compute_nb_images_fit_memory(args->seq, args->upscale_ratio, args->force_float, &MB_per_image, &MB_avail);
 	if (limit == 0) {
 		gchar *mem_per_image = g_format_size_full(MB_per_image * BYTES_IN_A_MB, G_FORMAT_SIZE_IEC_UNITS);
@@ -359,10 +359,6 @@ int seq_compute_mem_limits(struct generic_seq_args *args, gboolean for_writer) {
 	} else {
 #ifdef _OPENMP
 		if (for_writer) {
-			/* we already have allowed limit [1, max_thread] for
-			 * the non-writer case */
-			limit -= com.max_thread;
-			if (limit < 0) limit = 0;
 			int max_queue_size = com.max_thread * 3;
 			if (limit > max_queue_size)
 				limit = max_queue_size;
@@ -370,14 +366,10 @@ int seq_compute_mem_limits(struct generic_seq_args *args, gboolean for_writer) {
 		else if (limit > com.max_thread)
 			limit = com.max_thread;
 #else
-		if (for_writer) {
-			limit--;
-			if (limit < 0) limit = 0;
-			if (limit > 3)
-				limit = 3;
-		} else {
+		if (!for_writer)
 			limit = 1;
-		}
+		else if (limit > 3)
+			limit = 3;
 #endif
 	}
 	return limit;
