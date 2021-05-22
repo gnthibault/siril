@@ -168,7 +168,7 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 	gettimeofday(&t_start, NULL);
 
 	/* running statistics on the input image is best as it caches them */
-	threshold = compute_threshold(fit, sf->sigma * 6.0, layer, &norm, &bg);
+	threshold = compute_threshold(fit, sf->sigma * 5.0, layer, &norm, &bg);
 	if (norm == 0.0f)
 		return NULL;
 
