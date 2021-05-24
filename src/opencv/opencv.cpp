@@ -443,9 +443,7 @@ int cvAffineTransformation(fits *image, pointf *refpoints, pointf *curpoints, in
 	/* build vectors with lists of 3 stars. */
 	for (int i = 0; i < nb_points; i++) {
 		ref.push_back(Point2f(refpoints[i].x, image->ry - refpoints[i].y - 1));
-		if (upscale2x)
-			cur.push_back(Point2f(curpoints[i].x * 0.5f, (image->ry - curpoints[i].y - 1) * 0.5f));
-		else cur.push_back(Point2f(curpoints[i].x, image->ry - curpoints[i].y - 1));
+		cur.push_back(Point2f(curpoints[i].x, image->ry - curpoints[i].y - 1));
 	}
 
 	Mat m = estimateAffinePartial2D(cur, ref);
@@ -465,6 +463,7 @@ int cvAffineTransformation(fits *image, pointf *refpoints, pointf *curpoints, in
 	if (upscale2x) {
 		target_rx *= 2;
 		target_ry *= 2;
+		m *= 2;
 	}
 
 	if (image->naxes[2] != 1 && image->naxes[2] != 3) {
