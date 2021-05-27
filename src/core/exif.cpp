@@ -18,18 +18,14 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifdef __cplusplus
 extern "C" {
-#endif
 #ifdef HAVE_CONFIG_H
 #include "config.h"
 #endif
+}
 
 #ifdef _OPENMP
 #include <omp.h>
-#endif
-#ifdef __cplusplus
-}
 #endif
 
 #include <glib.h>
