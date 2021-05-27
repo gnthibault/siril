@@ -34,6 +34,7 @@
 #ifdef _WIN32
 #include <windows.h>
 #endif
+#include <glib.h>
 
 #include "core/siril.h"
 #include "core/proto.h"
@@ -45,6 +46,10 @@
 #include "gui/utils.h"
 #include "gui/progress_and_log.h"
 #include "io/single_image.h"
+
+#if GLIB_CHECK_VERSION(2,68,0)
+#define g_memdup g_memdup2
+#endif
 
 /**
  * Round double value to an integer

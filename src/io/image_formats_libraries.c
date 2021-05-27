@@ -21,6 +21,7 @@
 #ifdef HAVE_CONFIG_H
 #include <config.h>
 #endif
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
@@ -60,7 +61,7 @@
 
 #ifdef HAVE_LIBTIFF
 
-static int readtifstrip(TIFF* tif, uint32 width, uint32 height, uint16 nsamples, WORD **data) {
+static int readtifstrip(TIFF* tif, uint32_t width, uint32_t height, uint16_t nsamples, WORD **data) {
 	uint32_t rowsperstrip;
 	uint16_t config;
 	int retval = nsamples;
@@ -344,8 +345,8 @@ int readtif(const char *name, fits *fit, gboolean force_float) {
 	uint16_t nbits, nsamples, color;
 	WORD *data = NULL;
 	float *fdata = NULL;
-	uint16 sampleformat = 0;
-	
+	uint16_t sampleformat = 0;
+
 	TIFF* tif = Siril_TIFFOpen(name, "r");
 	if (!tif) {
 		siril_log_message(_("Could not open the TIFF file %s\n"), name);

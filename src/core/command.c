@@ -18,6 +18,7 @@
  * along with Siril. If not, see <http://www.gnu.org/licenses/>.
 */
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -221,7 +222,7 @@ int process_savepng(int nb){
 
 #ifdef HAVE_LIBTIFF
 int process_savetif(int nb){
-	uint16 bitspersample = 16;
+	uint16_t bitspersample = 16;
 
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
