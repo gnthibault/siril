@@ -317,17 +317,30 @@ static int affine_transform_hook(struct generic_seq_args *args, int out_index, i
 }
 
 static int affine_transform_compute_mem_limits(struct generic_seq_args *args, gboolean for_writer) {
-	unsigned int MB_per_image, MB_avail;
-	int limit = compute_nb_images_fit_memory(args->seq, args->upscale_ratio, FALSE, &MB_per_image, &MB_avail);
-	unsigned int required = MB_per_image;
+	unsigned int MB_per_orig_image, MB_per_scaled_image, MB_avail;
+	int limit = compute_nb_images_fit_memory(args->seq, args->upscale_ratio, FALSE,
+			&MB_per_orig_image, &MB_per_scaled_image, &MB_avail);
+	unsigned int required = MB_per_scaled_image;
 	if (limit > 0) {
-		/* The registration memory consumption, n is image size:
-		 * for monochrome images O(n), O(2n) for color
-		 * Don't forget that this is in addition to the image being already read.
+		/* The registration memory consumption, n is original image size:
+		 * Monochrome: O(n) for loaded image, O(nscaled) for output image,
+		 *             so O(2n) for unscaled, O(n+nscaled) for scaled
+		 * Color:
+		 * 	allocations				sum
+		 *	O(n) for loaded image			O(n) as input
+		 *	O(n) for bgr image			O(2n)
+		 *	-O(n) for input				O(n)
+		 *	O(nscaled) for output			O(n+nscaled)
+		 *	-O(n) for bgr				O(nscaled)
+		 *	O(nscaled) pour alloc de data		O(2nscaled)
+		 *	-O(nscaled) for output			O(nscaled) as output
+		 * so maximum is O(2n) for unscaled and O(2nscaled) for scaled
 		 */
-		if (args->seq->nb_layers == 3)
-			required = MB_per_image * 3;
-		else required = MB_per_image * 2;
+		if (args->upscale_ratio == 1.0)
+			required = MB_per_orig_image * 2;
+		else if (args->seq->nb_layers == 3)
+			required = MB_per_scaled_image * 2;
+		else required = MB_per_orig_image + MB_per_scaled_image;
 
 		int thread_limit = MB_avail / required;
 		if (thread_limit > com.max_thread)
@@ -337,7 +350,7 @@ static int affine_transform_compute_mem_limits(struct generic_seq_args *args, gb
 			/* we allow the already allocated thread_limit images,
 			 * plus how many images can be stored in what remains
 			 * unused by the main processing */
-			limit = thread_limit + (MB_avail - required * thread_limit) / MB_per_image;
+			limit = thread_limit + (MB_avail - required * thread_limit) / MB_per_scaled_image;
 		} else limit = thread_limit;
 	}
 
@@ -357,8 +370,8 @@ static int affine_transform_compute_mem_limits(struct generic_seq_args *args, gb
 			if (limit > max_queue_size)
 				limit = max_queue_size;
 		}
-		siril_debug_print("Memory required per thread: %u MB, per image: %u MB, limiting to %d threads\n",
-				required, MB_per_image, limit);
+		siril_debug_print("Memory required per thread: %u MB, per image: %u MB, limiting to %d %s\n",
+				required, MB_per_scaled_image, limit, for_writer ? "images" : "threads");
 #else
 		/* we still want the check of limit = 0 above */
 		if (!for_writer)

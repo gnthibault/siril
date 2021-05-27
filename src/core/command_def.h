@@ -81,7 +81,7 @@
 #define STR_RGRADIENT N_("Creates two images, with a radial shift (\"dR\" in pixels) and a rotational shift (\"dalpha\" in degrees) with respect to the point (\"xc\", \"yc\"). Between these two images, the shifts have the same amplitude, but an opposite sign. The two images are then added to create the final image. This process is also called Larson Sekanina filter")
 #define STR_RL N_("Restores an image using the Richardson-Lucy method. \"Sigma\" is the size of the kernel to be applied, while \"corner_radius_boost\" is a value which is added to Gaussian sigma for the tiles in the corners of an image. \"Iterations\" is the number of iterations to be performed")
 #define STR_RMGREEN N_("Chromatic noise reduction filter. It removes green noise in the current image. This filter is based on PixInsight's SCNR Average Neutral algorithm and it is the same filter used by HLVG plugin in Photoshop. \"Type\"=1 stands for Average Neutral Protection, while \"type\"=2 stands for Maximum Neutral Protection")
-#define STR_ROTATE N_("Rotates the image of an angle of \"degree\" value")
+#define STR_ROTATE N_("Rotates the image of an angle of \"degree\" value. The option \"-nocrop\" can be added to avoid the cropping")
 #define STR_ROTATEPI N_("Rotates the image of an angle of 180° around its center. This is equivalent to the command \"ROTATE 180\" or \"ROTATE -180\"")
 
 #define STR_SATU N_("Enhances the global saturation of the image. Try iteratively to obtain best results")

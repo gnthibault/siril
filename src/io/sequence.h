@@ -71,7 +71,7 @@ void free_reference_image();
 /* in export.c now */
 void	update_export_crop_label();
 
-int compute_nb_images_fit_memory(sequence *seq, double factor, gboolean force_float, unsigned int *MB_per_image, unsigned int *max_mem_MB);
+int compute_nb_images_fit_memory(sequence *seq, double factor, gboolean force_float, unsigned int *MB_per_orig_image, unsigned int *MB_per_scaled_image, unsigned int *max_mem_MB);
 
 void fix_selnum(sequence *seq, gboolean warn);
 

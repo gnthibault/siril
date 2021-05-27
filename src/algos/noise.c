@@ -29,7 +29,6 @@
 #include "algos/statistics.h"
 #include "gui/utils.h"
 #include "gui/progress_and_log.h"
-#include "opencv/opencv.h"
 
 #include "noise.h"
 

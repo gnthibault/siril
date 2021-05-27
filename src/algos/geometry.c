@@ -470,18 +470,9 @@ int crop(fits *fit, rectangle *bounds) {
  */
 void siril_rotate90() {
 	if (confirm_delete_wcs_keywords(&gfit)) {
-		static GtkToggleButton *crop_rotation = NULL;
-		int cropped;
-
-		if (crop_rotation == NULL) {
-			crop_rotation = GTK_TOGGLE_BUTTON(
-					lookup_widget("checkbutton_rotation_crop"));
-		}
-		cropped = gtk_toggle_button_get_active(crop_rotation);
-
 		set_cursor_waiting(TRUE);
 		undo_save_state(&gfit, _("Rotation (90.0deg)"));
-		verbose_rotate_image(&gfit, 90.0, -1, cropped);	// fast rotation, no interpolation, no crop
+		verbose_rotate_image(&gfit, 90.0, -1, 0);	// fast rotation, no interpolation, no crop
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 		set_cursor_waiting(FALSE);
@@ -490,18 +481,9 @@ void siril_rotate90() {
 
 void siril_rotate270() {
 	if (confirm_delete_wcs_keywords(&gfit)) {
-		static GtkToggleButton *crop_rotation = NULL;
-		int cropped;
-
-		if (crop_rotation == NULL) {
-			crop_rotation = GTK_TOGGLE_BUTTON(
-					lookup_widget("checkbutton_rotation_crop"));
-		}
-		cropped = gtk_toggle_button_get_active(crop_rotation);
-
 		set_cursor_waiting(TRUE);
 		undo_save_state(&gfit, _("Rotation (-90.0deg)"));
-		verbose_rotate_image(&gfit, 270.0, -1, cropped);// fast rotation, no interpolation, no crop
+		verbose_rotate_image(&gfit, 270.0, -1, 0);// fast rotation, no interpolation, no crop
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 		set_cursor_waiting(FALSE);

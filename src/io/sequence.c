@@ -1691,7 +1691,7 @@ void free_reference_image() {
 
 /* returns the number of images of the sequence that can fit into memory based
  * on the configured memory ratio */
-int compute_nb_images_fit_memory(sequence *seq, double factor, gboolean force_float, unsigned int *MB_per_image, unsigned int *max_mem_MB) {
+int compute_nb_images_fit_memory(sequence *seq, double factor, gboolean force_float, unsigned int *MB_per_orig_image, unsigned int *MB_per_scaled_image, unsigned int *max_mem_MB) {
 	int max_memory_MB = get_max_memory_in_MB();
 	if (factor < 1.0 || factor > 2.0) {
 		fprintf(stderr, "############ FACTOR UNINIT (set to 1) ############\n");
@@ -1699,19 +1699,27 @@ int compute_nb_images_fit_memory(sequence *seq, double factor, gboolean force_fl
 	}
 	uint64_t newx = round_to_int((double)seq->rx * factor);
 	uint64_t newy = round_to_int((double)seq->ry * factor);
-	uint64_t memory_per_image = newx * newy * seq->nb_layers;
-	if (force_float || get_data_type(seq->bitpix) == DATA_FLOAT)
-		memory_per_image *= sizeof(float);
-	else memory_per_image *= sizeof(WORD);
-	unsigned int memory_per_image_MB = memory_per_image / BYTES_IN_A_MB;
-	if (memory_per_image_MB == 0)
-		memory_per_image_MB = 1;
-	fprintf(stdout, "Memory per image: %u MB. Max memory: %d MB\n", memory_per_image_MB, max_memory_MB);
-	if (MB_per_image)
-		*MB_per_image = memory_per_image_MB;
+	uint64_t memory_per_orig_image = seq->rx * seq->ry * seq->nb_layers;
+	uint64_t memory_per_scaled_image = newx * newy * seq->nb_layers;
+	if (force_float || get_data_type(seq->bitpix) == DATA_FLOAT) {
+		memory_per_orig_image *= sizeof(float);
+		memory_per_scaled_image *= sizeof(float);
+	} else {
+		memory_per_orig_image *= sizeof(WORD);
+		memory_per_scaled_image *= sizeof(WORD);
+	}
+	unsigned int memory_per_orig_image_MB = memory_per_orig_image / BYTES_IN_A_MB;
+	unsigned int memory_per_scaled_image_MB = memory_per_scaled_image / BYTES_IN_A_MB;
+	if (memory_per_scaled_image_MB == 0)
+		memory_per_scaled_image_MB = 1;
+	fprintf(stdout, "Memory per image: %u MB. Max memory: %d MB\n", memory_per_scaled_image_MB, max_memory_MB);
+	if (MB_per_orig_image)
+		*MB_per_orig_image = memory_per_orig_image_MB;
+	if (MB_per_scaled_image)
+		*MB_per_scaled_image = memory_per_scaled_image_MB;
 	if (max_mem_MB)
 		*max_mem_MB = max_memory_MB;
-	return max_memory_MB / memory_per_image_MB;
+	return max_memory_MB / memory_per_scaled_image_MB;
 }
 
 void fix_selnum(sequence *seq, gboolean warn) {
