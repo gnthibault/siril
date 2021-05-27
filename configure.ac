@@ -176,7 +176,7 @@ if test -n "$CXX" && ( test "X$CXX" != "Xno" &&
 					[OPENCV_LIBS="-lopencv_core -lopencv_imgproc"],
 					[PKG_CHECK_MODULES([OPENCV], [opencv4],
 								[OPENCV_LIBS="-lopencv_core -lopencv_imgproc -lopencv_calib3d"],
-								AC_MSG_ERROR([opencv not found. Not using some image processing.]))]
+								AC_MSG_ERROR([opencv not found.]))]
 					)]
 			)
 else

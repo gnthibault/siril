@@ -183,7 +183,7 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 		siril_log_message(_("Failed to copy the image for processing\n"));
 		return NULL;
 	}
-    get_wavelet_layers(&wave_fit, WAVELET_SCALE, 2, TO_PAVE_BSPLINE, layer);
+	get_wavelet_layers(&wave_fit, WAVELET_SCALE, 2, TO_PAVE_BSPLINE, layer);
 
 	/* Build 2D representation of wavelet image upside-down */
 	wave_image = malloc(ny * sizeof(float *));
@@ -252,6 +252,7 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 		results = NULL;
 	sort_stars(results, nbstars);
 	free(wave_image);
+	free(candidates);
 
 	gettimeofday(&t_end, NULL);
 	if (showtime)

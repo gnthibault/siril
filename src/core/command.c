@@ -1101,6 +1101,7 @@ int process_rgradient(int nb) {
 
 int process_rotate(int nb) {
 	double degree;
+	int crop = 1;
 	
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
@@ -1108,8 +1109,15 @@ int process_rotate(int nb) {
 	}
 
 	set_cursor_waiting(TRUE);
+
 	degree = g_ascii_strtod(word[1], NULL);
-	verbose_rotate_image(&gfit, degree, OPENCV_LINEAR, 1);	//INTER_LINEAR
+
+	/* check for options */
+	if (word[2] && (!strcmp(word[2], "-nocrop"))) {
+		crop = 0;
+	}
+
+	verbose_rotate_image(&gfit, degree, OPENCV_LINEAR, crop);	//INTER_LINEAR
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	set_cursor_waiting(FALSE);

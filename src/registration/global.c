@@ -323,33 +323,16 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 				/ (double) sadata->fitted_stars + FWHMx;
 
 		if (!regargs->translation_only) {
-			if (regargs->x2upscale) {
-				/* updating pixel size if exist */
-				fit->pixel_size_x /= 2;
-				fit->pixel_size_y /= 2;
-
-				if (cvResizeGaussian(fit, fit->rx * 2, fit->ry * 2, OPENCV_NEAREST)) {
-					free_fitted_stars(stars);
-					return 1;
-				}
-				cvApplyScaleToH(&H, 2.0);
-			}
-			fits_flip_top_to_bottom(fit);
-			if (cvTransformImage(fit, (long) sadata->ref.x, (long) sadata->ref.y, H, regargs->interpolation)) {
+			if (cvTransformImage(fit, (long) sadata->ref.x, (long) sadata->ref.y, H, regargs->x2upscale, regargs->interpolation)) {
 				free_fitted_stars(stars);
 				return 1;
 			}
-			fits_flip_top_to_bottom(fit);
 		}
 
 		free_fitted_stars(stars);
 	}
 	else {
 		if (regargs->x2upscale && !regargs->translation_only) {
-			/* updating pixel size if exist */
-			fit->pixel_size_x /= 2;
-			fit->pixel_size_y /= 2;
-
 			if (cvResizeGaussian(fit, fit->rx * 2, fit->ry * 2, OPENCV_NEAREST))
 				return 1;
 		}
@@ -361,7 +344,13 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		regargs->regparam[out_index].fwhm = sadata->current_regdata[in_index].fwhm;	// not FWHMx because of the ref frame
 		regargs->regparam[out_index].weighted_fwhm = sadata->current_regdata[in_index].weighted_fwhm;
 		regargs->regparam[out_index].roundness = sadata->current_regdata[in_index].roundness;
-		invalidate_stats_from_fit(fit);
+
+		if (regargs->x2upscale) {
+			fit->pixel_size_x /= 2;
+			fit->pixel_size_y /= 2;
+			regargs->regparam[out_index].fwhm *= 2.0;
+			regargs->regparam[out_index].weighted_fwhm *= 2.0;
+		}
 	} else {
 		set_shifts(args->seq, in_index, regargs->layer, (float) H.h02,
 				(float) -H.h12, fit->top_down);
@@ -452,9 +441,10 @@ int star_align_finalize_hook(struct generic_seq_args *args) {
 }
 
 int star_align_compute_mem_limits(struct generic_seq_args *args, gboolean for_writer) {
-	unsigned int MB_per_image, MB_avail;
-	int limit = compute_nb_images_fit_memory(args->seq, args->upscale_ratio, args->force_float, &MB_per_image, &MB_avail);
-	unsigned int required = MB_per_image;
+	unsigned int MB_per_orig_image, MB_per_scaled_image, MB_avail;
+	int limit = compute_nb_images_fit_memory(args->seq, args->upscale_ratio, args->force_float,
+			&MB_per_orig_image, &MB_per_scaled_image, &MB_avail);
+	unsigned int required = MB_per_scaled_image;
 	if (limit > 0) {
 		/* The registration memory consumption, n is image size and m channel size.
 		 * First, a threshold is computed for star pixel value, using statistics:
@@ -465,21 +455,25 @@ int star_align_compute_mem_limits(struct generic_seq_args *args, gboolean for_wr
 		 * wavelet_transform then allocates 3 times the size of the channel in float,
 		 * because we request 3 planes of wavelets, and pave_2d allocates it once more
 		 * for its working copy, so that makes O(5m as float).
-		 * Then, the image is written by the generic function if rotation is enabled:
-		 * cvTransformImage is O(n) in mem for monochrome and O(2n) for color.
+		 * Then, the image is rotated and upscaled by the generic function if enabled:
+		 * cvTransformImage is O(n) in mem for unscaled, O(nscaled)=O(4m) for
+		 * monochrome scaled and O(2nscaled)=O(21m) for color scaled
+		 * All this is in addition to the image being already loaded.
+		 *
 		 * Since these three operations are in sequence, we need room only for the
-		 * biggest. In case of float color image, it's the rotation that takes more
-		 * memory, with O(2n) = O(6m). In other cases it's the wavelets with O(5m) or
-		 * O(10m) when it's ushort.
-		 * Don't forget that this is in addition to the image being already read.
+		 * biggest. In case of color rotated scaled image, it's the rotation that takes
+		 * more memory, with O(8n)=O(24m) in total. In all other cases it's the
+		 * wavelets with O(n+5mfloat).
 		 */
-		if (args->has_output && args->seq->nb_layers == 3 &&
-				get_data_type(args->seq->bitpix) == DATA_FLOAT)
-			required = MB_per_image * 3;
+		if (args->has_output && args->seq->nb_layers == 3 && args->upscale_ratio == 2.0)
+			required = MB_per_scaled_image * 2;
 		else {
-			unsigned int MB_per_channel = args->seq->nb_layers == 1 ? MB_per_image : MB_per_image / 3;
-			unsigned int float_multiplier = get_data_type(args->seq->bitpix) == DATA_FLOAT ? 1 : 2;
-			required = MB_per_image + 5 * MB_per_channel * float_multiplier;
+			unsigned int float_multiplier =
+				get_data_type(args->seq->bitpix) == DATA_FLOAT ? 1 : 2;
+			unsigned int MB_per_float_image = MB_per_orig_image * float_multiplier;
+			unsigned int MB_per_float_channel = args->seq->nb_layers == 1 ?
+				MB_per_float_image : MB_per_float_image / 3;
+			required = MB_per_orig_image + 5 * MB_per_float_channel;
 		}
 		int thread_limit = MB_avail / required;
 		if (thread_limit > com.max_thread)
@@ -489,7 +483,7 @@ int star_align_compute_mem_limits(struct generic_seq_args *args, gboolean for_wr
 			/* we allow the already allocated thread_limit images,
 			 * plus how many images can be stored in what remains
 			 * unused by the main processing */
-			limit = thread_limit + (MB_avail - required * thread_limit) / MB_per_image;
+			limit = thread_limit + (MB_avail - required * thread_limit) / MB_per_scaled_image;
 		} else limit = thread_limit;
 	}
 
@@ -509,8 +503,8 @@ int star_align_compute_mem_limits(struct generic_seq_args *args, gboolean for_wr
 			if (limit > max_queue_size)
 				limit = max_queue_size;
 		}
-		siril_debug_print("Memory required per thread: %u MB, per image: %u MB, limiting to %d threads\n",
-				required, MB_per_image, limit);
+		siril_debug_print("Memory required per thread: %u MB, per image: %u MB, limiting to %d %s\n",
+				required, MB_per_scaled_image, limit, for_writer ? "images" : "threads");
 #else
 		if (!for_writer)
 			limit = 1;

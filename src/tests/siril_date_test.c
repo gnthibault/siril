@@ -27,7 +27,7 @@ int test_consistency() {
 	diff = INPUT_TIME - ts;
 	cr_expect(diff == UNDER_US, "Failed with retval=%lu", diff);
 
-	dt2 = g_date_time_new_now_utc();
+	dt2 = g_date_time_new_from_iso8601 ("2016-11-31T22:10:42Z", NULL);
 	ts = date_time_to_ser_timestamp(dt2);
 	dt3 = ser_timestamp_to_date_time(ts);
 	cr_expect(g_date_time_equal(dt2, dt3), "date_time from ser are not equal");
