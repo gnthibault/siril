@@ -378,7 +378,7 @@ int seq_compute_mem_limits(struct generic_seq_args *args, gboolean for_writer) {
 int seq_prepare_hook(struct generic_seq_args *args) {
 	int retval = 0;
 	g_assert(args->has_output); // don't call this hook otherwise
-	if (args->force_ser_output || args->seq->type == SEQ_SER) {
+	if (args->force_ser_output || (args->seq->type == SEQ_SER && !args->force_fitseq_output)) {
 		gchar *dest;
 		const char *ptr = strrchr(args->seq->seqname, G_DIR_SEPARATOR);
 		if (ptr)
@@ -393,7 +393,7 @@ int seq_prepare_hook(struct generic_seq_args *args) {
 		}
 		g_free(dest);
 	}
-	else if (args->force_fitseq_output || args->seq->type == SEQ_FITSEQ) {
+	else if (args->force_fitseq_output || (args->seq->type == SEQ_FITSEQ && !args->force_ser_output)) {
 		gchar *dest;
 		const char *ptr = strrchr(args->seq->seqname, G_DIR_SEPARATOR);
 		if (ptr)
@@ -422,12 +422,12 @@ int seq_prepare_writer(struct generic_seq_args *args) {
 	else limit = seq_compute_mem_limits(args, TRUE); // the default
 
 	if (limit == 0) {
-		if (args->force_ser_output || args->seq->type == SEQ_SER) {
+		if (args->force_ser_output || (args->seq->type == SEQ_SER && !args->force_fitseq_output)) {
 			ser_close_file(args->new_ser);
 			free(args->new_ser);
 			args->new_ser = NULL;
 		}
-		else if (args->force_fitseq_output || args->seq->type == SEQ_FITSEQ) {
+		else if (args->force_fitseq_output || (args->seq->type == SEQ_FITSEQ && !args->force_ser_output)) {
 			fitseq_close_file(args->new_fitseq);
 			free(args->new_fitseq);
 			args->new_fitseq = NULL;
@@ -441,11 +441,11 @@ int seq_prepare_writer(struct generic_seq_args *args) {
 int seq_finalize_hook(struct generic_seq_args *args) {
 	int retval = 0;
 	g_assert(args->has_output); // don't call this hook otherwise
-	if ((args->force_ser_output || args->seq->type == SEQ_SER) && args->new_ser) {
+	if ((args->force_ser_output || (args->seq->type == SEQ_SER && !args->force_fitseq_output)) && args->new_ser) {
 		retval = ser_write_and_close(args->new_ser);
 		free(args->new_ser);
 	}
-	else if ((args->force_fitseq_output || args->seq->type == SEQ_FITSEQ) && args->new_fitseq) {
+	else if ((args->force_fitseq_output || (args->seq->type == SEQ_FITSEQ && !args->force_ser_output)) && args->new_fitseq) {
 		retval = fitseq_close_file(args->new_fitseq);
 		free(args->new_fitseq);
 	}
@@ -455,11 +455,13 @@ int seq_finalize_hook(struct generic_seq_args *args) {
 /* In SER, all images must be in a contiguous sequence, so we use the out_index.
  * In FITS sequences, to keep track of image accross processings, we keep the
  * input file number all along (in_index is the index in the sequence, not the name).
+ * The 2nd condition ensures that any force condition prevails over opposite
+ * input-type condition
  */
 int generic_save(struct generic_seq_args *args, int out_index, int in_index, fits *fit) {
-	if (args->force_ser_output || args->seq->type == SEQ_SER) {
+	if (args->force_ser_output || (args->seq->type == SEQ_SER && !args->force_fitseq_output)) {
 		return ser_write_frame_from_fit(args->new_ser, fit, out_index);
-	} else if (args->force_fitseq_output || args->seq->type == SEQ_FITSEQ) {
+	} else if (args->force_fitseq_output || (args->seq->type == SEQ_FITSEQ && !args->force_ser_output)) {
 		return fitseq_write_image(args->new_fitseq, fit, out_index);
 	} else {
 		char *dest = fit_sequence_get_image_filename_prefixed(args->seq,

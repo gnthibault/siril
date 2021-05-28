@@ -1208,6 +1208,9 @@ static void create_sequence_filename(sequence_type output_type, const char *dest
 static seqwrite_status write_image(fits *fit, struct writer_data *writer) {
 	seqwrite_status retval = WRITE_FAILED;
 	if (writer->ser) {
+		if (!strcmp(fit->row_order,"TOP-DOWN")) {  // need to flip the fit before writing to ser to preserve the bayer matrix
+			fits_flip_top_to_bottom(fit);
+		}
 		if (ser_write_frame_from_fit(writer->ser, fit, writer->index)) {
 			siril_log_color_message(_("Error while converting to SER (no space left?)\n"), "red");
 		}

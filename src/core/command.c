@@ -3677,6 +3677,7 @@ int process_preprocess(int nb) {
 	args = calloc(1, sizeof(struct preprocessing_data));
 	args->ppprefix = "pp_";
 	args->bias_level = FLT_MAX;
+	if (seq->type == SEQ_SER)  args->output_seqtype = SEQ_SER; // to be able to check allow_32bit_output. Overiden by -fitseq if required
 	
 	/* checking for options */
 	for (i = 2; i < nb; i++) {
@@ -3775,8 +3776,8 @@ int process_preprocess(int nb) {
 	args->normalisation = 1.0f;	// will be updated anyway
 	args->sigma[0] = -1.00; /* cold pixels: it is better to deactivate it */
 	args->sigma[1] =  3.00; /* hot pixels */
-	args->allow_32bit_output = (args->seq->type == SEQ_REGULAR
-			|| args->seq->type == SEQ_FITSEQ) && !com.pref.force_to_16bit;
+	args->allow_32bit_output = (args->output_seqtype == SEQ_REGULAR
+			|| args->output_seqtype == SEQ_FITSEQ) && !com.pref.force_to_16bit;
 
 	// start preprocessing
 	set_cursor_waiting(TRUE);
