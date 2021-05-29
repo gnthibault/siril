@@ -931,7 +931,7 @@ int process_merge(int nb) {
 				for (unsigned int frame = 0; frame < seqs[i]->number; frame++) {
 					seqwriter_wait_for_memory();
 					fits *fit = calloc(1, sizeof(fits));
-					if (ser_read_frame(seqs[i]->ser_file, frame, fit, FALSE)) {
+					if (ser_read_frame(seqs[i]->ser_file, frame, fit, FALSE, com.pref.debayer.open_debayer)) {
 						siril_log_message(_("Failed to read frame %d from input sequence `%s'\n"), frame, word[i + 1]);
 						retval = 1;
 						seqwriter_release_memory();

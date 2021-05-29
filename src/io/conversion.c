@@ -871,7 +871,7 @@ static fits *read_fit(struct reader_data *reader, seqread_status *retval) {	// r
 	fits *fit = NULL;
 	if (reader->ser) {
 		fit = calloc(1, sizeof(fits));
-		if (ser_read_frame(reader->ser, reader->index, fit, FALSE))
+		if (ser_read_frame(reader->ser, reader->index, fit, FALSE, com.pref.debayer.open_debayer))
 			*retval = READ_FAILED;
 		else *retval = READ_OK;
 		finish_read_seq(reader);

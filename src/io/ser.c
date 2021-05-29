@@ -702,7 +702,7 @@ int ser_metadata_as_fits(struct ser_struct *ser_file, fits *fit) {
 
 /* reads a frame on an already opened SER sequence.
  * frame number starts at 0 */
-int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit, gboolean force_float) {
+int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit, gboolean force_float, gboolean open_debayer) {
 	int retval = 0, i, j, swap = 0;
 	gint64 offset, frame_size;
 	size_t read_size;
@@ -751,7 +751,7 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit, gboolea
 
 	/* If opening images debayered is not activated, read the image as CFA monochrome */
 	ser_color type_ser = ser_file->color_id;
-	if (!com.pref.debayer.open_debayer && type_ser != SER_RGB && type_ser != SER_BGR) {
+	if (!open_debayer && type_ser != SER_RGB && type_ser != SER_BGR) {
 		const gchar *pattern = NULL;
 		type_ser = SER_MONO;
 
@@ -1285,7 +1285,9 @@ GdkPixbuf* get_thumbnail_from_ser(char *filename, gchar **descr) {
 	ima_data = malloc(sz * sizeof(float));
 	pixbuf_data = malloc(3 * MAX_SIZE * MAX_SIZE * sizeof(guchar));
 
-	ser_read_frame(&ser, 0, &fit, FALSE);
+	/* here no need to debayer, for performance purposes
+	 * we just display monochrome display */
+	ser_read_frame(&ser, 0, &fit, FALSE, FALSE);
 
 	for (i = 0; i < sz; i++) {
 		ima_data[i + 0] = (float)fit.pdata[RLAYER][i];
