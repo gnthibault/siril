@@ -8,5 +8,6 @@ void add_star_to_list(fitted_PSF *);
 void fill_stars_list(fits *fit, fitted_PSF **);
 void refresh_star_list(fitted_PSF **);
 void clear_stars_list();
+void pick_a_star();
 
 #endif

@@ -459,6 +459,28 @@ void clear_stars_list() {
 	com.star_is_seqdata = FALSE;
 }
 
+void pick_a_star() {
+	int layer = match_drawing_area_widget(com.vport[com.cvport], FALSE);
+	int new_index;
+
+	if (layer != -1) {
+		if (!(com.selection.h && com.selection.w))
+			return;
+		if (com.selection.w > 300 || com.selection.h > 300) {
+			siril_message_dialog(GTK_MESSAGE_WARNING, _("Current selection is too large"),
+					_("To determine the PSF, please make a selection around a star."));
+			return;
+		}
+		fitted_PSF *new_star = add_star(&gfit, layer, &new_index);
+		if (new_star) {
+			add_star_to_list(new_star);
+			siril_open_dialog("stars_list_window");
+		} else
+			return;
+	}
+	redraw(com.cvport, REMAP_NONE);
+}
+
 /***************** callbacks ****************/
 
 void on_treeview_cursor_changed(GtkTreeView *tree_view,

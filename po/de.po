@@ -7,7 +7,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2021-05-28 22:17+0200\n"
+"POT-Creation-Date: 2021-05-29 12:45+0200\n"
 "PO-Revision-Date: 2021-05-14 11:25+0200\n"
 "Last-Translator: Stefan Beck <astro@cometchaser.de>\n"
 "Language-Team: \n"
@@ -1876,7 +1876,7 @@ msgstr ""
 msgid "PSF for the Sequence"
 msgstr "PSF für die Sequenz"
 
-#: src/gui/siril3.glade:9197
+#: src/gui/siril3.glade:9198
 msgid "Pick a Star"
 msgstr "Stern auswählen"
 
@@ -5352,57 +5352,63 @@ msgctxt "shortcut window"
 msgid "Search an object in the image"
 msgstr "Ein Objekt im Bild suchen"
 
-#: src/gui/siril-shortcuts.ui:171
+#: src/gui/siril-shortcuts.ui:170
+#, fuzzy
+msgctxt "shortcut window"
+msgid "Pick the star within the selection"
+msgstr "Bringe ausgewählte Sterne zur Deckung"
+
+#: src/gui/siril-shortcuts.ui:178
 msgctxt "shortcut window"
 msgid "Windows and Application"
 msgstr "Anwendung + Fenster"
 
-#: src/gui/siril-shortcuts.ui:176
+#: src/gui/siril-shortcuts.ui:183
 msgctxt "shortcut window"
 msgid "Fullscreen on / off"
 msgstr "Vollbild an / aus"
 
-#: src/gui/siril-shortcuts.ui:183
+#: src/gui/siril-shortcuts.ui:190
 msgctxt "shortcut window"
 msgid "Hide / Show toolbar"
 msgstr "Verstecke / Zeige Werkzeugleiste"
 
-#: src/gui/siril-shortcuts.ui:190
+#: src/gui/siril-shortcuts.ui:197
 msgctxt "shortcut window"
 msgid "Switch to the Conversion page"
 msgstr "Zum Konvertierung-Reiter wechseln"
 
-#: src/gui/siril-shortcuts.ui:197
+#: src/gui/siril-shortcuts.ui:204
 msgctxt "shortcut window"
 msgid "Switch to the Sequence page"
 msgstr "Zum Sequenz-Reiter wechseln"
 
-#: src/gui/siril-shortcuts.ui:204
+#: src/gui/siril-shortcuts.ui:211
 msgctxt "shortcut window"
 msgid "Switch to the Pre-Processing page"
 msgstr "Zum  Pre-Processing-Reiter wechseln"
 
-#: src/gui/siril-shortcuts.ui:211
+#: src/gui/siril-shortcuts.ui:218
 msgctxt "shortcut window"
 msgid "Switch to the Registration page"
 msgstr "Zum Registrierungs-Reiter wechseln"
 
-#: src/gui/siril-shortcuts.ui:218
+#: src/gui/siril-shortcuts.ui:225
 msgctxt "shortcut window"
 msgid "Switch to the Plot page"
 msgstr "Zum Anzeige-Reiter wechseln"
 
-#: src/gui/siril-shortcuts.ui:225
+#: src/gui/siril-shortcuts.ui:232
 msgctxt "shortcut window"
 msgid "Switch to the Stacking page"
 msgstr "Zum Stacking-Reiter wechseln"
 
-#: src/gui/siril-shortcuts.ui:232
+#: src/gui/siril-shortcuts.ui:239
 msgctxt "shortcut window"
 msgid "Switch to the Output logs page"
 msgstr "Zum Ausgabe-Reiter wechseln"
 
-#: src/gui/siril-shortcuts.ui:239
+#: src/gui/siril-shortcuts.ui:246
 msgctxt "shortcut window"
 msgid "Quit the application"
 msgstr "Schließt die Anwendung"
@@ -6179,7 +6185,7 @@ msgstr ""
 "Zuschnitt: wählen Sie einen Bereich aus oder geben Sie X und Y bzw. Breite "
 "und Höhe an\n"
 
-#: src/core/command.c:595 src/core/command.c:3934 src/filters/wavelets.c:251
+#: src/core/command.c:595 src/core/command.c:3935 src/filters/wavelets.c:251
 #: src/filters/wavelets.c:321
 #, c-format
 msgid "Wavelet: maximum number of plans for this image size is %d\n"
@@ -6234,7 +6240,7 @@ msgstr "Sequenz: %s\n"
 msgid "Image: %s\n"
 msgstr "Bild: %s\n"
 
-#: src/core/command.c:830 src/core/command.c:3914
+#: src/core/command.c:830 src/core/command.c:3915
 msgid "********* END OF THE LIST *********\n"
 msgstr "********* ENDE DER LISTE *********\n"
 
@@ -6361,7 +6367,7 @@ msgstr "PSF läuft für geladene Sequenz auf Layer %d\n"
 #: src/core/command.c:2834 src/core/command.c:2931 src/core/command.c:3043
 #: src/core/command.c:3171 src/core/command.c:3179 src/core/command.c:3279
 #: src/core/command.c:3295 src/core/command.c:3312 src/core/command.c:3329
-#: src/core/command.c:3339 src/core/command.c:3740
+#: src/core/command.c:3339 src/core/command.c:3741
 #, c-format
 msgid "Missing argument to %s, aborting.\n"
 msgstr "Fehlender Wert für %s. Abbruch.\n"
@@ -6410,7 +6416,7 @@ msgid "Fill2: select a region or provide x, y, width, height\n"
 msgstr ""
 "Fill2: wählen Sie eine Region aus oder geben X, Y, Breite, Höhe direkt an\n"
 
-#: src/core/command.c:1712 src/gui/PSF_list.c:527
+#: src/core/command.c:1712 src/gui/PSF_list.c:549
 #, c-format
 msgid "Found %d stars in image, channel #%d\n"
 msgstr "%d Sterne im Bild gefunden, Kanal #%d\n"
@@ -6678,67 +6684,67 @@ msgstr ""
 msgid "Stacked sequence successfully.\n"
 msgstr "Sequenz erfolgreich gestackt.\n"
 
-#: src/core/command.c:3689
+#: src/core/command.c:3690
 #, c-format
 msgid "The offset value could not be parsed from expression: %s, aborting.\n"
 msgstr ""
 
-#: src/core/command.c:3695 src/core/preprocess.c:478
+#: src/core/command.c:3696 src/core/preprocess.c:478
 #, c-format
 msgid "Synthetic offset: Level = %d\n"
 msgstr ""
 
 #. not excluding all neg values here to allow defining a pedestal
-#: src/core/command.c:3698
+#: src/core/command.c:3699
 #, c-format
 msgid "The offset value is out of allowable bounds [-%d,%d], aborting.\n"
 msgstr ""
 
-#: src/core/command.c:3754
+#: src/core/command.c:3755
 msgid "-stretch option is now deprecated.\n"
 msgstr "-stretch Option ist veraltet.\n"
 
-#: src/core/command.c:3756
+#: src/core/command.c:3757
 msgid "-flip option is now deprecated.\n"
 msgstr "-flip Option ist veraltet.\n"
 
-#: src/core/command.c:3770 src/core/preprocess.c:637
+#: src/core/command.c:3771 src/core/preprocess.c:637
 msgid "Preprocessing...\n"
 msgstr "Vorberechnung...\n"
 
-#: src/core/command.c:3791
+#: src/core/command.c:3792
 msgid "16-bit per channel in processed images mode is active\n"
 msgstr "Modus 16-Bit pro Kanal für bearbeitete Bilder ist aktiv\n"
 
-#: src/core/command.c:3792
+#: src/core/command.c:3793
 msgid "32-bit per channel in processed images mode is active\n"
 msgstr "Modus 32-Bit pro Kanal für bearbeitete Bilder ist aktiv\n"
 
-#: src/core/command.c:3806
+#: src/core/command.c:3807
 msgid "Please specify the type of compression and quantization value.\n"
 msgstr ""
 "Bitte geben Sie die Art der Komprimierung und den Quantisierungswert an.\n"
 
-#: src/core/command.c:3822
+#: src/core/command.c:3823
 msgid "Please specify the value of hcompress scale factor.\n"
 msgstr "Bitte geben Sie den Wert des hcompress-Skalierungsfaktors an.\n"
 
-#: src/core/command.c:3829
+#: src/core/command.c:3830
 msgid ""
 "Wrong type of compression. Choices are rice, gzip1, gzip2 or hcompress\n"
 msgstr ""
 "Falsche Komprimierungsart. Möglich sind Rice,Gzip1, Gzip2 oder Hcompress\n"
 
-#: src/core/command.c:3833
+#: src/core/command.c:3834
 msgid "Please specify the value of quantization.\n"
 msgstr "Bitte geben Sie den Wert der Quantisierung an.\n"
 
-#: src/core/command.c:3839
+#: src/core/command.c:3840
 msgid "Quantization can only be equal to 0 for GZIP1 and GZIP2 algorithms.\n"
 msgstr ""
 "Die Quantisierung kann bei GZIP1- und GZIP2-Algorithmen nur gleich 0 sein.\n"
 
-#: src/core/command.c:3842
+#: src/core/command.c:3843
 #, c-format
 msgid ""
 "Compression enabled with the %s algorithm and a quantization value of %.2lf\n"
@@ -6746,25 +6752,25 @@ msgstr ""
 "Komprimierung mit dem %s-Algorithmus aktiviert und einem Quantisierungswert "
 "von %.2lf\n"
 
-#: src/core/command.c:3845
+#: src/core/command.c:3846
 msgid "No compression enabled.\n"
 msgstr "Kompression nicht aktiviert.\n"
 
-#: src/core/command.c:3864
+#: src/core/command.c:3865
 #, c-format
 msgid ""
 "Number of logical processors MUST be greater than 0 and lower or equal to "
 "%d.\n"
 msgstr "Anzahl logischer Prozessoren muß > 0 sein und =< %d.\n"
 
-#: src/core/command.c:3875
+#: src/core/command.c:3876
 #, c-format
 msgid "Using now %d logical processor\n"
 msgid_plural "Using now %d logical processors\n"
 msgstr[0] "Verwende jetzt %d logische Prozessoren \n"
 msgstr[1] "Verwende jetzt %d logische Prozessoren\n"
 
-#: src/core/command.c:3891
+#: src/core/command.c:3892
 msgid ""
 "The accepted range for the ratio of memory used for stacking is [0.05, 4], "
 "with values below the available memory recommended\n"
@@ -6772,7 +6778,7 @@ msgstr ""
 "Der akzeptierte Bereich für das Speicherverhältnis zum Stacken ist [0.05, "
 "4]. Werte sollten unter dem empfohlenen verfügbaren Speicher liegen.\n"
 
-#: src/core/command.c:3895
+#: src/core/command.c:3896
 #, c-format
 msgid ""
 "Setting the ratio of memory used for stacking above 1 will require the use "
@@ -6783,28 +6789,28 @@ msgstr ""
 "Auslagerungsspeicher. Dieser ist sehr langsam und wir nicht empfohlen (%g "
 "erforderlich).\n"
 
-#: src/core/command.c:3899
+#: src/core/command.c:3900
 #, c-format
 msgid "Usable memory for stacking changed to %g\n"
 msgstr "Speicherverfügbarkeit zum Stacken geändert auf %g\n"
 
-#: src/core/command.c:3909
+#: src/core/command.c:3910
 msgid "********* LIST OF AVAILABLE COMMANDS *********\n"
 msgstr "********* LISTE VERFÜGBARER KOMMANDOS *********\n"
 
-#: src/core/command.c:3963
+#: src/core/command.c:3964
 msgid "Required version is not correct.\n"
 msgstr "Benötigte Version ist nicht richtig.\n"
 
-#: src/core/command.c:3985
+#: src/core/command.c:3986
 msgid "The required version of Siril is ok.\n"
 msgstr "Die erforderliche Version von SIRIL ist in Ordnung.\n"
 
-#: src/core/command.c:3990
+#: src/core/command.c:3991
 msgid "A newer version of Siril is required, please update your version.\n"
 msgstr "Eine neuere Version von SIRIL wird benötigt. Bitte aktualisieren.\n"
 
-#: src/core/command.c:3992
+#: src/core/command.c:3993
 #, c-format
 msgid ""
 "The script you are executing requires a newer version of Siril to run (%s), "
@@ -8299,7 +8305,7 @@ msgstr ""
 "Nicht genügend Speicher für diese Operation (%s pro Bild erforderlich, %s "
 "gilt als verfügbar)\n"
 
-#: src/core/processing.c:588
+#: src/core/processing.c:590
 msgid "Process aborted by user\n"
 msgstr "Bearbeitung durch Benutzer abgebrochen\n"
 
@@ -8434,11 +8440,11 @@ msgstr "DDP Level muss zwischen [0, 65535] sein\n"
 msgid "Fill value must be in the range [0,%d]\n"
 msgstr ""
 
-#: src/core/siril_actions.c:286
+#: src/core/siril_actions.c:291
 msgid "Save your changes before loading a frame of the sequence."
 msgstr "Speichern Sie Ihre Änderungen, bevor Sie ein Bild der Sequenz laden."
 
-#: src/core/siril_actions.c:287
+#: src/core/siril_actions.c:292
 msgid ""
 "The image currently displayed is the result of the previous stack. If you "
 "load an image from the sequence, you might lose the entire process you "
@@ -8450,7 +8456,7 @@ msgstr ""
 "gesamten Prozess, den Sie an dem Bild durchgeführt haben, aber nicht das "
 "Bild selbst. Sie müssen Ihre Daten vorher speichern."
 
-#: src/core/siril_actions.c:290
+#: src/core/siril_actions.c:295
 msgid "Load another image"
 msgstr "Ein anderes Bild laden"
 
@@ -8612,14 +8618,14 @@ msgid "Filename is too long, not expanding it\n"
 msgstr "Dateiname zu lang\n"
 
 #: src/core/utils.c:1196 src/io/image_format_fits.c:2519
-#: src/io/image_format_fits.c:2524 src/io/ser.c:1313
+#: src/io/image_format_fits.c:2524 src/io/ser.c:1315
 msgid "pixel"
 msgid_plural "pixels"
 msgstr[0] "Pixel"
 msgstr[1] "Super Pixel"
 
 #: src/core/utils.c:1197 src/io/image_format_fits.c:2520
-#: src/io/image_format_fits.c:2525 src/io/ser.c:1314
+#: src/io/image_format_fits.c:2525 src/io/ser.c:1316
 msgid "channel"
 msgid_plural "channels"
 msgstr[0] "Kanal"
@@ -8887,21 +8893,21 @@ msgstr "%d: noch nicht betroffen"
 msgid "B&W"
 msgstr "B&W"
 
-#: src/gui/callbacks.c:1136
+#: src/gui/callbacks.c:1137
 msgid "This binning is not handled yet\n"
 msgstr "Dieses Binning wird noch nicht unterstützt\n"
 
-#: src/gui/callbacks.c:1247
+#: src/gui/callbacks.c:1248
 #, c-format
 msgid "Default FITS extension is set to %s\n"
 msgstr "Die Standard-FITS-Erweiterung ist eingestellt auf  %s\n"
 
-#: src/gui/callbacks.c:1261
+#: src/gui/callbacks.c:1262
 #, c-format
 msgid "Welcome to %s"
 msgstr "Wilkommen zu %s"
 
-#: src/gui/callbacks.c:1264
+#: src/gui/callbacks.c:1265
 msgid ""
 "Hello, this is the first time you use this new version of Siril. Please, "
 "have a seat and take the time to watch the short introduction we have "
@@ -8914,36 +8920,36 @@ msgstr ""
 "dass Sie diese Einführung jederzeit im Register \"Verschiedenes\" des "
 "Dialogfelds \"Einstellungen\" abspielen können. Möchten Sie fortfahren?"
 
-#: src/gui/callbacks.c:1267
+#: src/gui/callbacks.c:1268
 msgid "See Introduction"
 msgstr "Tipps zur Einführung"
 
-#: src/gui/callbacks.c:1517
+#: src/gui/callbacks.c:1518
 msgid "Closing application"
 msgstr "Schließe Anwendung"
 
-#: src/gui/callbacks.c:1518
+#: src/gui/callbacks.c:1519
 msgid "Are you sure you want to quit?"
 msgstr "Wirklich beenden?"
 
-#: src/gui/callbacks.c:1518
+#: src/gui/callbacks.c:1519
 msgid "Exit"
 msgstr "Beenden"
 
-#: src/gui/callbacks.c:1679
+#: src/gui/callbacks.c:1680
 #, c-format
 msgid "Selected %s sequence %s..."
 msgstr "Sequenz %s ausgwählt %s..."
 
-#: src/gui/callbacks.c:1741
+#: src/gui/callbacks.c:1742
 msgid "Searching for sequences in the current working directory..."
 msgstr "Suche nach Sequenzen im aktuellen Arbeitsverzeichnis..."
 
-#: src/gui/callbacks.c:1797
+#: src/gui/callbacks.c:1798
 msgid "RGB alignment (DFT)"
 msgstr "RGB Ausrichtung (DFT)"
 
-#: src/gui/callbacks.c:1802
+#: src/gui/callbacks.c:1803
 msgid "RGB alignment (PSF)"
 msgstr "RGB Ausrichtung (PSF)"
 
@@ -9128,11 +9134,11 @@ msgstr "Lineares Anpassungs-Clipping:\n"
 msgid "Cannot compute linear coefficients."
 msgstr "Lineare Koeffizienten können nicht berechnet werden."
 
-#: src/gui/menu_gray_psf.c:73 src/gui/menu_gray_psf.c:155
+#: src/gui/menu_gray_psf.c:73 src/gui/PSF_list.c:470
 msgid "Current selection is too large"
 msgstr "Aktuelle Auswahl ist zu groß"
 
-#: src/gui/menu_gray_psf.c:74 src/gui/menu_gray_psf.c:156
+#: src/gui/menu_gray_psf.c:74 src/gui/PSF_list.c:471
 msgid "To determine the PSF, please make a selection around a star."
 msgstr "Um die PSF zu bestimmen, treffen Sie eine Auswahl um einen Stern."
 
@@ -9473,15 +9479,15 @@ msgstr "Die Datei %s wurde erstellt.\n"
 msgid "Star list file (*.lst)"
 msgstr "Datei mit Stern-Liste (*.lst)"
 
-#: src/gui/PSF_list.c:520
+#: src/gui/PSF_list.c:542
 msgid "Load an image first, aborted.\n"
 msgstr "Abgebrochen! Laden Sie zuerst ein Bild.\n"
 
-#: src/gui/PSF_list.c:537
+#: src/gui/PSF_list.c:559
 msgid "Nothing to export"
 msgstr "Nichts zu exportieren"
 
-#: src/gui/PSF_list.c:538
+#: src/gui/PSF_list.c:560
 msgid "There are no stars in the list."
 msgstr "Es sind keine Sterne in der Liste."
 
@@ -10090,21 +10096,21 @@ msgstr "Fehler beim Öffnen der SER-Datei %s, Datei wird ignoriert.\n"
 msgid "output sequence type unknown, aborting\n"
 msgstr "Art der Ausgabesequenz unbekannt, Abbruch\n"
 
-#: src/io/conversion.c:1212
+#: src/io/conversion.c:1215
 msgid "Error while converting to SER (no space left?)\n"
 msgstr "Fehler bei der Konvertierung zu SER (zu wenig Speicherplatz?)\n"
 
-#: src/io/conversion.c:1219
+#: src/io/conversion.c:1222
 msgid "Error while converting to FITSEQ (no space left?)\n"
 msgstr ""
 "Fehler beim Konvertieren nach FITSEQ (zu wenig Speicherplatz?)\n"
 "\n"
 
-#: src/io/conversion.c:1226
+#: src/io/conversion.c:1229
 msgid "Error while converting to FITS (no space left?)\n"
 msgstr "Fehler bei der Konvertierung zu FITS (zu wenig Speicherplatz?)\n"
 
-#: src/io/conversion.c:1237
+#: src/io/conversion.c:1240
 msgid "Error while converting, unknown output\n"
 msgstr "Fehler beim Konvertieren, unbekannter Ausgang\n"
 
@@ -10268,14 +10274,14 @@ msgstr ""
 "Fehler: Sie versuchen ein FITS-Bild in einem nicht unetrstützten Format zu "
 "speichern (%d).\n"
 
-#: src/io/image_format_fits.c:2521 src/io/ser.c:1315
+#: src/io/image_format_fits.c:2521 src/io/ser.c:1317
 msgid "frame"
 msgid_plural "frames"
 msgstr[0] "Bild"
 msgstr[1] "Frames"
 
 #: src/io/image_format_fits.c:2521 src/io/image_format_fits.c:2526
-#: src/io/ser.c:1315
+#: src/io/ser.c:1317
 msgid "(Monochrome Preview)"
 msgstr "(Monochrome Vorschau)"
 

@@ -980,6 +980,7 @@ static void load_accels() {
 
 		"win.search-object",     "<Primary>slash", NULL,
 		"win.astrometry",        "<Primary>a", NULL,
+		"win.pickstar",          "<Primary>space", NULL,
 
 		NULL /* Terminating NULL */
 	};

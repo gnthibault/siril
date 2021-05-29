@@ -58,7 +58,8 @@ static GActionEntry image_entries[] = {
 		{ "dyn-psf", dyn_psf_activate },
 		{ "annotate-object", annotate_object_activate, NULL, "false", annotate_object_state },
 		{ "search-object", search_object_activate },
-		{ "seq-list", seq_list_activate }
+		{ "seq-list", seq_list_activate },
+		{ "pickstar", pick_star_activate }
 };
 
 static GActionEntry rgb_processing_entries[] = {

@@ -37,6 +37,7 @@
 #include "gui/histogram.h"
 #include "gui/open_dialog.h"
 #include "gui/message_dialog.h"
+#include "gui/PSF_list.h"
 #include "gui/save_dialog.h"
 #include "gui/sequence_list.h"
 #include "gui/progress_and_log.h"
@@ -249,6 +250,10 @@ void astrometry_activate(GSimpleAction *action, GVariant *parameter,gpointer use
 
 void dyn_psf_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	siril_open_dialog("stars_list_window");
+}
+
+void pick_star_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	pick_a_star();
 }
 
 void search_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {

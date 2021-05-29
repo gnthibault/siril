@@ -59,6 +59,7 @@ void toolbar_activate(GSimpleAction *action, GVariant *parameter, gpointer user_
 void change_zoom_fit_state(GSimpleAction *action, GVariant *state, gpointer user_data);
 void astrometry_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void dyn_psf_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void pick_star_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void search_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void annotate_object_state(GSimpleAction *action, GVariant *state, gpointer user_data);
 void annotate_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);

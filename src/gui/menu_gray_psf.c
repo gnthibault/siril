@@ -143,25 +143,3 @@ void on_menu_gray_seqpsf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		process_seq_psf(0);
 	}
 }
-
-void on_menu_gray_pick_star_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	int layer = match_drawing_area_widget(com.vport[com.cvport], FALSE);
-	int new_index;
-
-	if (layer != -1) {
-		if (!(com.selection.h && com.selection.w))
-			return;
-		if (com.selection.w > 300 || com.selection.h > 300) {
-			siril_message_dialog(GTK_MESSAGE_WARNING, _("Current selection is too large"),
-					_("To determine the PSF, please make a selection around a star."));
-			return;
-		}
-		fitted_PSF *new_star = add_star(&gfit, layer, &new_index);
-		if (new_star) {
-			add_star_to_list(new_star);
-			siril_open_dialog("stars_list_window");
-		} else
-			return;
-	}
-	redraw(com.cvport, REMAP_NONE);
-}
