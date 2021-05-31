@@ -879,7 +879,11 @@ static fits *read_fit(struct reader_data *reader, seqread_status *retval) {	// r
 		fit = calloc(1, sizeof(fits));
 		if (fitseq_read_frame(reader->fitseq, reader->index, fit, FALSE, get_thread_id(reader)))
 			*retval = READ_FAILED;
-		else *retval = READ_OK;
+		else {
+			debayer_if_needed(TYPEFITS, fit, FALSE);
+			*retval = READ_OK;
+		}
+
 		finish_read_seq(reader);
 	}
 #ifdef HAVE_FFMS2

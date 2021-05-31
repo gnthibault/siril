@@ -26,9 +26,7 @@
 
 #include "core/siril.h"
 
-#include "algos/statistics.h"
 #include "io/image_format_fits.h"
-#include "io/conversion.h"
 #include "gui/progress_and_log.h"
 #include "core/siril_log.h"
 
@@ -228,10 +226,6 @@ static int fitseq_read_frame_internal(fitseq *fitseq, int index, fits *dest, gbo
 
 	if (read_fits_with_convert(dest, fitseq->filename, force_float)) {
 		return -1;
-	}
-	if (com.pref.debayer.open_debayer) {
-		debayer_if_needed(TYPEFITS, dest, FALSE);
-		full_stats_invalidation_from_fit(dest);
 	}
 
 	return 0;
