@@ -28,6 +28,7 @@
 #define STR_EXTRACT N_("Extracts \"NbPlans\" planes of wavelet domain")
 #define STR_EXTRACTHA N_("Extracts Ha signal from a CFA image. The output file name starts with the prefix \"Ha_\"")
 #define STR_EXTRACTHAOIII N_("Extracts Ha and OIII signals from a CFA image. The output file name start with the prefix \"Ha_\" and \"OIII_\"")
+#define STR_EXTRACTGREEN N_("Extracts green signal from a CFA image. The output file name starts with the prefix \"Green_\"")
 
 #define STR_FDIV N_("Divides the image in memory by the image given in argument. The resulting image is multiplied by the value of the \"scalar\" argument. See also IDIV")
 #define STR_FFTD N_("Applies a Fast Fourier Transform to the image loaded in memory. \"Modulus\" and \"phase\" given in argument are saved in FITS files")
@@ -96,6 +97,7 @@
 #define STR_SELECT N_("This command allows easy mass selection of images in the loaded sequence (from \"from\" to \"to\" included)")
 #define STR_SEQCROP N_("Crops the loaded sequence. The output sequence name starts with the prefix \"cropped_\" unless otherwise specified with \"-prefix=\" option")
 #define STR_SEQEXTRACTHA N_("Same command as EXTRACT_HA but for the sequence \"sequencename\". The output sequence name starts with the prefix \"Ha_\" unless otherwise specified with option \"-prefix=\"")
+#define STR_SEQEXTRACTGREEN N_("Same command as EXTRACT_GREEN but for the sequence \"sequencename\". The output sequence name starts with the prefix \"Green_\" unless otherwise specified with option \"-prefix=\"")
 #define STR_SEQEXTRACTHAOIII N_("Same command as EXTRACT_HAOIII but for the sequence \"sequencename\". The output sequence name start with the prefix \"Ha_\" and \"OIII_\"")
 #define STR_SEQFIND_COSME N_("Same command as FIND_COSME but for the sequence \"sequencename\". The output sequence name starts with the prefix \"cc_\" unless otherwise specified with \"-prefix=\" option")
 #define STR_SEQFIND_COSME_CFA N_("Same command as FIND_COSME_CFA but for the sequence \"sequencename\". The output sequence name starts with the prefix \"cc_\" unless otherwise specified with \"-prefix=\" option")

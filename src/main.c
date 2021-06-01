@@ -243,19 +243,19 @@ static void siril_app_activate(GApplication *application) {
 
 	if (com.headless) {
 		if (main_option_script) {
-			GInputStream *input_stream;
+			GInputStream *input_stream = NULL;
 
 			if (g_strcmp0(main_option_script, "-") == 0) {
 				input_stream = siril_input_stream_from_stdin();
 			} else {
 				GError *error;
 				GFile *file = g_file_new_for_path(main_option_script);
-				input_stream = (GInputStream *)g_file_read(file, NULL, &error);
-
-				if (input_stream == NULL) {
+				if (file)
+					input_stream = (GInputStream *)g_file_read(file, NULL, &error);
+				if (!input_stream) {
 					if (error != NULL) {
 						g_clear_error(&error);
-						siril_log_message(_("File [%s] does not exist\n"), main_option_script);
+						siril_log_message(_("File [%s] does not exist (from CWD, use absolute path?)\n"), main_option_script);
 					}
 					g_object_unref(file);
 					exit(EXIT_FAILURE);

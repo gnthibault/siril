@@ -34,6 +34,8 @@ siril_common_SOURCES = \
 	algos/Def_Math.h \
 	algos/Def_Wavelet.h \
 	algos/Def_Mem.h \
+	algos/extraction.c \
+	algos/extraction.h \
 	algos/demosaicing.c \
 	algos/demosaicing.h \
 	algos/fix_xtrans_af.c \

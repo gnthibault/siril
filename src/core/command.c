@@ -74,6 +74,7 @@
 #include "algos/Def_Wavelet.h"
 #include "algos/background_extraction.h"
 #include "algos/demosaicing.h"
+#include "algos/extraction.h"
 #include "algos/colors.h"
 #include "algos/quality.h"
 #include "algos/noise.h"
@@ -610,7 +611,7 @@ int process_wavelet(int nb) {
 		}
 
 		for (chan = 0; chan < nb_chan; chan++) {
-			dir[chan] = g_build_filename(tmpdir, File_Name_Transform[chan],	NULL);
+			dir[chan] = g_build_filename(tmpdir, File_Name_Transform[chan], NULL);
 			wavelet_transform_file(Imag, gfit.ry, gfit.rx, dir[chan],
 					Type_Transform, Nbr_Plan, gfit.pdata[chan]);
 			g_free(dir[chan]);
@@ -619,7 +620,7 @@ int process_wavelet(int nb) {
 		free(Imag);
 	} else if (gfit.type == DATA_FLOAT) {
 		for (chan = 0; chan < nb_chan; chan++) {
-			dir[chan] = g_build_filename(tmpdir, File_Name_Transform[chan],	NULL);
+			dir[chan] = g_build_filename(tmpdir, File_Name_Transform[chan], NULL);
 			wavelet_transform_file_float(gfit.fpdata[chan], gfit.ry, gfit.rx, dir[chan],
 					Type_Transform, Nbr_Plan);
 			g_free(dir[chan]);
@@ -1379,7 +1380,7 @@ int process_seq_crop(int nb) {
 					char *current = word[i], *value;
 					value = current + 8;
 					if (value[0] == '\0') {
-						siril_log_message(_("Missing argument to %s, aborting.\n"),	current);
+						siril_log_message(_("Missing argument to %s, aborting.\n"), current);
 						return 1;
 					}
 					args->prefix = strdup(value);
@@ -2173,7 +2174,7 @@ int process_subsky(int nb) {
 						char *current = word[i], *value;
 						value = current + 8;
 						if (value[0] == '\0') {
-							siril_log_message(_("Missing argument to %s, aborting.\n"),	current);
+							siril_log_message(_("Missing argument to %s, aborting.\n"), current);
 							return 1;
 						}
 						args->seqEntry = strdup(value);
@@ -2413,6 +2414,48 @@ int process_split_cfa(int nb) {
 	return ret;
 }
 
+int process_extractGreen(int nb) {
+	if (isrgb(&gfit)) {
+		siril_log_message(_("Siril cannot split CFA channel. Make sure your image is in CFA mode.\n"));
+		return 1;
+	}
+	char *filename = NULL;
+	int ret = 1;
+
+	fits f_green = { 0 };
+
+	if (sequence_is_loaded() && !single_image_is_loaded()) {
+		filename = g_path_get_basename(com.seq.seqname);
+	}
+	else {
+		if (com.uniq->filename != NULL) {
+			char *tmp = remove_ext_from_filename(com.uniq->filename);
+			filename = g_path_get_basename(tmp);
+			free(tmp);
+		}
+	}
+
+	sensor_pattern pattern = get_bayer_pattern(&gfit);
+
+	gchar *green = g_strdup_printf("Green_%s%s", filename, com.pref.ext);
+	if (gfit.type == DATA_USHORT) {
+		if (!(ret = extractGreen_ushort(&gfit, &f_green, pattern))) {
+			ret = save1fits16(green, &f_green, 0);
+		}
+	}
+	else if (gfit.type == DATA_FLOAT) {
+		if (!(ret = extractGreen_float(&gfit, &f_green, pattern))) {
+			ret = save1fits32(green, &f_green, 0);
+		}
+	} else return 1;
+
+	g_free(green);
+	clearfits(&f_green);
+	free(filename);
+	return ret;
+
+}
+
 int process_extractHa(int nb) {
 	if (isrgb(&gfit)) {
 		siril_log_message(_("Siril cannot split CFA channel. Make sure your image is in CFA mode.\n"));
@@ -2434,44 +2477,16 @@ int process_extractHa(int nb) {
 		}
 	}
 
-	/* Get Bayer informations from header if available */
-	sensor_pattern tmp_pattern = com.pref.debayer.bayer_pattern;
-	if (com.pref.debayer.use_bayer_header) {
-		sensor_pattern bayer;
-		bayer = retrieveBayerPatternFromChar(gfit.bayer_pattern);
-
-		if (bayer <= BAYER_FILTER_MAX) {
-			if (bayer != tmp_pattern) {
-				if (bayer == BAYER_FILTER_NONE) {
-					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
-				}
-				else {
-					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
-								" from Bayer pattern in settings (%s). Overriding settings.\n"),
-							"salmon", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
-					tmp_pattern = bayer;
-				}
-			}
-		} else {
-			siril_log_message(_("XTRANS pattern not handled for this feature.\n"));
-			return 1;
-		}
-	}
-	if (tmp_pattern >= BAYER_FILTER_MIN && tmp_pattern <= BAYER_FILTER_MAX) {
-		siril_log_message(_("Filter Pattern: %s\n"),
-				filter_pattern[tmp_pattern]);
-	}
-
-	retrieve_Bayer_pattern(&gfit, &tmp_pattern);
+	sensor_pattern pattern = get_bayer_pattern(&gfit);
 
 	gchar *Ha = g_strdup_printf("Ha_%s%s", filename, com.pref.ext);
 	if (gfit.type == DATA_USHORT) {
-		if (!(ret = extractHa_ushort(&gfit, &f_Ha, tmp_pattern))) {
+		if (!(ret = extractHa_ushort(&gfit, &f_Ha, pattern))) {
 			ret = save1fits16(Ha, &f_Ha, 0);
 		}
 	}
 	else if (gfit.type == DATA_FLOAT) {
-		if (!(ret = extractHa_float(&gfit, &f_Ha, tmp_pattern))) {
+		if (!(ret = extractHa_float(&gfit, &f_Ha, pattern))) {
 			ret = save1fits32(Ha, &f_Ha, 0);
 		}
 	} else return 1;
@@ -2503,46 +2518,18 @@ int process_extractHaOIII(int nb) {
 		}
 	}
 
-	/* Get Bayer informations from header if available */
-	sensor_pattern tmp_pattern = com.pref.debayer.bayer_pattern;
-	if (com.pref.debayer.use_bayer_header) {
-		sensor_pattern bayer;
-		bayer = retrieveBayerPatternFromChar(gfit.bayer_pattern);
-
-		if (bayer <= BAYER_FILTER_MAX) {
-			if (bayer != tmp_pattern) {
-				if (bayer == BAYER_FILTER_NONE) {
-					siril_log_color_message(_("No Bayer pattern found in the header file.\n"), "red");
-				}
-				else {
-					siril_log_color_message(_("Bayer pattern found in header (%s) is different"
-								" from Bayer pattern in settings (%s). Overriding settings.\n"),
-							"salmon", filter_pattern[bayer], filter_pattern[com.pref.debayer.bayer_pattern]);
-					tmp_pattern = bayer;
-				}
-			}
-		} else {
-			siril_log_message(_("XTRANS pattern not handled for this feature.\n"));
-			return 1;
-		}
-	}
-	if (tmp_pattern >= BAYER_FILTER_MIN && tmp_pattern <= BAYER_FILTER_MAX) {
-		siril_log_message(_("Filter Pattern: %s\n"),
-				filter_pattern[tmp_pattern]);
-	}
-
-	retrieve_Bayer_pattern(&gfit, &tmp_pattern);
+	sensor_pattern pattern = get_bayer_pattern(&gfit);
 
 	gchar *Ha = g_strdup_printf("Ha_%s%s", filename, com.pref.ext);
 	gchar *OIII = g_strdup_printf("OIII_%s%s", filename, com.pref.ext);
 	if (gfit.type == DATA_USHORT) {
-		if (!(ret = extractHaOIII_ushort(&gfit, &f_Ha, &f_OIII, tmp_pattern))) {
+		if (!(ret = extractHaOIII_ushort(&gfit, &f_Ha, &f_OIII, pattern))) {
 			ret = save1fits16(Ha, &f_Ha, 0) ||
 					save1fits16(OIII, &f_OIII, 0);
 		}
 	}
 	else if (gfit.type == DATA_FLOAT) {
-		if (!(ret = extractHaOIII_float(&gfit, &f_Ha, &f_OIII, tmp_pattern))) {
+		if (!(ret = extractHaOIII_float(&gfit, &f_Ha, &f_OIII, pattern))) {
 			ret = save1fits32(Ha, &f_Ha, 0) ||
 					save1fits16(OIII, &f_OIII, 0);
 		}
@@ -2582,7 +2569,7 @@ int process_seq_mtf(int nb) {
 					char *current = word[i], *value;
 					value = current + 8;
 					if (value[0] == '\0') {
-						siril_log_message(_("Missing argument to %s, aborting.\n"),	current);
+						siril_log_message(_("Missing argument to %s, aborting.\n"), current);
 						return 1;
 					}
 					args->seqEntry = strdup(value);
@@ -2627,7 +2614,7 @@ int process_seq_split_cfa(int nb) {
 					char *current = word[i], *value;
 					value = current + 8;
 					if (value[0] == '\0') {
-						siril_log_message(_("Missing argument to %s, aborting.\n"),	current);
+						siril_log_message(_("Missing argument to %s, aborting.\n"), current);
 						return 1;
 					}
 					args->seqEntry = strdup(value);
@@ -2671,7 +2658,7 @@ int process_seq_extractHa(int nb) {
 					char *current = word[i], *value;
 					value = current + 8;
 					if (value[0] == '\0') {
-						siril_log_message(_("Missing argument to %s, aborting.\n"),	current);
+						siril_log_message(_("Missing argument to %s, aborting.\n"), current);
 						return 1;
 					}
 					args->seqEntry = strdup(value);
@@ -2683,6 +2670,50 @@ int process_seq_extractHa(int nb) {
 	set_cursor_waiting(TRUE);
 
 	apply_extractHa_to_sequence(args);
+
+	return 0;
+}
+
+int process_seq_extractGreen(int nb) {
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
+	sequence *seq = load_sequence(word[1], NULL);
+	if (!seq)
+		return 1;
+
+	if (seq->nb_layers > 1) {
+		siril_log_message(_("Siril cannot split CFA channel. Make sure your image is in CFA mode.\n"));
+		return 1;
+	}
+
+	struct split_cfa_data *args = calloc(1, sizeof(struct split_cfa_data));
+
+	args->seq = seq;
+	args->seqEntry = "Green_";
+
+	int startoptargs = 2;
+	if (nb > startoptargs) {
+		for (int i = startoptargs; i < nb; i++) {
+			if (word[i]) {
+				if (g_str_has_prefix(word[i], "-prefix=")) {
+					char *current = word[i], *value;
+					value = current + 8;
+					if (value[0] == '\0') {
+						siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+						return 1;
+					}
+					args->seqEntry = strdup(value);
+				}
+			}
+		}
+	}
+
+	set_cursor_waiting(TRUE);
+
+	apply_extractGreen_to_sequence(args);
 
 	return 0;
 }
