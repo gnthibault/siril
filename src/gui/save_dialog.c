@@ -346,12 +346,13 @@ static int save_dialog() {
 	init_dialog();
 
 	GtkFileChooser *chooser = GTK_FILE_CHOOSER(saveDialog);
+	fileChooserPreview *preview = NULL;
 	gchar *fname = get_filename_and_replace_ext();
 
 	gtk_file_chooser_set_current_name(chooser, fname);
 	gtk_file_chooser_set_do_overwrite_confirmation(chooser, TRUE);
 	set_filters_save_dialog(chooser);
-	siril_file_chooser_add_preview(chooser);
+	siril_file_chooser_add_preview(chooser, preview);
 	gtk_file_chooser_unselect_all(chooser);
 	g_signal_connect(chooser, "notify::filter", G_CALLBACK(filter_changed), (gpointer) chooser);
 	g_free(fname);
@@ -370,6 +371,7 @@ static int save_dialog() {
 		return res;
 	}
 	close_dialog();
+	siril_preview_free(preview);
 
 	return res;
 }

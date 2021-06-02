@@ -22,13 +22,7 @@
 
 typedef struct _fileChooserPreview fileChooserPreview;
 
-struct _fileChooserPreview {
-	GtkWidget *image;
-	GtkWidget *name_label;
-	GtkWidget *dim_label;
-	GtkWidget *size_label;
-};
-
-void siril_file_chooser_add_preview(GtkFileChooser *dialog);
+void siril_file_chooser_add_preview(GtkFileChooser *dialog, fileChooserPreview *preview);
+void siril_preview_free(fileChooserPreview *preview);
 
 #endif /* SRC_GUI_DIALOG_PREVIEW_H_ */

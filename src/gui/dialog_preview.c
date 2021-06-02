@@ -33,15 +33,30 @@
 
 #include "dialog_preview.h"
 
-static fileChooserPreview preview;
-
 struct _updta_preview_data {
 	GtkFileChooser *file_chooser;
 	gchar *filename;
 	gchar *description;
 	GdkPixbuf *pixbuf;
 	GFileInfo *file_info;
+	fileChooserPreview *preview;
 };
+
+struct _fileChooserPreview {
+	GtkWidget *image;
+	GtkWidget *name_label;
+	GtkWidget *dim_label;
+	GtkWidget *size_label;
+};
+
+static fileChooserPreview *new_preview_object() {
+	fileChooserPreview *object = g_new(fileChooserPreview, 1);
+	object->image = gtk_image_new();
+	object->name_label = gtk_label_new(NULL);
+	object->dim_label = gtk_label_new(NULL);
+	object->size_label = gtk_label_new(NULL);
+	return object;
+}
 
 static gboolean end_update_preview_cb(gpointer p) {
 	struct _updta_preview_data *args = (struct _updta_preview_data *) p;
@@ -55,7 +70,12 @@ static gboolean end_update_preview_cb(gpointer p) {
 	char *info_str = NULL;
 	GFileType type;
 
-	if (!(GTK_IS_IMAGE((preview.image)))) return FALSE;
+	fileChooserPreview *preview = args->preview;
+
+	if (!(GTK_IS_IMAGE((preview->image)))) {
+		g_free(preview);
+		return FALSE;
+	}
 
 	name_str = g_path_get_basename(args->filename);
 
@@ -73,31 +93,31 @@ static gboolean end_update_preview_cb(gpointer p) {
 
 	/* load icon */
 	if (type == G_FILE_TYPE_REGULAR && args->pixbuf) {
-		gtk_image_set_from_pixbuf(GTK_IMAGE(preview.image), args->pixbuf);
+		gtk_image_set_from_pixbuf(GTK_IMAGE(preview->image), args->pixbuf);
 		info_str = args->description;
 	} else if (type == G_FILE_TYPE_DIRECTORY) {
-		gtk_image_set_from_icon_name(GTK_IMAGE(preview.image), "folder", GTK_ICON_SIZE_DIALOG);
-		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), com.pref.thumbnail_size);
+		gtk_image_set_from_icon_name(GTK_IMAGE(preview->image), "folder", GTK_ICON_SIZE_DIALOG);
+		gtk_image_set_pixel_size(GTK_IMAGE(preview->image), com.pref.thumbnail_size);
 		info_str = g_strdup(_("Folder"));
 	} else {
 		image_type im_type = get_type_from_filename(args->filename);
 		if (im_type == TYPEAVI || im_type == TYPESER ||
 				(im_type == TYPEFITS && fitseq_is_fitseq(args->filename, NULL)))
-			gtk_image_set_from_icon_name(GTK_IMAGE(preview.image), "video", GTK_ICON_SIZE_DIALOG);
-		else gtk_image_set_from_icon_name(GTK_IMAGE(preview.image), "image", GTK_ICON_SIZE_DIALOG);
-		gtk_image_set_pixel_size(GTK_IMAGE(preview.image), com.pref.thumbnail_size);
+			gtk_image_set_from_icon_name(GTK_IMAGE(preview->image), "video", GTK_ICON_SIZE_DIALOG);
+		else gtk_image_set_from_icon_name(GTK_IMAGE(preview->image), "image", GTK_ICON_SIZE_DIALOG);
+		gtk_image_set_pixel_size(GTK_IMAGE(preview->image), com.pref.thumbnail_size);
 	}
 
 	/* information strings */
 	const char *format = "<span style=\"italic\">%s</span>";
 	char *markup = g_markup_printf_escaped(format, name_str);
-	gtk_label_set_markup(GTK_LABEL(preview.name_label), markup);
-	gtk_label_set_ellipsize(GTK_LABEL(preview.name_label), PANGO_ELLIPSIZE_MIDDLE);
-	gtk_label_set_width_chars(GTK_LABEL(preview.name_label), 25);
-	gtk_label_set_max_width_chars(GTK_LABEL(preview.name_label), 25);
+	gtk_label_set_markup(GTK_LABEL(preview->name_label), markup);
+	gtk_label_set_ellipsize(GTK_LABEL(preview->name_label), PANGO_ELLIPSIZE_MIDDLE);
+	gtk_label_set_width_chars(GTK_LABEL(preview->name_label), 25);
+	gtk_label_set_max_width_chars(GTK_LABEL(preview->name_label), 25);
 
-	gtk_label_set_text(GTK_LABEL(preview.dim_label), info_str);
-	gtk_label_set_text(GTK_LABEL(preview.size_label), size_str);
+	gtk_label_set_text(GTK_LABEL(preview->dim_label), info_str);
+	gtk_label_set_text(GTK_LABEL(preview->size_label), size_str);
 
 	if (args->pixbuf)
 		g_object_unref(args->pixbuf);
@@ -108,7 +128,9 @@ static gboolean end_update_preview_cb(gpointer p) {
 
 	g_object_unref(args->file_info);
 	g_free(args->filename);
+
 	free(args);
+	args = NULL;
 	return FALSE;
 }
 
@@ -179,6 +201,7 @@ static void update_preview_cb(GtkFileChooser *file_chooser, gpointer p) {
 	gchar *uri;
 	GFile *file;
 	GFileInfo *file_info;
+	fileChooserPreview *preview = (fileChooserPreview *)p;
 
 	uri = gtk_file_chooser_get_preview_uri(file_chooser);
 	if (uri == NULL) {
@@ -200,6 +223,7 @@ static void update_preview_cb(GtkFileChooser *file_chooser, gpointer p) {
 	data->filename = g_file_get_path(file);
 	data->file_info = file_info;
 	data->file_chooser = file_chooser;
+	data->preview = preview;
 
 	g_free(uri);
 	g_object_unref(file);
@@ -207,28 +231,29 @@ static void update_preview_cb(GtkFileChooser *file_chooser, gpointer p) {
 	start_in_new_thread(update_preview_cb_idle, data);
 }
 
-void siril_file_chooser_add_preview(GtkFileChooser *dialog) {
+void siril_preview_free(fileChooserPreview *preview) {
+	g_free(preview);
+}
+
+void siril_file_chooser_add_preview(GtkFileChooser *dialog, fileChooserPreview *preview) {
 	if (com.pref.show_thumbnails) {
 		GtkWidget *vbox;
 
 		vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
 		gtk_container_set_border_width(GTK_CONTAINER(vbox), 12);
 
-		preview.image = gtk_image_new();
-		preview.name_label = gtk_label_new(NULL);
-		preview.dim_label = gtk_label_new(NULL);
-		preview.size_label = gtk_label_new(NULL);
+		preview = new_preview_object();
 
-		gtk_label_set_justify(GTK_LABEL(preview.name_label), GTK_JUSTIFY_CENTER);
-		gtk_label_set_justify(GTK_LABEL(preview.dim_label), GTK_JUSTIFY_CENTER);
-		gtk_label_set_justify(GTK_LABEL(preview.dim_label), GTK_JUSTIFY_CENTER);
+		gtk_label_set_justify(GTK_LABEL(preview->name_label), GTK_JUSTIFY_CENTER);
+		gtk_label_set_justify(GTK_LABEL(preview->dim_label), GTK_JUSTIFY_CENTER);
+		gtk_label_set_justify(GTK_LABEL(preview->dim_label), GTK_JUSTIFY_CENTER);
 
-		gtk_widget_set_size_request(preview.image, com.pref.thumbnail_size, com.pref.thumbnail_size);
+		gtk_widget_set_size_request(preview->image, com.pref.thumbnail_size, com.pref.thumbnail_size);
 
-		gtk_box_pack_start(GTK_BOX(vbox), preview.image, FALSE, TRUE, 0);
-		gtk_box_pack_start(GTK_BOX(vbox), preview.name_label, FALSE, TRUE, 10);
-		gtk_box_pack_start(GTK_BOX(vbox), preview.size_label, FALSE, TRUE, 0);
-		gtk_box_pack_start(GTK_BOX(vbox), preview.dim_label, FALSE, TRUE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), preview->image, FALSE, TRUE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), preview->name_label, FALSE, TRUE, 10);
+		gtk_box_pack_start(GTK_BOX(vbox), preview->size_label, FALSE, TRUE, 0);
+		gtk_box_pack_start(GTK_BOX(vbox), preview->dim_label, FALSE, TRUE, 0);
 
 		gtk_widget_show_all(vbox);
 
@@ -236,6 +261,6 @@ void siril_file_chooser_add_preview(GtkFileChooser *dialog) {
 		gtk_file_chooser_set_use_preview_label(dialog, FALSE);
 		gtk_file_chooser_set_preview_widget_active(dialog, FALSE);
 
-		g_signal_connect(dialog, "update-preview", G_CALLBACK(update_preview_cb), NULL);
+		g_signal_connect(dialog, "update-preview", G_CALLBACK(update_preview_cb), (gpointer)preview);
 	}
 }
