@@ -110,6 +110,10 @@ gboolean load_WCS_from_file(fits* fit) {
 	return FALSE;
 }
 
+void free_wcs(fits *fit) {
+        fprintf(stderr, "ERROR: calling undefined function free_wcs\n");
+}
+
 SirilWidget *siril_file_chooser_save(GtkWindow *parent, GtkFileChooserAction action) {
         fprintf(stderr, "ERROR: calling undefined function siril_file_chooser_save\n");
 	return NULL;
