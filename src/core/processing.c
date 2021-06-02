@@ -45,8 +45,8 @@ gpointer generic_sequence_worker(gpointer p) {
 	int input_idx;	// index of the frame being processed in the sequence
 	int *index_mapping = NULL;
 	int nb_frames, excluded_frames = 0, progress = 0;
-	float nb_framesf;
 	int abort = 0;	// variable for breaking out of loop
+	gboolean have_seqwriter = FALSE;
 
 	assert(args);
 	assert(args->seq);
@@ -65,7 +65,7 @@ gpointer generic_sequence_worker(gpointer p) {
 			goto the_end;
 		}
 	}
-	nb_framesf = (float)nb_frames + 0.3f;	// leave margin for rounding errors and post processing
+	float nb_framesf = (float)nb_frames + 0.3f;	// leave margin for rounding errors and post processing
 	args->retval = 0;
 
 #ifdef _OPENMP
@@ -135,7 +135,7 @@ gpointer generic_sequence_worker(gpointer p) {
 		g_free(desc);
 	}
 
-	gboolean have_seqwriter = args->has_output &&
+	have_seqwriter = args->has_output &&
 		((args->force_fitseq_output || args->seq->type == SEQ_FITSEQ) ||
 		 (args->force_ser_output || args->seq->type == SEQ_SER));
 #ifdef _OPENMP
@@ -224,16 +224,10 @@ gpointer generic_sequence_worker(gpointer p) {
 			if (args->stop_on_error)
 				abort = 1;
 			else {
-				//args->seq->imgparam[frame].incl = FALSE;
 #ifdef _OPENMP
-#pragma omp critical
+#pragma omp atomic
 #endif
-				{
-					//if (args->nb_filtered_images > 0)
-					//	args->nb_filtered_images--;
-					//args->seq->selnum--;
-					excluded_frames++;
-				}
+				excluded_frames++;
 			}
 			clearfits(fit);
 			free(fit);
@@ -282,6 +276,12 @@ gpointer generic_sequence_worker(gpointer p) {
 		g_free(msg);
 	}
 
+	/* the finalize hook contains the sequence writer synchronization, it
+	 * should be called before outputing the logs */
+	if (have_seqwriter && args->finalize_hook && args->finalize_hook(args)) {
+		siril_log_message(_("Finalizing sequence processing failed.\n"));
+		abort = 1;
+	}
 	if (abort) {
 		set_progress_bar_data(_("Sequence processing failed. Check the log."), PROGRESS_RESET);
 		siril_log_color_message(_("Sequence processing failed.\n"), "red");
@@ -304,7 +304,7 @@ gpointer generic_sequence_worker(gpointer p) {
 #endif
 the_end:
 	if (index_mapping) free(index_mapping);
-	if (args->finalize_hook && args->finalize_hook(args)) {
+	if (!have_seqwriter && args->finalize_hook && args->finalize_hook(args)) {
 		siril_log_message(_("Finalizing sequence processing failed.\n"));
 		args->retval = 1;
 	}
