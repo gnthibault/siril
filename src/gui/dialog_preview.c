@@ -73,7 +73,6 @@ static gboolean end_update_preview_cb(gpointer p) {
 	fileChooserPreview *preview = args->preview;
 
 	if (!(GTK_IS_IMAGE((preview->image)))) {
-		g_free(preview);
 		return FALSE;
 	}
 
