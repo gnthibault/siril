@@ -78,6 +78,9 @@ static gboolean end_update_preview_cb(gpointer p) {
 
 	name_str = g_path_get_basename(args->filename);
 
+	if (!args->file_info) {
+		return FALSE;
+	}
 	type = g_file_info_get_file_type(args->file_info);
 
 	/* try to read file size */
