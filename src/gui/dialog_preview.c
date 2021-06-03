@@ -33,6 +33,8 @@
 
 #include "dialog_preview.h"
 
+static gboolean preview_allocated = FALSE; // flag needed when user load image before prevew was displayed.
+
 struct _updta_preview_data {
 	GtkFileChooser *file_chooser;
 	gchar *filename;
@@ -72,7 +74,7 @@ static gboolean end_update_preview_cb(gpointer p) {
 
 	fileChooserPreview *preview = args->preview;
 
-	if (!preview || !(GTK_IS_IMAGE((preview->image)))) {
+	if (!preview_allocated || !preview || !(GTK_IS_IMAGE((preview->image)))) {
 		return FALSE;
 	}
 
@@ -235,6 +237,7 @@ static void update_preview_cb(GtkFileChooser *file_chooser, gpointer p) {
 
 void siril_preview_free(fileChooserPreview *preview) {
 	g_free(preview);
+	preview_allocated = FALSE;
 }
 
 void siril_file_chooser_add_preview(GtkFileChooser *dialog, fileChooserPreview *preview) {
@@ -245,6 +248,7 @@ void siril_file_chooser_add_preview(GtkFileChooser *dialog, fileChooserPreview *
 		gtk_container_set_border_width(GTK_CONTAINER(vbox), 12);
 
 		preview = new_preview_object();
+		preview_allocated = TRUE;
 
 		gtk_label_set_justify(GTK_LABEL(preview->name_label), GTK_JUSTIFY_CENTER);
 		gtk_label_set_justify(GTK_LABEL(preview->dim_label), GTK_JUSTIFY_CENTER);
