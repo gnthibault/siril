@@ -968,7 +968,7 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 	if (nb_frames < 2) {
 		siril_log_message(_("Select at least two frames for stacking. Aborting.\n"));
 		return ST_GENERIC_ERROR;
-	} else if (nb_frames < 3 && args->type_of_rejection == GESDT) {
+	} else if (nb_frames < 3 && is_mean && args->type_of_rejection == GESDT) {
 		siril_log_message(_("The Generalized Extreme Studentized Deviate Test needs at least three frames for stacking. Aborting.\n"));
 		return ST_GENERIC_ERROR;
 	}
