@@ -952,35 +952,41 @@ void update_spinCPU(int max) {
 
 static void load_accels() {
 	static const gchar * const accelmap[] = {
-		"app.quit",              "<Primary>q", NULL,
-		"app.preferences",       "<Primary>p", NULL,
-		"app.open",              "<Primary>o", NULL,
-		"app.save",              "<Primary>s", NULL,
-		"app.save-as",           "<Primary><Shift>s", NULL,
+		"app.quit",                   "<Primary>q", NULL,
+		"app.preferences",            "<Primary>p", NULL,
+		"app.open",                   "<Primary>o", NULL,
+		"app.save",                   "<Primary>s", NULL,
+		"app.save-as",                "<Primary><Shift>s", NULL,
 
-		"win.undo",              "<Primary>z", NULL,
-		"win.redo",              "<Primary><Shift>z", NULL,
-		"win.close",             "<Primary>w", NULL,
-		"win.cwd",               "<Primary>d", NULL,
-		"win.full-screen",       "<Primary>f", NULL,
+		"win.undo",                   "<Primary>z", NULL,
+		"win.redo",                   "<Primary><Shift>z", NULL,
+		"win.close",                  "<Primary>w", NULL,
+		"win.cwd",                    "<Primary>d", NULL,
+		"win.full-screen",            "<Primary>f", NULL,
 
-		"win.conversion",        "F1", NULL,
-		"win.sequence",          "F2", NULL,
-		"win.prepro",            "F3", NULL,
-		"win.registration",      "F4", NULL,
-		"win.plot",              "F5", NULL,
-		"win.stacking",          "F6", NULL,
-		"win.logs",              "F7", NULL,
+		"win.conversion",             "F1", NULL,
+		"win.sequence",               "F2", NULL,
+		"win.prepro",                 "F3", NULL,
+		"win.registration",           "F4", NULL,
+		"win.plot",                   "F5", NULL,
+		"win.stacking",               "F6", NULL,
+		"win.logs",                   "F7", NULL,
 
-		"win.hide-show-toolbar", "<Primary>T", NULL,
+		"win.hide-show-toolbar",      "<Primary>T", NULL,
 
-		"win.zoom-out",          "<Primary>minus", "<Primary>KP_Subtract", NULL,
-		"win.zoom-in",           "<Primary>plus", "<Primary>KP_Add", NULL,
-		"win.zoom-fit",          "<Primary>0", NULL,
+		"win.zoom-out",               "<Primary>minus", "<Primary>KP_Subtract", NULL,
+		"win.zoom-in",                "<Primary>plus", "<Primary>KP_Add", NULL,
+		"win.zoom-fit",               "<Primary>0", NULL,
 
-		"win.search-object",     "<Primary>slash", NULL,
-		"win.astrometry",        "<Primary>a", NULL,
-		"win.pickstar",          "<Primary>space", NULL,
+		"win.search-object",          "<Primary>slash", NULL,
+		"win.astrometry",             "<Primary>a", NULL,
+		"win.pickstar",               "<Primary>space", NULL,
+
+		"win.negative-processing",    "<Primary>i", NULL,
+		"win.rotation90-processing",  "<Primary>Right", NULL,
+		"win.rotation270-processing", "<Primary>Left", NULL,
+		"win.mirrorx-processing",     "<Primary>Up", NULL,
+		"win.mirrory-processing",     "<Primary>Down", NULL,
 
 		NULL /* Terminating NULL */
 	};
