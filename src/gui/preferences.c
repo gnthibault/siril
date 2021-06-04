@@ -442,7 +442,7 @@ void on_combobox_comp_fits_method_changed(GtkComboBox *box, gpointer user_data) 
 
 void set_GUI_compression() {
 	GtkToggleButton *enabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_enabled_radio"));
-	GtkToggleButton *disabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_disbled_radio"));
+	GtkToggleButton *disabled = GTK_TOGGLE_BUTTON(lookup_widget("comp_fits_disabled_radio"));
 
 	gtk_toggle_button_set_active(enabled, com.pref.comp.fits_enabled);
 	gtk_toggle_button_set_active(disabled, !com.pref.comp.fits_enabled);
