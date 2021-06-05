@@ -149,6 +149,10 @@ static void global_initialization() {
 	com.zoom_value = ZOOM_DEFAULT;
 	com.ratio = 0.0;
 	com.pref.font_scale = 100.0;
+	/* first initialization of compression settings */
+	com.pref.comp.fits_enabled = FALSE;
+	com.pref.comp.fits_method = 0;
+	com.pref.comp.fits_quantization = 16;
 }
 
 static void init_num_procs() {

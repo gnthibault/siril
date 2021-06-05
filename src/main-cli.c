@@ -114,6 +114,11 @@ static void global_initialization() {
 	/* initialize the com struct and zoom level */
 	com.sliders = MINMAX;
 	com.zoom_value = ZOOM_DEFAULT;
+	com.pref.font_scale = 100.0;
+	/* first initialization of compression settings */
+	com.pref.comp.fits_enabled = FALSE;
+	com.pref.comp.fits_method = 0;
+	com.pref.comp.fits_quantization = 16;
 }
 
 static void init_num_procs() {
