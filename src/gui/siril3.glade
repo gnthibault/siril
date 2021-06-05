@@ -71,10 +71,6 @@ along with Siril.  If not, see <http://www.gnu.org/licenses/>.
     <property name="step-increment">1</property>
     <property name="page-increment">10</property>
   </object>
-  <object class="GtkMenu">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-  </object>
   <object class="GtkImage" id="addfilter1">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -6834,7 +6830,9 @@ Modifying parameters in this windows afterward will void the colour balance, and
                 <property name="activate-on-single-click">True</property>
                 <signal name="cursor-changed" handler="on_treeview1_cursor_changed" swapped="no"/>
                 <child internal-child="selection">
-                  <object class="GtkTreeSelection"/>
+                  <object class="GtkTreeSelection">
+                    <property name="mode">multiple</property>
+                  </object>
                 </child>
                 <child>
                   <object class="GtkTreeViewColumn" id="treeviewcolumn16">
@@ -18567,7 +18565,6 @@ The technique gives very good compression for astronomical images and is relativ
                                       <item id="rice">Rice</item>
                                       <item id="gzip1" translatable="yes">GZIP1</item>
                                       <item id="gzip2" translatable="yes">GZIP2</item>
-                                      <item id="hcompress" translatable="yes">Hcompress</item>
                                     </items>
                                     <signal name="changed" handler="on_combobox_comp_fits_method_changed" object="spinbutton_comp_fits_quantization" swapped="no"/>
                                   </object>
