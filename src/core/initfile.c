@@ -166,10 +166,10 @@ static int readinitfile() {
 	/* FITS compression setting */
 	config_setting_t *comp_setting = config_lookup(&config, keywords[CMP]);
 	if (comp_setting) {
-		config_setting_lookup_bool(comp_setting, "fits_enabled", &com.pref.comp.fits_enabled);
-		config_setting_lookup_int(comp_setting, "fits_method", &com.pref.comp.fits_method);
-		config_setting_lookup_float(comp_setting, "fits_quantization", &com.pref.comp.fits_quantization);
-		config_setting_lookup_float(comp_setting, "fits_hcompress_scale", &com.pref.comp.fits_hcompress_scale);
+		config_setting_lookup_bool(comp_setting, "compress_enabled", &com.pref.comp.fits_enabled);
+		config_setting_lookup_int(comp_setting, "compress_method", &com.pref.comp.fits_method);
+		config_setting_lookup_float(comp_setting, "compress_quantization", &com.pref.comp.fits_quantization);
+		config_setting_lookup_float(comp_setting, "compress_hcompress_scale", &com.pref.comp.fits_hcompress_scale);
 	}
 
 	/* Astrometry setting */
@@ -445,16 +445,16 @@ static void _save_comp(config_t *config, config_setting_t *root) {
 
 	cmp_group = config_setting_add(root, keywords[CMP], CONFIG_TYPE_GROUP);
 
-	cmp_setting = config_setting_add(cmp_group, "fits_enabled", CONFIG_TYPE_BOOL);
+	cmp_setting = config_setting_add(cmp_group, "compress_enabled", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(cmp_setting, com.pref.comp.fits_enabled);
 
-	cmp_setting = config_setting_add(cmp_group, "fits_method", CONFIG_TYPE_INT);
+	cmp_setting = config_setting_add(cmp_group, "compress_method", CONFIG_TYPE_INT);
 	config_setting_set_int(cmp_setting, com.pref.comp.fits_method);
 
-	cmp_setting = config_setting_add(cmp_group, "fits_quantization", CONFIG_TYPE_FLOAT);
+	cmp_setting = config_setting_add(cmp_group, "compress_quantization", CONFIG_TYPE_FLOAT);
 	config_setting_set_float(cmp_setting, com.pref.comp.fits_quantization);
 
-	cmp_setting = config_setting_add(cmp_group, "fits_hcompress_scale", CONFIG_TYPE_FLOAT);
+	cmp_setting = config_setting_add(cmp_group, "compress_hcompress_scale", CONFIG_TYPE_FLOAT);
 	config_setting_set_float(cmp_setting, com.pref.comp.fits_hcompress_scale);
 
 }

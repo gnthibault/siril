@@ -3848,7 +3848,7 @@ int process_set_compress(int nb) {
 		} else if (!g_ascii_strncasecmp(word[2] + 6, "gzip2", 5))  {
 			method = GZIP2_COMP;
 			comp = g_strdup("GZIP2");
-		} else if (!g_ascii_strncasecmp(word[2] + 6, "hcompress", 9)) {
+		} /*else if (!g_ascii_strncasecmp(word[2] + 6, "hcompress", 9)) {
 			method = HCOMPRESS_COMP;
 			if (!word[4]) {
 				siril_log_message(_("Please specify the value of hcompress scale factor.\n"));
@@ -3857,8 +3857,9 @@ int process_set_compress(int nb) {
 			}
 			hscale = g_ascii_strtod(word[4], NULL);
 			comp = g_strdup_printf("hcompress (scale factor = %.2lf) ", hscale);
-		} else {
-			siril_log_message(_("Wrong type of compression. Choices are rice, gzip1, gzip2 or hcompress\n"));
+		}*/ else {
+//			siril_log_message(_("Wrong type of compression. Choices are rice, gzip1, gzip2 or hcompress\n"));
+			siril_log_message(_("Wrong type of compression. Choices are rice, gzip1, gzip2\n"));
 			return 1;
 		}
 		if (!word[3]) {
