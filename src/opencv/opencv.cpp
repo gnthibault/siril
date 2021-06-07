@@ -388,7 +388,7 @@ unsigned char *cvCalculH(s_star *star_array_img,
 }
 
 // transform an image using the homography.
-int cvTransformImage(fits *image, long width, long height, Homography Hom, gboolean upscale2x, int interpolation) {
+int cvTransformImage(fits *image, Homography Hom, gboolean upscale2x, int interpolation) {
 	Mat in, out;
 	void *bgr = NULL;
 	int target_rx = image->rx, target_ry = image->ry;
@@ -417,7 +417,7 @@ int cvTransformImage(fits *image, long width, long height, Homography Hom, gbool
 	}
 
 	// OpenCV function
-	warpPerspective(in, out, H, Size(width, height), interpolation, BORDER_TRANSPARENT);
+	warpPerspective(in, out, H, Size(target_rx, target_ry), interpolation, BORDER_TRANSPARENT);
 
 	return Mat_to_image(image, &in, &out, bgr, target_rx, target_ry);
 }

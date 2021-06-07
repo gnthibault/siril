@@ -323,7 +323,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 				/ (double) sadata->fitted_stars + FWHMx;
 
 		if (!regargs->translation_only) {
-			if (cvTransformImage(fit, (long) sadata->ref.x, (long) sadata->ref.y, H, regargs->x2upscale, regargs->interpolation)) {
+			if (cvTransformImage(fit, H, regargs->x2upscale, regargs->interpolation)) {
 				free_fitted_stars(stars);
 				return 1;
 			}
