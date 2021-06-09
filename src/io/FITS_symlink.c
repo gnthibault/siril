@@ -76,7 +76,7 @@ gboolean test_if_symlink_is_ok() {
 	DWORD cr = read_registre_value(CLE_APPMODEUNLOCK_ADWDL, PATH_APPMODEUNLOCK);
 	if (cr != 1 ) {
 		siril_log_color_message(_("You should enable the Developer Mode in order to create symbolic links "
-				"instead of simply copying files.\n"), "red");
+				"instead of simply copying files.\n"), "salmon");
 		return FALSE;
 	}
 	return TRUE;
