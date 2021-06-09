@@ -7174,7 +7174,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                 <property name="margin-bottom">5</property>
                 <property name="expanded">True</property>
                 <child>
-                  <!-- n-columns=5 n-rows=9 -->
+                  <!-- n-columns=5 n-rows=10 -->
                   <object class="GtkGrid" id="GtkGridIPS">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
@@ -7536,6 +7536,22 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                       <packing>
                         <property name="left-attach">0</property>
                         <property name="top-attach">8</property>
+                        <property name="width">5</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="downsample_ips_button">
+                        <property name="label" translatable="yes">Downsample image</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Sometime, for oversampled images (like with Drizzle), it is complicated to resolve astrometry data. In consequence, downsampling data generally helps and make the algorithm running faster.</property>
+                        <property name="halign">start</property>
+                        <property name="draw-indicator">True</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">9</property>
                         <property name="width">5</property>
                       </packing>
                     </child>

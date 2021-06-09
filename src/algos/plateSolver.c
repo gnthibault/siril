@@ -53,6 +53,7 @@
 #include "io/image_format_fits.h"
 #include "io/single_image.h"
 #include "io/sequence.h"
+#include "opencv/opencv.h"
 #include "registration/matching/match.h"
 #include "registration/matching/apply_match.h"
 #include "registration/matching/misc.h"
@@ -60,6 +61,8 @@
 #include "registration/matching/project_coords.h"
 
 #include "plateSolver.h"
+
+#define DOWNSAMPLE_FACTOR 0.25
 
 enum {
 	COLUMN_RESOLVER,		// string
@@ -299,6 +302,13 @@ static gboolean flip_image_after_ps() {
 	return gtk_toggle_button_get_active(button);
 }
 
+static gboolean is_downsample_activated() {
+	GtkToggleButton *button;
+
+	button = GTK_TOGGLE_BUTTON(lookup_widget("downsample_ips_button"));
+	return gtk_toggle_button_get_active(button);
+}
+
 static gchar *get_catalog_url(SirilWorldCS *center, double mag_limit, double dfov, int type) {
 	GString *url;
 	gchar *coordinates;
@@ -307,7 +317,7 @@ static gchar *get_catalog_url(SirilWorldCS *center, double mag_limit, double dfo
 
 	coordinates = g_strdup_printf("%f+%f", siril_world_cs_get_alpha(center), siril_world_cs_get_delta(center));
 	mag = g_strdup_printf("%2.2lf", mag_limit);
-	fov = g_strdup_printf("%2.1lf", dfov / 2);
+	fov = g_strdup_printf("%2.1lf", dfov / 2.0);
 
 	url = g_string_new("http://vizier.u-strasbg.fr/viz-bin/asu-tsv?-source=");
 	switch (type) {
@@ -762,7 +772,7 @@ static void update_gfit(image_solved image, double det, gboolean ask_for_flip) {
 	gfit.wcsdata.equinox = 2000.0;
 	gfit.wcsdata.cdelt[0] = image.resolution / 3600.0;
 	gfit.wcsdata.cdelt[1] = -gfit.wcsdata.cdelt[0];
-	if (det < 0&& !ask_for_flip)
+	if (det < 0 && !ask_for_flip)
 		gfit.wcsdata.cdelt[0] = -gfit.wcsdata.cdelt[0];
 	gfit.wcsdata.crota[0] = gfit.wcsdata.crota[1] = -image.crota;
 	cd_x(&gfit.wcsdata);
@@ -784,13 +794,14 @@ static void flip_astrometry_data(fits *fit) {
 	fit->wcsdata.crota[1] = fit->wcsdata.crota[0];
 }
 
-static void print_platesolving_results(Homography H, image_solved image, gboolean *flip_image) {
+static void print_platesolving_results(Homography H, image_solved image, gboolean *flip_image, gboolean downsample) {
 	double rotation, det, scaleX, scaleY;
 	double inliers;
 	gchar *alpha;
 	gchar *delta;
 	char field_x[256] = { 0 };
 	char field_y[256] = { 0 };
+	float factor = (downsample) ? DOWNSAMPLE_FACTOR : 1.0;
 
 	/* Matching information */
 	gchar *str = ngettext("%d pair match.\n", "%d pair matches.\n", H.pair_matched);
@@ -803,7 +814,7 @@ static void print_platesolving_results(Homography H, image_solved image, gboolea
 	/* Plate Solving */
 	scaleX = sqrt(H.h00 * H.h00 + H.h01 * H.h01);
 	scaleY = sqrt(H.h10 * H.h10 + H.h11 * H.h11);
-	image.resolution = (scaleX + scaleY) * 0.5; // we assume square pixels
+	image.resolution = (scaleX + scaleY) * 0.5 * factor; // we assume square pixels
 	siril_log_message(_("Resolution:%*.3lf arcsec/px\n"), 11, image.resolution);
 
 	/* rotation */
@@ -831,7 +842,6 @@ static void print_platesolving_results(Homography H, image_solved image, gboolea
 
 	image.fov.x = get_fov(image.resolution, image.px_size.x);
 	image.fov.y = get_fov(image.resolution, image.px_size.y);
-
 	siril_log_message(_("Focal:%*.2lf mm\n"), 15, image.focal);
 	siril_log_message(_("Pixel size:%*.2lf µm\n"), 10, image.pixel_size);
 	fov_in_DHMS(image.fov.x / 60.0, field_x);
@@ -1144,6 +1154,18 @@ static gboolean end_plate_solver(gpointer p) {
 	struct plate_solver_data *args = (struct plate_solver_data *) p;
 	stop_processing_thread();
 
+	if (args->downsample) {
+		/* copying size of original fits */
+		args->fit->naxes[0] = args->fit_backup->naxes[0];
+		args->fit->naxes[1] = args->fit_backup->naxes[1];
+		args->fit->rx = args->fit->naxes[0];
+		args->fit->ry = args->fit->naxes[1];
+
+		copyfits(args->fit_backup, args->fit, CP_ALLOC | CP_COPYA, -1);
+
+		clearfits(args->fit_backup);
+	}
+
 	if (!args->manual)
 		clear_stars_list();
 	set_cursor_waiting(FALSE);
@@ -1153,13 +1175,12 @@ static gboolean end_plate_solver(gpointer p) {
 				"The image could not be aligned with the reference stars.\n"), "red");
 		if (!args->message) {
 			args->message = g_strdup(_("This is usually because the initial parameters (pixel size, focal length, initial coordinates) "
-					"are too far from the real metadata of the image.\n"
-					"You could also try to look into another catalogue.\n"
+					"are too far from the real metadata of the image.\n\n"
+					"You could also try to look into another catalogue, or try to click on the \"Downsampling\" button, especially for image done with Drizzle.\n\n"
 					"Finally, keep in mind that plate solving algorithm should only be applied on linear image."));
 		}
 		siril_message_dialog(GTK_MESSAGE_ERROR, title, args->message);
 	} else {
-
 		update_image_parameters_GUI();
 		set_GUI_CAMERA();
 		update_coordinates(is_result.image_center);
@@ -1191,11 +1212,16 @@ gpointer match_catalog(gpointer p) {
 	GError *error = NULL;
 	fitted_PSF **cstars;
 	int n_fit = 0, n_cat = 0, n = 0;
-	point image_size = { args->fit->rx, args->fit->ry };
 	Homography H = { 0 };
 	int nobj = AT_MATCH_CATALOG_NBRIGHT;
 
 	args->message = NULL;
+
+	if (args->downsample) {
+		args->fit_backup = calloc(1, sizeof(fits));
+		copyfits(args->fit, args->fit_backup, CP_ALLOC | CP_COPYA | CP_FORMAT, -1);
+		cvResizeGaussian(args->fit, DOWNSAMPLE_FACTOR * args->fit->rx, DOWNSAMPLE_FACTOR * args->fit->ry, OPENCV_AREA);
+	}
 
 	if (!args->manual) {
 		com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, NULL, FALSE); // TODO: use good layer
@@ -1256,11 +1282,13 @@ gpointer match_catalog(gpointer p) {
 		attempt++;
 	}
 	if (!args->ret) {
+
 		/* we only want to compare with linear function
 		 * Maybe one day we will apply match with homography matrix
 		 */
 		TRANS trans = H_to_linear_TRANS(H);
 		if (check_affine_TRANS_sanity(trans)) {
+			point image_size = { args->fit->rx, args->fit->ry };
 
 			is_result.px_size = image_size;
 			is_result.x = image_size.x / 2.0;
@@ -1269,7 +1297,15 @@ gpointer match_catalog(gpointer p) {
 
 			apply_match(&is_result, trans);
 
-			print_platesolving_results(H, is_result, &(args->flip_image));
+			if (args->downsample) {
+				double inv = 1.0 / DOWNSAMPLE_FACTOR;
+				is_result.px_size.x *= inv;
+				is_result.px_size.y *= inv;
+				is_result.x = is_result.px_size.x / 2.0;
+				is_result.y = is_result.px_size.y / 2.0;
+			}
+
+			print_platesolving_results(H, is_result, &(args->flip_image), args->downsample);
 		} else {
 			args->ret = 1;
 		}
@@ -1496,6 +1532,7 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 	args->pixel_size = px_size;
 	args->manual = is_detection_manual();
 	args->flip_image = flip_image_after_ps();
+	args->downsample = is_downsample_activated();
 	args->fit = &gfit;
 
 	return 0;

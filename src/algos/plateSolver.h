@@ -28,8 +28,10 @@ struct plate_solver_data {
 	online_catalog onlineCatalog;
 	gchar *catalogStars;
 	gboolean for_photometry_cc;
+	gboolean downsample;
 	double scale; // scale (resolution)
 	fits *fit;
+	fits *fit_backup;
 	gchar *message; // error message
 	int ret; // return value
 	double pixel_size; // pixel size in µm
