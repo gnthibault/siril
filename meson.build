@@ -487,8 +487,12 @@ man_files = [
 ]
 
 install_man(man_files)
-install_data(['AUTHORS', 'LICENSE.md'],
-             rename : ['doc/siril/AUTHORS', 'doc/siril/LICENSE.md'],
+install_data(['AUTHORS', 'LICENSE.md', 'LICENSE_sleef.txt'],
+             rename : [
+	       'doc/siril/AUTHORS',
+	       'doc/siril/LICENSE.md',
+	       'doc/siril/LICENSE_sleef.txt',
+	     ],
              install_dir : siril_share)
 
 
