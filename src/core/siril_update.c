@@ -43,6 +43,8 @@
 #define SIRIL_DOWNLOAD DOMAIN"download"
 #define GITLAB_URL "https://gitlab.com/free-astro/siril/raw"
 
+static gchar *get_changelog(gint x, gint y, gint z, gint p);
+
 
 // taken from gimp
 static gboolean siril_update_get_highest(JsonParser *parser,
@@ -289,35 +291,6 @@ static gchar *parse_changelog(gchar *changelog) {
 	return g_string_free(strResult, FALSE);
 }
 
-static gchar *get_changelog(gint x, gint y, gint z, gint p) {
-	GError *error = NULL;
-	gchar *result = NULL;
-	gchar *str;
-
-	if (p != 0) {
-		str = g_strdup_printf("/%d.%d.%d.%d/", x, y, z, p);
-	} else {
-		str = g_strdup_printf("/%d.%d.%d/", x, y, z);
-	}
-	GString *url = g_string_new(GITLAB_URL);
-	url = g_string_append(url, str);
-	url = g_string_append(url, "ChangeLog");
-
-	gchar *changelog_url = g_string_free(url, FALSE);
-	GFile *file = g_file_new_for_uri(changelog_url);
-
-	if (!g_file_load_contents(file, NULL, &result, NULL, NULL, &error)) {
-		siril_log_message(_("Error loading url: %s: %s\n"), changelog_url, error->message);
-		g_clear_error(&error);
-	}
-
-	g_free(changelog_url);
-	g_free(str);
-	g_object_unref(file);
-
-	return result;
-}
-
 static gchar *check_version(gchar *version, gboolean *verbose, gchar **data) {
 	gchar *changelog = NULL;
 	gchar *msg = NULL;
@@ -403,6 +376,51 @@ static void http_cleanup() {
 	curl = NULL;
 }
 
+static gchar *get_changelog(gint x, gint y, gint z, gint p) {
+	struct ucontent *changelog;
+	gchar *result = NULL;
+	gchar str[20];
+	gchar *changelog_url;
+	long code;
+
+	GString *url = g_string_new(GITLAB_URL);
+
+	changelog = g_try_malloc(sizeof(struct ucontent));
+	if (changelog == NULL) {
+		PRINT_ALLOC_ERR;
+		return NULL;
+	}
+
+	changelog->data = g_malloc(1);
+	changelog->data[0] = '\0';
+	changelog->len = 0;
+
+	if (p != 0) {
+		g_snprintf(str, sizeof(str), "/%d.%d.%d.%d/", x, y, z, p);
+	} else {
+		g_snprintf(str, sizeof(str), "/%d.%d.%d/", x, y, z);
+	}
+	url = g_string_append(url, str);
+	url = g_string_append(url, "ChangeLog");
+
+	changelog_url = g_string_free(url, FALSE);
+	curl_easy_setopt(curl, CURLOPT_URL, changelog_url);
+	curl_easy_setopt(curl, CURLOPT_FOLLOWLOCATION, 1L);
+	curl_easy_setopt(curl, CURLOPT_WRITEDATA, changelog);
+	if (curl_easy_perform(curl) == CURLE_OK) {
+		curl_easy_getinfo(curl, CURLINFO_RESPONSE_CODE, &code);
+		if (code == 200) {
+			result = g_strdup(changelog->data);
+		}
+	}
+	if (!result)
+		g_free(changelog->data);
+	g_free(changelog);
+	g_free(changelog_url);
+
+	return result;
+}
+
 static gchar *check_update_version(struct _update_data *args) {
 	JsonParser *parser;
 	gchar *last_version = NULL;
@@ -430,9 +448,9 @@ static gchar *check_update_version(struct _update_data *args) {
 		g_fprintf(stdout, "Last available version: %s\n", last_version);
 
 		msg = check_version(last_version, &(args->verbose), &data);
+		message_type = GTK_MESSAGE_INFO;
 	} else {
 		msg = siril_log_message(_("Cannot fetch version file\n"));
-		message_type = GTK_MESSAGE_INFO;
 	}
 
 	if (args->verbose) {
@@ -468,12 +486,6 @@ static gboolean end_update_idle(gpointer p) {
 	} else {
 		msg = check_update_version(args);
 		message_type = GTK_MESSAGE_INFO;
-	}
-	if (args->verbose) {
-		set_cursor_waiting(FALSE);
-		if (msg) {
-			siril_data_dialog(message_type, _("Software Update"), msg, data);
-		}
 	}
 
 	/* free data */
@@ -591,6 +603,35 @@ void siril_check_updates(gboolean verbose) {
 }
 
 #else
+
+static gchar *get_changelog(gint x, gint y, gint z, gint p) {
+	GError *error = NULL;
+	gchar *result = NULL;
+	gchar *str;
+
+	if (p != 0) {
+		str = g_strdup_printf("/%d.%d.%d.%d/", x, y, z, p);
+	} else {
+		str = g_strdup_printf("/%d.%d.%d/", x, y, z);
+	}
+	GString *url = g_string_new(GITLAB_URL);
+	url = g_string_append(url, str);
+	url = g_string_append(url, "ChangeLog");
+
+	gchar *changelog_url = g_string_free(url, FALSE);
+	GFile *file = g_file_new_for_uri(changelog_url);
+
+	if (!g_file_load_contents(file, NULL, &result, NULL, NULL, &error)) {
+		siril_log_message(_("Error loading url: %s: %s\n"), changelog_url, error->message);
+		g_clear_error(&error);
+	}
+
+	g_free(changelog_url);
+	g_free(str);
+	g_object_unref(file);
+
+	return result;
+}
 
 static void siril_check_updates_callback(GObject *source, GAsyncResult *result,
 		gpointer user_data) {
