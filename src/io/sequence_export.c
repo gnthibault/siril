@@ -429,7 +429,7 @@ static gpointer export_sequence(gpointer ptr) {
 							if (destfit->type == DATA_FLOAT) {
 								destfit->fpdata[layer][nx + ny * fit.rx] = pixel;
 							} else {
-								destfit->pdata[layer][nx + ny * fit.rx] = roundf_to_WORD(pixel);
+								destfit->pdata[layer][nx + ny * fit.rx] = roundf_to_WORD(pixel * USHRT_MAX_SINGLE);
 							}
 						} else {
 							retval = -1;
