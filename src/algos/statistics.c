@@ -113,7 +113,6 @@ float siril_stats_ushort_sd_32(const WORD data[], const int N) {
  */
 static double siril_stats_ushort_mad(WORD* data, const size_t n, const double m,
 		gboolean multithread) {
-	size_t i;
 	double mad;
 	int median = round_to_int(m);	// we use it on integer data anyway
 	WORD *tmp = malloc(n * sizeof(WORD));
@@ -123,9 +122,9 @@ static double siril_stats_ushort_mad(WORD* data, const size_t n, const double m,
 	}
 
 #ifdef _OPENMP
-#pragma omp parallel for num_threads(com.max_thread) if(n > 10000) private(i) schedule(static)
+#pragma omp parallel for num_threads(com.max_thread) if(multithread && n > 10000) schedule(static)
 #endif
-	for (i = 0; i < n; i++) {
+	for (size_t i = 0; i < n; i++) {
 		tmp[i] = (WORD)abs(data[i] - median);
 	}
 
