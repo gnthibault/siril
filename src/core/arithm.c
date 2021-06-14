@@ -312,6 +312,8 @@ int imoper_to_float(fits *a, fits *b, image_operator oper, float factor) {
 			result[i] *= factor;
 		if (result[i] > 1.0f)	// should we truncate by default?
 			result[i] = 1.0f;
+		if (result[i] < -1.0f)	// Here we want to clip all garbages pixels.
+			result[i] = 0.0f;
 	}
 	if (a->type == DATA_USHORT) {
 		fit_replace_buffer(a, result, DATA_FLOAT);
