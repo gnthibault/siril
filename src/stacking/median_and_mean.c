@@ -589,6 +589,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 	switch (args->type_of_rejection) {
 		case PERCENTILE:
 		case SIGMA:
+		case MAD:
 		case SIGMEDIAN:
 		case WINSORIZED:
 			median = quickmedian(stack, N);
@@ -616,8 +617,14 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 			N = output;
 			break;
 		case SIGMA:
+		case MAD:
 			do {
-				const float sigma = args->sd_calculator(stack, N);
+				float var;
+				if (args->type_of_rejection == SIGMA)
+					var = args->sd_calculator(stack, N);
+				else
+					var = args->mad_calculator(stack, N, median, FALSE);
+
 				if (!firstloop) {
 					median = quickmedian(stack, N);
 				} else {
@@ -628,7 +635,7 @@ static int apply_rejection_ushort(struct _data_block *data, int nb_frames, struc
 					// no more rejections
 						rejected[frame] = 0;
 					} else {
-						rejected[frame] = sigma_clipping(stack[frame], args->sig, sigma, median, crej);
+						rejected[frame] = sigma_clipping(stack[frame], args->sig, var, median, crej);
 						if (rejected[frame]) {
 							r++;
 						}
@@ -1144,8 +1151,10 @@ static int stack_mean_or_median(struct stacking_args *args, gboolean is_mean) {
 		}
 	}
 
-	if (itype == DATA_USHORT)
+	if (itype == DATA_USHORT) {
 		args->sd_calculator = nb_frames < 65536 ? siril_stats_ushort_sd_32 : siril_stats_ushort_sd_64;
+		args->mad_calculator = siril_stats_ushort_mad;
+	}
 
 	if (args->apply_weight) {
 		siril_log_message(_("Computing weights...\n"));

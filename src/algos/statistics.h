@@ -49,7 +49,9 @@ void apply_stats_to_sequence(struct stat_data *stat_args);
 
 float siril_stats_ushort_sd_64(const WORD data[], const int N);
 float siril_stats_ushort_sd_32(const WORD data[], const int N);
+float siril_stats_ushort_mad(const WORD* data, const size_t n, const double m, gboolean multithread);
 float siril_stats_float_sd(const float data[], const int N, float *mean);
+double siril_stats_float_mad(const float *data, const size_t n, const double m, gboolean multithread, float *buffer);
 
 #endif
 

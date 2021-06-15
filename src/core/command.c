@@ -3543,6 +3543,8 @@ int process_stackall(int nb) {
 				arg->type_of_rejection = PERCENTILE;
 			} else if (!strcmp(word[3], "s") || !strcmp(word[3], "sigma")) {
 				arg->type_of_rejection = SIGMA;
+			} else if (!strcmp(word[3], "a") || !strcmp(word[3], "mad")) {
+				arg->type_of_rejection = MAD;
 			} else if (!strcmp(word[3], "m") || !strcmp(word[3], "median")) {
 				arg->type_of_rejection = SIGMEDIAN;
 			} else if (!strcmp(word[3], "l") || !strcmp(word[3], "linear")) {
@@ -3650,6 +3652,8 @@ int process_stackone(int nb) {
 				arg->type_of_rejection = PERCENTILE;
 			} else if (!strcmp(word[3], "s") || !strcmp(word[3], "sigma")) {
 				arg->type_of_rejection = SIGMA;
+			} else if (!strcmp(word[3], "a") || !strcmp(word[3], "mad")) {
+				arg->type_of_rejection = MAD;
 			} else if (!strcmp(word[3], "m") || !strcmp(word[3], "median")) {
 				arg->type_of_rejection = SIGMEDIAN;
 			} else if (!strcmp(word[3], "l") || !strcmp(word[3], "linear")) {

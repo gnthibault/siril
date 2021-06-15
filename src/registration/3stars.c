@@ -156,6 +156,8 @@ static void start_seqpsf() {
 		results = calloc(com.seq.number, sizeof(struct _3psf));
 		if (!results) {
 			PRINT_ALLOC_ERR;
+			free(spsfargs);
+			free(args);
 			return;
 		}
 		results_size = com.seq.number;

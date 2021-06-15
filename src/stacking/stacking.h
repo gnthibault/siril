@@ -31,6 +31,7 @@ typedef enum {
 	NO_REJEC,
 	PERCENTILE,
 	SIGMA,
+	MAD,
 	SIGMEDIAN,
 	WINSORIZED,
 	LINEARFIT,
@@ -93,6 +94,7 @@ struct stacking_args {
 	double *weights; 				/* computed weights for each (layer,image)*/
 
 	float (*sd_calculator)(const WORD *, const int); // internal, for ushort
+	float (*mad_calculator)(const WORD *, const size_t, const double, gboolean) ; // internal, for ushort
 };
 
 /* configuration from the command line */

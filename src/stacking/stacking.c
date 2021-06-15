@@ -87,6 +87,7 @@ void initialize_stacking_methods() {
 		gtk_spin_button_set_value(high, com.pref.stack.linear_high);
 		break;
 	case SIGMA:
+	case MAD:
 	case SIGMEDIAN:
 	case WINSORIZED:
 		gtk_spin_button_set_value(low, com.pref.stack.sigma_low);
@@ -310,6 +311,9 @@ static void _show_summary(struct stacking_args *args) {
 		case SIGMA:
 			rej_str = _("Sigma Clipping");
 			break;
+		case MAD:
+			rej_str = _("MAD Clipping");
+			break;
 		case SIGMEDIAN:
 			rej_str = _("Median sigma Clipping");
 			break;
@@ -488,6 +492,7 @@ void on_stack_siglow_button_value_changed(GtkSpinButton *button, gpointer user_d
 		com.pref.stack.linear_low = gtk_spin_button_get_value(button);
 		break;
 	case SIGMA:
+	case MAD:
 	case SIGMEDIAN:
 	case WINSORIZED:
 		com.pref.stack.sigma_low = gtk_spin_button_get_value(button);
@@ -512,6 +517,7 @@ void on_stack_sighigh_button_value_changed(GtkSpinButton *button, gpointer user_
 		com.pref.stack.linear_high = gtk_spin_button_get_value(button);
 		break;
 	case SIGMA:
+	case MAD:
 	case SIGMEDIAN:
 	case WINSORIZED:
 		com.pref.stack.sigma_high = gtk_spin_button_get_value(button);
@@ -577,6 +583,7 @@ void on_comborejection_changed(GtkComboBox *box, gpointer user_data) {
 			break;
 		default:
 		case SIGMA:
+		case MAD:
 		case SIGMEDIAN:
 		case WINSORIZED:
 			gtk_widget_set_visible(siglow, TRUE);

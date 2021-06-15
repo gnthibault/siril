@@ -83,7 +83,7 @@ float siril_stats_float_sd(const float data[], const int N, float *m) {
  * of the absolute deviations from the data's median:
  *  MAD = median (| Xi − median(X) |)
  */
-static double siril_stats_float_mad(const float *data, const size_t n, const double m, gboolean multithread, float *buffer) {
+double siril_stats_float_mad(const float *data, const size_t n, const double m, gboolean multithread, float *buffer) {
 	double mad;
 	const float median = (float)m;
 	float *tmp = buffer ? buffer : malloc(n * sizeof(float));
