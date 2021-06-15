@@ -135,6 +135,7 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 	switch (args->type_of_rejection) {
 	case PERCENTILE:
 	case SIGMA:
+	case MAD:
 		median = quickmedian_float(stack, N);
 		if (median == 0.0)
 			return 0;
@@ -159,8 +160,14 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 		N = output;
 		break;
 	case SIGMA:
+	case MAD:
 		do {
-			const float sigma = siril_stats_float_sd(stack, N, NULL);
+			float var;
+			if (args->type_of_rejection == SIGMA)
+				var = siril_stats_float_sd(stack, N, NULL);
+			else
+				var = siril_stats_float_mad(stack, N, median, FALSE, NULL);
+
 			if (!firstloop)
 				median = quickmedian_float(stack, N);
 			else
@@ -170,7 +177,7 @@ int apply_rejection_float(struct _data_block *data, int nb_frames,
 					// no more rejections
 					rejected[frame] = 0;
 				} else {
-					rejected[frame] = sigma_clipping_float(stack[frame], sigma,
+					rejected[frame] = sigma_clipping_float(stack[frame], var,
 							siglow, sighigh, (float) median, crej);
 					if (rejected[frame])
 						r++;

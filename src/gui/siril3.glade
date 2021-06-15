@@ -15139,6 +15139,8 @@ However, multiplicative normalisation must be used with flat-field frames.&lt;/b
 
 &lt;b&gt;Sigma Clipping&lt;/b&gt; is an iterative algorithm which will reject pixels whose distance from median will be farthest than two given values in sigma units.
 
+&lt;b&gt;MAD Clipping&lt;/b&gt; is an iterative algorithm working as Sigma Clipping except that the estimator used is the Median Absolute Deviation (MAD). This is generally used for noisy infrared image processing.
+
 &lt;b&gt;Median Sigma Clipping&lt;/b&gt; is the same algorithm except than the rejected pixels are replaced by the median value.
 
 &lt;b&gt;Winsorized Sigma Clipping&lt;/b&gt; is very similar to Sigma Clipping method but it uses an algorithm based on Huber's work [1] [2].
@@ -15157,6 +15159,7 @@ The &lt;b&gt;Generalized Extreme Studentized Deviate Test&lt;/b&gt; algorithm [3
                                                       <item translatable="yes">No rejection</item>
                                                       <item translatable="yes">Percentile Clipping</item>
                                                       <item translatable="yes">Sigma Clipping</item>
+                                                      <item translatable="yes">MAD clipping</item>
                                                       <item translatable="yes">Median Sigma Clipping</item>
                                                       <item translatable="yes">Winsorized Sigma Clipping</item>
                                                       <item translatable="yes">Linear Fit Clipping</item>
