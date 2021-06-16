@@ -501,8 +501,10 @@ void on_ref_frame_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
 
 void sequence_list_change_selection_index(int index_in_list, int real_index) {
 	GtkTreePath *path = gtk_tree_path_new_from_indices(index_in_list, -1);
-	sequence_list_change_selection(gtk_tree_path_to_string(path), com.seq.imgparam[real_index].incl);
-	gtk_tree_path_free(path);
+	if (path) {
+		sequence_list_change_selection(gtk_tree_path_to_string(path), com.seq.imgparam[real_index].incl);
+		gtk_tree_path_free(path);
+	}
 }
 
 void sequence_list_change_current() {
