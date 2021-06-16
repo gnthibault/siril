@@ -469,8 +469,6 @@ static gchar *check_update_version(struct _update_data *args) {
 
 static gboolean end_update_idle(gpointer p) {
 	char *msg = NULL;
-	gchar *data = NULL;
-	GtkMessageType message_type = GTK_MESSAGE_ERROR;
 	struct _update_data *args = (struct _update_data *) p;
 
 	if (args->content == NULL) {
@@ -485,12 +483,10 @@ static gboolean end_update_idle(gpointer p) {
 		}
 	} else {
 		msg = check_update_version(args);
-		message_type = GTK_MESSAGE_INFO;
 	}
 
 	/* free data */
 	g_free(args->content);
-	g_free(data);
 	free(args);
 	http_cleanup();
 	set_progress_bar_data(PROGRESS_TEXT_RESET, PROGRESS_RESET);
