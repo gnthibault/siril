@@ -3246,7 +3246,7 @@ int process_register(int nb) {
 	 * of the selected line, and they are in the same order than layers so there should be
 	 * an exact matching between the two */
 	reg_args->layer = (reg_args->seq->nb_layers == 3) ? 1 : 0;
-	reg_args->interpolation = OPENCV_CUBIC;
+	reg_args->interpolation = OPENCV_AREA;
 	get_the_registration_area(reg_args, method);	// sets selection
 	reg_args->run_in_thread = TRUE;
 	reg_args->load_new_sequence = FALSE;	// don't load it for command line execution
