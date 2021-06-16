@@ -1063,7 +1063,7 @@ int process_resample(int nb) {
 	int toY = round_to_int(factor * gfit.ry);
 	
 	set_cursor_waiting(TRUE);
-	verbose_resize_gaussian(&gfit, toX, toY, OPENCV_LINEAR);
+	verbose_resize_gaussian(&gfit, toX, toY, OPENCV_AREA);
 	
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -1119,7 +1119,7 @@ int process_rotate(int nb) {
 		crop = 0;
 	}
 
-	verbose_rotate_image(&gfit, degree, OPENCV_LINEAR, crop);	//INTER_LINEAR
+	verbose_rotate_image(&gfit, degree, OPENCV_AREA, crop);
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	set_cursor_waiting(FALSE);
@@ -1132,7 +1132,7 @@ int process_rotatepi(int nb){
 		return 1;
 	}
 
-	verbose_rotate_image(&gfit, 180.0, OPENCV_LINEAR, 1);
+	verbose_rotate_image(&gfit, 180.0, OPENCV_AREA, 1);
 
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -1878,9 +1878,9 @@ int process_cosme(int nb) {
 			point center = {gfit.rx / 2.0, gfit.ry / 2.0};
 			dev.type = HOT_PIXEL; // we force it
 			dev.p.y = gfit.rx - dev.p.y - 1; /* FITS are stored bottom to top */
-			cvRotateImage(&gfit, center, 90.0, -1, OPENCV_LINEAR);
+			cvRotateImage(&gfit, center, 90.0, -1, OPENCV_AREA);
 			cosmeticCorrOneLine(&gfit, dev, is_cfa);
-			cvRotateImage(&gfit, center, -90.0, -1, OPENCV_LINEAR);
+			cvRotateImage(&gfit, center, -90.0, -1, OPENCV_AREA);
 
 			break;
 		default:
@@ -3246,7 +3246,7 @@ int process_register(int nb) {
 	 * of the selected line, and they are in the same order than layers so there should be
 	 * an exact matching between the two */
 	reg_args->layer = (reg_args->seq->nb_layers == 3) ? 1 : 0;
-	reg_args->interpolation = OPENCV_LINEAR;
+	reg_args->interpolation = OPENCV_AREA;
 	get_the_registration_area(reg_args, method);	// sets selection
 	reg_args->run_in_thread = TRUE;
 	reg_args->load_new_sequence = FALSE;	// don't load it for command line execution

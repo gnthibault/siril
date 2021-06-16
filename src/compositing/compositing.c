@@ -496,7 +496,7 @@ void on_filechooser_file_set(GtkFileChooserButton *widget, gpointer user_data) {
 							layers[layer]->the_fit.ry, gfit.rx, gfit.ry);
 						sprintf(buf, _("OK upscaled from %ux%u"),
 								layers[layer]->the_fit.rx, layers[layer]->the_fit.ry);
-						cvResizeGaussian(&layers[layer]->the_fit, gfit.rx, gfit.ry, OPENCV_LINEAR); // BILINEAR
+						cvResizeGaussian(&layers[layer]->the_fit, gfit.rx, gfit.ry, OPENCV_AREA);
 						gtk_label_set_text(layers[layer]->label, buf);
 						gtk_widget_set_tooltip_text(GTK_WIDGET(layers[layer]->label), _("Image loaded, and upscaled"));
 				}
