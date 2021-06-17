@@ -184,10 +184,12 @@ gchar *date_time_to_FITS_date(GDateTime *datetime) {
 	gchar *main_date = NULL;
 	gchar *format = "%Y-%m-%dT%H:%M:%S";
 
+#if GLIB_CHECK_VERSION(2,66,0)
 	/* if datetime has sub-second non-zero values below the second precision we
 	 * should print them as well */
 	if (g_date_time_get_microsecond(datetime) % G_TIME_SPAN_SECOND != 0)
 		format = "%Y-%m-%dT%H:%M:%S.%f";
+#endif
 
 	/* Main date and time. */
 	main_date = g_date_time_format(datetime, format);
