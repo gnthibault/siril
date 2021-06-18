@@ -37,7 +37,7 @@ void set_layers_for_assign();
 void set_layers_for_registration();
 void show_dialog(const char *text, const char *title, const char *icon);
 void show_txt_and_data_dialog(const char *text, const char *data, const char *title, const char *icon);
-void show_data_dialog(char *text, char *title, gchar *extra_button);
+void show_data_dialog(char *text, char *title, gchar *parent, gchar *extra_button);
 GtkWindow *siril_get_active_window();
 void initialize_FITS_name_entries();
 

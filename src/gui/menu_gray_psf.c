@@ -128,7 +128,7 @@ void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 				"RMSE:\n\t\tRMSE=%.3e"),
 			coordinates, fwhmx, units, fwhmy, units, result->angle, result->B,
 			result->A, str, result->mag + com.magOffset, result->s_mag, result->rmse);
-	show_data_dialog(msg, "PSF Results", url);
+	show_data_dialog(msg, "PSF Results", NULL, url);
 	g_free(coordinates);
 	g_free(msg);
 	g_free(url);

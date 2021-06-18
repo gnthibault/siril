@@ -781,21 +781,27 @@ void set_layers_for_registration() {
 		gtk_combo_box_set_active(GTK_COMBO_BOX(cbbt_layers), reminder);
 }
 
-void show_data_dialog(char *text, char *title, gchar *url) {
+void show_data_dialog(char *text, char *title, gchar *parent, gchar *url) {
 	GtkTextView *tv = GTK_TEXT_VIEW(lookup_widget("data_txt"));
 	GtkTextBuffer *tbuf = gtk_text_view_get_buffer(tv);
 	GtkTextIter itDebut;
 	GtkTextIter itFin;
+	GtkWindow *win = GTK_WINDOW(lookup_widget("data_dialog"));
 
 	gtk_text_buffer_get_bounds(tbuf, &itDebut, &itFin);
 	gtk_text_buffer_delete(tbuf, &itDebut, &itFin);
 	gtk_text_buffer_set_text(tbuf, text, strlen(text));
-	gtk_window_set_title(GTK_WINDOW(lookup_widget("data_dialog")), title);
+	gtk_window_set_title(win, title);
 
 	gtk_widget_show(lookup_widget("data_dialog"));
 	gtk_widget_set_visible(lookup_widget("data_extra_button"), url != NULL);
 	if (url) {
 		gtk_link_button_set_uri((GtkLinkButton *)lookup_widget("data_extra_button"), url);
+	}
+	if (parent) {
+		gtk_window_set_transient_for(win, GTK_WINDOW(lookup_widget(parent)));
+	} else {
+		gtk_window_set_transient_for(win, GTK_WINDOW(lookup_widget("control_window")));
 	}
 }
 
