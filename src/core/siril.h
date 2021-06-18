@@ -515,6 +515,8 @@ struct historic_struct {
 
 struct star_finder_struct {
 	int radius;
+	int adj_radius;
+	gboolean adjust;
 	double sigma;
 	double roundness;
 };

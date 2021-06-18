@@ -243,7 +243,7 @@ static void display_PSF(fitted_PSF **result) {
 				"FWHMy:\t%.2f%s\nr:\t%.3f\nAngle:\t%.2f deg\nrmse:\t%.3e\n"),
 				i, B, A, FWHMx, result[0]->units, FWHMy,
 				result[0]->units, r, angle, rmse);
-		show_data_dialog(msg, _("Average Star Data"), NULL);
+		show_data_dialog(msg, _("Average Star Data"), "stars_list_window", NULL);
 		g_free(msg);
 	}
 }

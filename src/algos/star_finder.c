@@ -43,6 +43,27 @@
 
 #define WAVELET_SCALE 3
 
+static double guess_resolution(fits *fit) {
+	double focal = fit->focal_length;
+	double size = fit->pixel_size_x;
+	double bin;
+
+	if ((focal <= 0.0) || (size <= 0.0)) {
+		focal = com.pref.focal;
+		size = com.pref.pitch;
+		if ((focal <= 0.0) || (size <= 0.0))
+			return 1;
+	}
+	bin = ((fit->binning_x + fit->binning_y) / 2.0);
+	if (bin <= 0) bin = 1.0;
+
+	double res = RADCONV / focal * size * bin;
+
+	/* if res > 1.0 we use default radius value */
+	if (res < 0.1 || res > 1.0) return 1.0;
+	return res;
+}
+
 static float compute_threshold(fits *fit, double ksigma, int layer, float *norm, double *bg) {
 	float threshold;
 	imstats *stat;
@@ -64,7 +85,7 @@ static float compute_threshold(fits *fit, double ksigma, int layer, float *norm,
 	return threshold;
 }
 
-static gboolean is_star(fitted_PSF *result, star_finder_params *sf) {
+static gboolean is_star(fitted_PSF *result, star_finder_params *sf ) {
 	if (isnan(result->fwhmx) || isnan(result->fwhmy))
 		return FALSE;
 	if (isnan(result->x0) || isnan(result->y0))
@@ -73,7 +94,7 @@ static gboolean is_star(fitted_PSF *result, star_finder_params *sf) {
 		return FALSE;
 	if ((result->x0 <= 0.0) || (result->y0 <= 0.0))
 		return FALSE;
-	if (result->sx > 3 * sf->radius || result->sy > 3 * sf->radius)
+	if (result->sx > 3 * sf->adj_radius || result->sy > 3 * sf->adj_radius)
 		return FALSE;
 	if (result->fwhmx <= 0.0 || result->fwhmy <= 0.0)
 		return FALSE;
@@ -85,14 +106,17 @@ static gboolean is_star(fitted_PSF *result, star_finder_params *sf) {
 static void get_structure(star_finder_params *sf) {
 	static GtkSpinButton *spin_radius = NULL, *spin_sigma = NULL,
 			*spin_roundness = NULL;
+	static GtkToggleButton *toggle_adjust = NULL;
 
 	if (spin_radius == NULL) {
 		spin_radius = GTK_SPIN_BUTTON(lookup_widget("spinstarfinder_radius"));
 		spin_sigma = GTK_SPIN_BUTTON(lookup_widget("spinstarfinder_threshold"));
 		spin_roundness = GTK_SPIN_BUTTON(lookup_widget("spinstarfinder_round"));
+		toggle_adjust = GTK_TOGGLE_BUTTON(lookup_widget("toggle_radius_adjust"));
 	}
 	sf->radius = (int) gtk_spin_button_get_value(spin_radius);
 	sf->sigma = gtk_spin_button_get_value(spin_sigma);
+	sf->adjust = gtk_toggle_button_get_active(toggle_adjust);
 	sf->roundness = gtk_spin_button_get_value(spin_roundness);
 }
 
@@ -107,8 +131,13 @@ void init_peaker_GUI() {
 void init_peaker_default() {
 	/* values taken from siril3.glade */
 	com.starfinder_conf.radius = 10;
+	com.starfinder_conf.adjust = TRUE;
 	com.starfinder_conf.sigma = 1.0;
 	com.starfinder_conf.roundness = 0.5;
+}
+
+void on_toggle_radius_adjust_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
+	com.starfinder_conf.adjust = gtk_toggle_button_get_active(togglebutton);
 }
 
 void on_spin_sf_radius_changed(GtkSpinButton *spinbutton, gpointer user_data) {
@@ -126,13 +155,16 @@ void on_spin_sf_roundness_changed(GtkSpinButton *spinbutton, gpointer user_data)
 void update_peaker_GUI() {
 	static GtkSpinButton *spin_radius = NULL, *spin_sigma = NULL,
 			*spin_roundness = NULL;
+	static GtkToggleButton *toggle_adjust = NULL;
 
 	if (spin_radius == NULL) {
 		spin_radius = GTK_SPIN_BUTTON(lookup_widget("spinstarfinder_radius"));
 		spin_sigma = GTK_SPIN_BUTTON(lookup_widget("spinstarfinder_threshold"));
 		spin_roundness = GTK_SPIN_BUTTON(lookup_widget("spinstarfinder_round"));
+		toggle_adjust = GTK_TOGGLE_BUTTON(lookup_widget("toggle_radius_adjust"));
 	}
 	gtk_spin_button_set_value(spin_radius, (double) com.starfinder_conf.radius);
+	gtk_toggle_button_set_active(toggle_adjust, com.starfinder_conf.adjust);
 	gtk_spin_button_set_value(spin_sigma, com.starfinder_conf.sigma);
 	gtk_spin_button_set_value(spin_roundness, com.starfinder_conf.roundness);
 }
@@ -209,9 +241,11 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 		return NULL;
 	}
 
+	sf->adj_radius = sf->adjust ? sf->radius / guess_resolution(fit) : sf->radius;
+
 	/* Search for candidate stars in the filtered image */
-	for (int y = sf->radius + areaY0; y < areaY1 - sf->radius; y++) {
-		for (int x = sf->radius + areaX0; x < areaX1 - sf->radius; x++) {
+	for (int y = sf->adj_radius + areaY0; y < areaY1 - sf->adj_radius; y++) {
+		for (int x = sf->adj_radius + areaX0; x < areaX1 - sf->adj_radius; x++) {
 			float pixel = wave_image[y][x];
 			if (pixel > threshold && pixel < norm) {
 				gboolean bingo = TRUE;
@@ -264,7 +298,7 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 
 /* returns number of stars found, result is in parameters */
 static int minimize_candidates(fits *image, star_finder_params *sf, double bg, pointi *candidates, int nb_candidates, int layer, fitted_PSF ***retval) {
-	int radius = sf->radius;
+	int radius = sf->adj_radius;
 	int nx = image->rx;
 	int ny = image->ry;
 	gsl_matrix *z = gsl_matrix_alloc(radius * 2, radius * 2);
