@@ -544,6 +544,7 @@ void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data)
 	}
 	set_cursor_waiting(TRUE);
 
+	confirm_peaker_GUI(); //making sure the spin buttons values are read even without confirmation
 	delete_selected_area();
 	com.stars = peaker(&gfit, layer, &com.starfinder_conf, &nbstars, NULL, TRUE);
 	siril_log_message(_("Found %d stars in image, channel #%d\n"), nbstars, layer);
