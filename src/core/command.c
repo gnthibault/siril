@@ -3562,8 +3562,10 @@ int process_stackall(int nb) {
 				siril_log_color_message(_("The average stacking with rejection requires two extra arguments: sigma low and high.\n"), "red");
 				goto failure;
 			}
-			if ((arg->type_of_rejection == GESDT) && (arg->sig[0] > 1.0 || (arg->sig[1] > 1.0))) {
-				siril_log_color_message(_("Extra parameters of GESDT algorithm must be between 0 and 1.\n"), "red");
+			if (((arg->type_of_rejection == GESDT)
+					|| (arg->type_of_rejection == PERCENTILE))
+					&& (arg->sig[0] > 1.0 || (arg->sig[1] > 1.0))) {
+				siril_log_color_message(_("Extra parameters of this rejection algorithm must be between 0 and 1.\n"), "red");
 				goto failure;
 			}
 			arg->method = stack_mean_with_rejection;
