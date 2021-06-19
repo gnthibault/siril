@@ -539,7 +539,7 @@ void confirm_outliers(struct outliers *out, int N, double median, int *rejected,
 		guint64 rej[2]) {
 	int i = N - 1;
 
-	while (!out[i].out && i >= 0) {
+	while (i > 1 && !out[i].out) {
 		i--;
 	}
 	for (int j = i; j >= 0; j--) {
