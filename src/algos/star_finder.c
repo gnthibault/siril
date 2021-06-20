@@ -51,14 +51,21 @@ static double guess_resolution(fits *fit) {
 	if ((focal <= 0.0) || (size <= 0.0)) {
 		focal = com.pref.focal;
 		size = com.pref.pitch;
+		/* if we have no way to guess, we return the
+		 * flag -1
+		 */
 		if ((focal <= 0.0) || (size <= 0.0))
-			return 1;
+			return -1.0;
 	}
 	bin = ((fit->binning_x + fit->binning_y) / 2.0);
 	if (bin <= 0) bin = 1.0;
 
 	double res = RADCONV / focal * size * bin;
 
+	/* test for high value. In this case we increase
+	 * the number of detected star in is_star function
+	 */
+	if (res > 20.0) return -1.0;
 	/* if res > 1.0 we use default radius value */
 	if (res < 0.1 || res > 1.0) return 1.0;
 	return res;
@@ -86,6 +93,11 @@ static float compute_threshold(fits *fit, double ksigma, int layer, float *norm,
 }
 
 static gboolean is_star(fitted_PSF *result, star_finder_params *sf ) {
+	/* here this is a bit trick, bu if no resolution is computed
+	 * we take a greater factor for star size. This is less optimize
+	 * but at least it reproduces almost the old behavior
+	 */
+	int factor = sf->no_guess ? 10 : 3;
 	if (isnan(result->fwhmx) || isnan(result->fwhmy))
 		return FALSE;
 	if (isnan(result->x0) || isnan(result->y0))
@@ -94,7 +106,7 @@ static gboolean is_star(fitted_PSF *result, star_finder_params *sf ) {
 		return FALSE;
 	if ((result->x0 <= 0.0) || (result->y0 <= 0.0))
 		return FALSE;
-	if (result->sx > 3 * sf->adj_radius || result->sy > 3 * sf->adj_radius)
+	if (result->sx > factor * sf->adj_radius || result->sy > factor * sf->adj_radius)
 		return FALSE;
 	if (result->fwhmx <= 0.0 || result->fwhmy <= 0.0)
 		return FALSE;
@@ -134,6 +146,7 @@ void init_peaker_default() {
 	com.starfinder_conf.adjust = TRUE;
 	com.starfinder_conf.sigma = 1.0;
 	com.starfinder_conf.roundness = 0.5;
+	com.starfinder_conf.no_guess = FALSE;
 }
 
 void on_toggle_radius_adjust_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
@@ -256,7 +269,14 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 		return NULL;
 	}
 
-	sf->adj_radius = sf->adjust ? sf->radius / guess_resolution(fit) : sf->radius;
+	double res = guess_resolution(fit);
+
+	if (res < 0) {
+		sf->no_guess = TRUE;
+		res = 1.0;
+	}
+
+	sf->adj_radius = sf->adjust ? sf->radius / res : sf->radius;
 
 	/* Search for candidate stars in the filtered image */
 	for (int y = sf->adj_radius + areaY0; y < areaY1 - sf->adj_radius; y++) {
