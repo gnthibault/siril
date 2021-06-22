@@ -3458,7 +3458,6 @@ static int stack_one_seq(struct stacking_configuration *arg) {
 			if (savefits(arg->result_file, &gfit))
 				siril_log_color_message(_("Could not save the stacking result %s\n"),
 						"red", arg->result_file);
-			//clearfits(&gfit);
 			++arg->number_of_loaded_sequences;
 		}
 		else if (!get_thread_run()) return -1;
