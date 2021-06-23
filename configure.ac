@@ -1,7 +1,7 @@
 dnl Process this file with autoconf to produce a configure script.
 m4_define([siril_major_version], [0])
 m4_define([siril_minor_version], [99])
-m4_define([siril_micro_version], [10])
+m4_define([siril_micro_version], [11])
 m4_define([siril_prerelease_version], [1])
 m4_define([siril_version],
           [siril_major_version.siril_minor_version.siril_micro_version])
@@ -14,8 +14,8 @@ m4_define([siril_stable],
           m4_if(m4_eval(siril_minor_version % 2), [0], [yes], [no]))
 
 dnl change siril_version_full by siril_version for stable release
-AC_INIT([siril], [siril_version_full],
-dnl AC_INIT([siril], [siril_version],
+dnl AC_INIT([siril], [siril_version_full],
+AC_INIT([siril], [siril_version],
         [https://gitlab.com/free-astro/siril/issues],
         [siril],
         [https://www.siril.org])
