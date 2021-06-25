@@ -521,7 +521,7 @@ void update_statusbar_convert() {
 	}
 }
 
-void on_treeview_selection5_changed(GtkTreeSelection *treeselection,
+void on_treeview_selection_convert_changed(GtkTreeSelection *treeselection,
 		gpointer user_data) {
 	update_statusbar_convert();
 }

@@ -12085,7 +12085,10 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                                         <signal name="drag-motion" handler="on_treeview_convert_drag_motion" swapped="no"/>
                                         <signal name="key-release-event" handler="on_treeview_convert_key_release_event" swapped="no"/>
                                         <child internal-child="selection">
-                                          <object class="GtkTreeSelection"/>
+                                          <object class="GtkTreeSelection">
+                                            <property name="mode">multiple</property>
+                                            <signal name="changed" handler="on_treeview_selection_convert_changed" swapped="no"/>
+                                          </object>
                                         </child>
                                         <child>
                                           <object class="GtkTreeViewColumn" id="treeviewcolumn17">
