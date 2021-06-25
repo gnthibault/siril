@@ -162,6 +162,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 		int ref_image, pldata *plot) {
 	int i, j;
 	double offset = -1001.0;
+	double fwhm;
 	fitted_PSF **psfs = seq->photometry[dataset], *ref_psf;
 	if (seq->reference_star >= 0 && !seq->photometry[seq->reference_star])
 		seq->reference_star = -1;
@@ -195,11 +196,14 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 				plot->data[j].y = psfs[i]->fwhmy / psfs[i]->fwhmx;
 				break;
 			case FWHM:
-				if (is_arcsec)
+				if (is_arcsec) {
 					fwhm_to_arcsec_if_needed(&gfit, psfs[i]);
-				else
+					fwhm = psfs[i]->fwhmx_arcsec < 0 ? psfs[i]->fwhmx : psfs[i]->fwhmx_arcsec;
+				} else {
 					fwhm_to_pixels(psfs[i]);
-				plot->data[j].y = psfs[i]->fwhmx;
+					fwhm = psfs[i]->fwhmx;
+				}
+				plot->data[j].y = fwhm;
 				break;
 			case AMPLITUDE:
 				plot->data[j].y = psfs[i]->A;
