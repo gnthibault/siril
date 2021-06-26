@@ -747,8 +747,11 @@ void fwhm_to_arcsec_if_needed(fits* fit, fitted_PSF *result) {
 	if (!result) return;
 	if (fit->focal_length <= 0.0 || fit->pixel_size_x <= 0.f
 			|| fit->pixel_size_y <= 0.f || fit->binning_x <= 0
-			|| fit->binning_y <= 0)
+			|| fit->binning_y <= 0) {
+		result->fwhmx_arcsec = -1.0;
+		result->fwhmy_arcsec = -1.0;
 		return;
+	}
 
 	double bin_X, bin_Y;
 	double fwhmx, fwhmy;
