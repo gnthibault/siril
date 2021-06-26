@@ -152,8 +152,10 @@ static int image_to_Mat(fits *image, Mat *in, Mat *out, void **bgr, int target_r
 static int Mat_to_image(fits *image, Mat *in, Mat *out, void *bgr, int target_rx, int target_ry) {
 	in->release();
 	if (bgr) free(bgr);
-	if (image->naxes[2] == 1)
+	if (image->naxes[2] == 1) {
 		free(image->data);
+		free(image->fdata);
+	}
 
 	size_t ndata = target_rx * target_ry;
 	if (image->type == DATA_USHORT) {
