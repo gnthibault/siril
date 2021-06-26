@@ -450,8 +450,8 @@ fitted_PSF *add_star(fits *fit, int layer, int *index) {
 		siril_message_dialog( GTK_MESSAGE_INFO, _("Peaker"), msg);
 	} else {
 		if (i < MAX_STARS) {
-			result->xpos = result->x0 + com.selection.x;
-			result->ypos = com.selection.y + com.selection.h - result->y0;
+			result->xpos = result->x0 + com.selection.x - 0.5;
+			result->ypos = com.selection.y + com.selection.h - result->y0 - 0.5;
 			com.stars[i] = result;
 			com.stars[i + 1] = NULL;
 			*index = i;
