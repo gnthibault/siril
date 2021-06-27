@@ -577,7 +577,7 @@ int register_ecc(struct registration_args *args) {
 	if (args->seq->type == SEQ_SER || ((args->seq->type == SEQ_REGULAR || args->seq->type == SEQ_FITSEQ) && fits_is_reentrant()))
 #endif
 	for (frame = 0; frame < args->seq->number; frame++) {
-		if (!abort) continue;
+		if (abort) continue;
 		if (args->run_in_thread && !get_thread_run()) {
 			abort = 1;
 			continue;
@@ -605,7 +605,7 @@ int register_ecc(struct registration_args *args) {
 			if (findTransform(&ref, &im, args->layer, &reg_param)) {
 				siril_log_message(
 						_("Cannot perform ECC alignment for frame %d\n"),
-						frame);
+						frame +1);
 				/* We exclude this frame */
 				args->seq->imgparam[frame].incl = FALSE;
 				current_regdata[frame].quality = 0.0;

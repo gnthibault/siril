@@ -569,8 +569,8 @@ int findTransform(fits *reference, fits *image, int layer,
 		im = new Mat(image->ry, image->rx, CV_16UC1, image->pdata[layer]);
 		/* this conversion operation of the reference could be avoided since
 		 * it's the same for all tested images */
-		ref->convertTo(*ref, CV_32FC1, 1.0/reference->stats[layer]->max);
-		im->convertTo(*im, CV_32FC1, 1.0/image->stats[layer]->max);
+		ref->convertTo(*ref, CV_32FC1, 1.0 / reference->stats[layer]->max);
+		im->convertTo(*im, CV_32FC1, 1.0 / image->stats[layer]->max);
 	}
 	else if (reference->type == DATA_FLOAT) {
 		ref = new Mat(reference->ry, reference->rx, CV_32FC1, reference->fpdata[layer]);
