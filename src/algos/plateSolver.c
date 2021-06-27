@@ -1224,7 +1224,7 @@ gpointer match_catalog(gpointer p) {
 	}
 
 	if (!args->manual) {
-		com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, NULL, FALSE); // TODO: use good layer
+		com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, NULL, FALSE, FALSE); // TODO: use good layer
 	} else {
 		if (com.stars)
 			while (com.stars[n_fit++]);

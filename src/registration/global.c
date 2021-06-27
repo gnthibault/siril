@@ -43,7 +43,6 @@
 #include "registration/matching/misc.h"
 #include "opencv/opencv.h"
 
-#define MAX_STARS_FITTED 2000
 
 /* TODO:
  * check usage of openmp in functions called by these ones (to be disabled)
@@ -152,10 +151,10 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	siril_log_color_message(_("Reference Image:\n"), "green");
 
 	if (regargs->matchSelection && regargs->selection.w > 0 && regargs->selection.h > 0) {
-		com.stars = peaker(&fit, regargs->layer, &com.starfinder_conf, &nb_stars, &regargs->selection, FALSE);
+		com.stars = peaker(&fit, regargs->layer, &com.starfinder_conf, &nb_stars, &regargs->selection, FALSE, TRUE);
 	}
 	else {
-		com.stars = peaker(&fit, regargs->layer, &com.starfinder_conf, &nb_stars, NULL, FALSE);
+		com.stars = peaker(&fit, regargs->layer, &com.starfinder_conf, &nb_stars, NULL, FALSE, TRUE);
 	}
 
 	siril_log_message(_("Found %d stars in reference, channel #%d\n"), nb_stars, regargs->layer);
@@ -213,7 +212,7 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 		i++;
 	}
 
-	if (nb_stars > MAX_STARS_FITTED) {
+	if (nb_stars >= MAX_STARS_FITTED) {
 		sadata->fitted_stars = MAX_STARS_FITTED;
 		siril_log_color_message(_("Reference Image: Limiting to %d brightest stars\n"), "green", MAX_STARS_FITTED);
 	} else {
@@ -258,10 +257,10 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		}
 
 		if (regargs->matchSelection && regargs->selection.w > 0 && regargs->selection.h > 0) {
-			stars = peaker(fit, regargs->layer, &com.starfinder_conf, &nb_stars, &regargs->selection, FALSE);
+			stars = peaker(fit, regargs->layer, &com.starfinder_conf, &nb_stars, &regargs->selection, FALSE, TRUE);
 		}
 		else {
-			stars = peaker(fit, regargs->layer, &com.starfinder_conf, &nb_stars, NULL, FALSE);
+			stars = peaker(fit, regargs->layer, &com.starfinder_conf, &nb_stars, NULL, FALSE, TRUE);
 		}
 
 		siril_log_message(_("Found %d stars in image %d, channel #%d\n"), nb_stars, filenum, regargs->layer);
@@ -273,8 +272,8 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 			return 1;
 		}
 
-		if (nb_stars > sadata->fitted_stars) {
-			if (nb_stars > MAX_STARS_FITTED) {
+		if (nb_stars >= sadata->fitted_stars) {
+			if (nb_stars >= MAX_STARS_FITTED) {
 				siril_log_color_message(_("Target Image: Limiting to %d brightest stars\n"), "green", MAX_STARS_FITTED);
 			}
 			nbpoints = sadata->fitted_stars;
@@ -440,7 +439,7 @@ int star_align_finalize_hook(struct generic_seq_args *args) {
 	// it here because it's still used in the generic processing function.
 }
 
-int star_align_compute_mem_limits(struct generic_seq_args *args, gboolean for_writer) {
+int star_align_compute_mem_limits(struct generic_seq_args *args, gboolean for_writer) { 
 	unsigned int MB_per_orig_image, MB_per_scaled_image, MB_avail;
 	int limit = compute_nb_images_fit_memory(args->seq, args->upscale_ratio, args->force_float,
 			&MB_per_orig_image, &MB_per_scaled_image, &MB_avail);
@@ -450,30 +449,48 @@ int star_align_compute_mem_limits(struct generic_seq_args *args, gboolean for_wr
 		 * First, a threshold is computed for star pixel value, using statistics:
 		 *	O(m), data is duplicated for median computation if
 		 *	there are nil values, O(1) otherwise
-		 * Then, still in peaker(), image is filtered using wavelets, duplicating the
-		 * image channel to act as input and output of the filter (O(m)) and
-		 * wavelet_transform then allocates 3 times the size of the channel in float,
-		 * because we request 3 planes of wavelets, and pave_2d allocates it once more
-		 * for its working copy, so that makes O(5m as float).
+		 * Then, still in peaker(), image is filtered using unsharp filter, duplicating
+		 * the reference channel to act as input and output of the filter as float O(2m
+		 * as float).
 		 * Then, the image is rotated and upscaled by the generic function if enabled:
 		 * cvTransformImage is O(n) in mem for unscaled, O(nscaled)=O(4m) for
 		 * monochrome scaled and O(2nscaled)=O(21m) for color scaled
-		 * All this is in addition to the image being already loaded.
+		 * All this is in addition to the image being already loaded, except for the
+		 * color scaled image.
 		 *
 		 * Since these three operations are in sequence, we need room only for the
-		 * biggest. In case of color rotated scaled image, it's the rotation that takes
-		 * more memory, with O(8n)=O(24m) in total. In all other cases it's the
-		 * wavelets with O(n+5mfloat).
+		 * largest.
+		 * rotated color scaled float	mem needed
+		 *       0     0      0     0	O(2m as float)
+		 *       1     0      0     0	O(2m as float)
+		 *       1     0      0     1	O(2m as float, same as 2n)
+		 *       1     0      1     0	O(4m, same as 2m as float)
+		 *       1     0      1     1	O(4m)
+		 *       1     1      0     0	O(2m as float)
+		 *       1     1      0     1	O(n)
+		 *       1     1      1     0	O(8n or 2nscaled)
+		 *       1     1      1     1	O(8n or 2nscaled)
 		 */
-		if (args->has_output && args->seq->nb_layers == 3 && args->upscale_ratio == 2.0)
-			required = MB_per_scaled_image * 2;
+		int is_color = args->seq->nb_layers == 3;
+		int is_float = get_data_type(args->seq->bitpix) == DATA_FLOAT;
+		int is_scaled = args->upscale_ratio == 2.0;
+		unsigned int float_multiplier = is_float ? 1 : 2;
+		unsigned int MB_per_float_image = MB_per_orig_image * float_multiplier;
+		unsigned int MB_per_float_channel = is_color ? MB_per_float_image / 3 : MB_per_float_image;
+		unsigned int MB_per_orig_channel = is_color ? MB_per_orig_image / 3 : MB_per_float_image;
+		MB_per_float_channel = min(1, MB_per_float_channel);
+		MB_per_orig_channel = min(1, MB_per_orig_channel);
+		if (!args->has_output || (!is_scaled && (!is_color || !is_float))) {
+			required = MB_per_orig_image + MB_per_float_channel * 2;
+		}
+		else if (args->has_output && !is_color && is_scaled) {
+			required = MB_per_orig_image + 4 * MB_per_orig_channel;
+		}
+		else if (args->has_output && is_color && !is_scaled && is_float) {
+			required = 2 * MB_per_orig_image;
+		}
 		else {
-			unsigned int float_multiplier =
-				get_data_type(args->seq->bitpix) == DATA_FLOAT ? 1 : 2;
-			unsigned int MB_per_float_image = MB_per_orig_image * float_multiplier;
-			unsigned int MB_per_float_channel = args->seq->nb_layers == 1 ?
-				MB_per_float_image : MB_per_float_image / 3;
-			required = MB_per_orig_image + 5 * MB_per_float_channel;
+			required = 2 * MB_per_scaled_image;
 		}
 		int thread_limit = MB_avail / required;
 		if (thread_limit > com.max_thread)

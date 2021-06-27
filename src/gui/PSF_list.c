@@ -311,6 +311,7 @@ static int save_list(gchar *filename) {
 	if (!com.stars)
 		return 1;
 	GError *error = NULL;
+	gboolean is_in_arcsec = FALSE;
 
 	GFile *file = g_file_new_for_path(filename);
 	GOutputStream *output_stream = (GOutputStream*) g_file_replace(file, NULL, FALSE,
@@ -326,12 +327,33 @@ static int save_list(gchar *filename) {
 		return 1;
 	}
 
+	gchar *buffer = g_strdup_printf("star#\tlayer\tB\tA\tX\tY\tFWHMx [%s]\tFWHMy [%s]\tangle\tRMSE\tmag%s", com.stars[0]->units,com.stars[0]->units,SIRIL_EOL);
+	if (!g_output_stream_write_all(output_stream, buffer, strlen(buffer), NULL, NULL, &error)) {
+		g_warning("%s\n", error->message);
+		g_free(buffer);
+		g_clear_error(&error);
+		g_object_unref(output_stream);
+		g_object_unref(file);
+		return 1;
+	}
+	g_free(buffer);
+	if (com.stars[0]) {
+		is_in_arcsec = com.stars[0]->fwhmx_arcsec > 0;
+	}
 	while (com.stars[i]) {
-		gchar *buffer = g_strdup_printf(
-				"%d\t%d\t%10.6f %10.6f %10.2f %10.2f %10.2f %10.2f %3.2f %10.3e %10.2f%s",
-				i + 1, com.stars[i]->layer, com.stars[i]->B, com.stars[i]->A,
-				com.stars[i]->xpos, com.stars[i]->ypos, com.stars[i]->fwhmx,
-				com.stars[i]->fwhmy, com.stars[i]->angle, com.stars[i]->rmse, com.stars[i]->mag, SIRIL_EOL);
+		if (is_in_arcsec) { 
+			buffer = g_strdup_printf(
+					"%d\t%d\t%10.6f\t%10.6f\t%10.2f\t%10.2f\t%10.2f\t%10.2f\t%3.2f\t%10.3e\t%10.2f%s",
+					i + 1, com.stars[i]->layer, com.stars[i]->B, com.stars[i]->A,
+					com.stars[i]->xpos, com.stars[i]->ypos, com.stars[i]->fwhmx_arcsec,
+					com.stars[i]->fwhmy_arcsec, com.stars[i]->angle, com.stars[i]->rmse, com.stars[i]->mag, SIRIL_EOL);
+		} else {
+			buffer = g_strdup_printf(
+					"%d\t%d\t%10.6f\t%10.6f\t%10.2f\t%10.2f\t%10.2f\t%10.2f\t%3.2f\t%10.3e\t%10.2f%s",
+					i + 1, com.stars[i]->layer, com.stars[i]->B, com.stars[i]->A,
+					com.stars[i]->xpos, com.stars[i]->ypos, com.stars[i]->fwhmx,
+					com.stars[i]->fwhmy, com.stars[i]->angle, com.stars[i]->rmse, com.stars[i]->mag, SIRIL_EOL);
+		}
 
 		if (!g_output_stream_write_all(output_stream, buffer, strlen(buffer), NULL, NULL, &error)) {
 			g_warning("%s\n", error->message);
@@ -549,7 +571,7 @@ void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data)
 
 	confirm_peaker_GUI(); //making sure the spin buttons values are read even without confirmation
 	delete_selected_area();
-	com.stars = peaker(&gfit, layer, &com.starfinder_conf, &nbstars, NULL, TRUE);
+	com.stars = peaker(&gfit, layer, &com.starfinder_conf, &nbstars, NULL, TRUE, FALSE);
 	siril_log_message(_("Found %d stars in image, channel #%d\n"), nbstars, layer);
 	if (com.stars)
 		refresh_star_list(com.stars);

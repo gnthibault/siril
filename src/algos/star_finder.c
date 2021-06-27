@@ -40,8 +40,14 @@
 #include "filters/wavelets.h"
 #include "io/image_format_fits.h"
 #include "core/OS_utils.h"
+#include "opencv/opencv.h"
 
 #define WAVELET_SCALE 3
+
+struct star_candidate_struct {
+	int x, y;
+	float mag_est;
+};
 
 static double guess_resolution(fits *fit) {
 	double focal = fit->focal_length;
@@ -71,7 +77,7 @@ static double guess_resolution(fits *fit) {
 	return res;
 }
 
-static float compute_threshold(fits *fit, double ksigma, int layer, float *norm, double *bg) {
+static float compute_threshold(fits *fit, double ksigma, int layer, float *norm, double *bg, double *bgnoise) {
 	float threshold;
 	imstats *stat;
 
@@ -87,6 +93,7 @@ static float compute_threshold(fits *fit, double ksigma, int layer, float *norm,
 	threshold = (float)(stat->median + ksigma * stat->bgnoise);
 	*norm = stat->normValue;
 	*bg = stat->median;
+	*bgnoise = stat->bgnoise;
 	free_stats(stat);
 
 	return threshold;
@@ -113,6 +120,18 @@ static gboolean is_star(fitted_PSF *result, star_finder_params *sf ) {
 	if ((result->fwhmy / result->fwhmx) < sf->roundness)
 		return FALSE;
 	return TRUE;
+}
+
+int star_cmp(const void *a, const void *b)
+{
+    starc *a1 = (starc *)a;
+    starc *a2 = (starc *)b;
+    if ((*a1).mag_est > (*a2).mag_est)
+        return -1;
+    else if ((*a1).mag_est < (*a2).mag_est)
+        return 1;
+    else
+        return 0;
 }
 
 static void get_structure(star_finder_params *sf) {
@@ -204,9 +223,9 @@ void confirm_peaker_GUI() {
  Original algorithm come from:
  Copyleft (L) 1998 Kenneth J. Mighell (Kitt Peak National Observatory)
  */
-static int minimize_candidates(fits *image, star_finder_params *sf, double bg, pointi *candidates, int nb_candidates, int layer, fitted_PSF ***retval);
+static int minimize_candidates(fits *image, star_finder_params *sf, double bg, starc *candidates, int nb_candidates, int layer, fitted_PSF ***retval, gboolean limit_nbstars);
 
-fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars, rectangle *area, gboolean showtime) {
+fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars, rectangle *area, gboolean showtime, gboolean limit_nbstars) {
 	int nx = fit->rx;
 	int ny = fit->ry;
 	int areaX0 = 0;
@@ -214,11 +233,11 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 	int areaX1 = nx;
 	int areaY1 = ny;
 	int nbstars = 0;
-	double bg;
+	double bg, bgnoise;
 	float threshold, norm;
-	float **wave_image;
-	fits wave_fit = { 0 };
-	pointi *candidates;
+	float **smooth_image;
+	fits smooth_fit = { 0 };
+	starc *candidates;
 
 	struct timeval t_start, t_end;
 
@@ -228,32 +247,34 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 	gettimeofday(&t_start, NULL);
 
 	/* running statistics on the input image is best as it caches them */
-	threshold = compute_threshold(fit, sf->sigma * 5.0, layer, &norm, &bg);
+	threshold = compute_threshold(fit, sf->sigma * 5.0, layer, &norm, &bg, &bgnoise);
 	if (norm == 0.0f)
 		return NULL;
 
 	siril_debug_print("Threshold: %f (background: %f, norm: %f)\n", threshold, bg, norm);
 
-	/* if fit is ushort, we need to get it in float [0, 65535] to run
-	 * statistics only once: stats give the threshold used in the
-	 * wavelets-filtered image for candidate detection and the background
-	 * used in PSF fitting from real image data which can be still ushort.
+	/* Removing wavelets and applying a Gaussian filter to select candidates
 	 */
-	if (extract_fits(fit, &wave_fit, layer, TRUE)) {
-		siril_log_message(_("Failed to copy the image for processing\n"));
+	if (extract_fits(fit, &smooth_fit, layer, TRUE)) {
+        siril_log_message(_("Failed to copy the image for processing\n"));
 		return NULL;
 	}
-	get_wavelet_layers(&wave_fit, WAVELET_SCALE, 2, TO_PAVE_BSPLINE, layer);
 
-	/* Build 2D representation of wavelet image upside-down */
-	wave_image = malloc(ny * sizeof(float *));
-	if (!wave_image) {
+	if (cvUnsharpFilter(&smooth_fit, 3, 0)) {
+		siril_log_message(_("Could not apply Gaussian filter, aborting\n"));
+		clearfits(&smooth_fit);
+		return NULL;
+	}
+
+	/* Build 2D representation of smoothed image upside-down */
+	smooth_image = malloc(ny * sizeof(float *));
+	if (!smooth_image) {
 		PRINT_ALLOC_ERR;
-		clearfits(&wave_fit);
+		clearfits(&smooth_fit);
 		return NULL;
 	}
 	for (int k = 0; k < ny; k++) {
-		wave_image[ny - k - 1] = wave_fit.fdata + k * nx;
+		smooth_image[ny - k - 1] = smooth_fit.fdata + k * nx;
 	}
 
 	if (area) {
@@ -263,8 +284,10 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 		areaY1 = area->h + areaY0;
 	}
 
-	candidates = malloc(MAX_STARS * sizeof(pointi));
+	candidates = malloc(MAX_STARS * sizeof(starc));
 	if (!candidates) {
+		clearfits(&smooth_fit);
+		free(smooth_image);
 		PRINT_ALLOC_ERR;
 		return NULL;
 	}
@@ -277,19 +300,26 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 	}
 
 	sf->adj_radius = sf->adjust ? sf->radius / res : sf->radius;
+	// siril_log_message("Adjusted radius: %d\n", sf->adj_radius);
+	int r = sf->adj_radius;
+	int boxsize = (2 * r + 1)*(2 * r + 1);
+	double locthreshold = sf->sigma * 5.0 * bgnoise;
 
 	/* Search for candidate stars in the filtered image */
-	for (int y = sf->adj_radius + areaY0; y < areaY1 - sf->adj_radius; y++) {
-		for (int x = sf->adj_radius + areaX0; x < areaX1 - sf->adj_radius; x++) {
-			float pixel = wave_image[y][x];
+	for (int y = r + areaY0; y < areaY1 - r; y++) {
+		for (int x = r + areaX0; x < areaX1 - r; x++) {
+			float pixel = smooth_image[y][x];
 			if (pixel > threshold && pixel < norm) {
 				gboolean bingo = TRUE;
 				float neighbor;
-				for (int yy = y - 1; yy <= y + 1; yy++) {
-					for (int xx = x - 1; xx <= x + 1; xx++) {
+				double mean = 0., meanhigh = 0.;
+				int count = 0;
+				// making sure the central pixel is a local max compared to all neighbors in the search box
+				for (int yy = y - r; yy <= y + r; yy++) {
+					for (int xx = x - r; xx <= x + r; xx++) {
 						if (xx == x && yy == y)
 							continue;
-						neighbor = wave_image[yy][xx];
+						neighbor = smooth_image[yy][xx];
 						if (neighbor > pixel) {
 							bingo = FALSE;
 							break;
@@ -299,11 +329,52 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 								break;
 							}
 						}
+						if (!bingo) break;
+						mean += neighbor;
+						count ++;
 					}
 				}
+				if (count < boxsize - 1) {
+					bingo = FALSE;
+					continue;
+				}
+				x += r; //no other local max can be found in the next r pixels band
+
+				count = 0;
+				for (int yy = y - 1; yy <= y + 1; yy++) {
+					for (int xx = x - r - 1; xx <= x - r + 1; xx++) { // x corrected by the anticipated shift
+						if (xx == x - r && yy == y) {
+							continue;
+						}
+						neighbor = smooth_image[yy][xx]; 
+						if (neighbor <= threshold) {
+							bingo = FALSE;
+							break;
+						}
+						if (!bingo) break;
+						meanhigh += neighbor;
+						count++;
+					}
+				}
+				if (count < 8) {
+					bingo = FALSE;
+					continue;
+				}
+				mean = (mean - meanhigh) / (boxsize - 9); // (boxsize - 1) pix in mean and 8 pix in meanhigh
+				/* trying to remove false positives in nebs
+				mean of 9 central pixels must be above mean of the whole search box excluding them
+				i.e, an approximation of the local background, by a significant amount
+				*/
+				meanhigh = (meanhigh + pixel) / 9;
+				if (meanhigh - mean <= locthreshold) { 
+					bingo = FALSE;
+					continue;
+				}
+
 				if (bingo && nbstars < MAX_STARS) {
-					candidates[nbstars].x = x;
+					candidates[nbstars].x = x - r; // x corrected by the anticipated shift
 					candidates[nbstars].y = y;
+					candidates[nbstars].mag_est = meanhigh;
 					nbstars++;
 					if (nbstars == MAX_STARS) break;
 				}
@@ -311,16 +382,16 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 		}
 		if (nbstars == MAX_STARS) break;
 	}
-	clearfits(&wave_fit);
+	clearfits(&smooth_fit);
 	siril_debug_print("Candidates for stars: %d\n", nbstars);
 
 	/* Check if candidates are stars by minimizing a PSF on each */
 	fitted_PSF **results;
-	nbstars = minimize_candidates(fit, sf, bg, candidates, nbstars, layer, &results);
+	nbstars = minimize_candidates(fit, sf, bg, candidates, nbstars, layer, &results, limit_nbstars);
 	if (nbstars == 0)
 		results = NULL;
 	sort_stars(results, nbstars);
-	free(wave_image);
+	free(smooth_image);
 	free(candidates);
 
 	gettimeofday(&t_end, NULL);
@@ -332,7 +403,7 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 }
 
 /* returns number of stars found, result is in parameters */
-static int minimize_candidates(fits *image, star_finder_params *sf, double bg, pointi *candidates, int nb_candidates, int layer, fitted_PSF ***retval) {
+static int minimize_candidates(fits *image, star_finder_params *sf, double bg, starc *candidates, int nb_candidates, int layer, fitted_PSF ***retval, gboolean limit_nbstars) {
 	int radius = sf->adj_radius;
 	int nx = image->rx;
 	int ny = image->ry;
@@ -358,6 +429,9 @@ static int minimize_candidates(fits *image, star_finder_params *sf, double bg, p
 		PRINT_ALLOC_ERR;
 		return 0;
 	}
+
+	//sorting candidates by starc.mean values as an estimator of mag
+	qsort(candidates, nb_candidates, sizeof(starc), star_cmp);
 
 	for (int candidate = 0; candidate < nb_candidates; candidate++) {
 		int x = candidates[candidate].x, y = candidates[candidate].y;
@@ -392,6 +466,7 @@ static int minimize_candidates(fits *image, star_finder_params *sf, double bg, p
 				//		result_index, cur_star->xpos, cur_star->ypos, cur_star->mag);
 			}
 			else free(cur_star);
+			if ((nbstars >= MAX_STARS_FITTED) && limit_nbstars) break;
 		}
 	}
 
