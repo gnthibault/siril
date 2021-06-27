@@ -605,7 +605,7 @@ int register_ecc(struct registration_args *args) {
 			if (findTransform(&ref, &im, args->layer, &reg_param)) {
 				siril_log_message(
 						_("Cannot perform ECC alignment for frame %d\n"),
-						frame +1);
+						frame + 1);
 				/* We exclude this frame */
 				args->seq->imgparam[frame].incl = FALSE;
 				current_regdata[frame].quality = 0.0;
