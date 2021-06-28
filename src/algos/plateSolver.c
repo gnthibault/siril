@@ -678,21 +678,30 @@ static gboolean has_any_keywords() {
 			gfit.pixel_size_x > 0.f ||
 			gfit.pixel_size_y > 0.f ||
 			(gfit.wcsdata.crval[0] > 0.0 && gfit.wcsdata.crval[1] != 0.0) ||
-			(gfit.wcsdata.objctra[0] != '\0' && gfit.wcsdata.objctdec[0] != '\0'));
+			(gfit.wcsdata.objctra[0] != '\0' && gfit.wcsdata.objctdec[0] != '\0') ||
+			(gfit.wcsdata.ra != 0.0 && gfit.wcsdata.dec != 0.0));
 }
 
 static void update_coords() {
 	SirilWorldCS *world_cs = NULL;
+	fits *fit = &gfit;
 
-	if (gfit.wcsdata.crval[0] != 0.0 && gfit.wcsdata.crval[1] != 0.0) {
-		// first transform coords to alpha and delta
-		world_cs = siril_world_cs_new_from_a_d(gfit.wcsdata.crval[0], gfit.wcsdata.crval[1]);
+	if (fit->wcsdata.ra != 0.0 && fit->wcsdata.dec != 0.0) {
+
+		world_cs = siril_world_cs_new_from_a_d(fit->wcsdata.ra, fit->wcsdata.dec);
 
 		update_coordinates(world_cs);
 		unselect_all_items();
-	} else if (gfit.wcsdata.objctra[0] != '\0' && gfit.wcsdata.objctdec[0] != '\0') {
+	} else if (fit->wcsdata.objctra[0] != '\0' && fit->wcsdata.objctdec[0] != '\0') {
 
-		world_cs = siril_world_cs_new_from_objct_ra_dec(gfit.wcsdata.objctra, gfit.wcsdata.objctdec);
+		world_cs = siril_world_cs_new_from_objct_ra_dec(fit->wcsdata.objctra, fit->wcsdata.objctdec);
+
+		update_coordinates(world_cs);
+		unselect_all_items();
+	} else if (fit->wcsdata.crval[0] != 0.0 && fit->wcsdata.crval[1] != 0.0) {
+
+		// first transform coords to alpha and delta
+		world_cs = siril_world_cs_new_from_a_d(fit->wcsdata.crval[0], fit->wcsdata.crval[1]);
 
 		update_coordinates(world_cs);
 		unselect_all_items();
@@ -776,6 +785,9 @@ static void update_gfit(image_solved image, double det, gboolean ask_for_flip) {
 		gfit.wcsdata.cdelt[0] = -gfit.wcsdata.cdelt[0];
 	gfit.wcsdata.crota[0] = gfit.wcsdata.crota[1] = -image.crota;
 	cd_x(&gfit.wcsdata);
+
+	gfit.wcsdata.ra = siril_world_cs_get_alpha(image.image_center);
+	gfit.wcsdata.dec = siril_world_cs_get_delta(image.image_center);
 
 	gchar *ra = siril_world_cs_alpha_format(image.image_center, "%02d %02d %.3lf");
 	gchar *dec = siril_world_cs_delta_format(image.image_center, "%c%02d %02d %.3lf");

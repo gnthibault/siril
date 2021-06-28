@@ -362,7 +362,13 @@ void read_fits_header(fits *fit) {
 	fits_read_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcsdata.objctra), NULL, &status);
 
 	status = 0;
+	fits_read_key(fit->fptr, TDOUBLE, "RA", &(fit->wcsdata.ra), NULL, &status);
+
+	status = 0;
 	fits_read_key(fit->fptr, TSTRING, "OBJCTDEC", &(fit->wcsdata.objctdec), NULL, &status);
+
+	status = 0;
+	fits_read_key(fit->fptr, TDOUBLE, "DEC", &(fit->wcsdata.dec), NULL, &status);
 
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "CRPIX1", &(fit->wcsdata.crpix[0]), NULL, &status);
@@ -947,6 +953,12 @@ static void save_wcs_keywords(fits *fit) {
 		fits_update_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcsdata.objctra),	"Image center R.A. (hms)", &status);
 		status = 0;
 		fits_update_key(fit->fptr, TSTRING, "OBJCTDEC", &(fit->wcsdata.objctdec), "Image center declination (dms)", &status);
+	}
+	if (fit->wcsdata.ra > 0) {
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "RA", &(fit->wcsdata.ra),	"Image center Right Ascension in degrees", &status);
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "DEC", &(fit->wcsdata.dec), "Image center Declination in degrees", &status);
 	}
 	if (fit->wcsdata.crpix[0] != '\0') {
 		status = 0;

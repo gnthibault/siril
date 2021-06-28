@@ -365,6 +365,8 @@ struct wcs_struct {
 	double crota[2];
 	char objctra[FLEN_VALUE];
 	char objctdec[FLEN_VALUE];
+	double ra;
+	double dec;
 };
 
 struct dft_struct {
