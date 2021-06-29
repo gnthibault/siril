@@ -985,7 +985,7 @@ static void load_accels() {
 		"win.zoom-fit",               "<Primary>0", NULL,
 
 		"win.search-object",          "<Primary>slash", NULL,
-		"win.astrometry",             "<Primary>a", NULL,
+		"win.astrometry",             "<Primary><Shift>a", NULL,
 		"win.pickstar",               "<Primary>space", NULL,
 
 		"win.negative-processing",    "<Primary>i", NULL,
@@ -1222,8 +1222,8 @@ void initialize_all_GUI(gchar *supported_files) {
 	update_MenuItem();
 	initialize_script_menu();
 
-	/* initialize command completion */
-	init_completion_command();
+	/* initialize command processor */
+	init_command();
 
 	/* initialize preprocessing */
 	initialize_preprocessing();
