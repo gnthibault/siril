@@ -316,7 +316,7 @@ static void show_command_help_popup(GtkEntry *entry) {
 }
 
 /* handler for the single-line console */
-#if GTK_CHECK_VERSION(4, 0, 0)
+#if GTK_CHECK_VERSION(3, 24, 24)
 static gboolean on_command_key_press_event(GtkEventController *controller,
 		guint keyval, guint keycode, GdkModifierType modifiers,
 		GtkWidget *widget) {
@@ -587,7 +587,7 @@ static void init_completion_command() {
 static void init_controller_command() {
 	GtkWidget *widget = lookup_widget("command");
 
-#if GTK_CHECK_VERSION(4, 0, 0)
+#if GTK_CHECK_VERSION(3, 24, 24)
 	GtkEventController *controller = gtk_event_controller_key_new(widget);
 	g_signal_connect(controller, "key-pressed", G_CALLBACK(on_command_key_press_event), widget);
 #else
