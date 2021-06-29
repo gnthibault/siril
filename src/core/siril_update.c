@@ -468,7 +468,7 @@ static gchar *check_update_version(struct _update_data *args) {
 }
 
 static gboolean end_update_idle(gpointer p) {
-	char *msg = NULL;
+	char *msg;
 	struct _update_data *args = (struct _update_data *) p;
 
 	if (args->content == NULL) {

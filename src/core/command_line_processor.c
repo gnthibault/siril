@@ -591,7 +591,7 @@ static void init_controller_command() {
 	GtkEventController *controller = gtk_event_controller_key_new(widget);
 	g_signal_connect(controller, "key-pressed", G_CALLBACK(on_command_key_press_event), widget);
 #else
-	g_signal_connect(controller, "key-key-press-event", G_CALLBACK(on_command_key_press_event), widget);
+	g_signal_connect(widget, "key-press-event", G_CALLBACK(on_command_key_press_event), NULL);
 #endif
 }
 
