@@ -136,7 +136,9 @@ gboolean load_WCS_from_file(fits* fit) {
 		return FALSE;
 	}
 
-	/** It looks like wcspih is not really thread safe. We need to lock it */
+	/** There is a bug with wcspih that it is not really thread-safe for wcslib version < 7.5.
+	 * We need to lock it.
+	 * TODO: check wcslib version ?*/
 	g_mutex_lock(&wcs_mutex);
 	wcs_status = wcspih(header, nkeyrec, 0, 0, &nreject, &nwcs, &data);
 

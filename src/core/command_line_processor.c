@@ -315,6 +315,80 @@ static void show_command_help_popup(GtkEntry *entry) {
 	g_free(helper);
 }
 
+/* handler for the single-line console */
+#if GTK_CHECK_VERSION(3, 24, 24)
+static gboolean on_command_key_press_event(GtkEventController *controller,
+		guint keyval, guint keycode, GdkModifierType modifiers,
+		GtkWidget *widget) {
+#else
+static gboolean on_command_key_press_event(GtkWidget *widget, GdkEventKey *event,
+		gpointer user_data) {
+	guint keyval = event->keyval;
+#endif
+	int handled = 0;
+	static GtkEntry *entry = NULL;
+	if (!entry)
+		entry = GTK_ENTRY(widget);
+	GtkEditable *editable = GTK_EDITABLE(entry);
+	int entrylength = 0;
+
+	switch (keyval) {
+	case GDK_KEY_Up:
+		handled = 1;
+		if (!com.cmd_history)
+			break;
+		if (com.cmd_hist_display > 0) {
+			if (com.cmd_history[com.cmd_hist_display - 1])
+				--com.cmd_hist_display;
+			// display previous entry
+			gtk_entry_set_text(entry, com.cmd_history[com.cmd_hist_display]);
+		} else if (com.cmd_history[com.cmd_hist_size - 1]) {
+			// ring back, display previous
+			com.cmd_hist_display = com.cmd_hist_size - 1;
+			gtk_entry_set_text(entry, com.cmd_history[com.cmd_hist_display]);
+		}
+		entrylength = gtk_entry_get_text_length(entry);
+		gtk_editable_set_position(editable, entrylength);
+		break;
+	case GDK_KEY_Down:
+		handled = 1;
+		if (!com.cmd_history)
+			break;
+		if (com.cmd_hist_display == com.cmd_hist_current)
+			break;
+		if (com.cmd_hist_display == com.cmd_hist_size - 1) {
+			if (com.cmd_hist_current == 0) {
+				// ring forward, end
+				gtk_entry_set_text(entry, "");
+				com.cmd_hist_display++;
+			} else if (com.cmd_history[0]) {
+				// ring forward, display next
+				com.cmd_hist_display = 0;
+				gtk_entry_set_text(entry, com.cmd_history[0]);
+			}
+		} else {
+			if (com.cmd_hist_display == com.cmd_hist_current - 1) {
+				// end
+				gtk_entry_set_text(entry, "");
+				com.cmd_hist_display++;
+			} else if (com.cmd_history[com.cmd_hist_display + 1]) {
+				// display next
+				gtk_entry_set_text(entry,
+						com.cmd_history[++com.cmd_hist_display]);
+			}
+		}
+		entrylength = gtk_entry_get_text_length(entry);
+		gtk_editable_set_position(editable, entrylength);
+		break;
+	case GDK_KEY_Page_Up:
+	case GDK_KEY_Page_Down:
+		handled = 1;
+		// go to first and last in history
+		break;
+	}
+	return (handled == 1);
+}
+
 int processcommand(const char *line) {
 	int wordnb = 0;
 	gchar *myline;
@@ -483,7 +557,7 @@ static gboolean completion_match_func(GtkEntryCompletion *completion,
 	return res;
 }
 
-void init_completion_command() {
+static void init_completion_command() {
 	GtkEntryCompletion *completion = gtk_entry_completion_new();
 	GtkListStore *model = gtk_list_store_new(1, G_TYPE_STRING);
 	GtkTreeIter iter;
@@ -502,12 +576,28 @@ void init_completion_command() {
 	/* Populate the completion database. */
 	command *current = commands;
 
-	while (current->process){
+	while (current->process) {
 		gtk_list_store_append(model, &iter);
 		gtk_list_store_set(model, &iter, COMPLETION_COLUMN, current->name, -1);
 		current++;
 	}
 	g_object_unref(model);
+}
+
+static void init_controller_command() {
+	GtkWidget *widget = lookup_widget("command");
+
+#if GTK_CHECK_VERSION(3, 24, 24)
+	GtkEventController *controller = gtk_event_controller_key_new(widget);
+	g_signal_connect(controller, "key-pressed", G_CALLBACK(on_command_key_press_event), widget);
+#else
+	g_signal_connect(widget, "key-press-event", G_CALLBACK(on_command_key_press_event), NULL);
+#endif
+}
+
+void init_command() {
+	init_completion_command();
+	init_controller_command();
 }
 
 void on_GtkCommandHelper_clicked(GtkButton *button, gpointer user_data) {
@@ -546,97 +636,4 @@ void on_command_activate(GtkEntry *entry, gpointer user_data) {
 		gtk_entry_set_text(entry, "");
 		set_precision_switch();
 	}
-}
-
-/* handler for the single-line console */
-gboolean on_command_key_press_event(GtkWidget *widget, GdkEventKey *event,
-		gpointer user_data) {
-	int handled = 0;
-	static GtkEntry *entry = NULL;
-	if (!entry)
-		entry = GTK_ENTRY(widget);
-	GtkEditable *editable = GTK_EDITABLE(entry);
-	int entrylength = 0;
-
-	switch (event->keyval) {
-	case GDK_KEY_Up:
-		handled = 1;
-		if (!com.cmd_history)
-			break;
-		if (com.cmd_hist_display > 0) {
-			if (com.cmd_history[com.cmd_hist_display - 1])
-				--com.cmd_hist_display;
-			// display previous entry
-			gtk_entry_set_text(entry, com.cmd_history[com.cmd_hist_display]);
-		} else if (com.cmd_history[com.cmd_hist_size - 1]) {
-			// ring back, display previous
-			com.cmd_hist_display = com.cmd_hist_size - 1;
-			gtk_entry_set_text(entry, com.cmd_history[com.cmd_hist_display]);
-		}
-		entrylength = gtk_entry_get_text_length(entry);
-		gtk_editable_set_position(editable, entrylength);
-		break;
-	case GDK_KEY_Down:
-		handled = 1;
-		if (!com.cmd_history)
-			break;
-		if (com.cmd_hist_display == com.cmd_hist_current)
-			break;
-		if (com.cmd_hist_display == com.cmd_hist_size - 1) {
-			if (com.cmd_hist_current == 0) {
-				// ring forward, end
-				gtk_entry_set_text(entry, "");
-				com.cmd_hist_display++;
-			} else if (com.cmd_history[0]) {
-				// ring forward, display next
-				com.cmd_hist_display = 0;
-				gtk_entry_set_text(entry, com.cmd_history[0]);
-			}
-		} else {
-			if (com.cmd_hist_display == com.cmd_hist_current - 1) {
-				// end
-				gtk_entry_set_text(entry, "");
-				com.cmd_hist_display++;
-			} else if (com.cmd_history[com.cmd_hist_display + 1]) {
-				// display next
-				gtk_entry_set_text(entry,
-						com.cmd_history[++com.cmd_hist_display]);
-			}
-		}
-		entrylength = gtk_entry_get_text_length(entry);
-		gtk_editable_set_position(editable, entrylength);
-		break;
-	case GDK_KEY_Page_Up:
-	case GDK_KEY_Page_Down:
-		handled = 1;
-		// go to first and last in history
-		break;
-	}
-	return (handled == 1);
-}
-
-gboolean on_command_focus_in_event(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-
-	static const gchar * const accelmap[] = {
-		"win.astrometry", NULL, NULL,
-
-		NULL /* Terminating NULL */
-	};
-	set_accel_map(accelmap);
-
-	return GDK_EVENT_PROPAGATE;
-}
-
-gboolean on_command_focus_out_event(GtkWidget *widget, GdkEvent *event,
-		gpointer user_data) {
-
-	static const gchar * const accelmap[] = {
-		"win.astrometry", "<Primary>a", NULL,
-
-		NULL /* Terminating NULL */
-	};
-	set_accel_map(accelmap);
-
-	return GDK_EVENT_PROPAGATE;
 }

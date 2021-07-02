@@ -468,21 +468,20 @@ static gchar *check_update_version(struct _update_data *args) {
 }
 
 static gboolean end_update_idle(gpointer p) {
-	char *msg = NULL;
 	struct _update_data *args = (struct _update_data *) p;
 
 	if (args->content == NULL) {
 		switch(args->code) {
 		case 0:
-			msg = siril_log_message(_("Unable to check updates! "
+			siril_log_message(_("Unable to check updates! "
 					"Please Check your network connection\n"));
 			break;
 		default:
-			msg = siril_log_message(_("Unable to check updates! Error: %ld\n"),
+			siril_log_message(_("Unable to check updates! Error: %ld\n"),
 					args->code);
 		}
 	} else {
-		msg = check_update_version(args);
+		check_update_version(args);
 	}
 
 	/* free data */
