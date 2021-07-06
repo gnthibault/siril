@@ -214,10 +214,11 @@ static double getOuterRadius() {
 	return com.pref.phot_set.outer;
 }
 
-static double getMagErr(double intensity, double area, int nsky, double skysig) {
+static double getMagErr(double intensity, double area, int nsky, double skysig, double *SNR) {
 	double skyvar, sigsq;
 	double err1, err2, err3;
 	double phpadu;
+	double noise;
 
 	skyvar = skysig * skysig; /* variance of the sky brightness */
 	sigsq = skyvar / nsky; /* square of the standard error of the mean sky brightness */
@@ -225,8 +226,11 @@ static double getMagErr(double intensity, double area, int nsky, double skysig) 
 	err1 = area * skyvar;
 	err2 = intensity / phpadu;
 	err3 = sigsq * area * area;
+	noise = sqrt(err1 + err2 + err3);
 
-	return fmin(9.999, 1.0857 * sqrt(err1 + err2 + err3) / intensity);
+	*SNR = 10.0 * log10(intensity / noise);
+
+	return fmin(9.999, 1.0857 * noise / intensity);
 }
 
 static double lo_data() {
@@ -344,10 +348,13 @@ photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) 
 
 	phot = phot_alloc();
 	if (phot) {
+		double SNR = 0.0;
+
 		signalIntensity = apmag - (area * mean);
 
 		phot->mag = getMagnitude(signalIntensity);
-		phot->s_mag = getMagErr(signalIntensity, area, n_sky, stdev);
+		phot->s_mag = getMagErr(signalIntensity, area, n_sky, stdev, &SNR);
+		phot->SNR = phot->s_mag < 9.999 ? SNR : 0.0;
 		phot->valid = valid;
 	}
 

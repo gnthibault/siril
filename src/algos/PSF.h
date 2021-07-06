@@ -16,6 +16,7 @@ struct fwhm_struct {
 	double angle; /* angle of the axis x,y with respect to the image's */
 	double mag; /* magnitude of the star : this parameter is not fitted but calculated with the vector G and the parameter B */
 	double s_mag; /* error on the magnitude */
+	double SNR; /* SNR of the star */
 	photometry *phot; /* photometry data */
 	gboolean phot_is_valid; /* valid if computed by photometry and no saturated pixel detected */
 	double xpos, ypos; /* position of the star in the image, not set by Minimization */

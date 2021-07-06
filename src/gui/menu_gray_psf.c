@@ -125,9 +125,10 @@ void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 				"Background Value:\n\t\tB=%.6f\n\n"
 				"Maximal Intensity:\n\t\tA=%.6f\n\n"
 				"Magnitude (%s):\n\t\tm=%.4f\u00B1%.4f\n\n"
+				"Signal-to-noise ratio:\n\t\tSNR=%.1fdB\n\n"
 				"RMSE:\n\t\tRMSE=%.3e"),
 			coordinates, fwhmx, units, fwhmy, units, result->angle, result->B,
-			result->A, str, result->mag + com.magOffset, result->s_mag, result->rmse);
+			result->A, str, result->mag + com.magOffset, result->s_mag, result->SNR, result->rmse);
 	show_data_dialog(msg, "PSF Results", NULL, url);
 	g_free(coordinates);
 	g_free(msg);

@@ -523,11 +523,13 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf, gboolean fo
 	if (psf_angle->phot != NULL) {
 		psf_angle->mag = psf_angle->phot->mag;
 		psf_angle->s_mag = psf_angle->phot->s_mag;
+		psf_angle->SNR = psf_angle->phot->SNR;
 		psf_angle->phot_is_valid = psf_angle->phot->valid;
 
 	} else {
 		psf_angle->mag = psf_get_mag(z, psf_angle->B);
 		psf_angle->s_mag = 9.999;
+		psf_angle->SNR = 0;
 		psf_angle->phot_is_valid = FALSE;
 	}
 	//RMSE
@@ -650,6 +652,7 @@ fitted_PSF *psf_global_minimisation(gsl_matrix* z, double bg,
 					if (psf->phot != NULL) {
 						psf->mag = psf->phot->mag;
 						psf->s_mag = psf->phot->s_mag;
+						psf->SNR = psf->phot->SNR;
 						psf->phot_is_valid = psf->phot->valid;
 					}
 				} else {
@@ -728,9 +731,17 @@ void psf_display_result(fitted_PSF *result, rectangle *area) {
 			"Background value=%0.6f\n"
 			"Maximal intensity=%0.6f\n"
 			"Magnitude (%s)=%0.2f\n"
-			"RMSE=%.3e\n"), coordinates,
+			"SNR=%.1fdB\n"
+			"RMSE=%.3e\n"),
+			coordinates,
 			result->fwhmx, result->units, result->fwhmy, result->units,
-			result->angle, result->B, result->A, str, result->mag + com.magOffset, result->rmse);
+			result->angle,
+			result->B,
+			result->A,
+			str,
+			result->mag + com.magOffset,
+			result->SNR,
+			result->rmse);
 
 	siril_log_message(buffer);
 	g_free(buffer);

@@ -7,6 +7,7 @@ struct photometry_struct {
 	double mag; // magnitude
 	double s_mag; // magnitude uncertainty
 	gboolean valid; // TRUE if no pixel outside of the range
+	double SNR; // SNR estimation
 };
 typedef struct photometry_struct photometry;
 
