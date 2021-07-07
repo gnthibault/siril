@@ -533,12 +533,12 @@ static gchar *build_wcs_url(gchar *ra, gchar *dec) {
 }
 
 static const char *SNR_quality(double SNR) {
-	if (SNR <= 0.0) return _("N/A");
-	if (SNR <= 10.0) return _("Bad");
-	if (SNR <= 15.0) return _("Poor");
-	if (SNR <= 25.0) return _("Fair");
-	if (SNR <= 40.0) return _("Good");
-	else return _("Excellent");
+	if (SNR > 40.0) return _("Excellent");
+	if (SNR > 25.0) return _("Good");
+	if (SNR > 15.0) return _("Fair");
+	if (SNR > 10.0) return _("Poor");
+	if (SNR > 0.0) return _("Bad");
+	else return _("N/A");
 }
 
 void popup_psf_result(fitted_PSF *result, rectangle *area) {
@@ -596,7 +596,7 @@ void popup_psf_result(fitted_PSF *result, rectangle *area) {
 			result->angle, result->B, result->A, str,
 			result->mag + com.magOffset, result->s_mag, result->SNR,
 			SNR_quality(result->SNR), result->rmse);
-	show_data_dialog(msg, "PSF Results", NULL, url);
+	show_data_dialog(msg, "PSF and quick photometry results", NULL, url);
 	g_free(coordinates);
 	g_free(msg);
 	g_free(url);
