@@ -818,4 +818,3 @@ fitted_PSF *duplicate_psf(fitted_PSF *psf) {
 	}
 	return new_psf;
 }
-

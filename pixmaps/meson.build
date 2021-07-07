@@ -27,6 +27,8 @@ siril_icons = [
   'mtf_dark.svg',
   'mtf.svg',
   'neg.svg',
+  'photometry.svg',
+  'photometry_dark.svg',
   'rotate-acw_dark.svg',
   'rotate-acw.svg',
   'rotate-cw_dark.svg',

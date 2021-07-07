@@ -105,6 +105,7 @@ static void global_initialization() {
 	com.selected_star = -1;
 	com.star_is_seqdata = FALSE;
 	com.stars = NULL;
+	com.qphot = NULL;
 	com.uniq = NULL;
 	com.color = NORMAL_COLOR;
 	for (int i = 0; i < MAXVPORT; i++)

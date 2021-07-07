@@ -15,13 +15,16 @@ void delete_selected_area();
 void reset_display_offset();
 void reset_zoom_default();
 
+gboolean display_quick_photo();
+
 /* mouse behaviour */
 typedef enum {
 	MOUSE_ACTION_NONE,
 	MOUSE_ACTION_SELECT_REG_AREA,
 	MOUSE_ACTION_SELECT_PREVIEW1,
 	MOUSE_ACTION_SELECT_PREVIEW2,
-	MOUSE_ACTION_DRAW_SAMPLES
+	MOUSE_ACTION_DRAW_SAMPLES,
+	MOUSE_ACTION_PHOTOMETRY
 } mouse_status_enum;
 
 extern mouse_status_enum mouse_status;	// defined in registration_preview.c

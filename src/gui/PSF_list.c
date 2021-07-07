@@ -25,6 +25,7 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/OS_utils.h"
+#include "core/siril_world_cs.h"
 #include "io/single_image.h"
 #include "io/sequence.h"
 #include "gui/utils.h"
@@ -35,6 +36,7 @@
 #include "gui/message_dialog.h"
 #include "gui/PSF_list.h"
 #include "gui/progress_and_log.h"
+#include "algos/siril_wcs.h"
 #include "algos/PSF.h"
 #include "algos/star_finder.h"
 
@@ -504,6 +506,100 @@ void pick_a_star() {
 			return;
 	}
 	redraw(com.cvport, REMAP_NONE);
+}
+
+static gchar *build_wcs_url(gchar *ra, gchar *dec) {
+	if (!has_wcs(&gfit)) return NULL;
+
+	double resolution = get_wcs_image_resolution(&gfit);
+
+	gchar *tol = g_strdup_printf("%lf", resolution * 3600 * 15);
+
+	GString *url = g_string_new("https://simbad.u-strasbg.fr/simbad/sim-coo?Coord=");
+	url = g_string_append(url, ra);
+	url = g_string_append(url, dec);
+	url = g_string_append(url, "&Radius=");
+	url = g_string_append(url, tol);
+	url = g_string_append(url, "&Radius.unit=arcsec");
+	url = g_string_append(url, "#lab_basic");
+
+	gchar *simbad_url = g_string_free(url, FALSE);
+	gchar *cleaned_url = url_cleanup(simbad_url);
+
+	g_free(tol);
+	g_free(simbad_url);
+
+	return cleaned_url;
+}
+
+static const char *SNR_quality(double SNR) {
+	if (SNR <= 0.0) return _("N/A");
+	if (SNR <= 10.0) return _("Bad");
+	if (SNR <= 15.0) return _("Poor");
+	if (SNR <= 25.0) return _("Fair");
+	if (SNR <= 40.0) return _("Good");
+	else return _("Excellent");
+}
+
+void popup_psf_result(fitted_PSF *result) {
+	gchar *msg, *coordinates, *url = NULL;
+	const char *str;
+	if (com.magOffset > 0.0)
+		str = "true reduced";
+	else
+		str = "relative";
+
+	double x = result->x0 + com.selection.x;
+	double y = com.selection.y + com.selection.h - result->y0;
+	if (has_wcs(&gfit)) {
+		double world_x, world_y;
+		SirilWorldCS *world_cs;
+
+		pix2wcs(&gfit, x, (double) gfit.ry - y, &world_x, &world_y);
+		world_cs = siril_world_cs_new_from_a_d(world_x, world_y);
+		if (world_cs) {
+			gchar *ra = siril_world_cs_alpha_format(world_cs, "%02d %02d %.3lf");
+			gchar *dec = siril_world_cs_delta_format(world_cs, "%c%02d %02d %.3lf");
+
+			url = build_wcs_url(ra, dec);
+
+			g_free(ra);
+			g_free(dec);
+
+			ra = siril_world_cs_alpha_format(world_cs, " %02dh%02dm%02ds");
+			dec = siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'%02d\"");
+
+			coordinates = g_strdup_printf("x0=%.2fpx\t%s J2000\n\t\ty0=%.2fpx\t%s J2000", x, ra, y, dec);
+
+			g_free(ra);
+			g_free(dec);
+			siril_world_cs_unref(world_cs);
+		} else {
+			coordinates = g_strdup_printf("x0=%.2fpx\n\t\ty0=%.2fpx", x, y);
+		}
+	} else {
+		coordinates = g_strdup_printf("x0=%.2fpx\n\t\ty0=%.2fpx", x, y);
+	}
+
+	double fwhmx, fwhmy;
+	char *units;
+	get_fwhm_as_arcsec_if_possible(result, &fwhmx, &fwhmy, &units);
+	msg = g_strdup_printf(_("Centroid Coordinates:\n\t\t%s\n\n"
+				"Full Width Half Maximum:\n\t\tFWHMx=%.2f%s\n\t\tFWHMy=%.2f%s\n\n"
+				"Angle:\n\t\t%0.2fdeg\n\n"
+				"Background Value:\n\t\tB=%.6f\n\n"
+				"Maximal Intensity:\n\t\tA=%.6f\n\n"
+				"Magnitude (%s):\n\t\tm=%.4f\u00B1%.4f\n\n"
+				"Signal-to-noise ratio:\n\t\tSNR=%.1fdB (%s)\n\n"
+				"RMSE:\n\t\tRMSE=%.3e"),
+			coordinates, fwhmx, units, fwhmy, units,
+			result->angle, result->B, result->A, str,
+			result->mag + com.magOffset, result->s_mag, result->SNR,
+			SNR_quality(result->SNR), result->rmse);
+	show_data_dialog(msg, "PSF Results", NULL, url);
+	g_free(coordinates);
+	g_free(msg);
+	g_free(url);
 }
 
 /***************** callbacks ****************/

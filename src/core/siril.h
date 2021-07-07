@@ -680,6 +680,7 @@ struct cominf {
 	
 	GSList *grad_samples;
 	GSList *found_object;
+	fitted_PSF *qphot;      // quick photometry result
 
 	int max_thread;			// maximum of thread used for parallel execution
 

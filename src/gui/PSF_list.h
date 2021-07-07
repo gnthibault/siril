@@ -10,4 +10,6 @@ void refresh_star_list(fitted_PSF **);
 void clear_stars_list();
 void pick_a_star();
 
+void popup_psf_result();
+
 #endif

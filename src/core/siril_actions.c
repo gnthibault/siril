@@ -228,6 +228,22 @@ void negative_view_activate(GSimpleAction *action, GVariant *parameter, gpointer
 	g_variant_unref(state);
 }
 
+void photometry_state(GSimpleAction *action, GVariant *state, gpointer user_data) {
+	mouse_status = (mouse_status == MOUSE_ACTION_PHOTOMETRY) ? MOUSE_ACTION_SELECT_REG_AREA : MOUSE_ACTION_PHOTOMETRY;
+	g_simple_action_set_state(action, state);
+	free(com.qphot);
+	com.qphot = NULL;
+	redraw(com.cvport, REMAP_NONE);
+}
+
+void photometry_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	GVariant *state;
+
+	state = g_action_get_state(G_ACTION(action));
+	g_action_change_state(G_ACTION(action), g_variant_new_boolean(!g_variant_get_boolean(state)));
+	g_variant_unref(state);
+}
+
 void color_map_state(GSimpleAction *action, GVariant *state, gpointer user_data) {
 	set_cursor_waiting(TRUE);
 	redraw(com.cvport, REMAP_ALL);

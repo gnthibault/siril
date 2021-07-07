@@ -110,6 +110,7 @@ static void update_icons_to_theme(gboolean is_dark) {
 	siril_debug_print("Loading %s theme...\n", is_dark ? "dark" : "light");
 	if (is_dark) {
 		update_theme_button("annotate_button", "astrometry_dark.svg");
+		update_theme_button("photometry_button", "photometry_dark.svg");
 
 		update_theme_button("rotate90_anticlock_button", "rotate-acw_dark.svg");
 		update_theme_button("rotate90_clock_button", "rotate-cw_dark.svg");
@@ -123,6 +124,7 @@ static void update_icons_to_theme(gboolean is_dark) {
 		update_theme_button("histoToolAutoStretch", "mtf_dark.svg");
 	} else {
 		update_theme_button("annotate_button", "astrometry.svg");
+		update_theme_button("photometry_button", "photometry.svg");
 
 		update_theme_button("rotate90_anticlock_button", "rotate-acw.svg");
 		update_theme_button("rotate90_clock_button", "rotate-cw.svg");

@@ -30,6 +30,7 @@
 #include "io/single_image.h"
 #include "io/sequence.h"
 #include "gui/open_dialog.h"
+#include "gui/PSF_list.h"
 #include "image_interactions.h"
 #include "image_display.h"
 #include "gui/callbacks.h"
@@ -535,6 +536,22 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 
 					redraw(com.cvport, REMAP_NONE);
 					redraw_previews();
+				}
+			} else if (mouse_status == MOUSE_ACTION_PHOTOMETRY) {
+				int s = com.pref.phot_set.outer;
+				rectangle area = { zoomed.x - s, zoomed.y - s, s * 2, s * 2 };
+				if (area.x - s > 0 && area.x + s < gfit.rx
+						&& area.y - s > 0 && area.y + s < gfit.ry) {
+					com.qphot = psf_get_minimisation(&gfit, com.cvport, &area, TRUE, TRUE, TRUE);
+					if (com.qphot) {
+						com.qphot->xpos = com.qphot->x0 + area.x;
+						if (gfit.top_down)
+							com.qphot->ypos = com.qphot->y0 + area.y;
+						else
+							com.qphot->ypos = area.y + area.h - com.qphot->y0;
+						redraw(com.cvport, REMAP_NONE);
+						popup_psf_result(com.qphot);
+					}
 				}
 			}
 		} else if (event->button == GDK_BUTTON_SECONDARY) {	// right click

@@ -20,6 +20,8 @@ pixmaps = \
 	mtf.svg \
 	mtf_dark.svg \
 	neg.svg \
+	photometry.svg \
+	photometry_dark.svg \
 	r.svg \
 	rotate-acw_dark.svg \
 	rotate-acw.svg \

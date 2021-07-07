@@ -10024,6 +10024,11 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
       </object>
     </child>
   </object>
+  <object class="GtkImage" id="photometry">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="pixbuf">pixmaps/photometry_dark.svg</property>
+  </object>
   <object class="GtkMenu" id="precision_menu">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -16518,6 +16523,20 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="action-name">win.annotate-object</property>
                     <property name="use-underline">True</property>
                     <property name="icon-widget">astrometry</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToggleToolButton" id="photometry_button">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">Switch to photometry mode</property>
+                    <property name="action-name">win.photometry</property>
+                    <property name="use-underline">True</property>
+                    <property name="icon-widget">photometry</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
