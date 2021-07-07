@@ -83,6 +83,8 @@ void free_image_data() {
 		com.found_object = NULL;
 		reset_display_offset();
 		reset_zoom_default();
+		free(com.qphot);
+		com.qphot = NULL;
 	}
 	clear_histograms();
 
