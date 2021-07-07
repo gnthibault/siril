@@ -62,7 +62,7 @@ static gchar *build_wcs_url(gchar *ra, gchar *dec) {
 static const char *SNR_quality(double SNR) {
 	if (SNR <= 0.0) return _("N/A");
 	if (SNR <= 10.0) return _("Bad");
-	if (SNR <= 15.0) return _("Low");
+	if (SNR <= 15.0) return _("Poor");
 	if (SNR <= 25.0) return _("Fair");
 	if (SNR <= 40.0) return _("Good");
 	else return _("Excellent");
