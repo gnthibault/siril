@@ -777,6 +777,7 @@ static void background_neutralize(fits* fit, rectangle black_selection) {
 	}
 
 	invalidate_stats_from_fit(fit);
+	invalidate_gfit_histogram();
 }
 
 void on_button_bkg_neutralization_clicked(GtkButton *button, gpointer user_data) {
@@ -994,6 +995,7 @@ static void white_balance(fits *fit, gboolean is_manual, rectangle white_selecti
 	}
 
 	invalidate_stats_from_fit(fit);
+	invalidate_gfit_histogram();
 }
 
 void on_calibration_apply_button_clicked(GtkButton *button, gpointer user_data) {
