@@ -51,7 +51,7 @@ void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
 	if (!result)
 		return;
 
-	popup_psf_result(result);
+	popup_psf_result(result, &com.selection);
 	free(result);
 }
 

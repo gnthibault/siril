@@ -550,7 +550,7 @@ gboolean on_drawingarea_button_press_event(GtkWidget *widget,
 						else
 							com.qphot->ypos = area.y + area.h - com.qphot->y0;
 						redraw(com.cvport, REMAP_NONE);
-						popup_psf_result(com.qphot);
+						popup_psf_result(com.qphot, &area);
 					}
 				}
 			}

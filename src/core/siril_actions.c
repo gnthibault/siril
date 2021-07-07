@@ -229,7 +229,7 @@ void negative_view_activate(GSimpleAction *action, GVariant *parameter, gpointer
 }
 
 void photometry_state(GSimpleAction *action, GVariant *state, gpointer user_data) {
-	mouse_status = (mouse_status == MOUSE_ACTION_PHOTOMETRY) ? MOUSE_ACTION_SELECT_REG_AREA : MOUSE_ACTION_PHOTOMETRY;
+	mouse_status = g_variant_get_boolean(state) ? MOUSE_ACTION_PHOTOMETRY : MOUSE_ACTION_SELECT_REG_AREA;
 	g_simple_action_set_state(action, state);
 	free(com.qphot);
 	com.qphot = NULL;

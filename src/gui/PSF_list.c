@@ -541,7 +541,7 @@ static const char *SNR_quality(double SNR) {
 	else return _("Excellent");
 }
 
-void popup_psf_result(fitted_PSF *result) {
+void popup_psf_result(fitted_PSF *result, rectangle *area) {
 	gchar *msg, *coordinates, *url = NULL;
 	const char *str;
 	if (com.magOffset > 0.0)
@@ -549,8 +549,8 @@ void popup_psf_result(fitted_PSF *result) {
 	else
 		str = "relative";
 
-	double x = result->x0 + com.selection.x;
-	double y = com.selection.y + com.selection.h - result->y0;
+	double x = result->x0 + area->x;
+	double y = area->y + area->h - result->y0;
 	if (has_wcs(&gfit)) {
 		double world_x, world_y;
 		SirilWorldCS *world_cs;
