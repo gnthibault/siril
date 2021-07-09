@@ -620,20 +620,26 @@ static void draw_stars(const draw_data_t* dd) {
 		}
 	}
 
-	/* quick photometry ? */
+	/* quick photometry */
 	if (!com.script && com.qphot && mouse_status == MOUSE_ACTION_PHOTOMETRY) {
 		gboolean inverted = gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(lookup_widget("neg_button")));
+		double size = com.qphot->fwhmx * 2.0;
+
 		cairo_set_dash(cr, NULL, 0, 0);
+		cairo_set_source_rgba(cr, 1.0, 0.4, 0.0, 0.9);
+		cairo_set_line_width(cr, 1.5 / dd->zoom);
+
+		/* fwhm * 2: first circle */
+		cairo_arc(cr, com.qphot->xpos, com.qphot->ypos, size, 0., 2. * M_PI);
+		cairo_stroke(cr);
+
+		/* sky annulus */
 		if (inverted) {
 			cairo_set_source_rgba(cr, 0.5, 0.0, 0.7, 0.9);
 		} else {
 			cairo_set_source_rgba(cr, 0.5, 1.0, 0.3, 0.9);
 		}
-		cairo_set_line_width(cr, 1.5 / dd->zoom);
 
-		double size = com.qphot->fwhmx * 2.0;
-		cairo_arc(cr, com.qphot->xpos, com.qphot->ypos, size, 0., 2. * M_PI);
-		cairo_stroke(cr);
 		cairo_arc(cr, com.qphot->xpos, com.qphot->ypos, com.pref.phot_set.inner, 0., 2. * M_PI);
 		cairo_stroke(cr);
 		cairo_arc(cr, com.qphot->xpos, com.qphot->ypos, com.pref.phot_set.outer, 0., 2. * M_PI);
