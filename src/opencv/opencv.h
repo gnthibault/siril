@@ -25,7 +25,7 @@ unsigned char *cvCalculH(s_star *star_array_img,
 		struct s_star *star_array_ref, int n, Homography *H);
 
 
-int cvTransformImage(fits *image, Homography Hom, gboolean upscale2x, int interpolation);
+int cvTransformImage(fits *image, unsigned int width, unsigned int height, Homography Hom, gboolean upscale2x, int interpolation);
 
 int cvUnsharpFilter(fits*, double, double);
 

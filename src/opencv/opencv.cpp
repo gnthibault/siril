@@ -390,14 +390,10 @@ unsigned char *cvCalculH(s_star *star_array_img,
 }
 
 // transform an image using the homography.
-int cvTransformImage(fits *image, Homography Hom, gboolean upscale2x, int interpolation) {
+int cvTransformImage(fits *image, unsigned int width, unsigned int height, Homography Hom, gboolean upscale2x, int interpolation) {
 	Mat in, out;
 	void *bgr = NULL;
-	int target_rx = image->rx, target_ry = image->ry;
-	if (upscale2x) {
-		target_rx *= 2;
-		target_ry *= 2;
-	}
+	int target_rx = width, target_ry = height;
 
 	if (image_to_Mat(image, &in, &out, &bgr, target_rx, target_ry))
 		return 1;
@@ -405,18 +401,21 @@ int cvTransformImage(fits *image, Homography Hom, gboolean upscale2x, int interp
 	Mat H = Mat(3, 3, CV_64FC1);
 	convert_H_to_MatH(&Hom, H);
 
-	/* modify matrix for reverse Y axis */
-	Mat F = Mat::eye(3, 3, CV_64FC1);
-	F.at<double>(1,1) = -1.0;
-	F.at<double>(1,2) = image->ry - 1.0;
-	H = F * H * F.inv();
-
 	if (upscale2x) {
 		Mat S = Mat::eye(3, 3, CV_64FC1);
 		S.at<double>(0,0) = 2.0;
 		S.at<double>(1,1) = 2.0;
 		H = S * H;
 	}
+
+	/* modify matrix for reverse Y axis */
+	Mat F = Mat::eye(3, 3, CV_64FC1);
+	F.at<double>(1,1) = -1.0;
+	F.at<double>(1,2) = image->ry - 1.0;
+
+	H = F * H * F.inv();
+	/* express shift in ref image axes*/
+	H.at<double>(1,2) += target_ry - 1.0 - F.at<double>(1,2);
 
 	// OpenCV function
 	warpPerspective(in, out, H, Size(target_rx, target_ry), interpolation, BORDER_TRANSPARENT);
