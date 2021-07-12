@@ -1,6 +1,6 @@
 /*============================================================================
-  WCSLIB 7.3 - an implementation of the FITS WCS standard.
-  Copyright (C) 1995-2020, Mark Calabretta
+  WCSLIB 7.7 - an implementation of the FITS WCS standard.
+  Copyright (C) 1995-2021, Mark Calabretta
 
   This file is part of WCSLIB.
 
@@ -17,11 +17,9 @@
   You should have received a copy of the GNU Lesser General Public License
   along with WCSLIB.  If not, see http://www.gnu.org/licenses.
 
-  Direct correspondence concerning WCSLIB to mark@calabretta.id.au
-
   Author: Mark Calabretta, Australia Telescope National Facility, CSIRO.
   http://www.atnf.csiro.au/people/Mark.Calabretta
-  $Id: wcsunits.c,v 7.3.1.2 2020/08/17 11:19:09 mcalabre Exp mcalabre $
+  $Id: wcsunits.c,v 7.7 2021/07/12 06:36:49 mcalabre Exp $
 *===========================================================================*/
 
 #include <math.h>
@@ -109,19 +107,22 @@ int wcsunitse(
 {
   static const char *function = "wcsunitse";
 
-  int    func1, func2, i, status;
-  double scale1, scale2, units1[WCSUNITS_NTYPE], units2[WCSUNITS_NTYPE];
+  int status;
 
+  int    func1;
+  double scale1, units1[WCSUNITS_NTYPE];
   if ((status = wcsulexe(have, &func1, &scale1, units1, err))) {
     return status;
   }
 
+  int    func2;
+  double scale2, units2[WCSUNITS_NTYPE];
   if ((status = wcsulexe(want, &func2, &scale2, units2, err))) {
     return status;
   }
 
   // Check conformance.
-  for (i = 0; i < WCSUNITS_NTYPE; i++) {
+  for (int i = 0; i < WCSUNITS_NTYPE; i++) {
     if (units1[i] != units2[i]) {
       return wcserr_set(WCSERR_SET(UNITSERR_BAD_UNIT_SPEC),
         "Mismatched units type '%s': have '%s', want '%s'",
@@ -216,7 +217,11 @@ int wcsutrn(int ctrl, char unitstr[])
 
 //----------------------------------------------------------------------------
 
-int wcsulex(const char unitstr[], int *func, double *scale, double units[])
+int wcsulex(
+  const char unitstr[],
+  int    *func,
+  double *scale,
+  double units[WCSUNITS_NTYPE])
 
 {
   return wcsulexe(unitstr, func, scale, units, 0x0);

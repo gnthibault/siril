@@ -1,6 +1,6 @@
 /*============================================================================
-  WCSLIB 7.3 - an implementation of the FITS WCS standard.
-  Copyright (C) 1995-2020, Mark Calabretta
+  WCSLIB 7.7 - an implementation of the FITS WCS standard.
+  Copyright (C) 1995-2021, Mark Calabretta
 
   This file is part of WCSLIB.
 
@@ -17,14 +17,12 @@
   You should have received a copy of the GNU Lesser General Public License
   along with WCSLIB.  If not, see http://www.gnu.org/licenses.
 
-  Direct correspondence concerning WCSLIB to mark@calabretta.id.au
-
   Author: Mark Calabretta, Australia Telescope National Facility, CSIRO.
   http://www.atnf.csiro.au/people/Mark.Calabretta
-  $Id: fitshdr.h,v 7.3.1.2 2020/08/17 11:19:09 mcalabre Exp mcalabre $
+  $Id: fitshdr.h,v 7.7 2021/07/12 06:36:49 mcalabre Exp $
 *=============================================================================
 *
-* WCSLIB 7.3 - C routines that implement the FITS World Coordinate System
+* WCSLIB 7.7 - C routines that implement the FITS World Coordinate System
 * (WCS) standard.  Refer to the README file provided with WCSLIB for an
 * overview of the library.
 *
@@ -95,6 +93,7 @@
 *                         1: Null fitskey pointer passed.
 *                         2: Memory allocation failed.
 *                         3: Fatal error returned by Flex parser.
+*                         4: Unrecognised data type.
 *
 * Notes:
 *   1: Keyword parsing is done in accordance with the syntax defined by
@@ -393,7 +392,8 @@ enum fitshdr_errmsg_enum {
   FITSHDRERR_SUCCESS      = 0,	// Success.
   FITSHDRERR_NULL_POINTER = 1,	// Null fitskey pointer passed.
   FITSHDRERR_MEMORY       = 2,	// Memory allocation failed.
-  FITSHDRERR_FLEX_PARSER  = 3	// Fatal error returned by Flex parser.
+  FITSHDRERR_FLEX_PARSER  = 3,	// Fatal error returned by Flex parser.
+  FITSHDRERR_DATA_TYPE    = 4 	// Unrecognised data type.
 };
 
 #ifdef WCSLIB_INT64
