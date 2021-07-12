@@ -1,6 +1,6 @@
 /*============================================================================
-  WCSLIB 7.3 - an implementation of the FITS WCS standard.
-  Copyright (C) 1995-2020, Mark Calabretta
+  WCSLIB 7.7 - an implementation of the FITS WCS standard.
+  Copyright (C) 1995-2021, Mark Calabretta
 
   This file is part of WCSLIB.
 
@@ -17,14 +17,12 @@
   You should have received a copy of the GNU Lesser General Public License
   along with WCSLIB.  If not, see http://www.gnu.org/licenses.
 
-  Direct correspondence concerning WCSLIB to mark@calabretta.id.au
-
   Author: Mark Calabretta, Australia Telescope National Facility, CSIRO.
   http://www.atnf.csiro.au/people/Mark.Calabretta
-  $Id: dis.h,v 7.3.1.2 2020/08/17 12:10:44 mcalabre Exp mcalabre $
+  $Id: dis.h,v 7.7 2021/07/12 06:36:49 mcalabre Exp $
 *=============================================================================
 *
-* WCSLIB 7.3 - C routines that implement the FITS World Coordinate System
+* WCSLIB 7.7 - C routines that implement the FITS World Coordinate System
 * (WCS) standard.  Refer to the README file provided with WCSLIB for an
 * overview of the library.
 *
@@ -90,6 +88,10 @@
 * where i, a, m, and the value for each DQia match each PVi_ma.  Consequently,
 * WCSLIB would handle a FITS header containing these keywords, along with
 * CQDISia = 'TPV' and the required DQia.NAXES and DQia.AXIS.ihat keywords.
+*
+* Note that, as defined, TPV assumes that CDi_ja is used to define the linear
+* transformation.  The section on historical idiosyncrasies (below) cautions
+* about translating CDi_ja to PCi_ja plus CDELTia in this case.
 *
 * SIP - Simple Imaging Polynomial:
 * --------------------------------
@@ -164,6 +166,10 @@
 * along with CQDISia = 'WAT' and the required DPja.NAXES keywords.  For ZPX,
 * the ZPN projection parameters are also encoded in WATi_n, and wcspih()
 * translates these to standard PVi_ma.
+*
+* Note that, as defined, TNX and ZPX assume that CDi_ja is used to define the
+* linear transformation.  The section on historical idiosyncrasies (below)
+* cautions about translating CDi_ja to PCi_ja plus CDELTia in this case.
 *
 * TPD - Template Polynomial Distortion:
 * -------------------------------------
@@ -245,6 +251,12 @@
 * where r = sqrt(xx + yy).  Note that even powers of r are excluded since they
 * can be accomodated by powers of (xx + yy).
 *
+* Note here that "x" refers to the axis to which the distortion function is
+* attached, with "y" being the complementary axis.  So, for example, with
+* longitude on axis 1 and latitude on axis 2, for TPD attached to axis 1, "x"
+* refers to axis 1 and "y" to axis 2.  For TPD attached to axis 2, "x" refers
+* to axis 2, and "y" to axis 1.
+*
 * TPV uses all terms up to 39.  The m in its PVi_ma keywords translates
 * directly to the TPD coefficient number.
 *
@@ -306,6 +318,13 @@
 *
 * where the value corresponds to CRPIXja.
 *
+* Likewise, because TPV, TNX, and ZPX are defined in terms of CDi_ja, the
+* independent variables of the polynomial are intermediate world coordinates
+* rather than intermediate pixel coordinates.  Because sequent distortions
+* are always applied before CDELTia, if CDi_ja is translated to PCi_ja plus
+* CDELTia, then either CDELTia must be unity, or the distortion polynomial
+* coefficients must be adjusted to account for the change of scale.
+*
 * Summary of the dis routines:
 * ----------------------------
 * These routines apply the distortion functions defined by the extension to
@@ -318,7 +337,8 @@
 * dpfill(), dpkeyi(), and dpkeyd() are provided to manage the dpkey struct.
 *
 * disndp(), disini(), disinit(), discpy(), and disfree() are provided to
-* manage the disprm struct, and another, disprt(), prints its contents.
+* manage the disprm struct, dissize() computes its total size including
+* allocated memory, and disprt() prints its contents.
 *
 * disperr() prints the error message(s) (if any) stored in a disprm struct.
 *
@@ -542,6 +562,35 @@
 *             int       Status return value:
 *                         0: Success.
 *                         1: Null disprm pointer passed.
+*
+*
+* dissize() - Compute the size of a disprm struct
+* -----------------------------------------------
+* dissize() computes the full size of a disprm struct, including allocated
+* memory.
+*
+* Given:
+*   dis       const struct disprm*
+*                       Distortion function parameters.
+*
+*                       If NULL, the base size of the struct and the allocated
+*                       size are both set to zero.
+*
+* Returned:
+*   sizes     int[2]    The first element is the base size of the struct as
+*                       returned by sizeof(struct disprm).  The second element
+*                       is the total allocated size, in bytes, assuming that
+*                       the allocation was done by disini().  This figure
+*                       includes memory allocated for members of constituent
+*                       structs, such as disprm::dp.
+*
+*                       It is not an error for the struct not to have been set
+*                       up via tabset(), which normally results in additional
+*                       memory allocation. 
+*
+* Function return value:
+*             int       Status return value:
+*                         0: Success.
 *
 *
 * disprt() - Print routine for the disprm struct
@@ -1110,6 +1159,8 @@ int disinit(int alloc, int naxis, struct disprm *dis, int ndpmax);
 int discpy(int alloc, const struct disprm *dissrc, struct disprm *disdst);
 
 int disfree(struct disprm *dis);
+
+int dissize(const struct disprm *dis, int sizes[2]);
 
 int disprt(const struct disprm *dis);
 

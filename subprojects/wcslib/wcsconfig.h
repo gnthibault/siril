@@ -12,7 +12,7 @@
 #define HAVE_WCSLIB_VERSION 1
 
 /* WCSLIB library version number. */
-#define WCSLIB_VERSION "7.3.1"
+#define WCSLIB_VERSION "7.7.0"
 
 /* 64-bit integer data type. */
 #define WCSLIB_INT64 int64_t

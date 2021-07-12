@@ -1,6 +1,6 @@
 /*============================================================================
-  WCSLIB 7.3 - an implementation of the FITS WCS standard.
-  Copyright (C) 1995-2020, Mark Calabretta
+  WCSLIB 7.7 - an implementation of the FITS WCS standard.
+  Copyright (C) 1995-2021, Mark Calabretta
 
   This file is part of WCSLIB.
 
@@ -17,14 +17,12 @@
   You should have received a copy of the GNU Lesser General Public License
   along with WCSLIB.  If not, see http://www.gnu.org/licenses.
 
-  Direct correspondence concerning WCSLIB to mark@calabretta.id.au
-
   Author: Mark Calabretta, Australia Telescope National Facility, CSIRO.
   http://www.atnf.csiro.au/people/Mark.Calabretta
-  $Id: cel.h,v 7.3.1.2 2020/08/17 11:19:09 mcalabre Exp mcalabre $
+  $Id: cel.h,v 7.7 2021/07/12 06:36:49 mcalabre Exp $
 *=============================================================================
 *
-* WCSLIB 7.3 - C routines that implement the FITS World Coordinate System
+* WCSLIB 7.7 - C routines that implement the FITS World Coordinate System
 * (WCS) standard.  Refer to the README file provided with WCSLIB for an
 * overview of the library.
 *
@@ -50,7 +48,8 @@
 *
 * Routine celini() is provided to initialize the celprm struct with default
 * values, celfree() reclaims any memory that may have been allocated to store
-* an error message, and celprt() prints its contents.
+* an error message, celsize() computes its total size including allocated
+* memory, and celprt() prints its contents.
 *
 * celperr() prints the error message(s), if any, stored in a celprm struct and
 * the prjprm struct that it contains.
@@ -99,6 +98,33 @@
 *             int       Status return value:
 *                         0: Success.
 *                         1: Null celprm pointer passed.
+*
+*
+* celsize() - Compute the size of a celprm struct
+* -----------------------------------------------
+* celsize() computes the full size of a celprm struct, including allocated
+* memory.
+*
+* Given:
+*   cel       const struct celprm*
+*                       Celestial transformation parameters.
+*
+*                       If NULL, the base size of the struct and the allocated
+*                       size are both set to zero.
+*
+* Returned:
+*   sizes     int[2]    The first element is the base size of the struct as
+*                       returned by sizeof(struct celprm).  The second element
+*                       is the total allocated size, in bytes.  This figure
+*                       includes memory allocated for the constituent struct,
+*                       celprm::err.
+*
+*                       It is not an error for the struct not to have been set
+*                       up via celset().
+*
+* Function return value:
+*             int       Status return value:
+*                         0: Success.
 *
 *
 * celprt() - Print routine for the celprm struct
@@ -431,6 +457,8 @@ struct celprm {
 int celini(struct celprm *cel);
 
 int celfree(struct celprm *cel);
+
+int celsize(const struct celprm *cel, int sizes[2]);
 
 int celprt(const struct celprm *cel);
 

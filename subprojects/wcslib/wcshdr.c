@@ -1,6 +1,6 @@
 /*============================================================================
-  WCSLIB 7.3 - an implementation of the FITS WCS standard.
-  Copyright (C) 1995-2020, Mark Calabretta
+  WCSLIB 7.7 - an implementation of the FITS WCS standard.
+  Copyright (C) 1995-2021, Mark Calabretta
 
   This file is part of WCSLIB.
 
@@ -17,11 +17,9 @@
   You should have received a copy of the GNU Lesser General Public License
   along with WCSLIB.  If not, see http://www.gnu.org/licenses.
 
-  Direct correspondence concerning WCSLIB to mark@calabretta.id.au
-
   Author: Mark Calabretta, Australia Telescope National Facility, CSIRO.
   http://www.atnf.csiro.au/people/Mark.Calabretta
-  $Id: wcshdr.c,v 7.3.1.2 2020/08/17 11:19:09 mcalabre Exp mcalabre $
+  $Id: wcshdr.c,v 7.7 2021/07/12 06:36:49 mcalabre Exp $
 *===========================================================================*/
 
 #include <ctype.h>
@@ -484,14 +482,14 @@ int wcsvfree(int *nwcs, struct wcsprm **wcs)
 }
 
 //----------------------------------------------------------------------------
+// Matching the definitions in dis.c.
 #define I_DTYPE   0	// Distortion type code.
 #define I_NIPARM  1	// Full (allocated) length of iparm[].
 #define I_NDPARM  2	// No. of parameters in dparm[], excl. work space.
-#define I_DOCORR  3	// True if distortion func computes a correction.
-#define I_TPDNCO  4	// No. of TPD coefficients, forward...
-#define I_TPDINV  5	// ...and inverse.
-#define I_TPDAUX  6	// True if auxiliary variables are used.
-#define I_TPDRAD  7	// True if the radial variable is used.
+#define I_TPDNCO  3	// No. of TPD coefficients, forward...
+#define I_TPDINV  4	// ...and inverse.
+#define I_TPDAUX  5	// True if auxiliary variables are used.
+#define I_TPDRAD  6	// True if the radial variable is used.
 
 int wcshdo(int ctrl, struct wcsprm *wcs, int *nkeyrec, char **header)
 
@@ -1679,9 +1677,13 @@ int wcshdo(int ctrl, struct wcsprm *wcs, int *nkeyrec, char **header)
         }
 
         // Does the distortion function compute a correction?
-        if (iparm[I_DOCORR]) {
+        if (dis->docorr[j]) {
           wcshdo_util(ctrl, keyword, "", 0, 0x0, 0, 0, 0, alt, 0, 0,
             "'DOCORR: 1'", "Distortion function computes a correction",
+            nkeyrec, header, &status);
+        } else {
+          wcshdo_util(ctrl, keyword, "", 0, 0x0, 0, 0, 0, alt, 0, 0,
+            "'DOCORR: 0'", "Distortion function computes coordinates",
             nkeyrec, header, &status);
         }
 
@@ -1941,45 +1943,50 @@ void wcshdo_format(
   char *format)
 
 {
-  char cval[24];
-  int  cp0, cpi, i, expmax, expon, nsig, precision;
+  int emax = -999;
+  int emin = +999;
+  int precision = 0;
+  for (int i = 0; i < nval; i++) {
+    // Double precision has at least 15 significant digits, and up to 17:
+    // http://en.wikipedia.org/wiki/Double-precision_floating-point_format
+    char cval[24];
+    wcsutil_double2str(cval, "%21.14E", val[i]);
+
+    int cpi = 16;
+    while (2 < cpi && cval[cpi] == '0') cpi--;
+
+    // Precision for 'E' format.
+    cpi -= 2;
+    if (precision < cpi) precision = cpi;
+
+    // Range of significant digits for 'f' format.
+    int expon;
+    sscanf(cval+18, "%d", &expon);
+
+    if (emax < expon) emax = expon;
+    expon -= cpi;
+    if (expon < emin) emin = expon;
+  }
+
 
   if (fmt == 'G') {
-    fmt = 'f';
-    for (i = 0; i < nval; i++) {
-      if (fabs(val[i]) < 1e-4 || 1e12 < val[i]) {
-        fmt = 'E';
-        break;
-      }
+    // Because e.g. writing 1e4 as 10000 requires an extra digit.
+    emax++;
+
+    if (emin < -15 || 15 < emax || 15 < (emax - emin)) {
+      fmt = 'E';
+    } else {
+      fmt = 'f';
     }
   }
 
-  cp0 = 2;
-  expmax = -999;
-  for (i = 0; i < nval; i++) {
-    // Double precision has at least 15 significant digits, and up to 17:
-    // http://en.wikipedia.org/wiki/Double-precision_floating-point_format
-    wcsutil_double2str(cval, "%21.14E", val[i]);
-
-    cpi = 16;
-    while (cp0 < cpi && cval[cpi] == '0') cpi--;
-    cp0 = cpi;
-
-    sscanf(cval+18, "%d", &expon);
-    if (expmax < expon) expmax = expon;
-  }
-
-  nsig = cp0 - 1;
-
-
   if (fmt == 'f') {
-    precision = nsig - (expmax + 1);
+    precision = -emin;
     if (precision < 1)  precision = 1;
     if (17 < precision) precision = 17;
     sprintf(format, "%%20.%df", precision);
 
   } else {
-    precision = nsig - 1;
     if (precision < 1)  precision = 1;
     if (14 < precision) precision = 14;
     if (precision < 14) {
