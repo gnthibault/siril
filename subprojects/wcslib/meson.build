@@ -7,7 +7,7 @@
 
 project('wcslib', 
   ['c','cpp'],
-  version : '0.1.14',
+  version : '7.7.0',
   meson_version: '>=0.53.0',
   default_options : [
     'c_std=gnu11',
