@@ -414,8 +414,6 @@ int cvTransformImage(fits *image, unsigned int width, unsigned int height, Homog
 	F.at<double>(1,2) = image->ry - 1.0;
 
 	H = F * H * F.inv();
-	/* express shift in ref image axes*/
-	H.at<double>(1,2) += target_ry - 1.0 - F.at<double>(1,2);
 
 	// OpenCV function
 	warpPerspective(in, out, H, Size(target_rx, target_ry), interpolation, BORDER_TRANSPARENT);
