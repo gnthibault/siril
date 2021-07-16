@@ -28,6 +28,23 @@
 #include "gui/message_dialog.h"
 #include "gui/image_interactions.h"
 #include "gui/callbacks.h"
+#include "gui/PSF_list.h"
+
+void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
+	fitted_PSF *result = NULL;
+	int layer = match_drawing_area_widget(com.vport[com.cvport], FALSE);
+
+	if (layer == -1)
+		return;
+	if (!(com.selection.h && com.selection.w))
+		return;
+	result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE, TRUE);
+	if (!result)
+		return;
+
+	popup_psf_result(result, &com.selection);
+	free(result);
+}
 
 
 void on_menu_gray_seqpsf_activate(GtkMenuItem *menuitem, gpointer user_data) {
