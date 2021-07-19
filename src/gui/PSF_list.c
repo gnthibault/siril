@@ -477,7 +477,7 @@ void clear_stars_list() {
 			if (com.stars[1] || !com.star_is_seqdata) {
 				int i = 0;
 				while (i < MAX_STARS && com.stars[i])
-					free(com.stars[i++]);
+					free_psf(com.stars[i++]);
 			}
 		}
 		free(com.stars);

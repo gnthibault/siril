@@ -499,17 +499,20 @@ fitted_PSF *add_star(fits *fit, int layer, int *index) {
 	/* We do not check if it's matching with the "is_star()" criteria.
 	 * Indeed, in this case the user can add manually stars missed by star_finder */
 
-	if (com.stars) {
+	if (com.stars && !com.star_is_seqdata) {
 		// check if the star was already detected/peaked
 		while (com.stars[i]) {
 			if (fabs(result->x0 + com.selection.x - com.stars[i]->xpos) < 0.9
-					&& fabs(
-							com.selection.y + com.selection.h - result->y0
+					&& fabs(com.selection.y + com.selection.h - result->y0
 									- com.stars[i]->ypos) < 0.9)
 				already_found = TRUE;
 			i++;
 		}
 	} else {
+		if (com.star_is_seqdata) {
+			/* com.stars was allocated with a size of 2, we need to free it before reallocating */
+			clear_stars_list();
+		}
 		com.stars = malloc((MAX_STARS + 1) * sizeof(fitted_PSF*));
 		if (!com.stars) {
 			PRINT_ALLOC_ERR;
