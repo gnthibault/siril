@@ -332,7 +332,7 @@ static fitted_PSF *psf_minimiz_no_angle(gsl_matrix* z, double background) {
 	f.fdf = &psf_Gaussian_fdf;
 	f.n = n;
 	if (n <= p) {
-		free(psf);
+		free_psf(psf);
 		free(y);
 		free(sigma);
 		return NULL;
@@ -389,6 +389,7 @@ static fitted_PSF *psf_minimiz_no_angle(gsl_matrix* z, double background) {
 	psf->units = "px";
 	// Magnitude
 	psf->mag = psf_get_mag(z, psf->B);
+	psf->phot = NULL;
 	psf->phot_is_valid = FALSE;
 	// RMSE
 	psf->rmse = d.rmse;
@@ -549,7 +550,6 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf, gboolean fo
 	gsl_multifit_fdfsolver_free(s);
 	gsl_matrix_free(covar);
 	gsl_rng_free(r);
-	free(psf_angle->phot);
 	return psf_angle;
 }
 
@@ -567,7 +567,7 @@ double psf_get_fwhm(fits *fit, int layer, rectangle *selection, double *roundnes
 	retval = result->fwhmx;
 	if (roundness)
 		*roundness = result->fwhmy / result->fwhmx;
-	free(result);
+	free_psf(result);
 	return retval;
 }
 
@@ -663,10 +663,10 @@ fitted_PSF *psf_global_minimisation(gsl_matrix* z, double bg,
 				fitted_PSF *tmp_psf;
 				if ((tmp_psf = psf_minimiz_angle(z, psf, for_photometry, verbose))
 						== NULL) {
-					free(psf);
+					free_psf(psf);
 					return NULL;
 				}
-				free(psf);
+				free_psf(psf);
 				psf = tmp_psf;
 			}
 		}
@@ -684,7 +684,7 @@ fitted_PSF *psf_global_minimisation(gsl_matrix* z, double bg,
 		/* We quickly test the result. If it is bad we return NULL */
 		if (!isfinite(psf->fwhmx) || !isfinite(psf->fwhmy) ||
 				psf->fwhmx <= 0.0 || psf->fwhmy <= 0.0) {
-			free(psf);
+			free_psf(psf);
 			psf = NULL;
 		}
 	}
@@ -817,4 +817,9 @@ fitted_PSF *duplicate_psf(fitted_PSF *psf) {
 		memcpy(new_psf->phot, psf->phot, sizeof(photometry));
 	}
 	return new_psf;
+}
+
+void free_psf(fitted_PSF *psf) {
+	if (psf->phot) free(psf->phot);
+	free(psf);
 }

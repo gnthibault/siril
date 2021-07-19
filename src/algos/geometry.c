@@ -570,7 +570,7 @@ void on_button_sample_ratio_toggled(GtkToggleButton *button, gpointer user_data)
 /**************
  * CROP
  */
-void on_menu_gray_crop_activate(GtkMenuItem *menuitem, gpointer user_data) {
+void siril_crop() {
 	// if astrometry exists
 	if (confirm_delete_wcs_keywords(&gfit)) {
 		undo_save_state(&gfit, _("Crop (x=%d, y=%d, w=%d, h=%d)"),
@@ -589,10 +589,6 @@ void on_menu_gray_crop_activate(GtkMenuItem *menuitem, gpointer user_data) {
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 	}
-}
-
-void on_menu_gray_crop_seq_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	siril_open_dialog("crop_dialog");
 }
 
 gint64 crop_compute_size_hook(struct generic_seq_args *args, int nb_frames) {

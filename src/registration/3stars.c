@@ -419,7 +419,7 @@ static int rotate_images(struct registration_args *regargs, regdata *current_reg
 	for (int i = 0; i < results_size; i++) {
 		for (int s = 0; s < 3; s++)
 			if (results[i].stars[s])
-				free(results[i].stars[s]);
+				free_psf(results[i].stars[s]);
 	}
 	free(results);
 	results = NULL;

@@ -272,7 +272,7 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 				break;
 			}
 			flux[chan] = powf(10.f, -0.4f * (float) photometry->mag);
-			free(photometry);
+			free_psf(photometry);
 		}
 		if (no_phot) {
 			i++;

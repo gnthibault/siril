@@ -647,6 +647,7 @@ static void draw_stars(const draw_data_t* dd) {
 		cairo_select_font_face(cr, "Purisa", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 		cairo_set_font_size(cr, 40);
 		cairo_move_to(cr, com.qphot->xpos + com.pref.phot_set.outer + 5, com.qphot->ypos);
+		cairo_stroke(cr);
 	}
 
 	if (sequence_is_loaded() && com.seq.current >= 0) {

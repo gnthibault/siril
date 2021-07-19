@@ -30,32 +30,6 @@
 #include "gui/callbacks.h"
 #include "gui/PSF_list.h"
 
-void on_menu_gray_psf_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	fitted_PSF *result = NULL;
-	int layer = match_drawing_area_widget(com.vport[com.cvport], FALSE);
-
-	if (layer == -1)
-		return;
-	if (!(com.selection.h && com.selection.w))
-		return;
-	result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE, TRUE);
-	if (!result)
-		return;
-
-	popup_psf_result(result, &com.selection);
-	free(result);
-}
-
-
-void on_menu_gray_seqpsf_activate(GtkMenuItem *menuitem, gpointer user_data) {
-	if (!sequence_is_loaded()) {
-		siril_message_dialog(GTK_MESSAGE_ERROR, _("PSF for the sequence only applies on sequences"),
-				_("Please load a sequence before trying to apply the PSF for the sequence."));
-	} else {
-		process_seq_psf(0);
-	}
-}
-
 static void set_selection_ratio(double ratio) {
 	com.ratio = ratio;
 	enforce_ratio_and_clamp();

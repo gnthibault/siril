@@ -465,7 +465,7 @@ static int minimize_candidates(fits *image, star_finder_params *sf, double bg, s
 				//fprintf(stdout, "%03d: %11f %11f %f\n",
 				//		result_index, cur_star->xpos, cur_star->ypos, cur_star->mag);
 			}
-			else free(cur_star);
+			else free_psf(cur_star);
 			if ((nbstars >= MAX_STARS_FITTED) && limit_nbstars) break;
 		}
 	}
@@ -519,7 +519,7 @@ fitted_PSF *add_star(fits *fit, int layer, int *index) {
 	}
 
 	if (already_found) {
-		free(result);
+		free_psf(result);
 		result = NULL;
 		char *msg = siril_log_message(_("This star has already been picked !\n"));
 		siril_message_dialog( GTK_MESSAGE_INFO, _("Peaker"), msg);
@@ -531,7 +531,7 @@ fitted_PSF *add_star(fits *fit, int layer, int *index) {
 			com.stars[i + 1] = NULL;
 			*index = i;
 		} else {
-			free(result);
+			free_psf(result);
 			result = NULL;
 		}
 	}
@@ -552,7 +552,7 @@ int remove_star(int index) {
 
 	int N = get_size_star_tab() + 1;
 
-	free(com.stars[index]);
+	free_psf(com.stars[index]);
 	memmove(&com.stars[index], &com.stars[index + 1],
 			(N - index - 1) * sizeof(*com.stars));
 	redraw(com.cvport, REMAP_NONE);
@@ -579,7 +579,7 @@ void sort_stars(fitted_PSF **stars, int total) {
 void free_fitted_stars(fitted_PSF **stars) {
 	int i = 0;
 	while (stars && stars[i])
-		free(stars[i++]);
+		free_psf(stars[i++]);
 	free(stars);
 }
 

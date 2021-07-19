@@ -265,6 +265,6 @@ void on_button_rgradient_selection_clicked(GtkButton *button, gpointer user_data
 
 		g_free(x0);
 		g_free(y0);
-		free(result);
+		free_psf(result);
 	}
 }

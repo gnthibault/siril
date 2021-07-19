@@ -59,50 +59,60 @@ static GActionEntry image_entries[] = {
 		{ "dyn-psf", dyn_psf_activate },
 		{ "annotate-object", annotate_object_activate, NULL, "false", annotate_object_state },
 		{ "search-object", search_object_activate },
-		{ "seq-list", seq_list_activate },
-		{ "pickstar", pick_star_activate }
+		{ "seq-list", seq_list_activate }
+};
+
+static GActionEntry selection_entries[] = {
+		{ "pickstar", pick_star_activate },
+		{ "psf", psf_activate },
+		{ "crop", crop_activate }
+};
+
+static GActionEntry selection_sequence_entries[] = {
+		{ "seq-psf", seq_psf_activate },
+		{ "seq-crop", seq_crop_activate }
 };
 
 static GActionEntry rgb_processing_entries[] = {
-		{"remove-green-processing", remove_green_activate },
-		{"saturation-processing", saturation_activate },
-		{"color-calib-processing", color_calib_activate },
-		{"pcc-processing", pcc_activate },
-		{"split-channel-processing", split_channel_activate }
+		{ "remove-green-processing", remove_green_activate },
+		{ "saturation-processing", saturation_activate },
+		{ "color-calib-processing", color_calib_activate },
+		{ "pcc-processing", pcc_activate },
+		{ "split-channel-processing", split_channel_activate }
 };
 
 static GActionEntry any_processing_entries[] = {
-		{"negative-processing", negative_activate },
-		{"histo-processing", histo_activate },
-		{"fix-banding-processing", fix_banding_activate },
-		{"cosmetic-processing", cosmetic_activate },
-		{"background-extr-processing", background_extr_activate }
+		{ "negative-processing", negative_activate },
+		{ "histo-processing", histo_activate },
+		{ "fix-banding-processing", fix_banding_activate },
+		{ "cosmetic-processing", cosmetic_activate },
+		{ "background-extr-processing", background_extr_activate }
 };
 
 static GActionEntry any_mono_processing_entries[] = {
-		{"split-cfa-processing", split_cfa_activate }
+		{ "split-cfa-processing", split_cfa_activate }
 };
 
 static GActionEntry single_processing_entries[] = {
-		{"asinh-processing", asinh_activate },
-		{"deconvolution-processing", deconvolution_activate },
-		{"resample-processing", resample_activate },
-		{"rotation-processing", rotation_activate },
-		{"rotation90-processing", rotation90_activate },
-		{"rotation270-processing", rotation270_activate },
-		{"mirrorx-processing", mirrorx_activate },
-		{"mirrory-processing", mirrory_activate },
-		{"wavelets-processing", wavelets_activate },
-		{"split-wavelets-processing", split_wavelets_activate },
-		{"medianfilter-processing", medianfilter_activate },
-		{"rgradient-processing", rgradient_activate },
-		{"clahe-processing", clahe_activate },
-		{"linearmatch-processing", linearmatch_activate }
+		{ "asinh-processing", asinh_activate },
+		{ "deconvolution-processing", deconvolution_activate },
+		{ "resample-processing", resample_activate },
+		{ "rotation-processing", rotation_activate },
+		{ "rotation90-processing", rotation90_activate },
+		{ "rotation270-processing", rotation270_activate },
+		{ "mirrorx-processing", mirrorx_activate },
+		{ "mirrory-processing", mirrory_activate },
+		{ "wavelets-processing", wavelets_activate },
+		{ "split-wavelets-processing", split_wavelets_activate },
+		{ "medianfilter-processing", medianfilter_activate },
+		{ "rgradient-processing", rgradient_activate },
+		{ "clahe-processing", clahe_activate },
+		{ "linearmatch-processing", linearmatch_activate }
 };
 
 static GActionEntry none_processing_entries[] = {
-		{"fft-processing", fft_activate },
-		{"rgb-compositing-processing", rgb_compositing_activate }
+		{ "fft-processing", fft_activate },
+		{ "rgb-compositing-processing", rgb_compositing_activate }
 };
 
 static void _siril_window_enable_action_group(GActionMap *map,
@@ -203,6 +213,25 @@ void siril_window_enable_none_proc_actions(GtkApplicationWindow *window, gboolea
 	_siril_window_enable_action_group(G_ACTION_MAP(window), none_processing_actions, enable);
 }
 
+void siril_window_enable_if_selection_actions(GtkApplicationWindow *window, gboolean enable) {
+	static const gchar *selection_actions[] = {
+		"pickstar",
+		"psf",
+		"crop",
+		NULL,
+	};
+	_siril_window_enable_action_group(G_ACTION_MAP(window), selection_actions, enable);
+}
+
+void siril_window_enable_if_selection_sequence_actions(GtkApplicationWindow *window, gboolean enable) {
+	static const gchar *selection_sequebce_actions[] = {
+		"seq-psf",
+		"seq-crop",
+		NULL,
+	};
+	_siril_window_enable_action_group(G_ACTION_MAP(window), selection_sequebce_actions, enable);
+}
+
 void siril_window_map_actions(GtkApplicationWindow *window) {
 	g_action_map_add_action_entries(G_ACTION_MAP(window), win_entries, G_N_ELEMENTS(win_entries), window);
 	g_action_map_add_action_entries(G_ACTION_MAP(window), image_entries, G_N_ELEMENTS(image_entries), window);
@@ -211,4 +240,6 @@ void siril_window_map_actions(GtkApplicationWindow *window) {
 	g_action_map_add_action_entries(G_ACTION_MAP(window), any_mono_processing_entries, G_N_ELEMENTS(any_mono_processing_entries), window);
 	g_action_map_add_action_entries(G_ACTION_MAP(window), single_processing_entries, G_N_ELEMENTS(single_processing_entries), window);
 	g_action_map_add_action_entries(G_ACTION_MAP(window), none_processing_entries, G_N_ELEMENTS(none_processing_entries), window);
+	g_action_map_add_action_entries(G_ACTION_MAP(window), selection_entries, G_N_ELEMENTS(selection_entries), window);
+	g_action_map_add_action_entries(G_ACTION_MAP(window), selection_sequence_entries, G_N_ELEMENTS(selection_sequence_entries), window);
 }

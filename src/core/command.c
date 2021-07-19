@@ -1164,7 +1164,7 @@ int process_set_mag(int nb) {
 			siril_log_message(_("Relative magnitude: %.3lf, "
 					"True reduced magnitude: %.3lf, "
 					"Offset: %.3lf\n"), result->mag, mag, com.magOffset);
-			free(result);
+			free_psf(result);
 		}
 	}
 	return 0;
@@ -1284,7 +1284,7 @@ int process_psf(int nb){
 		fitted_PSF *result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE, TRUE);
 		if (result) {
 			psf_display_result(result, &com.selection);
-			free(result);
+			free_psf(result);
 		}
 	}
 	return 0;

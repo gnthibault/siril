@@ -219,7 +219,6 @@ static void do_popup_rgbmenu(GtkWidget *my_widget, GdkEventButton *event) {
 
 static void do_popup_graymenu(GtkWidget *my_widget, GdkEventButton *event) {
 	static GtkMenu *menu = NULL;
-	gboolean selected;
 
 	gboolean is_a_single_image_loaded = single_image_is_loaded() && (!sequence_is_loaded()
 			|| (sequence_is_loaded() && (com.seq.current == RESULT_IMAGE
@@ -229,20 +228,6 @@ static void do_popup_graymenu(GtkWidget *my_widget, GdkEventButton *event) {
 		menu = GTK_MENU(gtk_builder_get_object(builder, "menugray"));
 		gtk_menu_attach_to_widget(GTK_MENU(menu), my_widget, NULL);
 	}
-
-	selected = com.selection.w && com.selection.h;
-	gtk_widget_set_sensitive(lookup_widget("undo_item1"), is_undo_available());
-	gtk_widget_set_sensitive(lookup_widget("redo_item1"), is_redo_available());
-	gtk_widget_set_sensitive(lookup_widget("menu_gray_stat"), is_a_single_image_loaded || sequence_is_loaded());
-	gtk_widget_set_sensitive(lookup_widget("menu_gray_seqpsf"), selected && sequence_is_loaded());
-	gtk_widget_set_sensitive(lookup_widget("menu_gray_pick_star"), selected);
-	gtk_widget_set_sensitive(lookup_widget("menu_gray_crop"), selected && is_a_single_image_loaded);
-	gtk_widget_set_sensitive(lookup_widget("menu_gray_crop_seq"), selected && sequence_is_loaded());
-#ifdef HAVE_WCSLIB
-	gtk_widget_set_sensitive(lookup_widget("menu_gray_search"), has_wcs(&gfit));
-#else
-	gtk_widget_set_sensitive(lookup_widget("menu_gray_search"), FALSE);
-#endif
 
 	// selection submenu
 	double original_ratio = (double)gfit.rx / (double)gfit.ry;
@@ -557,6 +542,7 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 
 	} else if (event->button == GDK_BUTTON_SECONDARY) {	// right click
 		if (mouse_status != MOUSE_ACTION_DRAW_SAMPLES) {
+			update_MenuItem();
 			do_popup_graymenu(widget, NULL);
 		}
 	}

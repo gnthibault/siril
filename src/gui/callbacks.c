@@ -383,7 +383,7 @@ void update_MenuItem() {
 	GAction *action_fits_header = g_action_map_lookup_action (G_ACTION_MAP(app_win), "fits-header");
 	g_simple_action_set_enabled(G_SIMPLE_ACTION(action_fits_header), any_image_is_loaded && gfit.header != NULL);
 
-	/* Image processing Menu */
+	/* Image processing Menu, or some gray_menu too */
 
 	/* single RGB image is needed */
 	siril_window_enable_rgb_proc_actions(app_win, is_a_singleRGB_image_loaded);
@@ -395,6 +395,10 @@ void update_MenuItem() {
 	siril_window_enable_single_proc_actions(app_win, is_a_single_image_loaded);
 	/* no images needed */
 	siril_window_enable_none_proc_actions(app_win, TRUE);
+	/* selection is needed */
+	siril_window_enable_if_selection_actions(app_win, com.selection.w && com.selection.h);
+	/* selection and sequence is needed */
+	siril_window_enable_if_selection_sequence_actions(app_win, com.selection.w && com.selection.h && sequence_is_loaded());
 
 	/* Image information menu */
 	siril_window_enable_image_actions(app_win, any_image_is_loaded);

@@ -1155,7 +1155,7 @@ void free_sequence(sequence *seq, gboolean free_seq_too) {
 					if (seq->regparam[layer][j].fwhm_data &&
 							(!seq->photometry[0] ||
 							 seq->regparam[layer][j].fwhm_data != seq->photometry[0][j])) // avoid double free
-						free(seq->regparam[layer][j].fwhm_data);
+						free_psf(seq->regparam[layer][j].fwhm_data);
 				}
 				free(seq->regparam[layer]);
 			}

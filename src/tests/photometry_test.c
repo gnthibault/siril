@@ -172,7 +172,7 @@ void test_photometry_float() {
 	cr_expect_float_eq(psf->rmse, 2.250e-03, 1e-6);
 
 	gsl_matrix_free(matrix);
-	free(psf);
+	free_psf(psf);
 }
 
 void test_photometry_ushort() {
@@ -209,7 +209,7 @@ void test_photometry_ushort() {
 	cr_expect_float_eq(psf->rmse, 2.250e-03 * USHRT_MAX_SINGLE, 0.1);
 
 	gsl_matrix_free(matrix);
-	free(psf);
+	free_psf(psf);
 }
 
 Test(science, psf_float) { test_photometry_float(); }

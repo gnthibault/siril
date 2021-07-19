@@ -9127,8 +9127,8 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
       <object class="GtkMenuItem" id="menu_gray_psf">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.psf</property>
         <property name="label" translatable="yes">PSF</property>
-        <signal name="activate" handler="on_menu_gray_psf_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -9136,8 +9136,8 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
         <property name="visible">True</property>
         <property name="can-focus">False</property>
         <property name="tooltip-text" translatable="yes">Will use registration data if any are available on the registration layer, otherwise if the checkbox 'follow star movement' is checked in the registration tab, it will run with this option.</property>
+        <property name="action-name">win.seq-psf</property>
         <property name="label" translatable="yes">PSF for the Sequence</property>
-        <signal name="activate" handler="on_menu_gray_seqpsf_activate" swapped="no"/>
       </object>
     </child>
     <child>
@@ -9389,18 +9389,18 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
       <object class="GtkMenuItem" id="menu_gray_crop">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.crop</property>
         <property name="label" translatable="yes">Crop</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menu_gray_crop_activate" swapped="no"/>
       </object>
     </child>
     <child>
       <object class="GtkMenuItem" id="menu_gray_crop_seq">
         <property name="visible">True</property>
         <property name="can-focus">False</property>
+        <property name="action-name">win.seq-crop</property>
         <property name="label" translatable="yes">Crop Sequence...</property>
         <property name="use-underline">True</property>
-        <signal name="activate" handler="on_menu_gray_crop_seq_activate" swapped="no"/>
       </object>
     </child>
   </object>

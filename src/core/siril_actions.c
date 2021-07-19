@@ -272,6 +272,34 @@ void pick_star_activate(GSimpleAction *action, GVariant *parameter, gpointer use
 	pick_a_star();
 }
 
+void psf_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	fitted_PSF *result = NULL;
+	int layer = match_drawing_area_widget(com.vport[com.cvport], FALSE);
+
+	if (layer == -1)
+		return;
+	if (!(com.selection.h && com.selection.w))
+		return;
+	result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE, TRUE);
+	if (!result)
+		return;
+
+	popup_psf_result(result, &com.selection);
+	free_psf(result);
+}
+
+void seq_psf_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	process_seq_psf(0);
+}
+
+void crop_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	siril_crop();
+}
+
+void seq_crop_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	siril_open_dialog("crop_dialog");
+}
+
 void search_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	if (has_wcs(&gfit))
 		siril_open_dialog("search_objects");
