@@ -10665,7 +10665,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
     <signal name="item-activated" handler="on_open_recent_action_item_activated" swapped="no"/>
   </object>
   <object class="GtkAdjustment" id="register_minpairs">
-    <property name="lower">10</property>
+    <property name="lower">4</property>
     <property name="upper">2000</property>
     <property name="value">10</property>
     <property name="step-increment">1</property>
@@ -12219,7 +12219,7 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                                     <property name="input-purpose">digits</property>
                                   </object>
                                   <packing>
-                                    <property name="left-attach">3</property>
+                                    <property name="left-attach">2</property>
                                     <property name="top-attach">0</property>
                                   </packing>
                                 </child>
@@ -12263,7 +12263,7 @@ Note: FITS images will have no effect when the pre-processed sequence is SER or 
                                     <signal name="changed" handler="on_prepro_output_type_combo1_changed" swapped="no"/>
                                   </object>
                                   <packing>
-                                    <property name="left-attach">2</property>
+                                    <property name="left-attach">3</property>
                                     <property name="top-attach">0</property>
                                   </packing>
                                 </child>
@@ -13828,25 +13828,27 @@ When processing images, registration data is taken from the default layer if ava
                                       </packing>
                                     </child>
                                     <child>
-                                      <object class="GtkBox">
+                                      <!-- n-columns=3 n-rows=2 -->
+                                      <object class="GtkGrid">
                                         <property name="visible">True</property>
                                         <property name="can-focus">False</property>
-                                        <property name="spacing">10</property>
+                                        <property name="row-spacing">10</property>
+                                        <property name="column-spacing">10</property>
+                                        <property name="row-homogeneous">True</property>
                                         <child>
                                           <object class="GtkCheckButton" id="checkStarSelect">
                                             <property name="label" translatable="yes">Match stars in selection</property>
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
                                             <property name="receives-default">False</property>
-                                            <property name="tooltip-text" translatable="yes">Check this box if you want to perform the Global Star Alignment algorithm within the selected area in the reference image. If no selection are done, this option is ignored.
-WARNING: Make sure to draw a selection with a sufficient number of stars.</property>
+                                            <property name="tooltip-markup" translatable="yes">Check this box if you want to perform the Global Star Alignment algorithm within the selected area in the reference image. If no selection are done, this option is ignored.
+
+&lt;b&gt;WARNING&lt;/b&gt;: Make sure to draw a selection with a sufficient number of stars.</property>
                                             <property name="draw-indicator">True</property>
                                           </object>
                                           <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="padding">4</property>
-                                            <property name="position">0</property>
+                                            <property name="left-attach">0</property>
+                                            <property name="top-attach">0</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -13855,18 +13857,40 @@ WARNING: Make sure to draw a selection with a sufficient number of stars.</prope
                                             <property name="visible">True</property>
                                             <property name="can-focus">True</property>
                                             <property name="receives-default">False</property>
-                                            <property name="tooltip-text" translatable="yes">This is the only registration that can detect and apply rotations on images. However, rotating images will degrade them to a certain extent. Activating this will use the same image alignment algorithm but only apply "one-pixel accurate" translations (rotation is computed, but not applied).
-This is useful for image sequences with very small rotation angle.
+                                            <property name="tooltip-markup" translatable="yes">Global resgistration is the only method that can detect and apply rotations on images. However, rotating images will degrade them to a certain extent. Activating this will use the same image alignment algorithm but only apply "one-pixel accurate" translations. This is useful for image sequences with very small rotation angle.
+We strongly recommend to use this option with &lt;b&gt;Shift&lt;/b&gt; transformation as it will fit only translations to match the images.
 
-WARNING: no new sequence is built, registration data is stored in the original sequence.</property>
+&lt;b&gt;WARNING&lt;/b&gt;: no new sequence is built, registration data is stored in the original sequence.</property>
                                             <property name="draw-indicator">True</property>
                                             <signal name="toggled" handler="on_regTranslationOnly_toggled" swapped="no"/>
                                           </object>
                                           <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="padding">4</property>
-                                            <property name="position">1</property>
+                                            <property name="left-attach">1</property>
+                                            <property name="top-attach">0</property>
+                                          </packing>
+                                        </child>
+                                        <child>
+                                          <object class="GtkComboBoxText" id="comboreg_transfo">
+                                            <property name="visible">True</property>
+                                            <property name="can-focus">False</property>
+                                            <property name="tooltip-markup" translatable="yes">&lt;b&gt;Shift&lt;/b&gt; is a 2 degree-of-freedom (x/y shifts) rigid mapping, well-suited for images with no distortion, no scaling and no field rotation. It needs at least 1 pair of stars to be matched to define the transformation.
+
+&lt;b&gt;Affine&lt;/b&gt; is a 4 degree-of-freedom (one scale, one rotation and x/y shifts) more rigid mapping, well-suited for images with no distortion. It needs at least 2 pairs of stars to be matched to define the transformation.
+
+&lt;b&gt;Homography&lt;/b&gt; is the default transformation which uses an 8-degree-of-freedom transform to warp the images onto the reference frame. This is well-suited for the general case and strongly recommended for wide-field images. It needs at least 4 pairs of stars to be matched to define the transformation.
+
+&lt;b&gt;WARNING&lt;/b&gt;: The initial star matching uses triangle similarity algorithm, in consequence the minimum of star pairs must be at least of 3 for &lt;b&gt;Shift&lt;/b&gt; and &lt;b&gt;Affine&lt;/b&gt; and of 4 for &lt;b&gt;Homography&lt;/b&gt;.</property>
+                                            <property name="active">2</property>
+                                            <items>
+                                              <item translatable="yes">Shift</item>
+                                              <item translatable="yes">Affine</item>
+                                              <item translatable="yes">Homography</item>
+                                            </items>
+                                            <signal name="changed" handler="on_comboreg_transfo_changed" swapped="no"/>
+                                          </object>
+                                          <packing>
+                                            <property name="left-attach">0</property>
+                                            <property name="top-attach">1</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -13877,9 +13901,8 @@ WARNING: no new sequence is built, registration data is stored in the original s
                                             <property name="label" translatable="yes">Minimum Star Pairs:</property>
                                           </object>
                                           <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">2</property>
+                                            <property name="left-attach">1</property>
+                                            <property name="top-attach">1</property>
                                           </packing>
                                         </child>
                                         <child>
@@ -13902,10 +13925,12 @@ WARNING: no new sequence is built, registration data is stored in the original s
                                             </style>
                                           </object>
                                           <packing>
-                                            <property name="expand">False</property>
-                                            <property name="fill">True</property>
-                                            <property name="position">3</property>
+                                            <property name="left-attach">2</property>
+                                            <property name="top-attach">1</property>
                                           </packing>
+                                        </child>
+                                        <child>
+                                          <placeholder/>
                                         </child>
                                       </object>
                                       <packing>

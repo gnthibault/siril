@@ -993,7 +993,11 @@ BENCHFUN
     for (int i = 0; i < H; ++i) {
         int fitn = i * W;
         for (int j = 0; j < W; ++j) {
-            const float factor = YNew[i][j] / std::max(YOld[i][j], 0.00001f);
+            /*const */float factor = YNew[i][j] / std::max(YOld[i][j], 0.00001f);
+            /* ugly patch to handle #678 */
+            if (std::isnan(factor)) {
+            	factor = 1.f;
+            }
             if (args->fit->type == DATA_USHORT) {
             	args->fit->pdata[RLAYER][fitn] = rtengine::CLIP<float>(redVals[i][j] * factor);
             	if (channels == 3) {
