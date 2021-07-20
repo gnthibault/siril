@@ -1272,7 +1272,7 @@ gpointer match_catalog(gpointer p) {
 			g_warning("%s\n", error->message);
 			g_clear_error(&error);
 		}
-		free(cstars); // don't use free_fitted_stars because it is empty and it will crash
+		free_fitted_stars(cstars);
 		args->ret = 1;
 		siril_add_idle(end_plate_solver, args);
 		g_object_unref(catalog);
