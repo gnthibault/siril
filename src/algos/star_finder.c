@@ -256,12 +256,12 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 	/* Removing wavelets and applying a Gaussian filter to select candidates
 	 */
 	if (extract_fits(fit, &smooth_fit, layer, TRUE)) {
-        siril_log_message(_("Failed to copy the image for processing\n"));
+		siril_log_color_message(_("Failed to copy the image for processing\n"), "red");
 		return NULL;
 	}
 
 	if (cvUnsharpFilter(&smooth_fit, 3, 0)) {
-		siril_log_message(_("Could not apply Gaussian filter, aborting\n"));
+		siril_log_color_message(_("Could not apply Gaussian filter, aborting\n"), "red");
 		clearfits(&smooth_fit);
 		return NULL;
 	}
@@ -282,6 +282,11 @@ fitted_PSF **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars,
 		areaY0 = area->y;
 		areaX1 = area->w + areaX0;
 		areaY1 = area->h + areaY0;
+
+		if (areaX1 > nx || areaY1 > ny) {
+			siril_log_color_message(_("Selection is larger than image\n"), "red");
+			return NULL;
+		}
 	}
 
 	candidates = malloc(MAX_STARS * sizeof(starc));
