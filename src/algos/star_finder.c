@@ -424,7 +424,7 @@ static int minimize_candidates(fits *image, star_finder_params *sf, double bg, s
 	}
 	else return 0;
 
-	fitted_PSF **results = malloc((nb_candidates + 1) * sizeof(fitted_PSF *));
+	fitted_PSF **results = new_fitted_stars(nb_candidates);
 	if (!results) {
 		PRINT_ALLOC_ERR;
 		return 0;
@@ -493,7 +493,7 @@ fitted_PSF *add_star(fits *fit, int layer, int *index) {
 	gboolean already_found = FALSE;
 
 	*index = -1;
-	fitted_PSF * result = psf_get_minimisation(&gfit, layer, &com.selection, FALSE, TRUE, TRUE);
+	fitted_PSF *result = psf_get_minimisation(&gfit, layer, &com.selection, FALSE, TRUE, TRUE);
 	if (!result)
 		return NULL;
 	/* We do not check if it's matching with the "is_star()" criteria.
@@ -513,7 +513,7 @@ fitted_PSF *add_star(fits *fit, int layer, int *index) {
 			/* com.stars was allocated with a size of 2, we need to free it before reallocating */
 			clear_stars_list();
 		}
-		com.stars = malloc((MAX_STARS + 1) * sizeof(fitted_PSF*));
+		com.stars = new_fitted_stars(MAX_STARS);
 		if (!com.stars) {
 			PRINT_ALLOC_ERR;
 			return NULL;
@@ -577,6 +577,13 @@ int compare_stars(const void* star1, const void* star2) {
 void sort_stars(fitted_PSF **stars, int total) {
 	if (*(&stars))
 		qsort(*(&stars), total, sizeof(fitted_PSF*), compare_stars);
+}
+
+fitted_PSF **new_fitted_stars(size_t n) {
+	fitted_PSF **stars = malloc((n + 1) * sizeof(fitted_PSF *));
+	if (stars) stars[0] = NULL;
+
+	return stars;
 }
 
 void free_fitted_stars(fitted_PSF **stars) {

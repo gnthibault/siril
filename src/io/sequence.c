@@ -62,6 +62,7 @@
 #include "gui/sequence_list.h"
 #include "gui/preferences.h"
 #include "algos/PSF.h"
+#include "algos/star_finder.h"
 #include "algos/quality.h"
 #include "algos/statistics.h"
 #include "algos/geometry.h"
@@ -972,7 +973,7 @@ static void set_fwhm_star_as_star_list_with_layer(sequence *seq, int layer) {
 	if (seq->regparam && layer >= 0 && layer < seq->nb_layers
 			&& seq->regparam[layer] && seq->current >= 0
 			&& seq->regparam[layer][seq->current].fwhm_data && !com.stars) {
-		com.stars = malloc(2 * sizeof(fitted_PSF *));
+		com.stars = new_fitted_stars(1);
 		com.stars[0] = seq->regparam[layer][seq->current].fwhm_data;
 		com.stars[1] = NULL;
 		// this is freed in PSF_list.c:clear_stars_list()

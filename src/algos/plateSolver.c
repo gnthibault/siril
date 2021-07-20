@@ -904,6 +904,7 @@ static int read_NOMAD_catalog(GInputStream *stream, fitted_PSF **cstars) {
 		star->ypos = y;
 		star->mag = Vmag;
 		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
+		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -943,6 +944,7 @@ static int read_TYCHO2_catalog(GInputStream *stream, fitted_PSF **cstars) {
 		star->ypos = y;
 		star->mag = Vmag;
 		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
+		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -984,6 +986,7 @@ static int read_GAIA_catalog(GInputStream *stream, fitted_PSF **cstars) {
 		star->ypos = y;
 		star->mag = Gmag;
 		star->BV = -99.9;
+		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -1026,6 +1029,7 @@ static int read_PPMXL_catalog(GInputStream *stream, fitted_PSF **cstars) {
 		star->ypos = y;
 		star->mag = Jmag;
 		star->BV = -99.9;
+		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -1068,6 +1072,7 @@ static int read_BRIGHT_STARS_catalog(GInputStream *stream, fitted_PSF **cstars) 
 		star->ypos = y;
 		star->mag = Vmag;
 		star->BV = BV;
+		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -1110,6 +1115,7 @@ static int read_APASS_catalog(GInputStream *stream, fitted_PSF **cstars) {
 		star->ypos = y;
 		star->mag = Vmag;
 		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
+		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -1250,7 +1256,7 @@ gpointer match_catalog(gpointer p) {
 		return GINT_TO_POINTER(1);
 	}
 
-	cstars = malloc((MAX_STARS + 1) * sizeof(fitted_PSF *));
+	cstars = new_fitted_stars(MAX_STARS);
 	if (cstars == NULL) {
 		PRINT_ALLOC_ERR;
 		args->ret = 1;
@@ -1266,7 +1272,7 @@ gpointer match_catalog(gpointer p) {
 			g_warning("%s\n", error->message);
 			g_clear_error(&error);
 		}
-		free_fitted_stars(cstars);
+		free(cstars); // don't use free_fitted_stars because it is empty and it will crash
 		args->ret = 1;
 		siril_add_idle(end_plate_solver, args);
 		g_object_unref(catalog);

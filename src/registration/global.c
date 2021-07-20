@@ -194,7 +194,7 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	 * that would destroy com.stars
 	 */
 	i = 0;
-	sadata->refstars = malloc((MAX_STARS + 1) * sizeof(fitted_PSF *));
+	sadata->refstars = new_fitted_stars(MAX_STARS);
 	if (!sadata->refstars) {
 		PRINT_ALLOC_ERR;
 		return 1;

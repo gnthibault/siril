@@ -25,6 +25,7 @@
 
 #include "registration.h"
 #include "algos/PSF.h"
+#include "algos/star_finder.h"
 #include "io/sequence.h"
 #include "io/image_format_fits.h"
 #include "core/processing.h"
@@ -117,7 +118,7 @@ static gboolean _3stars_seqpsf_end(gpointer p) {
 	}
 	update_icons(awaiting_star - 1, TRUE);
 
-	com.stars = realloc(com.stars, 4 * sizeof(fitted_PSF *)); // to be sure...
+	com.stars = realloc(com.stars, (3 + 1) * sizeof(fitted_PSF *)); // to be sure...
 	com.stars[awaiting_star - 1] = duplicate_psf(results[args->seq->current].stars[awaiting_star - 1]);
 
 psf_end:
@@ -189,7 +190,7 @@ void on_select_star_button_clicked(GtkButton *button, gpointer user_data) {
 	}
 
 	if (!com.stars)
-		com.stars = calloc(4, sizeof(fitted_PSF *));
+		com.stars = new_fitted_stars(3);
 
 	start_seqpsf();
 }

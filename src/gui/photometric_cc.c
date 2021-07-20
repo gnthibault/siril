@@ -606,7 +606,7 @@ int apply_photometric_cc() {
 		return 1;
 	}
 
-	stars = malloc((MAX_STARS + 1) * sizeof(fitted_PSF *));
+	stars = new_fitted_stars(MAX_STARS);
 	if (stars == NULL) {
 		PRINT_ALLOC_ERR;
 		set_cursor_waiting(FALSE);
