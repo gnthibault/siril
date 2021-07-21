@@ -185,8 +185,8 @@ void on_select_star_button_clicked(GtkButton *button, gpointer user_data) {
 	else if (three_buttons[2] == widget)
 		awaiting_star = 3;
 	else {
-	       fprintf(stderr, "unknown button clicked\n");
-       	       return;
+		fprintf(stderr, "unknown button clicked\n");
+		return;
 	}
 
 	if (!com.stars)

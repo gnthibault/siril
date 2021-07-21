@@ -335,7 +335,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 				return 1;
 			break;
 			case HOMOGRAPHY_TRANSFORMATION:
-				siril_log_color_message(_("Less than %d%% star pairs kept by homography model, Image %d may show important distorsion\n"),
+				siril_log_color_message(_("Less than %d%% star pairs kept by homography model, Image %d may show important distortion\n"),
 					"salmon", MIN_RATIO_INLIERS, filenum);
 			break;
 			default:

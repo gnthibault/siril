@@ -584,6 +584,7 @@ void sort_stars(psf_star **stars, int total) {
 		qsort(*(&stars), total, sizeof(psf_star*), compare_stars);
 }
 
+/* allocates a new psf_star structure with a size of n + 1. First element is initialized to NULL */
 psf_star **new_fitted_stars(size_t n) {
 	psf_star **stars = malloc((n + 1) * sizeof(psf_star *));
 	if (stars) stars[0] = NULL;
