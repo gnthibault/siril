@@ -200,7 +200,7 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 		return 1;
 	}
 	while (i < MAX_STARS && com.stars[i]) {
-		fitted_PSF *tmp = malloc(sizeof(fitted_PSF));
+		fitted_PSF *tmp = new_psf_star();
 		if (!tmp) {
 			PRINT_ALLOC_ERR;
 			sadata->refstars[i] = NULL;

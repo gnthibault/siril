@@ -306,7 +306,7 @@ static fitted_PSF *psf_minimiz_no_angle(gsl_matrix* z, double background) {
 	gsl_matrix *covar = gsl_matrix_alloc(p, p);
 	double *y = malloc(n * sizeof(double));
 	double *sigma = malloc(n * sizeof(double));
-	fitted_PSF *psf = malloc(sizeof(fitted_PSF));
+	fitted_PSF *psf = new_psf_star();
 	if (!y || !sigma || !psf) {
 		PRINT_ALLOC_ERR;
 		return NULL;
@@ -426,7 +426,7 @@ static fitted_PSF *psf_minimiz_angle(gsl_matrix* z, fitted_PSF *psf, gboolean fo
 	g_assert (n > 0);
 	int status;
 	unsigned int iter = 0;
-	fitted_PSF *psf_angle = malloc(sizeof(fitted_PSF));
+	fitted_PSF *psf_angle = new_psf_star();
 	gsl_matrix *covar = gsl_matrix_alloc(p, p);
 	double *y = malloc(n * sizeof(double));
 	double *sigma = malloc(n * sizeof(double));
@@ -807,16 +807,21 @@ double convert_single_fwhm_to_pixels(double fwhm, double s) {
 	return sqrt(s * 0.5) * _2_SQRT_2_LOG2;
 }
 
+fitted_PSF *new_psf_star() {
+	fitted_PSF *star = malloc(sizeof(fitted_PSF));
+	star->phot = NULL;
+
+	return star;
+}
+
 fitted_PSF *duplicate_psf(fitted_PSF *psf) {
 	if (!psf)
 		return NULL;
-	fitted_PSF *new_psf = malloc(sizeof(fitted_PSF));
+	fitted_PSF *new_psf = new_psf_star();
 	memcpy(new_psf, psf, sizeof(fitted_PSF));
 	if (psf->phot) {
 		new_psf->phot = malloc(sizeof(photometry));
 		memcpy(new_psf->phot, psf->phot, sizeof(photometry));
-	} else {
-		new_psf->phot = NULL;
 	}
 	return new_psf;
 }

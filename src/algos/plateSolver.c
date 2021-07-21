@@ -899,12 +899,11 @@ static int read_NOMAD_catalog(GInputStream *stream, fitted_PSF **cstars) {
 		}
 		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Vmag, &Bmag);
 
-		star = malloc(sizeof(fitted_PSF));
+		star = new_psf_star();
 		star->xpos = x;
 		star->ypos = y;
 		star->mag = Vmag;
 		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
-		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -939,12 +938,11 @@ static int read_TYCHO2_catalog(GInputStream *stream, fitted_PSF **cstars) {
 		}
 		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Vmag, &Bmag);
 
-		star = malloc(sizeof(fitted_PSF));
+		star = new_psf_star();
 		star->xpos = x;
 		star->ypos = y;
 		star->mag = Vmag;
 		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
-		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -981,12 +979,11 @@ static int read_GAIA_catalog(GInputStream *stream, fitted_PSF **cstars) {
 		}
 		sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Gmag, &BPmag);
 
-		star = malloc(sizeof(fitted_PSF));
+		star = new_psf_star();
 		star->xpos = x;
 		star->ypos = y;
 		star->mag = Gmag;
 		star->BV = -99.9;
-		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -1024,12 +1021,11 @@ static int read_PPMXL_catalog(GInputStream *stream, fitted_PSF **cstars) {
 		}
 		sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Jmag, &Hmag);
 
-		star = malloc(sizeof(fitted_PSF));
+		star = new_psf_star();
 		star->xpos = x;
 		star->ypos = y;
 		star->mag = Jmag;
 		star->BV = -99.9;
-		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -1067,12 +1063,11 @@ static int read_BRIGHT_STARS_catalog(GInputStream *stream, fitted_PSF **cstars) 
 		}
 		sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Vmag, &BV);
 
-		star = malloc(sizeof(fitted_PSF));
+		star = new_psf_star();
 		star->xpos = x;
 		star->ypos = y;
 		star->mag = Vmag;
 		star->BV = BV;
-		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -1110,12 +1105,11 @@ static int read_APASS_catalog(GInputStream *stream, fitted_PSF **cstars) {
 		}
 		int n = sscanf(line, "%lf %lf %lf %lf %lf", &r, &x, &y, &Vmag, &Bmag);
 
-		star = malloc(sizeof(fitted_PSF));
+		star = new_psf_star();
 		star->xpos = x;
 		star->ypos = y;
 		star->mag = Vmag;
 		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
-		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;

@@ -71,8 +71,7 @@ static void read_photometry_cc_file(GInputStream *stream, fitted_PSF **stars, in
 	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
 				NULL, NULL))) {
 		int tmp;
-		fitted_PSF *star = malloc(sizeof(fitted_PSF));
-		star->phot = NULL;
+		fitted_PSF *star = new_psf_star();
 
 		sscanf(line, "%d %lf %lf %lf\n", &tmp, &(star->xpos), &(star->ypos), &(star->BV));
 

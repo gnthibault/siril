@@ -51,6 +51,7 @@ void fwhm_to_pixels(fitted_PSF *result);
 gboolean get_fwhm_as_arcsec_if_possible(fitted_PSF *star, double *fwhmx, double *fwhmy, char **unit);
 double convert_single_fwhm_to_pixels(double fwhm, double s);
 
+fitted_PSF *new_psf_star();
 fitted_PSF *duplicate_psf(fitted_PSF *);
 void free_psf(fitted_PSF *psf);
 
