@@ -29,17 +29,12 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include "opencv2/core/version.hpp"
-#if CV_MAJOR_VERSION == 2
-#include "opencv/findHomography/calib3d.hpp"
-#else
-#if CV_MAJOR_VERSION == 4
 #define CV_RANSAC FM_RANSAC
-#endif
 #include <opencv2/calib3d.hpp>
-#endif
 
 #include "core/siril.h"
 #include "core/proto.h"
+#include "registration/registration.h"
 #include "registration/matching/misc.h"
 #include "registration/matching/atpmatch.h"
 #include "opencv.h"
@@ -357,30 +352,67 @@ static void convert_MatH_to_H(Mat from, Homography *to) {
 }
 
 unsigned char *cvCalculH(s_star *star_array_img,
-		struct s_star *star_array_ref, int n, Homography *Hom) {
+		struct s_star *star_array_ref, int n, Homography *Hom, transformation_type type) {
 
 	std::vector<Point2f> ref;
 	std::vector<Point2f> img;
-	Mat mask;
+	// needed for shift transform which uses estimateTranslation3D
+	std::vector<Point3f> ref3;
+	std::vector<Point3f> img3;
+
+	Mat H, a, mask, s;
 	unsigned char *ret = NULL;
-	int i;
 
 	/* build vectors with lists of stars. */
-	for (i = 0; i < n; i++) {
-		ref.push_back(Point2f(star_array_ref[i].x, star_array_ref[i].y));
-		img.push_back(Point2f(star_array_img[i].x, star_array_img[i].y));
-	}
-
-	Mat H = findHomography(img, ref, CV_RANSAC, defaultRANSACReprojThreshold, mask);
-	if (countNonZero(H) < 1) {
+	switch (type) {
+	case AFFINE_TRANSFORMATION:
+	case HOMOGRAPHY_TRANSFORMATION:
+		for (int i = 0; i < n; i++) {
+			ref.push_back(Point2f(star_array_ref[i].x, star_array_ref[i].y));
+			img.push_back(Point2f(star_array_img[i].x, star_array_img[i].y));
+		}
+	break;
+	case SHIFT_TRANSFORMATION:
+		for (int i = 0; i < n; i++) {
+			ref3.push_back(Point3f(star_array_ref[i].x, star_array_ref[i].y, 0.));
+			img3.push_back(Point3f(star_array_img[i].x, star_array_img[i].y, 0.));
+		}
+	break;
+	default:
 		return NULL;
 	}
+
+	//fitting the model
+	switch (type) {
+	case SHIFT_TRANSFORMATION:
+		estimateTranslation3D(img3, ref3, s, mask, CV_RANSAC, defaultRANSACReprojThreshold);
+		// if (float(countNonZero(mask))/n < 0.1) return NULL; //TBD trying to implement a way to detect the quality of the fit - rejecting if less than 10% are inliers
+		H = Mat::eye(3, 3, CV_64FC1);
+		H.at<double>(0,2) = s.at<double>(0);
+		H.at<double>(1,2) = s.at<double>(1);		
+	break;
+	case AFFINE_TRANSFORMATION:
+		a = estimateAffinePartial2D(img, ref, mask, CV_RANSAC, defaultRANSACReprojThreshold);
+		if (countNonZero(a) < 1) return NULL; //must count before filling H, otherwise zero elements cannot be caught
+		H = Mat::eye(3, 3, CV_64FC1);
+		a.copyTo(H(cv::Rect_<int>(0,0,3,2))); //slicing is (x, y, w, h)
+	break;
+	case HOMOGRAPHY_TRANSFORMATION:
+		H = findHomography(img, ref, CV_RANSAC, defaultRANSACReprojThreshold, mask);
+		if (countNonZero(H) < 1) return NULL;
+		break;
+	default:
+		return NULL;
+	}
+
 	Hom->Inliers = countNonZero(mask);
 	if (n > 0) {
 		ret = (unsigned char *) malloc(n * sizeof(unsigned char));
-		for (i = 0; i < n; i++) {
+		for (int i = 0; i < n; i++) {
 			ret[i] = mask.at<uchar>(i);
 		}
+	} else {
+		return NULL;
 	}
 
 	convert_MatH_to_H(H, Hom);

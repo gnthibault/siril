@@ -66,8 +66,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "http://mirror.sergal.org/gnu/gsl/gsl-2.6.tar.gz",
-                    "sha256": "b782339fc7a38fe17689cb39966c4d821236c28018b6593ddb6fd59ee40786a8"
+                    "url": "http://mirror.sergal.org/gnu/gsl/gsl-2.7.tar.gz",
+                    "sha256": "efbbf3785da0e53038be7907500628b466152dbc3c173a87de1b5eba2e23602b"
                 }
             ],
             "cleanup": [
@@ -109,8 +109,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "http://fftw.org/fftw-3.3.8.tar.gz",
-                    "sha256": "6113262f6e92c5bd474f2875fa1b01054c4ad5040f6b0da7c03c98821d9ae303"
+                    "url": "http://fftw.org/fftw-3.3.9.tar.gz",
+                    "sha256": "bf2c7ce40b04ae811af714deb512510cc2c17b9ab9d6ddcf49fe4487eea7af3d"
                 }
             ],
             "cleanup": [
@@ -136,13 +136,34 @@
             "config-opts": [
                 "-DCMAKE_BUILD_TYPE=RELEASE",
                 "-DBUILD_EXAMPLES=OFF",
-                "-DOPENCV_GENERATE_PKGCONFIG=ON"
+                "-DOPENCV_GENERATE_PKGCONFIG=ON",
+                "-DBUILD_DOCS=OFF",
+                "-DBUILD_opencv_apps=OFF",
+                "-DBUILD_opencv_python2=OFF",
+                "-DBUILD_opencv_python3=OFF",
+                "-DBUILD_PERF_TESTS=OFF",
+                "-DBUILD_SHARED_LIBS=ON",
+                "-DBUILD_TESTS=OFF",
+                "-DCMAKE_BUILD_TYPE=RELEASE",
+                "-DENABLE_PRECOMPILED_HEADERS=OFF",
+                "-DFORCE_VTK=OFF",
+                "-DWITH_FFMPEG=OFF",
+                "-DWITH_GDAL=OFF",
+                "-DWITH_IPP=OFF",
+                "-DWITH_OPENEXR=OFF",
+                "-DWITH_OPENGL=OFF",
+                "-DWITH_QT=OFF",
+                "-DWITH_TBB=OFF",
+                "-DWITH_XINE=OFF",
+                "-DBUILD_JPEG=ON",
+                "-DBUILD_TIFF=ON",
+                "-DBUILD_PNG=ON"
             ],
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://github.com/opencv/opencv/archive/4.4.0.zip",
-                    "sha256": "7faa0991c74cda52313ee37ef73f3e451332a47e7aa36c2bb2240b69f5002d27"
+                    "url": "https://github.com/opencv/opencv/archive/4.5.3.zip",
+                    "sha256": "a61e7a4618d353140c857f25843f39b2abe5f451b018aab1604ef0bc34cd23d5"
                 }
             ]
         },
@@ -178,8 +199,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url" : "https://www.libraw.org/data/LibRaw-0.20.0.tar.gz",
-                    "sha256" : "1f0a383da2ce9f409087facd28261decbf6be72cc90c78cd003b0766e4d694a3"
+                    "url" : "https://www.libraw.org/data/LibRaw-0.20.2.tar.gz",
+                    "sha256" : "dc1b486c2003435733043e4e05273477326e51c3ea554c6864a4eafaff1004a6"
                 }
             ]
         },
@@ -192,8 +213,8 @@
             "sources": [
                 {
                     "type": "archive",
-                    "url": "https://hyperrealm.github.io/libconfig/dist/libconfig-1.7.2.tar.gz",
-                    "sha256": "7c3c7a9c73ff3302084386e96f903eb62ce06953bb1666235fac74363a16fad9"
+                    "url": "https://hyperrealm.github.io/libconfig/dist/libconfig-1.7.3.tar.gz",
+                    "sha256": "545166d6cac037744381d1e9cc5a5405094e7bfad16a411699bcff40bbb31ee7"
                 }
             ],
             "cleanup": [

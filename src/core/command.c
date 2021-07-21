@@ -686,12 +686,6 @@ int process_clahe(int nb) {
 	double clip_limit;
 	int size;
 
-	if (CV_MAJOR_VERSION < 3) {
-		siril_log_message(_("Your version of opencv is "
-				"too old for this feature. Please upgrade your system."));
-		return 1;
-	}
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
@@ -3186,7 +3180,9 @@ int process_register(int nb) {
 	reg_args->translation_only = FALSE;
 	reg_args->x2upscale = FALSE;
 	reg_args->prefix = "r_";
-	reg_args->min_pairs = AT_MATCH_MINPAIRS;
+	reg_args->min_pairs = 10; // 10 is good enough to ensure good matching
+	reg_args->type = HOMOGRAPHY_TRANSFORMATION;
+	reg_args->layer = (reg_args->seq->nb_layers == 3) ? 1 : 0;
 
 	/* check for options */
 	for (i = 2; i < nb; i++) {
@@ -3195,6 +3191,44 @@ int process_register(int nb) {
 				reg_args->x2upscale = TRUE;
 			} else if (!strcmp(word[i], "-norot")) {
 				reg_args->translation_only = TRUE;
+				reg_args->type = SHIFT_TRANSFORMATION; //using most rigid model as default if -norot
+			} else if (g_str_has_prefix(word[i], "-transf=")) {
+				char *current = word[i], *value;
+				value = current + 8;
+				if (value[0] == '\0') {
+					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+					return 1;
+				}
+				if(!g_strcmp0(g_ascii_strdown(value, -1),"shift")) { 
+					reg_args->type = SHIFT_TRANSFORMATION;
+					continue;
+				}
+				if(!g_strcmp0(g_ascii_strdown(value, -1),"affine")) {
+					reg_args->type = AFFINE_TRANSFORMATION;
+					continue;
+				}
+				if(!g_strcmp0(g_ascii_strdown(value, -1),"homography")) {
+					reg_args->type = HOMOGRAPHY_TRANSFORMATION;
+					continue;
+				} 
+				siril_log_message(_("Unknown transformation type %s, aborting.\n"), value);
+				return 1;
+			} else if (g_str_has_prefix(word[i], "-layer=")) {
+				if (reg_args->seq->nb_layers == 1) {  // handling mono case
+					siril_log_message(_("This sequence is mono, ignoring layer number.\n"));
+					continue;
+				}
+				char *current = word[i], *value;
+				value = current + 7;
+				if (value[0] == '\0') {
+					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+					return 1;
+				}
+				if ((g_ascii_strtoull(value, NULL, 10) < 0) || (g_ascii_strtoull(value, NULL, 10) > 2)) { 
+					siril_log_message(_("Unknown layer number %s, must be between 0 and 2, will use green layer.\n"), value);
+					continue;
+				}
+				reg_args->layer = g_ascii_strtoull(value, NULL, 10);
 			} else if (g_str_has_prefix(word[i], "-prefix=")) {
 				char *current = word[i], *value;
 				value = current + 8;
@@ -3210,10 +3244,10 @@ int process_register(int nb) {
 					siril_log_message(_("Missing argument to %s, aborting.\n"), current);
 					return 1;
 				}
-				if (g_ascii_strtoull(value, NULL, 10) < AT_MATCH_MINPAIRS) {
+				if (g_ascii_strtoull(value, NULL, 10) < 4) { // using absolute min_pairs required by homography
 					gchar *str = ngettext("%d smaller than minimum allowable star pairs: %d, aborting.\n", "%d smaller than minimum allowable star pairs: %d, aborting.\n",
 							g_ascii_strtoull(value, NULL, 10));
-					str = g_strdup_printf(str, g_ascii_strtoull(value, NULL, 10), AT_MATCH_MINPAIRS);
+					str = g_strdup_printf(str, g_ascii_strtoull(value, NULL, 10), reg_args->min_pairs);
 					siril_log_message(str);
 					g_free(str);
 
@@ -3242,10 +3276,7 @@ int process_register(int nb) {
 		}
 	}
 
-	/* getting the selected registration layer from the combo box. The value is the index
-	 * of the selected line, and they are in the same order than layers so there should be
-	 * an exact matching between the two */
-	reg_args->layer = (reg_args->seq->nb_layers == 3) ? 1 : 0;
+
 	reg_args->interpolation = OPENCV_AREA;
 	get_the_registration_area(reg_args, method);	// sets selection
 	reg_args->run_in_thread = TRUE;

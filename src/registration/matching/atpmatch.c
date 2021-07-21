@@ -592,7 +592,8 @@ int atPrepareHomography(int numA, /* I: number of stars in list A */
 		int numB, /* I: number of stars in list B */
 		struct s_star *listB, /* I: match this set of objects with list A */
 		Homography *H,
-		gboolean print_output
+		gboolean print_output,
+		transformation_type type
 ) {
 	int ret = 0;
 	int num_stars_B; /* number of stars in chain B */
@@ -608,7 +609,7 @@ int atPrepareHomography(int numA, /* I: number of stars in list A */
 	g_assert(star_array_A != NULL);
 	g_assert(star_array_B != NULL);
 
-	mask = cvCalculH(star_array_A, star_array_B, num_stars_B, H);
+	mask = cvCalculH(star_array_A, star_array_B, num_stars_B, H, type);
 	ret = (mask == NULL ? 1 : 0);
 
 	if (print_output) {

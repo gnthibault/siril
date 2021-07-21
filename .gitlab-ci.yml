@@ -69,15 +69,45 @@ build-image-stable:
     - echo "FROM debian:stable" > Dockerfile
     - echo "RUN apt-get update" >> Dockerfile
     - echo "RUN apt-get install -y --no-install-recommends \\" >> Dockerfile
-    - echo "at-spi2-core build-essential desktop-file-utils cmake hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev libopencv-dev librsvg2-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev liblcms2-dev wget libtool libcurl4-gnutls-dev wcslib-dev python3 python3-pip libjson-glib-dev" >> Dockerfile
-    - echo "RUN wget https://www.libraw.org/data/LibRaw-0.20.0.tar.gz \\" >> Dockerfile
-    - echo " && tar xfv LibRaw-0.20.0.tar.gz \\" >> Dockerfile
-    - echo " && cd LibRaw-0.20.0 \\" >> Dockerfile
+    - echo "at-spi2-core build-essential desktop-file-utils cmake unzip hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev librsvg2-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev liblcms2-dev wget libtool libcurl4-gnutls-dev wcslib-dev python3 python3-pip libjson-glib-dev" >> Dockerfile
+    - echo "RUN wget https://www.libraw.org/data/LibRaw-0.20.2.tar.gz \\" >> Dockerfile
+    - echo " && tar xfv LibRaw-0.20.2.tar.gz \\" >> Dockerfile
+    - echo " && cd LibRaw-0.20.2 \\" >> Dockerfile
     - echo " && autoreconf -fi \\" >> Dockerfile
     - echo " && ./configure --prefix /usr \\" >> Dockerfile
     - echo " && make install \\" >> Dockerfile
     - echo " && cd .. \\" >> Dockerfile
-    - echo " && rm -rf LibRaw-0.20.0 \\" >> Dockerfile
+    - echo " && rm -rf LibRaw-0.20.2 \\" >> Dockerfile
+    - echo " && wget -O opencv.zip https://github.com/opencv/opencv/archive/4.5.3.zip \\" >> Dockerfile
+    - echo " && unzip opencv.zip && cd opencv-4.5.3 \\" >> Dockerfile
+    - echo " && mkdir -p build && cd build \\" >> Dockerfile
+    - echo " && cmake -DCMAKE_INSTALL_PREFIX:PATH=/usr \\" >> Dockerfile
+    - echo " -DOPENCV_GENERATE_PKGCONFIG=ON \\" >> Dockerfile
+    - echo " -DBUILD_DOCS=OFF \\" >> Dockerfile
+    - echo " -DBUILD_EXAMPLES=OFF \\" >> Dockerfile
+    - echo " -DBUILD_opencv_apps=OFF \\" >> Dockerfile
+    - echo " -DBUILD_opencv_python2=OFF \\" >> Dockerfile
+    - echo " -DBUILD_opencv_python3=OFF \\" >> Dockerfile
+    - echo " -DBUILD_PERF_TESTS=OFF \\" >> Dockerfile
+    - echo " -DBUILD_SHARED_LIBS=ON \\" >> Dockerfile
+    - echo " -DBUILD_TESTS=OFF \\" >> Dockerfile
+    - echo " -DCMAKE_BUILD_TYPE=RELEASE \\" >> Dockerfile
+    - echo " -DENABLE_PRECOMPILED_HEADERS=OFF \\" >> Dockerfile
+    - echo " -DFORCE_VTK=OFF \\" >> Dockerfile
+    - echo " -DWITH_FFMPEG=OFF \\" >> Dockerfile
+    - echo " -DWITH_GDAL=OFF \\" >> Dockerfile
+    - echo " -DWITH_IPP=OFF \\" >> Dockerfile
+    - echo " -DWITH_OPENEXR=OFF \\" >> Dockerfile
+    - echo " -DWITH_OPENGL=OFF \\" >> Dockerfile
+    - echo " -DWITH_QT=OFF \\" >> Dockerfile
+    - echo " -DWITH_TBB=OFF \\" >> Dockerfile
+    - echo " -DWITH_XINE=OFF \\" >> Dockerfile
+    - echo " -DBUILD_JPEG=ON \\" >> Dockerfile
+    - echo " -DBUILD_TIFF=ON \\" >> Dockerfile
+    - echo " -DBUILD_PNG=ON ..\\" >> Dockerfile
+    - echo " && make install \\" >> Dockerfile
+    - echo " && cd ../.. \\" >> Dockerfile
+    - echo " && rm -rf opencv-4.5.3 opencv.zip \\" >> Dockerfile
     - echo " && python3 -m pip install meson \\" >> Dockerfile
     - echo " && python3 -m pip install ninja" >> Dockerfile
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-debian-stable --cache=true --cache-ttl=120h

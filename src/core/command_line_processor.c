@@ -287,10 +287,12 @@ static void show_command_help_popup(GtkEntry *entry) {
 				str = g_string_append(str, _(current->definition));
 				str = g_string_append(str, "\n\n<b>");
 				str = g_string_append(str, _("Can be used in a script: "));
-				str = g_string_append(str, "<span foreground=\"red\">");
+
 				if (current->scriptable) {
+					str = g_string_append(str, "<span foreground=\"green\">");
 					str = g_string_append(str, _("YES"));
 				} else {
+					str = g_string_append(str, "<span foreground=\"red\">");
 					str = g_string_append(str, _("NO"));
 				}
 				str = g_string_append(str, "</span></b>");

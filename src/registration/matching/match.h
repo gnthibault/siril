@@ -9,6 +9,6 @@
 
 int new_star_match(psf_star **s1, psf_star **s2, int n, int nobj_override,
 		double s_min, double s_max,
-		Homography *H, gboolean print_output);
+		Homography *H, gboolean print_output, transformation_type type);
 
 #endif   /* MATCH_H */

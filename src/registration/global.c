@@ -43,6 +43,7 @@
 #include "registration/matching/misc.h"
 #include "opencv/opencv.h"
 
+# define MIN_RATIO_INLIERS 30 //percentage of inliers after transformation fitting (shift, affine or homography)
 
 /* TODO:
  * check usage of openmp in functions called by these ones (to be disabled)
@@ -51,6 +52,17 @@
 
 static void create_output_sequence_for_global_star(struct registration_args *args);
 static void print_alignment_results(Homography H, int filenum, float FWHMx, float FWHMy, char *units);
+
+static int get_min_requires_stars(transformation_type type) {
+	switch(type) {
+	case SHIFT_TRANSFORMATION:
+	case AFFINE_TRANSFORMATION:
+		return 3;
+	default:
+	case HOMOGRAPHY_TRANSFORMATION:
+		return 4;
+	}
+}
 
 regdata *star_align_get_current_regdata(struct registration_args *regargs) {
 	regdata *current_regdata;
@@ -160,7 +172,7 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	siril_log_message(_("Found %d stars in reference, channel #%d\n"), nb_stars, regargs->layer);
 
 
-	if (!com.stars || nb_stars < AT_MATCH_MINPAIRS) {
+	if (!com.stars || nb_stars < get_min_requires_stars(regargs->type)) {
 		siril_log_message(
 				_("There are not enough stars in reference image to perform alignment\n"));
 		args->seq->regparam[regargs->layer] = NULL;
@@ -265,7 +277,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 
 		siril_log_message(_("Found %d stars in image %d, channel #%d\n"), nb_stars, filenum, regargs->layer);
 
-		if (!stars || nb_stars < AT_MATCH_MINPAIRS) {
+		if (!stars || nb_stars < get_min_requires_stars(regargs->type)) {
 			siril_log_message(
 					_("Not enough stars. Image %d skipped\n"), filenum);
 			if (stars) free_fitted_stars(stars);
@@ -287,7 +299,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		double scale_max = 1.1;
 		retvalue = 1;
 		while (retvalue && attempt < NB_OF_MATCHING_TRY){
-			retvalue = new_star_match(stars, sadata->refstars, nbpoints, nobj, scale_min, scale_max, &H, FALSE);
+			retvalue = new_star_match(stars, sadata->refstars, nbpoints, nobj, scale_min, scale_max, &H, FALSE, regargs->type);
 			if (attempt == 1) {
 				scale_min = -1.0;
 				scale_max = -1.0;
@@ -302,12 +314,35 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 			free_fitted_stars(stars);
 			return 1;
 		}
-		if (H.pair_matched < regargs->min_pairs) {
+		if (H.Inliers < regargs->min_pairs) {
 			siril_log_color_message(_("Not enough star pairs (%d): Image %d skipped\n"),
-					"red", H.pair_matched, filenum);
+					"red", H.Inliers, filenum);
 			free_fitted_stars(stars);
 			return 1;
 		}
+		if (((double)H.Inliers / (double)H.pair_matched) < ((double)MIN_RATIO_INLIERS / 100.)) {
+			switch (regargs->type) {
+			case SHIFT_TRANSFORMATION:
+				siril_log_color_message(_("Less than %d%% star pairs kept by shift model, it may be too rigid for your data: Image %d skipped\n"),
+					"red", MIN_RATIO_INLIERS, filenum);
+				free_fitted_stars(stars);
+				return 1;
+			break;
+			case AFFINE_TRANSFORMATION:
+				siril_log_color_message(_("Less than %d%% star pairs kept by affine model, it may be too rigid for your data: Image %d skipped\n"),
+					"red", MIN_RATIO_INLIERS, filenum);
+				free_fitted_stars(stars);
+				return 1;
+			break;
+			case HOMOGRAPHY_TRANSFORMATION:
+				siril_log_color_message(_("Less than %d%% star pairs kept by homography model, Image %d may show important distorsion\n"),
+					"salmon", MIN_RATIO_INLIERS, filenum);
+			break;
+			default:
+			printf("Should not happen\n");
+			}
+		}
+
 
 		FWHM_average(stars, nbpoints, &FWHMx, &FWHMy, &units);
 #ifdef _OPENMP
@@ -318,7 +353,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 		sadata->current_regdata[in_index].roundness = FWHMy/FWHMx;
 		sadata->current_regdata[in_index].fwhm =  FWHMx;
 		sadata->current_regdata[in_index].weighted_fwhm = 2 * FWHMx
-				* (((double) sadata->fitted_stars) - (double) H.pair_matched)
+				* (((double) sadata->fitted_stars) - (double) H.Inliers)
 				/ (double) sadata->fitted_stars + FWHMx;
 
 		if (!regargs->translation_only) {
@@ -608,10 +643,8 @@ static void print_alignment_results(Homography H, int filenum, float FWHMx, floa
 
 	/* Matching information */
 	siril_log_color_message(_("Matching stars in image %d: done\n"), "green", filenum);
-	gchar *str = ngettext("%d pair match.\n", "%d pair matches.\n", H.pair_matched);
-	str = g_strdup_printf(str, H.pair_matched);
-	siril_log_message(str);
-	g_free(str);
+	siril_log_message(_("Initial pair matches: %d\n"), H.pair_matched);
+	siril_log_message(_("Pair matches after fitting: %d\n"), H.Inliers);
 	inliers = 1.0 - ((((double) H.pair_matched - (double) H.Inliers)) / (double) H.pair_matched);
 	siril_log_message(_("Inliers:%*.3f\n"), 11, inliers);
 

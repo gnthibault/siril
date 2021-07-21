@@ -63,13 +63,6 @@ static void clahe_close(gboolean revert) {
 
 static int clahe_update_preview() {
 	copy_backup_to_gfit();
-	if (CV_MAJOR_VERSION < 3) {
-		char *error = siril_log_message(_("Your version of opencv is "
-				"too old for this feature. Please upgrade your system."));
-		siril_message_dialog(GTK_MESSAGE_ERROR, _("Upgrade your system"),
-				error);
-		return 1;
-	}
 
 	struct CLAHE_data *args = malloc(sizeof(struct CLAHE_data));
 
