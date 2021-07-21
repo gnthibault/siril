@@ -118,7 +118,7 @@ static gboolean _3stars_seqpsf_end(gpointer p) {
 	}
 	update_icons(awaiting_star - 1, TRUE);
 
-	com.stars = realloc(com.stars, (3 + 1) * sizeof(psf_star *)); // to be sure...
+	com.stars = realloc(com.stars, 4 * sizeof(psf_star *)); // to be sure...
 	com.stars[awaiting_star - 1] = duplicate_psf(results[args->seq->current].stars[awaiting_star - 1]);
 
 psf_end:
@@ -190,7 +190,7 @@ void on_select_star_button_clicked(GtkButton *button, gpointer user_data) {
 	}
 
 	if (!com.stars)
-		com.stars = new_fitted_stars(3);
+		com.stars = calloc(4, sizeof(psf_star *)); // don't use new_psf_star. It is a bit different
 
 	start_seqpsf();
 }
@@ -420,7 +420,7 @@ static int rotate_images(struct registration_args *regargs, regdata *current_reg
 	for (int i = 0; i < results_size; i++) {
 		for (int s = 0; s < 3; s++)
 			if (results[i].stars[s])
-				free_psf(results[i].stars[s]);
+				free(results[i].stars[s]);
 	}
 	free(results);
 	results = NULL;
@@ -431,4 +431,3 @@ static int rotate_images(struct registration_args *regargs, regdata *current_reg
 	set_registration_ready(FALSE);
 	return args->retval;
 }
-
