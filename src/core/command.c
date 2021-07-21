@@ -1158,7 +1158,7 @@ int process_set_mag(int nb) {
 			siril_log_message(_("Select an area first\n"));
 			return 1;
 		}
-		fitted_PSF *result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE, TRUE);
+		psf_star *result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE, TRUE);
 		if (result) {
 			com.magOffset = mag - result->mag;
 			siril_log_message(_("Relative magnitude: %.3lf, "
@@ -1281,7 +1281,7 @@ int process_psf(int nb){
 			siril_log_message(_("Select an area first\n"));
 			return 1;
 		}
-		fitted_PSF *result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE, TRUE);
+		psf_star *result = psf_get_minimisation(&gfit, layer, &com.selection, TRUE, TRUE, TRUE);
 		if (result) {
 			psf_display_result(result, &com.selection);
 			free_psf(result);

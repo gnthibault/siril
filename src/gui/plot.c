@@ -163,7 +163,7 @@ static void build_photometry_dataset(sequence *seq, int dataset, int size,
 	int i, j;
 	double offset = -1001.0;
 	double fwhm;
-	fitted_PSF **psfs = seq->photometry[dataset], *ref_psf;
+	psf_star **psfs = seq->photometry[dataset], *ref_psf;
 	if (seq->reference_star >= 0 && !seq->photometry[seq->reference_star])
 		seq->reference_star = -1;
 

@@ -121,7 +121,7 @@ static int prepare_to_recalc(int num_matched_A,
 		struct s_star *matched_list_B, struct s_star *star_list_A_copy,
 		TRANS *trans);
 
-int new_star_match(fitted_PSF **s1, fitted_PSF **s2, int n, int nobj_override,
+int new_star_match(psf_star **s1, psf_star **s2, int n, int nobj_override,
 		double s_min, double s_max,
 		Homography *H, gboolean print_output) {
 	int ret;

@@ -658,7 +658,7 @@ static void draw_stars(const draw_data_t* dd) {
 								  com.seq.photometry_colors[i][1],
 								  com.seq.photometry_colors[i][2], 1.0);
 			cairo_set_line_width(cr, 2.0 / dd->zoom);
-			fitted_PSF *the_psf = com.seq.photometry[i][com.seq.current];
+			psf_star *the_psf = com.seq.photometry[i][com.seq.current];
 			if (the_psf) {
 				double size = the_psf->fwhmx * 2.0;
 				cairo_arc(cr, the_psf->xpos, the_psf->ypos, size, 0., 2. * M_PI);

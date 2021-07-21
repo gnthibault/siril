@@ -250,7 +250,7 @@ static double hi_data() {
 }
 
 /* Function that compute all photometric data. The result must be freed */
-photometry *getPhotometryData(gsl_matrix* z, fitted_PSF *psf, gboolean verbose) {
+photometry *getPhotometryData(gsl_matrix* z, psf_star *psf, gboolean verbose) {
 	int width = z->size2;
 	int height = z->size1;
 	int n_sky = 0, ret;

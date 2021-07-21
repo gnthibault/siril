@@ -14,7 +14,7 @@ typedef struct struct_coeff {
 
 struct photometric_cc_data {
 	fits *fit;
-	fitted_PSF **stars;
+	psf_star **stars;
 	GInputStream *bv_stream;
 	rectangle bg_area;
 	gboolean bg_auto;

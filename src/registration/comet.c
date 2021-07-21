@@ -112,7 +112,7 @@ static int get_reglayer() {
 }
 
 void on_button1_comet_clicked(GtkButton *button, gpointer p) {
-	fitted_PSF *result = NULL;
+	psf_star *result = NULL;
 	int layer = get_reglayer();
 
 	if (com.selection.h && com.selection.w) {
@@ -144,7 +144,7 @@ void on_button1_comet_clicked(GtkButton *button, gpointer p) {
 }
 
 void on_button2_comet_clicked(GtkButton *button, gpointer p) {
-	fitted_PSF *result = NULL;
+	psf_star *result = NULL;
 	int layer = get_reglayer();
 
 	if (com.selection.h && com.selection.w) {

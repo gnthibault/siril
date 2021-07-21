@@ -202,7 +202,7 @@ static void get_stars_list_store() {
 	gtk_tree_view_column_set_cell_data_func(col, cell, gdouble_rmse_cell_data_function, NULL, NULL);
 }
 
-static void display_PSF(fitted_PSF **result) {
+static void display_PSF(psf_star **result) {
 	if (result) {
 		gchar *msg;
 		int i = 0;
@@ -408,7 +408,7 @@ static void save_stars_dialog() {
 
 /********************* public ***********************/
 
-void add_star_to_list(fitted_PSF *star) {
+void add_star_to_list(psf_star *star) {
 	static GtkTreeSelection *selection = NULL;
 	GtkTreeIter iter;
 
@@ -442,7 +442,7 @@ void add_star_to_list(fitted_PSF *star) {
 	display_status();
 }
 
-void fill_stars_list(fits *fit, fitted_PSF **stars) {
+void fill_stars_list(fits *fit, psf_star **stars) {
 	int i = 0;
 	if (stars == NULL)
 		return;
@@ -457,7 +457,7 @@ void fill_stars_list(fits *fit, fitted_PSF **stars) {
 	com.selected_star = -1;
 }
 
-void refresh_star_list(fitted_PSF **star){
+void refresh_star_list(psf_star **star){
 	get_stars_list_store();
 	gtk_list_store_clear(liststore_stars);
 	fill_stars_list(&gfit, com.stars);
@@ -498,7 +498,7 @@ void pick_a_star() {
 					_("To determine the PSF, please make a selection around a star."));
 			return;
 		}
-		fitted_PSF *new_star = add_star(&gfit, layer, &new_index);
+		psf_star *new_star = add_star(&gfit, layer, &new_index);
 		if (new_star) {
 			add_star_to_list(new_star);
 			siril_open_dialog("stars_list_window");
@@ -541,7 +541,7 @@ static const char *SNR_quality(double SNR) {
 	else return _("N/A");
 }
 
-void popup_psf_result(fitted_PSF *result, rectangle *area) {
+void popup_psf_result(psf_star *result, rectangle *area) {
 	gchar *msg, *coordinates, *url = NULL;
 	const char *str;
 	if (com.magOffset > 0.0)

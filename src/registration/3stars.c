@@ -39,7 +39,7 @@ static int awaiting_star = 0;
 static GtkWidget *three_buttons[3] = { 0 };
 
 struct _3psf {
-	fitted_PSF *stars[3];
+	psf_star *stars[3];
 };
 
 static struct _3psf *results;
@@ -118,7 +118,7 @@ static gboolean _3stars_seqpsf_end(gpointer p) {
 	}
 	update_icons(awaiting_star - 1, TRUE);
 
-	com.stars = realloc(com.stars, (3 + 1) * sizeof(fitted_PSF *)); // to be sure...
+	com.stars = realloc(com.stars, (3 + 1) * sizeof(psf_star *)); // to be sure...
 	com.stars[awaiting_star - 1] = duplicate_psf(results[args->seq->current].stars[awaiting_star - 1]);
 
 psf_end:

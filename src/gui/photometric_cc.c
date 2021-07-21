@@ -63,7 +63,7 @@ static void start_photometric_cc() {
 	}
 }
 
-static void read_photometry_cc_file(GInputStream *stream, fitted_PSF **stars, int *nb_stars) {
+static void read_photometry_cc_file(GInputStream *stream, psf_star **stars, int *nb_stars) {
 	gchar *line;
 	int i = 0;
 
@@ -71,7 +71,7 @@ static void read_photometry_cc_file(GInputStream *stream, fitted_PSF **stars, in
 	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
 				NULL, NULL))) {
 		int tmp;
-		fitted_PSF *star = new_psf_star();
+		psf_star *star = new_psf_star();
 
 		sscanf(line, "%d %lf %lf %lf\n", &tmp, &(star->xpos), &(star->ypos), &(star->BV));
 
@@ -126,7 +126,7 @@ static void bv2rgb(float *r, float *g, float *b, float bv) { // RGB <0,1> <- BV 
 	}
 }
 
-static int make_selection_around_a_star(fitted_PSF *stars, rectangle *area, fits *fit) {
+static int make_selection_around_a_star(psf_star *stars, rectangle *area, fits *fit) {
 	/* make a selection around the star */
 	area->x = round_to_int(stars->xpos - com.pref.phot_set.outer);
 	area->y = round_to_int(stars->ypos - com.pref.phot_set.outer);
@@ -228,7 +228,7 @@ static float siril_stats_robust_mean(const float sorted_data[],
 	return mean;
 }
 
-static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, float kw[], int n_channel) {
+static int get_white_balance_coeff(psf_star **stars, int nb_stars, fits *fit, float kw[], int n_channel) {
 	int i = 0, ngood = 0;
 	gboolean no_phot = FALSE;
 	int progress = 0;
@@ -266,7 +266,7 @@ static int get_white_balance_coeff(fitted_PSF **stars, int nb_stars, fits *fit, 
 		}
 
 		for (int chan = 0; chan < 3; chan ++) {
-			fitted_PSF *photometry = psf_get_minimisation(fit, chan, &area, TRUE, FALSE, TRUE);
+			psf_star *photometry = psf_get_minimisation(fit, chan, &area, TRUE, FALSE, TRUE);
 			if (!photometry || !photometry->phot_is_valid) {
 				no_phot = TRUE;
 				break;
@@ -580,7 +580,7 @@ void initialize_photometric_cc_dialog() {
 }
 
 int apply_photometric_cc() {
-	fitted_PSF **stars;
+	psf_star **stars;
 	GtkComboBox *norm_box;
 	GtkToggleButton *auto_bkg;
 	GError *error = NULL;

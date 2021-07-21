@@ -273,7 +273,7 @@ void pick_star_activate(GSimpleAction *action, GVariant *parameter, gpointer use
 }
 
 void psf_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
-	fitted_PSF *result = NULL;
+	psf_star *result = NULL;
 	int layer = match_drawing_area_widget(com.vport[com.cvport], FALSE);
 
 	if (layer == -1)

@@ -200,13 +200,13 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 		return 1;
 	}
 	while (i < MAX_STARS && com.stars[i]) {
-		fitted_PSF *tmp = new_psf_star();
+		psf_star *tmp = new_psf_star();
 		if (!tmp) {
 			PRINT_ALLOC_ERR;
 			sadata->refstars[i] = NULL;
 			return 1;
 		}
-		memcpy(tmp, com.stars[i], sizeof(fitted_PSF));
+		memcpy(tmp, com.stars[i], sizeof(psf_star));
 		sadata->refstars[i] = tmp;
 		sadata->refstars[i+1] = NULL;
 		i++;
@@ -251,7 +251,7 @@ static int star_align_image_hook(struct generic_seq_args *args, int out_index, i
 	}
 
 	if (in_index != regargs->reference_image) {
-		fitted_PSF **stars;
+		psf_star **stars;
 		if (args->seq->type == SEQ_SER || args->seq->type == SEQ_FITSEQ) {
 			siril_log_color_message(_("Frame %d:\n"), "bold", filenum);
 		}

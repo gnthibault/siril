@@ -188,7 +188,7 @@ typedef struct point_struct point;
 typedef struct pointf_struct pointf;
 typedef struct pointi_struct pointi;
 typedef struct historic_struct historic;
-typedef struct fwhm_struct fitted_PSF;
+typedef struct fwhm_struct psf_star;
 typedef struct star_finder_struct star_finder_params;
 typedef struct pref_struct preferences;
 typedef struct save_config_struct save_config;
@@ -283,7 +283,7 @@ struct imdata {
 /* registration data, exists once for each image and each layer */
 struct registration_data {
 	float shiftx, shifty;	// we could have a subpixel precision, but is it needed? saved
-	fitted_PSF *fwhm_data;	// used in PSF/FWHM registration, not saved
+	psf_star *fwhm_data;	// used in PSF/FWHM registration, not saved
 	float fwhm;		// copy of fwhm->fwhmx, used as quality indicator, saved data
 	float weighted_fwhm; // used to exclude spurious images.
 	float roundness;	// fwhm->fwhmy / fwhm->fwhmx, 0 when uninit, ]0, 1] when set
@@ -340,7 +340,7 @@ struct sequ {
 	
 	gboolean needs_saving;	// a dirty flag for the sequence, avoid saving it too often
 
-	fitted_PSF **photometry[MAX_SEQPSF];// psf for multiple stars for all images
+	psf_star **photometry[MAX_SEQPSF];// psf for multiple stars for all images
 	int reference_star;	// reference star for apparent magnitude (index of photometry)
 	double reference_mag;	// reference magnitude for the reference star
 	double photometry_colors[MAX_SEQPSF][3]; // colors for each photometry curve
@@ -673,14 +673,14 @@ struct cominf {
 	gsl_histogram *layers_hist[MAXVPORT]; // current image's histograms
 
 	star_finder_params starfinder_conf;	// star finder settings, from GUI or init file
-	fitted_PSF **stars;		// list of stars detected in the current image
+	psf_star **stars;		// list of stars detected in the current image
 	gboolean star_is_seqdata;	// the only star in stars belongs to seq, don't free it
 	int selected_star;		// current selected star in the GtkListStore
 	double magOffset;		// offset to reduce the real magnitude, single image
 	
 	GSList *grad_samples;
 	GSList *found_object;
-	fitted_PSF *qphot;      // quick photometry result
+	psf_star *qphot;      // quick photometry result
 
 	int max_thread;			// maximum of thread used for parallel execution
 

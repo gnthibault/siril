@@ -391,7 +391,7 @@ get_value
  * Return 1 if there is an error.
  */
 
-int get_stars(fitted_PSF **s, int n, int *num_stars, struct s_star **list) {
+int get_stars(psf_star **s, int n, int *num_stars, struct s_star **list) {
 	int i = 0;
 	struct s_star *head, *last, *new;
 

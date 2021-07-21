@@ -49,7 +49,7 @@ struct seqpsf_args {
 
 struct seqpsf_data {
 	int image_index;
-	fitted_PSF *psf;
+	psf_star *psf;
 	double exposure;
 };
 

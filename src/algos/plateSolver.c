@@ -873,9 +873,9 @@ static void print_platesolving_results(Homography H, image_solved image, gboolea
 
 }
 
-static int read_NOMAD_catalog(GInputStream *stream, fitted_PSF **cstars) {
+static int read_NOMAD_catalog(GInputStream *stream, psf_star **cstars) {
 	gchar *line;
-	fitted_PSF *star;
+	psf_star *star;
 
 	int i = 0;
 
@@ -915,9 +915,9 @@ static int read_NOMAD_catalog(GInputStream *stream, fitted_PSF **cstars) {
 	return i;
 }
 
-static int read_TYCHO2_catalog(GInputStream *stream, fitted_PSF **cstars) {
+static int read_TYCHO2_catalog(GInputStream *stream, psf_star **cstars) {
 	gchar *line;
-	fitted_PSF *star;
+	psf_star *star;
 
 	int i = 0;
 
@@ -953,9 +953,9 @@ static int read_TYCHO2_catalog(GInputStream *stream, fitted_PSF **cstars) {
 	return i;
 }
 
-static int read_GAIA_catalog(GInputStream *stream, fitted_PSF **cstars) {
+static int read_GAIA_catalog(GInputStream *stream, psf_star **cstars) {
 	gchar *line;
-	fitted_PSF *star;
+	psf_star *star;
 
 	int i = 0;
 
@@ -995,9 +995,9 @@ static int read_GAIA_catalog(GInputStream *stream, fitted_PSF **cstars) {
 	return i;
 }
 
-static int read_PPMXL_catalog(GInputStream *stream, fitted_PSF **cstars) {
+static int read_PPMXL_catalog(GInputStream *stream, psf_star **cstars) {
 	gchar *line;
-	fitted_PSF *star;
+	psf_star *star;
 
 	int i = 0;
 
@@ -1037,9 +1037,9 @@ static int read_PPMXL_catalog(GInputStream *stream, fitted_PSF **cstars) {
 	return i;
 }
 
-static int read_BRIGHT_STARS_catalog(GInputStream *stream, fitted_PSF **cstars) {
+static int read_BRIGHT_STARS_catalog(GInputStream *stream, psf_star **cstars) {
 	gchar *line;
-	fitted_PSF *star;
+	psf_star *star;
 
 	int i = 0;
 
@@ -1079,9 +1079,9 @@ static int read_BRIGHT_STARS_catalog(GInputStream *stream, fitted_PSF **cstars) 
 	return i;
 }
 
-static int read_APASS_catalog(GInputStream *stream, fitted_PSF **cstars) {
+static int read_APASS_catalog(GInputStream *stream, psf_star **cstars) {
 	gchar *line;
-	fitted_PSF *star;
+	psf_star *star;
 
 	int i = 0;
 
@@ -1121,7 +1121,7 @@ static int read_APASS_catalog(GInputStream *stream, fitted_PSF **cstars) {
 	return i;
 }
 
-static int read_catalog(GInputStream *stream, fitted_PSF **cstars, int type) {
+static int read_catalog(GInputStream *stream, psf_star **cstars, int type) {
 	switch (type) {
 	default:
 	case TYCHO2:
@@ -1222,7 +1222,7 @@ static gboolean end_plate_solver(gpointer p) {
 gpointer match_catalog(gpointer p) {
 	struct plate_solver_data *args = (struct plate_solver_data *) p;
 	GError *error = NULL;
-	fitted_PSF **cstars;
+	psf_star **cstars;
 	int n_fit = 0, n_cat = 0, n = 0;
 	Homography H = { 0 };
 	int nobj = AT_MATCH_CATALOG_NBRIGHT;

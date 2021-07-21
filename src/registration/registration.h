@@ -94,7 +94,7 @@ int get_registration_layer(sequence *seq);
 struct star_align_data {
 	struct registration_args *regargs;
 	regdata *current_regdata;
-	fitted_PSF **refstars;
+	psf_star **refstars;
 	int fitted_stars;
 	BYTE *success;
 	point ref;
