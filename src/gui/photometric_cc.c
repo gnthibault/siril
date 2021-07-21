@@ -72,6 +72,7 @@ static void read_photometry_cc_file(GInputStream *stream, fitted_PSF **stars, in
 				NULL, NULL))) {
 		int tmp;
 		fitted_PSF *star = malloc(sizeof(fitted_PSF));
+		star->phot = NULL;
 
 		sscanf(line, "%d %lf %lf %lf\n", &tmp, &(star->xpos), &(star->ypos), &(star->BV));
 
