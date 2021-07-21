@@ -123,7 +123,7 @@ static int prepare_to_recalc(int num_matched_A,
 
 int new_star_match(psf_star **s1, psf_star **s2, int n, int nobj_override,
 		double s_min, double s_max,
-		Homography *H, gboolean print_output) {
+		Homography *H, gboolean print_output, transformation_type type) {
 	int ret;
 	int numA, numB;
 	int num_matched_A, num_matched_B;
@@ -419,7 +419,7 @@ int new_star_match(psf_star **s1, psf_star **s2, int n, int nobj_override,
 	Hom->pair_matched = num_matches;
 
 	if (atPrepareHomography(num_matched_A, matched_list_A, num_matched_B,
-			matched_list_B, Hom, print_output)) {
+			matched_list_B, Hom, print_output, type)) {
 		fprintf(stderr,"atPrepareHomography fails on computing H\n");
 		/** */
 		atTransDel(trans);

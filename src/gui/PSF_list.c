@@ -470,6 +470,8 @@ void clear_stars_list() {
 			get_stars_list_store();
 			gtk_list_store_clear(liststore_stars);
 		}
+		g_mutex_lock(&com.mutex);
+
 		if (com.stars[0]) {
 			/* freeing found stars. It must not be done when the only star in
 			 * com.stars is the same as com.seq.imgparam[xxx].fwhm, as set in
@@ -482,6 +484,7 @@ void clear_stars_list() {
 		}
 		free(com.stars);
 		com.stars = NULL;
+		g_mutex_unlock(&com.mutex);
 	}
 	com.star_is_seqdata = FALSE;
 }

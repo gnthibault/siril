@@ -679,6 +679,25 @@ void on_comboboxregmethod_changed(GtkComboBox *box, gpointer user_data) {
 	writeinitfile();
 }
 
+void on_comboreg_transfo_changed(GtkComboBox *box, gpointer user_data) {
+	GtkAdjustment *register_minpairs = GTK_ADJUSTMENT(gtk_builder_get_object(builder, "register_minpairs"));
+	double val = gtk_adjustment_get_value(register_minpairs);
+
+	switch(gtk_combo_box_get_active(box)) {
+	case SHIFT_TRANSFORMATION:
+	case AFFINE_TRANSFORMATION:
+		gtk_adjustment_set_lower (register_minpairs, 3);
+		break;
+	case HOMOGRAPHY_TRANSFORMATION:
+		gtk_adjustment_set_lower (register_minpairs, 4);
+		if (val < 4)
+			gtk_adjustment_set_value(register_minpairs, 4);
+		break;
+	default:
+		printf("on_comboreg_transfo_changed: Value not handled.\n");
+	}
+}
+
 /* for now, the sequence argument is used only when executing a script */
 int get_registration_layer(sequence *seq) {
 	if (!com.script) {
@@ -880,7 +899,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	GtkToggleButton *regall, *follow, *matchSel, *no_translate, *x2upscale,
 			*cumul;
 	GtkComboBox *cbbt_layers;
-	GtkComboBoxText *ComboBoxRegInter;
+	GtkComboBoxText *ComboBoxRegInter, *ComboBoxTransfo;
 	GtkSpinButton *minpairs;
 
 	if (!reserve_thread()) {	// reentrant from here
@@ -921,6 +940,7 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	ComboBoxRegInter = GTK_COMBO_BOX_TEXT(lookup_widget("ComboBoxRegInter"));
 	cumul = GTK_TOGGLE_BUTTON(lookup_widget("check_button_comet"));
 	minpairs = GTK_SPIN_BUTTON(lookup_widget("spinbut_minpairs"));
+	ComboBoxTransfo = GTK_COMBO_BOX_TEXT(lookup_widget("comboreg_transfo"));
 
 	reg_args->func = method->method_ptr;
 	reg_args->seq = &com.seq;
@@ -933,6 +953,8 @@ void on_seqregister_button_clicked(GtkButton *button, gpointer user_data) {
 	reg_args->cumul = gtk_toggle_button_get_active(cumul);
 	reg_args->prefix = gtk_entry_get_text(GTK_ENTRY(lookup_widget("regseqname_entry")));
 	reg_args->min_pairs = gtk_spin_button_get_value_as_int(minpairs);
+	reg_args->type = gtk_combo_box_get_active(GTK_COMBO_BOX(ComboBoxTransfo));
+
 
 	/* We check that available disk space is enough when:
 	 * - activating the subpixel alignment, which requires generating a new

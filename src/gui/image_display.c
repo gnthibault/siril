@@ -985,7 +985,9 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	draw_selection(&dd);
 
 	/* detected stars and highlight the selected star */
+	g_mutex_lock(&com.mutex);
 	draw_stars(&dd);
+	g_mutex_unlock(&com.mutex);
 
 	/* detected objects */
 	draw_annotates(&dd);

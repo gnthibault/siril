@@ -303,12 +303,6 @@ siril_common_SOURCES += \
 	opencv/opencv.h \
 	opencv/ecc/ecc.cpp \
 	opencv/ecc/ecc.h \
-	opencv/findHomography/fundam.cpp \
-	opencv/findHomography/calibration.cpp \
-	opencv/findHomography/modelest.cpp \
-	opencv/findHomography/_modelest.h \
-	opencv/findHomography/calib3d.hpp \
-	opencv/findHomography/precomp.hpp \
 	core/exif.cpp \
 	core/exif.h
 

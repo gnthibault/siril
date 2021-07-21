@@ -229,22 +229,7 @@ cfitsio_dep = dependency('cfitsio', required : true)
 cairo_dep = dependency('cairo', required : true)
 json_glib = dependency('json-glib-1.0', version: '>=1.2.6')
 kplot_dep = dependency('kplot', fallback : ['kplot', 'kplot_dep'], required : true)
-
-
-# TODO: Prefered OpenCV version???
-opencv4_dep = dependency('opencv4', required : false)
-opencv3_dep = dependency('opencv', required : false)
-if not opencv4_dep.found()
-  if opencv3_dep.found()
-    message('Use OpenCV3')
-    opencv_dep = opencv3_dep
-  else
-    error('OpenCV not found!')
-  endif
-else
-  message('Use OpenCV4')
-  opencv_dep = opencv4_dep
-endif
+opencv4_dep = dependency('opencv4', required : true, version: '>= 4.4.0')
 
 rtprocess_dep = dependency('rtprocess', required : false)
 if not rtprocess_dep.found()
@@ -439,7 +424,7 @@ externals_dep = declare_dependency(
     gtk_dep,
     libcurl_dep,
     gsl_dep,
-    opencv_dep,
+    opencv4_dep,
     rtprocess_dep,
     exiv_dep,
     wcslib_dep,

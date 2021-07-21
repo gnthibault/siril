@@ -822,6 +822,8 @@ psf_star *duplicate_psf(psf_star *psf) {
 	if (psf->phot) {
 		new_psf->phot = malloc(sizeof(photometry));
 		memcpy(new_psf->phot, psf->phot, sizeof(photometry));
+	} else {
+		new_psf->phot = NULL;
 	}
 	return new_psf;
 }

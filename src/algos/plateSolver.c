@@ -54,6 +54,7 @@
 #include "io/single_image.h"
 #include "io/sequence.h"
 #include "opencv/opencv.h"
+#include "registration/registration.h"
 #include "registration/matching/match.h"
 #include "registration/matching/apply_match.h"
 #include "registration/matching/misc.h"
@@ -904,6 +905,7 @@ static int read_NOMAD_catalog(GInputStream *stream, psf_star **cstars) {
 		star->ypos = y;
 		star->mag = Vmag;
 		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
+		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -943,6 +945,7 @@ static int read_TYCHO2_catalog(GInputStream *stream, psf_star **cstars) {
 		star->ypos = y;
 		star->mag = Vmag;
 		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
+		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -984,6 +987,7 @@ static int read_GAIA_catalog(GInputStream *stream, psf_star **cstars) {
 		star->ypos = y;
 		star->mag = Gmag;
 		star->BV = -99.9;
+		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -1026,6 +1030,7 @@ static int read_PPMXL_catalog(GInputStream *stream, psf_star **cstars) {
 		star->ypos = y;
 		star->mag = Jmag;
 		star->BV = -99.9;
+		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -1068,6 +1073,7 @@ static int read_BRIGHT_STARS_catalog(GInputStream *stream, psf_star **cstars) {
 		star->ypos = y;
 		star->mag = Vmag;
 		star->BV = BV;
+		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -1110,6 +1116,7 @@ static int read_APASS_catalog(GInputStream *stream, psf_star **cstars) {
 		star->ypos = y;
 		star->mag = Vmag;
 		star->BV = n < 5 ? -99.9 : Bmag - Vmag;
+		star->phot = NULL;
 		cstars[i] = star;
 		cstars[i + 1] = NULL;
 		i++;
@@ -1284,7 +1291,7 @@ gpointer match_catalog(gpointer p) {
 	args->ret = 1;
 	int attempt = 1;
 	while (args->ret && attempt < NB_OF_MATCHING_TRY) {
-		args->ret = new_star_match(com.stars, cstars, n, nobj, scale_min, scale_max, &H, args->for_photometry_cc);
+		args->ret = new_star_match(com.stars, cstars, n, nobj, scale_min, scale_max, &H, args->for_photometry_cc, HOMOGRAPHY_TRANSFORMATION);
 		if (attempt == 1) {
 			scale_min = -1.0;
 			scale_max = -1.0;
