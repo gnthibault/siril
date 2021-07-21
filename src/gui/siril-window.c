@@ -144,7 +144,6 @@ void siril_window_enable_image_actions(GtkApplicationWindow *window, gboolean en
 		"photometry",
 		"image-information",
 	    "dyn-psf",
-        "search-object",
 		"seq-list",
 		NULL,
 	};

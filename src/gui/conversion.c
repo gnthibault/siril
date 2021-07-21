@@ -57,6 +57,21 @@ static void init_widgets() {
 	g_assert(liststore_convert);
 }
 
+static void format_index_convert(GtkEntry *entry) {
+	int idx = g_ascii_strtoull(gtk_entry_get_text(entry), NULL, 10);
+	gchar *str = NULL;
+
+	if (idx < 1) {
+		str = g_strdup_printf("00001");
+	} else if (idx < 10000) {
+		str = g_strdup_printf("%05d", idx);
+	} else if (idx > INDEX_MAX) {
+		str = g_strdup_printf("65535");
+	}
+	gtk_entry_set_text(entry, str);
+	g_free(str);
+}
+
 int count_converted_files() {
 	init_widgets();
 	GtkTreeIter iter;
@@ -202,6 +217,7 @@ static void initialize_convert() {
 	}
 	if (output_type == SEQ_REGULAR) {
 		GtkEntry *startEntry = GTK_ENTRY(lookup_widget("startIndiceEntry"));
+		format_index_convert(startEntry);
 		const gchar *index = gtk_entry_get_text(startEntry);
 		args->start = (g_ascii_strtoll(index, NULL, 10) <= 0
 						|| g_ascii_strtoll(index, NULL, 10) >= INDEX_MAX) ?	1 : g_ascii_strtoll(index, NULL, 10);
@@ -605,3 +621,8 @@ void on_prepro_output_type_combo1_changed(GtkComboBox *combo, gpointer user_data
 	process_destroot(output);
 	check_for_conversion_form_completeness();
 }
+
+void on_startIndiceEntry_activate(GtkEntry *entry, gpointer user_data) {
+	format_index_convert(entry);
+}
+

@@ -167,7 +167,7 @@ typedef enum {
 #define MAX_STARS 200000		// maximum length of com.stars
 #define MAX_STARS_FITTED 2000   // maximum number of stars fitted for registration
 
-#define INDEX_MAX 100000		// maximum index for images
+#define INDEX_MAX 65535		// maximum index for images
 
 typedef struct imdata imgdata;
 typedef struct registration_data regdata;
