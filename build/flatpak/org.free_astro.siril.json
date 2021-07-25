@@ -188,20 +188,21 @@
             ]
         },
         {
-            "name": "libraw",
+						"name": "libraw",
             "config-opts": [ "--disable-examples", "--disable-static" ],
-            "cleanup": [
-                "/include",
-                "/lib/pkgconfig",
-                "/lib/*.la",
-                "/share/doc"
-            ],
+            "cleanup": [ "/share/doc" ],
             "sources": [
                 {
-                    "type": "archive",
-                    "url" : "https://www.libraw.org/data/LibRaw-0.20.2.tar.gz",
-                    "sha256" : "dc1b486c2003435733043e4e05273477326e51c3ea554c6864a4eafaff1004a6"
-                }
+                    "type": "git",
+                    "url": "https://github.com/LibRaw/LibRaw.git"
+                },
+                {
+                    "type": "shell",
+                    "commands": [
+                        "make -f Makefile.devel regenerate",
+                        "autoreconf --force --install"
+                    ]
+                },
             ]
         },
         {
