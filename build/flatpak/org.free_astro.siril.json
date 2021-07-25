@@ -125,49 +125,6 @@
             ]
         },
         {
-            "name": "opencv",
-            "buildsystem": "cmake-ninja",
-            "builddir": true,
-            "cleanup": [
-                "/bin",
-                "/include",
-                "/lib/pkgconfig"
-            ],
-            "config-opts": [
-                "-DCMAKE_BUILD_TYPE=RELEASE",
-                "-DBUILD_EXAMPLES=OFF",
-                "-DOPENCV_GENERATE_PKGCONFIG=ON",
-                "-DBUILD_DOCS=OFF",
-                "-DBUILD_opencv_apps=OFF",
-                "-DBUILD_opencv_python2=OFF",
-                "-DBUILD_opencv_python3=OFF",
-                "-DBUILD_PERF_TESTS=OFF",
-                "-DBUILD_SHARED_LIBS=ON",
-                "-DBUILD_TESTS=OFF",
-                "-DCMAKE_BUILD_TYPE=RELEASE",
-                "-DENABLE_PRECOMPILED_HEADERS=OFF",
-                "-DFORCE_VTK=OFF",
-                "-DWITH_FFMPEG=OFF",
-                "-DWITH_GDAL=OFF",
-                "-DWITH_IPP=OFF",
-                "-DWITH_OPENEXR=OFF",
-                "-DWITH_OPENGL=OFF",
-                "-DWITH_QT=OFF",
-                "-DWITH_TBB=OFF",
-                "-DWITH_XINE=OFF",
-                "-DBUILD_JPEG=ON",
-                "-DBUILD_TIFF=ON",
-                "-DBUILD_PNG=ON"
-            ],
-            "sources": [
-                {
-                    "type": "archive",
-                    "url": "https://github.com/opencv/opencv/archive/4.5.3.zip",
-                    "sha256": "a61e7a4618d353140c857f25843f39b2abe5f451b018aab1604ef0bc34cd23d5"
-                }
-            ]
-        },
-        {
             "name": "exiv2",
             "buildsystem": "cmake-ninja",
             "config-opts": ["-DCMAKE_BUILD_TYPE=Release"],
@@ -199,7 +156,7 @@
                 {
                     "type": "shell",
                     "commands": [
-                        "make -f Makefile.devel regenerate",
+                        "make -f Makefile.devel",
                         "autoreconf --force --install"
                     ]
                 }
@@ -271,6 +228,50 @@
                 }
             ]
         },
+        {
+            "name": "opencv",
+            "buildsystem": "cmake-ninja",
+            "builddir": true,
+            "cleanup": [
+                "/bin",
+                "/include",
+                "/lib/pkgconfig"
+            ],
+            "config-opts": [
+                "-DCMAKE_BUILD_TYPE=RELEASE",
+                "-DBUILD_EXAMPLES=OFF",
+                "-DOPENCV_GENERATE_PKGCONFIG=ON",
+                "-DBUILD_DOCS=OFF",
+                "-DBUILD_opencv_apps=OFF",
+                "-DBUILD_opencv_python2=OFF",
+                "-DBUILD_opencv_python3=OFF",
+                "-DBUILD_PERF_TESTS=OFF",
+                "-DBUILD_SHARED_LIBS=ON",
+                "-DBUILD_TESTS=OFF",
+                "-DCMAKE_BUILD_TYPE=RELEASE",
+                "-DENABLE_PRECOMPILED_HEADERS=OFF",
+                "-DFORCE_VTK=OFF",
+                "-DWITH_FFMPEG=OFF",
+                "-DWITH_GDAL=OFF",
+                "-DWITH_IPP=OFF",
+                "-DWITH_OPENEXR=OFF",
+                "-DWITH_OPENGL=OFF",
+                "-DWITH_QT=OFF",
+                "-DWITH_TBB=OFF",
+                "-DWITH_XINE=OFF",
+                "-DBUILD_JPEG=ON",
+                "-DBUILD_TIFF=ON",
+                "-DBUILD_PNG=ON"
+            ],
+            "sources": [
+                {
+                    "type": "archive",
+                    "url": "https://github.com/opencv/opencv/archive/4.5.3.zip",
+                    "sha256": "a61e7a4618d353140c857f25843f39b2abe5f451b018aab1604ef0bc34cd23d5"
+                }
+            ]
+        },
+        
         "shared-modules/intltool/intltool-0.51.json",
         {
             "name": "siril",
