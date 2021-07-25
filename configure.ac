@@ -167,18 +167,9 @@ if test -n "$CXX" && ( test "X$CXX" != "Xno" &&
 	m4_include([m4/ax_cxx_compile_stdcxx.m4])
 	AX_CXX_COMPILE_STDCXX(11, noext, mandatory)
 
-	dnl AC_MSG_WARN(CXX is "$CXX")
-	dnl http://nerdland.net/2009/07/detecting-c-libraries-with-autotools/ solution 2
-	dnl we handle 2 opencv versions because of a debian bug with opencv2 and GTK3
-	PKG_CHECK_MODULES([OPENCV], [opencv >= 3.0],
-			[OPENCV_LIBS="-lopencv_core -lopencv_imgproc -lopencv_calib3d"],
-			[PKG_CHECK_MODULES([OPENCV], [opencv >= 2.0],
-					[OPENCV_LIBS="-lopencv_core -lopencv_imgproc"],
-					[PKG_CHECK_MODULES([OPENCV], [opencv4],
+	PKG_CHECK_MODULES([OPENCV], [opencv4 >= 4.4.0],
 								[OPENCV_LIBS="-lopencv_core -lopencv_imgproc -lopencv_calib3d"],
-								AC_MSG_ERROR([opencv not found.]))]
-					)]
-			)
+								AC_MSG_ERROR([opencv not found.]))
 else
 	AC_MSG_ERROR([no C++ compiler found])
 fi
