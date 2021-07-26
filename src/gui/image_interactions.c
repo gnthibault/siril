@@ -542,10 +542,11 @@ gboolean on_drawingarea_button_release_event(GtkWidget *widget,
 
 	} else if (event->button == GDK_BUTTON_SECONDARY) {	// right click
 		if (mouse_status != MOUSE_ACTION_DRAW_SAMPLES) {
-			update_MenuItem();
 			do_popup_graymenu(widget, NULL);
 		}
 	}
+	update_MenuItem();
+
 	return FALSE;
 }
 
