@@ -70,14 +70,13 @@ build-image-stable:
     - echo "RUN apt-get update" >> Dockerfile
     - echo "RUN apt-get install -y --no-install-recommends \\" >> Dockerfile
     - echo "at-spi2-core build-essential desktop-file-utils cmake unzip hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev librsvg2-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev liblcms2-dev wget libtool libcurl4-gnutls-dev wcslib-dev python3 python3-pip libjson-glib-dev" >> Dockerfile
-    - echo "RUN wget https://www.libraw.org/data/LibRaw-0.20.2.tar.gz \\" >> Dockerfile
-    - echo " && tar xfv LibRaw-0.20.2.tar.gz \\" >> Dockerfile
-    - echo " && cd LibRaw-0.20.2 \\" >> Dockerfile
+    - echo "RUN git clone https://github.com/LibRaw/LibRaw.git \\" >> Dockerfile
+    - echo " && cd LibRaw \\" >> Dockerfile
     - echo " && autoreconf -fi \\" >> Dockerfile
-    - echo " && ./configure --prefix /usr \\" >> Dockerfile
+    - echo " && ./configure --disable-examples --disable-static --prefix /usr \\" >> Dockerfile
     - echo " && make install \\" >> Dockerfile
     - echo " && cd .. \\" >> Dockerfile
-    - echo " && rm -rf LibRaw-0.20.2 \\" >> Dockerfile
+    - echo " && rm -rf LibRaw \\" >> Dockerfile
     - echo " && wget -O opencv.zip https://github.com/opencv/opencv/archive/4.5.3.zip \\" >> Dockerfile
     - echo " && unzip opencv.zip && cd opencv-4.5.3 \\" >> Dockerfile
     - echo " && mkdir -p build && cd build \\" >> Dockerfile

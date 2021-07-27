@@ -159,6 +159,7 @@ static command commands[] = {
 	{"threshlo", 1, "threshlo level", process_threshlo, STR_THRESHLO, TRUE},
 	{"threshhi", 1, "threshi level", process_threshhi, STR_THRESHHI, TRUE},
 	{"thresh", 2, "thresh lo hi", process_thresh, STR_THRESH, TRUE}, /* threshes hi and lo */
+	{"tilt", 0, "tilt [clear]", process_tilt, STR_TILT, FALSE},
 
 	{"unselect", 2, "unselect from to", process_unselect, STR_UNSELECT, FALSE},
 	{"unsetmag", 0, "unsetmag", process_unset_mag, STR_UNSETMAG, FALSE},

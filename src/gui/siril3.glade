@@ -6627,6 +6627,11 @@ Modifying parameters in this windows afterward will void the colour balance, and
     <property name="can-focus">False</property>
     <property name="icon-name">edit-find</property>
   </object>
+  <object class="GtkImage" id="image2">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="pixbuf">pixmaps/tilt_dark.svg</property>
+  </object>
   <object class="GtkImage" id="imageHelp">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -8652,6 +8657,20 @@ The default value is 0.5, suitable for stars twice as big in one direction as th
                     <property name="use-underline">True</property>
                     <property name="icon-widget">image_starfinder</property>
                     <signal name="clicked" handler="on_process_starfinder_button_clicked" swapped="no"/>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">True</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToolButton" id="tilt_button">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">Estimate sensor tilt</property>
+                    <property name="use-underline">True</property>
+                    <property name="icon-widget">image2</property>
+                    <signal name="clicked" handler="on_tilt_button_clicked" swapped="no"/>
                   </object>
                   <packing>
                     <property name="expand">False</property>

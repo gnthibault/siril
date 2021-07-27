@@ -31,4 +31,6 @@ pixmaps = \
 	starfinder.svg \
 	starfinder_dark.svg \
 	sum.svg \
-	sum_dark.svg
+	sum_dark.svg \
+	tilt.svg \
+	tilt_dark.svg

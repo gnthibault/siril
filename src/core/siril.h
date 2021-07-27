@@ -189,6 +189,7 @@ typedef struct pointf_struct pointf;
 typedef struct pointi_struct pointi;
 typedef struct historic_struct historic;
 typedef struct fwhm_struct psf_star;
+typedef struct tilt_struct sensor_tilt;
 typedef struct star_finder_struct star_finder_params;
 typedef struct pref_struct preferences;
 typedef struct save_config_struct save_config;
@@ -681,6 +682,7 @@ struct cominf {
 	GSList *grad_samples;
 	GSList *found_object;
 	psf_star *qphot;      // quick photometry result
+	sensor_tilt *tilt;     // tilt information
 
 	int max_thread;			// maximum of thread used for parallel execution
 

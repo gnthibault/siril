@@ -27,6 +27,7 @@
 #include "core/OS_utils.h"
 #include "algos/statistics.h"
 #include "algos/annotate.h"
+#include "algos/ccd-inspector.h"
 #include "algos/background_extraction.h"
 #include "algos/plateSolver.h"
 #include "gui/image_interactions.h"
@@ -85,6 +86,7 @@ void free_image_data() {
 		reset_zoom_default();
 		free(com.qphot);
 		com.qphot = NULL;
+		clear_sensor_tilt();
 	}
 	clear_histograms();
 

@@ -126,6 +126,7 @@
 #define STR_THRESHLO N_("Replaces values below \"level\" with \"level\"")
 #define STR_THRESHHI N_("Replaces values above \"level\" with \"level\"")
 #define STR_THRESH N_("Replaces values below \"lo\" with \"lo\" and values above \"hi\" with \"hi\"")
+#define STR_TILT N_("Computes the Sensor tilt as the fwhm difference between the best and worst corner truncated mean values. The \"clear\" option allows to clear the drawing")
 
 #define STR_UNSELECT N_("Allows easy mass unselection of images in the loaded sequence (from \"from\" to \"to\" included). See SELECT")
 #define STR_UNSETMAG N_("Reset the magnitude calibration to 0. See SETMAG")
