@@ -118,6 +118,7 @@ static void update_icons_to_theme(gboolean is_dark) {
 		update_theme_button("mirrory_button", "mirrory_dark.svg");
 
 		update_theme_button("process_starfinder_button", "starfinder_dark.svg");
+		update_theme_button("tilt_button", "tilt_dark.svg");
 		update_theme_button("sum_button", "sum_dark.svg");
 		update_theme_button("export_button", "export_dark.svg");
 
@@ -132,6 +133,7 @@ static void update_icons_to_theme(gboolean is_dark) {
 		update_theme_button("mirrory_button", "mirrory.svg");
 
 		update_theme_button("process_starfinder_button", "starfinder.svg");
+		update_theme_button("tilt_button", "tilt.svg");
 		update_theme_button("sum_button", "sum.svg");
 		update_theme_button("export_button", "export.svg");
 

@@ -24,6 +24,7 @@
 #include "core/siril_app_dirs.h"
 #include "core/processing.h"
 #include "algos/colors.h"
+#include "algos/ccd-inspector.h"
 #include "algos/background_extraction.h"
 #include "algos/PSF.h"
 #include "algos/siril_wcs.h"
@@ -821,6 +822,57 @@ static void draw_annotates(const draw_data_t* dd) {
 	}
 }
 
+static void draw_analysis(const draw_data_t* dd) {
+	if (com.tilt) {
+		cairo_t *cr = dd->cr;
+		cairo_set_dash(cr, NULL, 0, 0);
+
+		cairo_set_source_rgb(cr, 1.0, 0.8, 0.7);
+		cairo_set_line_width(cr, 2.0 / dd->zoom);
+		cairo_move_to(cr, com.tilt->pt[0].x, com.tilt->pt[0].y);
+		cairo_line_to(cr, com.tilt->pt[1].x, com.tilt->pt[1].y);
+		cairo_line_to(cr, com.tilt->pt[2].x, com.tilt->pt[2].y);
+		cairo_line_to(cr, com.tilt->pt[3].x, com.tilt->pt[3].y);
+		cairo_line_to(cr, com.tilt->pt[1].x, com.tilt->pt[1].y);
+		cairo_move_to(cr, com.tilt->pt[3].x, com.tilt->pt[3].y);
+		cairo_line_to(cr, com.tilt->pt[0].x, com.tilt->pt[0].y);
+		cairo_line_to(cr, com.tilt->pt[2].x, com.tilt->pt[2].y);
+		cairo_stroke(cr);
+
+		/* draw text */
+		cairo_select_font_face(cr, "Purisa", CAIRO_FONT_SLANT_NORMAL,
+							   CAIRO_FONT_WEIGHT_BOLD);
+		int size = 20.0 / dd->zoom;
+		cairo_set_font_size(cr, size);
+
+		/* fwhm 1 */
+		gchar *str = g_strdup_printf("%.2f", com.tilt->fwhm[0]);
+		cairo_move_to(cr, com.tilt->pt[0].x, com.tilt->pt[0].y - size);
+		cairo_show_text(cr, str);
+		g_free(str);
+		/* fwhm 2 */
+		str = g_strdup_printf("%.2f", com.tilt->fwhm[1]);
+		cairo_move_to(cr, com.tilt->pt[1].x, com.tilt->pt[1].y - size);
+		cairo_show_text(cr, str);
+		g_free(str);
+		/* fwhm 3 */
+		str = g_strdup_printf("%.2f", com.tilt->fwhm[2]);
+		cairo_move_to(cr, com.tilt->pt[2].x, com.tilt->pt[2].y + size);
+		cairo_show_text(cr, str);
+		g_free(str);
+		/* fwhm 4 */
+		str = g_strdup_printf("%.2f", com.tilt->fwhm[3]);
+		cairo_move_to(cr, com.tilt->pt[3].x, com.tilt->pt[3].y + size);
+		cairo_show_text(cr, str);
+		g_free(str);
+		/* fwhm center */
+		str = g_strdup_printf("%.2f", com.tilt->fwhm_centre);
+		cairo_move_to(cr, gfit.rx / 2.0, (gfit.ry / 2.0) + size);
+		cairo_show_text(cr, str);
+		g_free(str);
+	}
+}
+
 static gboolean redraw_idle(gpointer p) {
 	redraw(com.cvport, GPOINTER_TO_INT(p)); // draw stars
 	return FALSE;
@@ -991,6 +1043,9 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 
 	/* detected objects */
 	draw_annotates(&dd);
+
+	/* analysis tool */
+	draw_analysis(&dd);
 
 	/* background removal gradient selection boxes */
 	draw_brg_boxes(&dd);

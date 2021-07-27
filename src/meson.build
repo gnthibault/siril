@@ -19,6 +19,7 @@ configure_file(output : 'config.h',
 src_files = [ 
   'algos/annotate.c',
   'algos/background_extraction.c',
+  'algos/ccd-inspector.c',
   'algos/colors.c',
   'algos/demosaicing.c',
   'algos/demosaicing_rtp.cpp',

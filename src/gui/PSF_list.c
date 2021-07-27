@@ -39,6 +39,7 @@
 #include "algos/siril_wcs.h"
 #include "algos/PSF.h"
 #include "algos/star_finder.h"
+#include "algos/ccd-inspector.h"
 
 static GtkListStore *liststore_stars = NULL;
 
@@ -657,6 +658,7 @@ void on_remove_button_clicked(GtkButton *button, gpointer user_data) {
 
 void on_remove_all_button_clicked(GtkButton *button, gpointer user_data) {
 	remove_all_stars();
+	clear_sensor_tilt();
 }
 
 void on_process_starfinder_button_clicked(GtkButton *button, gpointer user_data) {

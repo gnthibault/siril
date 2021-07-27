@@ -73,6 +73,7 @@
 #include "algos/Def_Math.h"
 #include "algos/Def_Wavelet.h"
 #include "algos/background_extraction.h"
+#include "algos/ccd-inspector.h"
 #include "algos/demosaicing.h"
 #include "algos/extraction.h"
 #include "algos/colors.h"
@@ -1483,6 +1484,19 @@ int process_histo(int nb){
 	g_object_unref(output_stream);
 	g_object_unref(file);
 	gsl_histogram_free(histo);
+	return 0;
+}
+
+int process_tilt(int nb) {
+	if (word[1] && !g_ascii_strcasecmp(word[1], "clear")) {
+		clear_sensor_tilt();
+		redraw(com.cvport, REMAP_NONE);
+	} else {
+		set_cursor_waiting(TRUE);
+		draw_sensor_tilt(&gfit);
+		set_cursor_waiting(FALSE);
+	}
+
 	return 0;
 }
 

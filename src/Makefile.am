@@ -29,6 +29,8 @@ siril_common_SOURCES = \
 	algos/annotate.h \
 	algos/background_extraction.c \
 	algos/background_extraction.h \
+	algos/ccd-inspector.c \
+	algos/ccd-inspector.h \
 	algos/colors.c \
 	algos/colors.h \
 	algos/Def_Math.h \
@@ -67,7 +69,7 @@ siril_common_SOURCES = \
 	algos/statistics_float.c \
 	algos/statistics_float.h \
 	algos/transform.c \
-  algos/search_objects.c \
+	algos/search_objects.c \
 	algos/siril_wcs.h \
 	algos/siril_wcs.c \
 	compositing/align_rgb.c \
