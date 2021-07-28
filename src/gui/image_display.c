@@ -1084,4 +1084,6 @@ void add_image_and_label_to_cairo(cairo_t *cr, int vport) {
 	draw_main_image(&dd);
 	/* detected objects */
 	draw_annotates(&dd);
+	/* analysis */
+	draw_analysis(&dd);
 }
