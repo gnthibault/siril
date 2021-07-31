@@ -38,6 +38,7 @@
 #include "core/processing.h"
 #include "core/OS_utils.h"
 #include "core/siril_world_cs.h"
+#include "core/undo.h"
 #include "gui/utils.h"
 #include "gui/callbacks.h"
 #include "gui/progress_and_log.h"
@@ -1323,6 +1324,11 @@ gpointer match_catalog(gpointer p) {
 				is_result.x = is_result.px_size.x / 2.0;
 				is_result.y = is_result.px_size.y / 2.0;
 			}
+			// saving state for undo before modifying fit structure
+			const char *undo_str = args->for_photometry_cc ? _("Photometric CC") : _("Plate Solve");
+			fits *undo_fit = args->downsample ? args->fit_backup : args->fit;
+
+			undo_save_state(undo_fit, undo_str);
 
 			print_platesolving_results(H, is_result, &(args->flip_image), args->downsample);
 		} else {

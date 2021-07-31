@@ -364,8 +364,17 @@ void update_MenuItem() {
 	/* some toolbar buttons */
 	gtk_widget_set_sensitive(lookup_widget("toolbarbox"), any_image_is_loaded);
 
+	gboolean enable_button = any_image_is_loaded && has_wcs(&gfit);
 	GAction *action_annotate = g_action_map_lookup_action(G_ACTION_MAP(app_win), "annotate-object");
-	g_simple_action_set_enabled(G_SIMPLE_ACTION (action_annotate), any_image_is_loaded && has_wcs(&gfit));
+	g_simple_action_set_enabled(G_SIMPLE_ACTION(action_annotate), enable_button);
+	/* untoggle if disabled */
+	if (!enable_button) {
+		GVariant *state = g_action_get_state(action_annotate);
+		if (g_variant_get_boolean(g_action_get_state(action_annotate))) {
+			g_action_change_state(action_annotate, g_variant_new_boolean(FALSE));
+		}
+		g_variant_unref(state);
+	}
 
 	/* undo and redo */
 	GAction *action_undo = g_action_map_lookup_action(G_ACTION_MAP(app_win), "undo");

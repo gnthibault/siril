@@ -588,7 +588,7 @@ int apply_photometric_cc() {
 	norm_box = GTK_COMBO_BOX(lookup_widget("combo_box_cc_norm"));
 	auto_bkg = GTK_TOGGLE_BUTTON(lookup_widget("button_cc_bkg_auto"));
 
-	undo_save_state(&gfit, _("Photometric CC"));
+
 	invalidate_stats_from_fit(&gfit);
 	invalidate_gfit_histogram();
 

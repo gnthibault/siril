@@ -22,6 +22,7 @@
 #define SRC_ALGOS_SIRIL_WCS_H_
 
 gboolean has_wcs(fits *fit);
+gboolean has_wcsdata(fits *fit);
 void free_wcs(fits *fit);
 gboolean load_WCS_from_file(fits* fit);
 gboolean load_WCS_from_memory(fits *fit);

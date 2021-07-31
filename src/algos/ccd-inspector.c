@@ -163,6 +163,7 @@ int draw_sensor_tilt(fits *fit) {
 
 void on_tilt_button_clicked(GtkButton *button, gpointer user_data) {
 	set_cursor_waiting(TRUE);
+	confirm_peaker_GUI();
 	draw_sensor_tilt(&gfit);
 	set_cursor_waiting(FALSE);
 }

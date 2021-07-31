@@ -35,6 +35,7 @@
 #include "core/undo.h"
 #include "core/proto.h"
 #include "algos/statistics.h"
+#include "algos/siril_wcs.h"
 
 #ifndef O_BINARY
 #define O_BINARY 0
@@ -89,6 +90,7 @@ static int undo_remove_item(historic *histo, int index) {
 		g_unlink(histo[index].filename);
 		g_free(histo[index].filename);
 		histo[index].filename = NULL;
+		memset(&histo[index].wcsdata, 0, sizeof(wcs_info));
 	}
 	memset(histo[index].history, 0, FLEN_VALUE);
 	return 0;
@@ -111,6 +113,8 @@ static void undo_add_item(fits *fit, char *filename, char *histo) {
 	com.history[com.hist_current].rx = fit->rx;
 	com.history[com.hist_current].ry = fit->ry;
 	com.history[com.hist_current].type = fit->type;
+	com.history[com.hist_current].wcsdata = fit->wcsdata;
+	com.history[com.hist_current].focal_length = fit->focal_length;
 	snprintf(com.history[com.hist_current].history, FLEN_VALUE, "%s", histo);
 
 	if (com.hist_current == com.hist_size - 1) {
@@ -139,7 +143,6 @@ static int undo_get_data_ushort(fits *fit, historic hist) {
 	errno = 0;
 	fit->rx = fit->naxes[0] = hist.rx;
 	fit->ry = fit->naxes[1] = hist.ry;
-	/* TODO: fit->naxes[0] = fit->rx ? what about naxes[2] ? */
 
 	size_t n = fit->naxes[0] * fit->naxes[1];
 	size_t size = n * fit->naxes[2] * sizeof(WORD);
@@ -167,6 +170,15 @@ static int undo_get_data_ushort(fits *fit, historic hist) {
 		fit->pdata[GLAYER] = fit->data + n;
 		fit->pdata[BLAYER] = fit->data + n * 2;
 	}
+	memcpy(&fit->wcsdata, &hist.wcsdata, sizeof(wcs_info));
+	fit->focal_length = hist.focal_length;
+	if (!has_wcsdata(fit)) {
+		free_wcs(fit);
+	} else {
+		load_WCS_from_memory(fit);
+	}
+
+
 	full_stats_invalidation_from_fit(fit);
 	free(buf);
 	g_close(fd, NULL);
@@ -211,6 +223,14 @@ static int undo_get_data_float(fits *fit, historic hist) {
 		fit->fpdata[GLAYER] = fit->fdata + n;
 		fit->fpdata[BLAYER] = fit->fdata + n * 2;
 	}
+	memcpy(&fit->wcsdata, &hist.wcsdata, sizeof(wcs_info));
+	fit->focal_length = hist.focal_length;
+	if (!has_wcsdata(fit)) {
+		free_wcs(fit);
+	} else {
+		load_WCS_from_memory(fit);
+	}
+
 	full_stats_invalidation_from_fit(fit);
 	free(buf);
 	g_close(fd, NULL);
@@ -244,7 +264,7 @@ gboolean is_redo_available() {
     return (com.history && (com.hist_display < com.hist_current - 1));
 }
 
-int undo_save_state(fits *fit, char *message, ...) {
+int undo_save_state(fits *fit, const char *message, ...) {
 	gchar *filename;
 	char histo[FLEN_VALUE] = { 0 };
 	va_list args;

@@ -515,6 +515,8 @@ struct historic_struct {
 	char history[FLEN_VALUE];
 	int rx, ry;
 	data_type type;
+	wcs_info wcsdata;
+	double focal_length;
 };
 
 struct star_finder_struct {

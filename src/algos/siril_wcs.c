@@ -48,6 +48,13 @@ gboolean has_wcs(fits *fit) {
 	return FALSE;
 }
 
+// deal with cases where wcsdata is not NULL but members are set to 0
+gboolean has_wcsdata(fits *fit) {
+	if ((fit->wcsdata.crval[0] == 0.0 && fit->wcsdata.crval[1] == 0.0)) return FALSE;
+		return TRUE;
+}
+
+
 void free_wcs(fits *fit) {
 #ifdef HAVE_WCSLIB
 	if (fit->wcslib) {
