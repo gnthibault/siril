@@ -1244,7 +1244,17 @@ gpointer match_catalog(gpointer p) {
 	}
 
 	if (!args->manual) {
-		com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, NULL, FALSE, FALSE); // TODO: use good layer
+		if (args->cropfactor == 1.f) {
+			com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, NULL, FALSE, FALSE); // TODO: use good layer
+		} else {
+			int x, y, w, h;
+			w = (int)(args->cropfactor * args->fit->rx);
+			h = (int)(args->cropfactor * args->fit->ry);
+			x = (int)(args->fit->rx / 2 - w / 2);
+			y = (int)(args->fit->ry / 2 - h / 2);			
+			rectangle croparea = {x, y, w, h};
+			com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, &croparea, FALSE, FALSE); // TODO: use good layer    
+		}
 	} else {
 		if (com.stars)
 			while (com.stars[n_fit++]);
@@ -1531,13 +1541,16 @@ gchar *search_in_catalogs(const gchar *object) {
 }
 
 int fill_plate_solver_structure(struct plate_solver_data *args) {
-	double fov, px_size, scale, m;
+	double fov, px_size, scale, m, usedfov, maindim;
 	SirilWorldCS *catalog_center;
 
 	px_size = get_pixel();
 	scale = get_resolution(get_focal(), px_size);
-	fov = get_fov(scale, gfit.ry > gfit.rx ? gfit.ry : gfit.rx);
-	m = get_mag_limit(fov);
+	maindim = gfit.ry > gfit.rx ? gfit.ry : gfit.rx;
+	fov = get_fov(scale, maindim);
+	usedfov = min(fov, 300.); //5deg in arcmin
+	args->cropfactor = (usedfov < fov) ? usedfov / fov : 1.0; // to avoid cropping on rounding errors
+	m = get_mag_limit(usedfov * CROP_ALLOWANCE);
 	catalog_center = get_center_of_catalog();
 
 	if (siril_world_cs_get_alpha(catalog_center) == 0.0 && siril_world_cs_get_delta(catalog_center)) {
@@ -1546,8 +1559,8 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 	}
 
 	/* Filling structure */
-	args->onlineCatalog = args->for_photometry_cc ? get_photometry_catalog() : get_online_catalog(fov, m);
-	args->catalogStars = download_catalog(args->onlineCatalog, catalog_center, fov, m);
+	args->onlineCatalog = args->for_photometry_cc ? get_photometry_catalog() : get_online_catalog(usedfov * CROP_ALLOWANCE, m);
+	args->catalogStars = download_catalog(args->onlineCatalog, catalog_center, usedfov * CROP_ALLOWANCE, m);
 	if (!args->catalogStars) {
 		siril_world_cs_unref(catalog_center);
 		siril_message_dialog(GTK_MESSAGE_ERROR, _("No catalog"), _("Cannot download the online star catalog."));

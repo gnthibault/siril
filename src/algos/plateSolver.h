@@ -7,6 +7,7 @@
 
 #define BRIGHTEST_STARS 2500
 #define AT_MATCH_CATALOG_NBRIGHT   60
+#define CROP_ALLOWANCE 1.2
 
 #define RADtoASEC (3600.0 * 180.0 / M_PI)
 
@@ -30,6 +31,7 @@ struct plate_solver_data {
 	gboolean for_photometry_cc;
 	gboolean downsample;
 	double scale; // scale (resolution)
+	double cropfactor; // image cropping for wide fields
 	fits *fit;
 	fits *fit_backup;
 	gchar *message; // error message
