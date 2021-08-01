@@ -1589,7 +1589,7 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 		args->yoffset = 0.0;
 	}
 	memcpy(&(args->solvearea), &croparea, sizeof(rectangle));
-	m = get_mag_limit(usedfov * CROP_ALLOWANCE);
+	m = get_mag_limit(fov);
 	catalog_center = get_center_of_catalog();
 
 	if (siril_world_cs_get_alpha(catalog_center) == 0.0 && siril_world_cs_get_delta(catalog_center)) {
@@ -1598,7 +1598,7 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 	}
 
 	/* Filling structure */
-	args->onlineCatalog = args->for_photometry_cc ? get_photometry_catalog() : get_online_catalog(usedfov * CROP_ALLOWANCE, m);
+	args->onlineCatalog = args->for_photometry_cc ? get_photometry_catalog() : get_online_catalog(fov, m);
 	args->catalogStars = download_catalog(args->onlineCatalog, catalog_center, usedfov * CROP_ALLOWANCE, m);
 	if (!args->catalogStars) {
 		siril_world_cs_unref(catalog_center);
