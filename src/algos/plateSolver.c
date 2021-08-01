@@ -1251,26 +1251,12 @@ gpointer match_catalog(gpointer p) {
 	}
 
 	if (!args->manual) {
-		rectangle croparea = { 0 };
-		if (args->autocrop) {
-			if (args->cropfactor != 1.f) {
-				croparea.w = (int) (args->cropfactor * args->fit->rx);
-				croparea.h = (int) (args->cropfactor * args->fit->ry);
-				croparea.x = (int) (args->fit->rx / 2 - croparea.w / 2);
-				croparea.y = (int) (args->fit->ry / 2 - croparea.h / 2);
-			}
-		} else {
-			/* take selection if it exists */
-			if (com.selection.w != 0 && com.selection.h != 0) {
-				memcpy(&croparea, &com.selection, sizeof(rectangle));
-				/* TODO change cropfactor, however, if the crop is not centered, we must think about it */
-			}
-		}
-		com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, &croparea, FALSE, FALSE); // TODO: use good layer
+		com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, &(args->solvearea), FALSE, FALSE); // TODO: use good layer
 	} else {
 		if (com.stars)
 			while (com.stars[n_fit++]);
 	}
+
 	if (!com.stars || n_fit < AT_MATCH_STARTN_LINEAR) {
 		args->message = g_strdup_printf(_("There are not enough stars picked in the image. "
 				"At least %d stars are needed."), AT_MATCH_STARTN_LINEAR);
@@ -1553,15 +1539,56 @@ gchar *search_in_catalogs(const gchar *object) {
 }
 
 int fill_plate_solver_structure(struct plate_solver_data *args) {
-	double fov, px_size, scale, m, usedfov, maindim;
+	double fov, px_size, scale, m, usedfov, maindim, scalefactor;
 	SirilWorldCS *catalog_center;
+	rectangle croparea = { 0 };
 
 	px_size = get_pixel();
 	scale = get_resolution(get_focal(), px_size);
 	maindim = gfit.ry > gfit.rx ? gfit.ry : gfit.rx;
+	args->autocrop = is_autocrop_activated();
+	args->manual = is_detection_manual();
+	args->downsample = is_downsample_activated();
+	args->fit = &gfit;
+	scalefactor = args->downsample ? DOWNSAMPLE_FACTOR : 1.f;
 	fov = get_fov(scale, maindim);
-	usedfov = min(fov, 300.); //5deg in arcmin
-	args->cropfactor = (usedfov < fov) ? usedfov / fov : 1.0; // to avoid cropping on rounding errors
+	if (!args->manual) {
+		if (args->autocrop) {
+			usedfov = min(fov, 300.); //5deg in arcmin
+			args->cropfactor = (usedfov < fov) ? usedfov / fov : 1.0; // to avoid cropping on rounding errors
+			if (args->cropfactor != 1.f) {
+				croparea.w = (int) (args->cropfactor * scalefactor * args->fit->rx);
+				croparea.h = (int) (args->cropfactor * scalefactor * args->fit->ry);
+				croparea.x = (int) (scalefactor / 2 * (args->fit->rx - croparea.w));
+				croparea.y = (int) (scalefactor / 2 * (args->fit->ry - croparea.h));
+				siril_log_message(_("Picture auto-cropped factor: %.2f\n"),args->cropfactor);
+			}
+			args->xoffset = 0.0;
+			args->yoffset = 0.0;
+		} else {
+			/* take selection if it exists */
+			if (com.selection.w != 0 && com.selection.h != 0) {
+				memcpy(&croparea, &com.selection, sizeof(rectangle));
+				maindim = croparea.w > croparea.h ? croparea.w : croparea.h;
+				usedfov = get_fov(scale, maindim);
+				args->cropfactor = 1.f; //No need to write anything about cropping, user selected smthg
+				args->xoffset = (int) (croparea.x + croparea.w / 2 - args->fit->rx / 2);
+				args->yoffset = (int) (croparea.y + croparea.h / 2 - args->fit->ry / 2);				
+				siril_log_message(_("Solving on selected area: %d %d %d %d \n"),croparea.x, croparea.y, croparea.w, croparea.h);
+			} else { // autocrop false and no selection
+				usedfov = fov;
+				args->cropfactor = 1.;
+				args->xoffset = 0.0;
+				args->yoffset = 0.0;
+			}
+		}
+	} else { //stars manual selection - use full field centered
+		usedfov = fov;
+		args->cropfactor = 1.0 ;  //just in case
+		args->xoffset = 0.0;
+		args->yoffset = 0.0;
+	}
+	memcpy(&(args->solvearea), &croparea, sizeof(rectangle));
 	m = get_mag_limit(usedfov * CROP_ALLOWANCE);
 	catalog_center = get_center_of_catalog();
 
@@ -1580,11 +1607,7 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 	}
 	args->scale = scale;
 	args->pixel_size = px_size;
-	args->manual = is_detection_manual();
 	args->flip_image = flip_image_after_ps();
-	args->downsample = is_downsample_activated();
-	args->autocrop = is_autocrop_activated();
-	args->fit = &gfit;
 
 	return 0;
 }
