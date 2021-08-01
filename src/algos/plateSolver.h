@@ -30,6 +30,7 @@ struct plate_solver_data {
 	gchar *catalogStars;
 	gboolean for_photometry_cc;
 	gboolean downsample;
+	gboolean autocrop;
 	double scale; // scale (resolution)
 	double cropfactor; // image cropping for wide fields
 	fits *fit;

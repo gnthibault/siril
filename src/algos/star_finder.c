@@ -277,7 +277,7 @@ psf_star **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars, r
 		smooth_image[ny - k - 1] = smooth_fit.fdata + k * nx;
 	}
 
-	if (area) {
+	if (area && area->w != 0 && area->h != 0) {
 		areaX0 = area->x;
 		areaY0 = area->y;
 		areaX1 = area->w + areaX0;

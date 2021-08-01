@@ -311,6 +311,13 @@ static gboolean is_downsample_activated() {
 	return gtk_toggle_button_get_active(button);
 }
 
+static gboolean is_autocrop_activated() {
+	GtkToggleButton *button;
+
+	button = GTK_TOGGLE_BUTTON(lookup_widget("autocrop_ips_button"));
+	return gtk_toggle_button_get_active(button);
+}
+
 static gchar *get_catalog_url(SirilWorldCS *center, double mag_limit, double dfov, int type) {
 	GString *url;
 	gchar *coordinates;
@@ -1244,17 +1251,22 @@ gpointer match_catalog(gpointer p) {
 	}
 
 	if (!args->manual) {
-		if (args->cropfactor == 1.f) {
-			com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, NULL, FALSE, FALSE); // TODO: use good layer
+		rectangle croparea = { 0 };
+		if (args->autocrop) {
+			if (args->cropfactor != 1.f) {
+				croparea.w = (int) (args->cropfactor * args->fit->rx);
+				croparea.h = (int) (args->cropfactor * args->fit->ry);
+				croparea.x = (int) (args->fit->rx / 2 - croparea.w / 2);
+				croparea.y = (int) (args->fit->ry / 2 - croparea.h / 2);
+			}
 		} else {
-			int x, y, w, h;
-			w = (int)(args->cropfactor * args->fit->rx);
-			h = (int)(args->cropfactor * args->fit->ry);
-			x = (int)(args->fit->rx / 2 - w / 2);
-			y = (int)(args->fit->ry / 2 - h / 2);			
-			rectangle croparea = {x, y, w, h};
-			com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, &croparea, FALSE, FALSE); // TODO: use good layer    
+			/* take selection if it exists */
+			if (com.selection.w != 0 && com.selection.h != 0) {
+				memcpy(&croparea, &com.selection, sizeof(rectangle));
+				/* TODO change cropfactor, however, if the crop is not centered, we must think about it */
+			}
 		}
+		com.stars = peaker(args->fit, 0, &com.starfinder_conf, &n_fit, &croparea, FALSE, FALSE); // TODO: use good layer
 	} else {
 		if (com.stars)
 			while (com.stars[n_fit++]);
@@ -1571,6 +1583,7 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 	args->manual = is_detection_manual();
 	args->flip_image = flip_image_after_ps();
 	args->downsample = is_downsample_activated();
+	args->autocrop = is_autocrop_activated();
 	args->fit = &gfit;
 
 	return 0;
