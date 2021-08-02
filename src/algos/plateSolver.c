@@ -1319,12 +1319,12 @@ gpointer match_catalog(gpointer p) {
 		 * Maybe one day we will apply match with homography matrix
 		 */
 		TRANS trans = H_to_linear_TRANS(H);
-		if (check_affine_TRANS_sanity(trans)) {
+//		if (check_affine_TRANS_sanity(trans)) {
 			point image_size = { args->fit->rx, args->fit->ry };
 
 			is_result.px_size = image_size;
-			is_result.x = image_size.x / 2.0;
-			is_result.y = image_size.y / 2.0;
+			is_result.x = (image_size.x / 2.0);
+			is_result.y = (image_size.y / 2.0);
 			is_result.pixel_size = args->pixel_size;
 
 			apply_match(&is_result, trans);
@@ -1343,9 +1343,9 @@ gpointer match_catalog(gpointer p) {
 			undo_save_state(undo_fit, undo_str);
 
 			print_platesolving_results(H, is_result, &(args->flip_image), args->downsample);
-		} else {
-			args->ret = 1;
-		}
+//		} else {
+//			args->ret = 1;
+//		}
 
 	}
 	/* free data */
@@ -1575,13 +1575,13 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 				memcpy(&croparea, &com.selection, sizeof(rectangle));
 				maindim = croparea.w > croparea.h ? croparea.w : croparea.h;
 				usedfov = get_fov(scale, maindim);
-				args->cropfactor = 1.f; //No need to write anything about cropping, user selected smthg
+				args->cropfactor = 1.0; //No need to write anything about cropping, user selected smthg
 				args->xoffset = (int) (croparea.x + croparea.w / 2 - args->fit->rx / 2);
-				args->yoffset = (int) (croparea.y + croparea.h / 2 - args->fit->ry / 2);				
+				args->yoffset = (int) (croparea.y + croparea.h / 2 - args->fit->ry / 2);
 				siril_log_message(_("Solving on selected area: %d %d %d %d \n"), croparea.x, croparea.y, croparea.w, croparea.h);
 			} else { // autocrop false and no selection
 				usedfov = fov;
-				args->cropfactor = 1.;
+				args->cropfactor = 1.0;
 				args->xoffset = 0.0;
 				args->yoffset = 0.0;
 			}
