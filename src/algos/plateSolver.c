@@ -1227,6 +1227,8 @@ static gboolean end_plate_solver(gpointer p) {
 			fits_flip_top_to_bottom(args->fit);
 			flip_astrometry_data(args->fit);
 			redraw(com.cvport, REMAP_ALL);
+		} else {
+			redraw(com.cvport, REMAP_NONE);
 		}
 		load_WCS_from_memory(args->fit);
 	}
@@ -1589,7 +1591,7 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 			siril_log_message(_("Auto-cropped factor: %.2f\n"), args->cropfactor);
 			siril_log_message(_("Solving on selected area: %d %d %d %d \n"), croparea.x, croparea.y, croparea.w, croparea.h);
 		}
-		printf("usedfov=%lf et %lf\n", usedfov, fov);
+
 		if (args->downsample) {
 			croparea.w *= scalefactor;
 			croparea.h *= scalefactor;
