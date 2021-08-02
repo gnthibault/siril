@@ -34,7 +34,7 @@ struct plate_solver_data {
 	double scale; // scale (resolution)
 	double cropfactor; // image cropping for wide fields
 	rectangle solvearea;
-	double xoffset, yoffset; //offset of solvearea center wrt. image center
+	int xoffset, yoffset; //offset of solvearea center wrt. image center
 	fits *fit;
 	fits *fit_backup;
 	gchar *message; // error message

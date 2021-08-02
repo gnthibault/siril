@@ -1570,8 +1570,8 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 		} else {
 			croparea.x = 0;
 			croparea.y = 0;
-			croparea.w = gfit.rx;
-			croparea.h = gfit.ry;		
+			croparea.w = args->fit->rx;
+			croparea.h = args->fit->ry;
 			args->xoffset = 0;
 			args->yoffset = 0;
 		}
@@ -1582,12 +1582,12 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 		// then apply or not autocropping to 5deg (300 arcmin)
 		usedfov = (args->autocrop) ?  min(fov, 300.) : fov;
 		args->cropfactor = (usedfov < fov) ? usedfov / fov : 1.0; // to avoid cropping on rounding errors
-		if (args->cropfactor != 1.f) {
+		if (args->cropfactor != 1.0) {
 			croparea.x += (int) ((croparea.w - croparea.w * args->cropfactor) / 2);
 			croparea.y += (int) ((croparea.h - croparea.h * args->cropfactor) / 2);
 			croparea.w = (int) (args->cropfactor * croparea.w);
 			croparea.h = (int) (args->cropfactor * croparea.h);
-           // TODO calc cenetr offset if need 
+           // TODO calc center offset if need
 			siril_log_message(_("Auto-cropped factor: %.2f\n"), args->cropfactor);
 			siril_log_message(_("Solving on selected area: %d %d %d %d \n"), croparea.x, croparea.y, croparea.w, croparea.h);
 		}
