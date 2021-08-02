@@ -77,13 +77,13 @@ static double guess_resolution(fits *fit) {
 	return res;
 }
 
-static float compute_threshold(fits *fit, double ksigma, int layer, float *norm, double *bg, double *bgnoise) {
+static float compute_threshold(fits *fit, double ksigma, int layer, rectangle *area, float *norm, double *bg, double *bgnoise) {
 	float threshold;
 	imstats *stat;
 
 	assert(layer <= 3);
 
-	stat = statistics(NULL, -1, fit, layer, NULL, STATS_BASIC, FALSE);
+	stat = statistics(NULL, -1, fit, layer, area, STATS_BASIC, FALSE);
 	if (!stat) {
 		siril_log_message(_("Error: statistics computation failed.\n"));
 		*norm = 0;
@@ -247,7 +247,7 @@ psf_star **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars, r
 	gettimeofday(&t_start, NULL);
 
 	/* running statistics on the input image is best as it caches them */
-	threshold = compute_threshold(fit, sf->sigma * 5.0, layer, &norm, &bg, &bgnoise);
+	threshold = compute_threshold(fit, sf->sigma * 5.0, layer, area, &norm, &bg, &bgnoise);
 	if (norm == 0.0f)
 		return NULL;
 
