@@ -771,12 +771,16 @@ static void cd_x(wcs_info *wcs) {
 	rot = rot * M_PI / 180.0;
 	double sinrot, cosrot;
 	double2 sc;
+	int sign;
+
 	sc = xsincos(rot);
 	sinrot = sc.x;
 	cosrot = sc.y;
 	wcs->cd[0][0] = wcs->cdelt[0] * cosrot;
-	wcs->cd[0][1] = wcs->cdelt[0] * sinrot;
-	wcs->cd[1][0] = -wcs->cdelt[1] * sinrot;
+	sign = (wcs->cdelt[0] >= 0) ? 1 : -1;
+	wcs->cd[0][1] = fabs(wcs->cdelt[1]) * sign * sinrot;
+	sign = (wcs->cdelt[1] >= 0) ? 1 : -1;
+	wcs->cd[1][0] = -fabs(wcs->cdelt[1]) * sign * sinrot;
 	wcs->cd[1][1] = wcs->cdelt[1] * cosrot;
 }
 
@@ -1574,7 +1578,7 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 				args->cropfactor = 1.f; //No need to write anything about cropping, user selected smthg
 				args->xoffset = (int) (croparea.x + croparea.w / 2 - args->fit->rx / 2);
 				args->yoffset = (int) (croparea.y + croparea.h / 2 - args->fit->ry / 2);				
-				siril_log_message(_("Solving on selected area: %d %d %d %d \n"),croparea.x, croparea.y, croparea.w, croparea.h);
+				siril_log_message(_("Solving on selected area: %d %d %d %d \n"), croparea.x, croparea.y, croparea.w, croparea.h);
 			} else { // autocrop false and no selection
 				usedfov = fov;
 				args->cropfactor = 1.;
