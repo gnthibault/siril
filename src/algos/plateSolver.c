@@ -1549,44 +1549,57 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 
 	px_size = get_pixel();
 	scale = get_resolution(get_focal(), px_size);
-	maindim = gfit.ry > gfit.rx ? gfit.ry : gfit.rx;
+	
 	args->autocrop = is_autocrop_activated();
 	args->manual = is_detection_manual();
 	args->downsample = is_downsample_activated();
 	args->fit = &gfit;
-	scalefactor = args->downsample ? DOWNSAMPLE_FACTOR : 1.f;
-	fov = get_fov(scale, maindim);
+	scalefactor = args->downsample ? DOWNSAMPLE_FACTOR : 1.0;
+	
 	if (!args->manual) {
-		if (args->autocrop) {
-			usedfov = min(fov, 300.); //5deg in arcmin
-			args->cropfactor = (usedfov < fov) ? usedfov / fov : 1.0; // to avoid cropping on rounding errors
-			if (args->cropfactor != 1.f) {
-				croparea.w = (int) (args->cropfactor * scalefactor * args->fit->rx);
-				croparea.h = (int) (args->cropfactor * scalefactor * args->fit->ry);
-				croparea.x = (int) (scalefactor / 2 * (args->fit->rx - croparea.w));
-				croparea.y = (int) (scalefactor / 2 * (args->fit->ry - croparea.h));
-				siril_log_message(_("Picture auto-cropped factor: %.2f\n"),args->cropfactor);
-			}
-			args->xoffset = 0.0;
-			args->yoffset = 0.0;
+		// first checking if there is a selection of is the full field is to be used
+		if (com.selection.w != 0 && com.selection.h != 0) {
+			memcpy(&croparea, &com.selection, sizeof(rectangle));
+			// args->xoffset = (int) ((croparea.x + croparea.w / 2 - args->fit->rx / 2));
+			// args->yoffset = (int) (croparea.y + croparea.h / 2 - args->fit->ry / 2);
+			// TODO calc cenetr offset if need 
+			args->xoffset = 0;
+			args->yoffset = 0;
 		} else {
-			/* take selection if it exists */
-			if (com.selection.w != 0 && com.selection.h != 0) {
-				memcpy(&croparea, &com.selection, sizeof(rectangle));
-				maindim = croparea.w > croparea.h ? croparea.w : croparea.h;
-				usedfov = get_fov(scale, maindim);
-				args->cropfactor = 1.0; //No need to write anything about cropping, user selected smthg
-				args->xoffset = (int) (croparea.x + croparea.w / 2 - args->fit->rx / 2);
-				args->yoffset = (int) (croparea.y + croparea.h / 2 - args->fit->ry / 2);
-				siril_log_message(_("Solving on selected area: %d %d %d %d \n"), croparea.x, croparea.y, croparea.w, croparea.h);
-			} else { // autocrop false and no selection
-				usedfov = fov;
-				args->cropfactor = 1.0;
-				args->xoffset = 0.0;
-				args->yoffset = 0.0;
-			}
+			croparea.x = 0;
+			croparea.y = 0;
+			croparea.w = gfit.rx;
+			croparea.h = gfit.ry;		
+			args->xoffset = 0;
+			args->yoffset = 0;
+		}
+		siril_log_message(_("Solving on selected area: %d %d %d %d \n"), croparea.x, croparea.y, croparea.w, croparea.h);
+		maindim = max(croparea.w, croparea.h);
+		fov = get_fov(scale, maindim);
+
+		// then apply or not autocropping to 5deg (300 arcmin)
+		usedfov = (args->autocrop) ?  min(fov, 300.) : fov;
+		args->cropfactor = (usedfov < fov) ? usedfov / fov : 1.0; // to avoid cropping on rounding errors
+		if (args->cropfactor != 1.f) {
+			croparea.x += (int) ((croparea.w - croparea.w * args->cropfactor) / 2);
+			croparea.y += (int) ((croparea.h - croparea.h * args->cropfactor) / 2);
+			croparea.w = (int) (args->cropfactor * croparea.w);
+			croparea.h = (int) (args->cropfactor * croparea.h);
+           // TODO calc cenetr offset if need 
+			siril_log_message(_("Auto-cropped factor: %.2f\n"), args->cropfactor);
+			siril_log_message(_("Solving on selected area: %d %d %d %d \n"), croparea.x, croparea.y, croparea.w, croparea.h);
+		}
+		printf("usedfov=%lf et %lf\n", usedfov, fov);
+		if (args->downsample) {
+			croparea.w *= scalefactor;
+			croparea.h *= scalefactor;
+			croparea.x *= scalefactor;
+			croparea.y *= scalefactor;
+			args->xoffset *= scalefactor;
+			args->yoffset *= scalefactor;
 		}
 	} else { //stars manual selection - use full field centered
+		fov = get_fov(scale, max(args->fit->rx, args->fit->ry));
 		usedfov = fov;
 		args->cropfactor = 1.0 ;  //just in case
 		args->xoffset = 0.0;
