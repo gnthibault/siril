@@ -1178,7 +1178,7 @@ static gboolean check_affine_TRANS_sanity(TRANS trans) {
 	double var2 = fabs(trans.c) - fabs(trans.e);
 	siril_debug_print("abs(b+f)=%f et abs(c+e)=%f\n", var1, var2);
 
-	return ((fabs(var1) < 0.1) && fabs(var2) < 0.1);
+	return ((fabs(var1) < 0.3) && fabs(var2) < 0.3);
 }
 
 static gboolean end_plate_solver(gpointer p) {
@@ -1319,7 +1319,7 @@ gpointer match_catalog(gpointer p) {
 		 * Maybe one day we will apply match with homography matrix
 		 */
 		TRANS trans = H_to_linear_TRANS(H);
-//		if (check_affine_TRANS_sanity(trans)) {
+		if (check_affine_TRANS_sanity(trans)) {
 			point image_size = { args->fit->rx, args->fit->ry };
 
 			is_result.px_size = image_size;
@@ -1343,9 +1343,9 @@ gpointer match_catalog(gpointer p) {
 			undo_save_state(undo_fit, undo_str);
 
 			print_platesolving_results(H, is_result, &(args->flip_image), args->downsample);
-//		} else {
-//			args->ret = 1;
-//		}
+		} else {
+			args->ret = 1;
+		}
 
 	}
 	/* free data */
