@@ -1198,7 +1198,7 @@ static gboolean end_plate_solver(gpointer p) {
 	}
 
 	if (!args->manual)
-		clear_stars_list();
+		redraw(com.cvport, REMAP_NONE);
 	set_cursor_waiting(FALSE);
 
 	if (args->ret) {
@@ -1559,21 +1559,14 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 	scalefactor = args->downsample ? DOWNSAMPLE_FACTOR : 1.0;
 	
 	if (!args->manual) {
-		// first checking if there is a selection of is the full field is to be used
+		// first checking if there is a selection or if the full field is to be used
 		if (com.selection.w != 0 && com.selection.h != 0) {
 			memcpy(&croparea, &com.selection, sizeof(rectangle));
-			// args->xoffset = (int) ((croparea.x + croparea.w / 2 - args->fit->rx / 2));
-			// args->yoffset = (int) (croparea.y + croparea.h / 2 - args->fit->ry / 2);
-			// TODO calc cenetr offset if need 
-			args->xoffset = 0;
-			args->yoffset = 0;
 		} else {
 			croparea.x = 0;
 			croparea.y = 0;
 			croparea.w = args->fit->rx;
 			croparea.h = args->fit->ry;
-			args->xoffset = 0;
-			args->yoffset = 0;
 		}
 		siril_log_message(_("Solving on selected area: %d %d %d %d \n"), croparea.x, croparea.y, croparea.w, croparea.h);
 		maindim = max(croparea.w, croparea.h);
@@ -1590,6 +1583,13 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
            // TODO calc center offset if need
 			siril_log_message(_("Auto-cropped factor: %.2f\n"), args->cropfactor);
 			siril_log_message(_("Solving on selected area: %d %d %d %d \n"), croparea.x, croparea.y, croparea.w, croparea.h);
+		}
+		if (com.selection.w != 0 && com.selection.h != 0) {
+			args->xoffset = (double)croparea.x + 0.5*(double)croparea.w - 0.5*(double)args->fit->rx;
+			args->yoffset = (double)croparea.y + 0.5*(double)croparea.h - 0.5*(double)args->fit->ry;
+		} else {
+			args->xoffset = 0.0;
+			args->yoffset = 0.0;
 		}
 
 		if (args->downsample) {
