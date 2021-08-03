@@ -4081,3 +4081,50 @@ int process_requires(int nb) {
 		return 1;
 	}
 }
+
+int process_boxselect(int nb){
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
+	if (!(single_image_is_loaded() || sequence_is_loaded())) {
+		siril_log_message(_("Load an image or a sequence first, aborting\n"));
+		return 1;
+	}
+
+	rectangle area;
+	if ((!com.selection.h) || (!com.selection.w)) {
+		if (nb == 5) {
+			if (g_ascii_strtoull(word[1], NULL, 10) < 0 || g_ascii_strtoull(word[2], NULL, 10) < 0) {
+				siril_log_message(_("Selection: x and y must be positive values.\n"));
+				return 1;
+			}
+			if (g_ascii_strtoull(word[3], NULL, 10) <= 0 || g_ascii_strtoull(word[4], NULL, 10) <= 0) {
+				siril_log_message(_("Selection: width and height must be greater than 0.\n"));
+				return 1;
+			}
+			if (g_ascii_strtoull(word[1], NULL, 10) + g_ascii_strtoull(word[3], NULL, 10) > gfit.rx || g_ascii_strtoull(word[2], NULL, 10) + g_ascii_strtoull(word[4], NULL, 10) > gfit.ry) {
+				siril_log_message(_("Crop: width and height, respectively, must be less than %d and %d.\n"), gfit.rx,gfit.ry);
+				return 1;
+			}
+			area.x = g_ascii_strtoull(word[1], NULL, 10);
+			area.y = g_ascii_strtoull(word[2], NULL, 10);
+			area.w = g_ascii_strtoull(word[3], NULL, 10);
+			area.h = g_ascii_strtoull(word[4], NULL, 10);
+		}
+		else {
+			siril_log_message(_("Please specify x, y, w and h, aborting\n"));
+			return 1;
+		}
+	} else {
+		siril_log_message(_("A selection is already made, aborting\n"));
+		return 1;
+	}
+
+	memcpy(&com.selection, &area, sizeof(rectangle));
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
+	
+	return 0;
+}
