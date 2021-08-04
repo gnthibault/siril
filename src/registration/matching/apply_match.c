@@ -112,12 +112,12 @@
 
 #undef DEBUG           /* get some of diagnostic output */
 
-static int proc_star_file(image_solved *solved, TRANS *trans);
+static int proc_star_file(SirilWorldCS *px_cat_center, double *crpix, TRANS *trans, double *a, double *d);
 
-int apply_match(image_solved *solved, TRANS trans) {
+int apply_match(SirilWorldCS *px_cat_center, double *crpix, TRANS trans, double *alpha, double *delta) {
 
 	/* now walk through the file and do the dirty work */
-	if (proc_star_file(solved, &trans) != SH_SUCCESS) {
+	if (proc_star_file(px_cat_center, crpix, &trans, alpha, delta) != SH_SUCCESS) {
 		shError("can't process data for platesolving");
 		return (1);
 	}
@@ -148,24 +148,19 @@ int apply_match(image_solved *solved, TRANS trans) {
  */
 
 /* I: TRANS taking (x,y) -> (ra, dec) */
-static int proc_star_file(image_solved *solved, TRANS *trans) {
-//	int i = 0;
+static int proc_star_file(SirilWorldCS *px_cat_center, double *crpix, TRANS *trans, double *a, double*d) {
 	double xval, yval;
 	double r_dec;
 	double z, alpha, delta;
 	double delta_ra, delta_dec;
 	double rsquared;
-	SirilWorldCS *px_cat_center = get_image_solved_px_cat_center(solved);
 	double ra = siril_world_cs_get_alpha(px_cat_center);
 	double dec = siril_world_cs_get_delta(px_cat_center);
 
-	siril_world_cs_unref(px_cat_center);
-
 	r_dec = dec * DEGTORAD;
 
-//	while (s && s[i]) {
-	xval = get_image_solved_x(solved); //s[i]->xpos;
-	yval = get_image_solved_y(solved); //s[i]->ypos;
+	xval = crpix[0];
+	yval = crpix[1];
 
 	/*
 	 * let's transform from (x,y) to (delta_ra, delta_dec),
@@ -221,8 +216,7 @@ static int proc_star_file(image_solved *solved, TRANS *trans) {
 		zz = atan2(delta_ra, z) / DEGTORAD;
 		alpha = zz + ra;
 
-		zz = cos((alpha - ra) * DEGTORAD)
-				* (sin(r_dec) + delta_dec * cos(r_dec));
+		zz = cos((alpha - ra) * DEGTORAD) * (sin(r_dec) + delta_dec * cos(r_dec));
 		delta = atan2(zz, z) / DEGTORAD;
 	}
 
@@ -249,10 +243,8 @@ static int proc_star_file(image_solved *solved, TRANS *trans) {
 	fprintf(stdout, "new RA = %10.5f, new dec = %10.5f\n", alpha, delta);
 #endif
 
-	update_image_center_coord(solved, alpha, delta);
-
-//	i++;
-//	}
+	*a = alpha;
+	*d = delta;
 
 	return (SH_SUCCESS);
 }

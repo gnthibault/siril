@@ -91,11 +91,11 @@ struct object {
 };
 
 struct image_solved_struct {
-	point px_size;
+	point size;
 	SirilWorldCS *px_cat_center;
 	SirilWorldCS *image_center;
 	point fov;
-	double x, y;
+	double crpix[2];
 	double resolution, pixel_size, focal;
 	double crota;
 };
@@ -105,7 +105,7 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 
 static struct object platedObject[RESOLVER_NUMBER];
 static GtkListStore *list_IPS = NULL;
-static image_solved is_result;
+static image_solved solution;
 
 void initialize_ips_dialog() {
 	GtkWidget *button_ips_ok, *button_cc_ok, *catalog_label, *catalog_box_ips,
@@ -606,7 +606,7 @@ static gchar *download_catalog(online_catalog onlineCatalog, SirilWorldCS *catal
 
 		/* -------------------------------------------------------------------------------- */
 
-		is_result.px_cat_center = siril_world_cs_ref(catalog_center);
+		solution.px_cat_center = siril_world_cs_ref(catalog_center);
 	}
 	return foutput;
 }
@@ -782,13 +782,17 @@ static void cd_x(wcs_info *wcs) {
 	sign = (wcs->cdelt[1] >= 0) ? 1 : -1;
 	wcs->cd[1][0] = -fabs(wcs->cdelt[1]) * sign * sinrot;
 	wcs->cd[1][1] = wcs->cdelt[1] * cosrot;
+
+	printf("old cd: %lf et %lf\n", wcs->cd[0][0], wcs->cd[1][0]);
+	printf("old cd: %lf et %lf\n", wcs->cd[1][0], wcs->cd[1][1]);
+
 }
 
 static void update_gfit(image_solved image, double det, gboolean ask_for_flip) {
 	gfit.focal_length = image.focal;
 	gfit.pixel_size_x = gfit.pixel_size_y = image.pixel_size;
-	gfit.wcsdata.crpix[0] = image.x;
-	gfit.wcsdata.crpix[1] = image.y;
+	gfit.wcsdata.crpix[0] = image.crpix[0];
+	gfit.wcsdata.crpix[1] = image.crpix[1];
 	gfit.wcsdata.crval[0] = siril_world_cs_get_alpha(image.image_center);
 	gfit.wcsdata.crval[1] = siril_world_cs_get_delta(image.image_center);
 	gfit.wcsdata.equinox = 2000.0;
@@ -865,8 +869,8 @@ static void print_platesolving_results(Homography H, image_solved image, gboolea
 
 	image.focal = RADCONV * image.pixel_size / image.resolution;
 
-	image.fov.x = get_fov(image.resolution, image.px_size.x);
-	image.fov.y = get_fov(image.resolution, image.px_size.y);
+	image.fov.x = get_fov(image.resolution, image.size.x);
+	image.fov.y = get_fov(image.resolution, image.size.y);
 	siril_log_message(_("Focal:%*.2lf mm\n"), 15, image.focal);
 	siril_log_message(_("Pixel size:%*.2lf µm\n"), 10, image.pixel_size);
 	fov_in_DHMS(image.fov.x / 60.0, field_x);
@@ -1198,7 +1202,7 @@ static gboolean end_plate_solver(gpointer p) {
 	}
 
 	if (!args->manual)
-		redraw(com.cvport, REMAP_NONE);
+		clear_stars_list();
 	set_cursor_waiting(FALSE);
 
 	if (args->ret) {
@@ -1214,9 +1218,9 @@ static gboolean end_plate_solver(gpointer p) {
 	} else {
 		update_image_parameters_GUI();
 		set_GUI_CAMERA();
-		update_coordinates(is_result.image_center);
-		siril_world_cs_unref(is_result.px_cat_center);
-		siril_world_cs_unref(is_result.image_center);
+		update_coordinates(solution.image_center);
+		siril_world_cs_unref(solution.px_cat_center);
+		siril_world_cs_unref(solution.image_center);
 
 		control_window_switch_to_tab(OUTPUT_LOGS);
 		if (args->for_photometry_cc) {
@@ -1322,29 +1326,72 @@ gpointer match_catalog(gpointer p) {
 		 */
 		TRANS trans = H_to_linear_TRANS(H);
 		if (check_affine_TRANS_sanity(trans)) {
+			double ra0, dec0;
 			point image_size = { args->fit->rx, args->fit->ry };
 
-			is_result.px_size = image_size;
-			is_result.x = (image_size.x / 2.0);
-			is_result.y = (image_size.y / 2.0);
-			is_result.pixel_size = args->pixel_size;
+			solution.size = image_size;
+			solution.crpix[0] = (image_size.x / 2.0);
+			solution.crpix[1] = (image_size.y / 2.0);
+			solution.pixel_size = args->pixel_size;
 
-			apply_match(&is_result, trans);
+			apply_match(solution.px_cat_center, solution.crpix, trans, &ra0, &dec0);
+
+			solution.image_center = siril_world_cs_new_from_a_d(ra0, dec0);
 
 			if (args->downsample) {
 				double inv = 1.0 / DOWNSAMPLE_FACTOR;
-				is_result.px_size.x *= inv;
-				is_result.px_size.y *= inv;
-				is_result.x = is_result.px_size.x / 2.0;
-				is_result.y = is_result.px_size.y / 2.0;
+				solution.size.x *= inv;
+				solution.size.y *= inv;
+				solution.crpix[0] = (image_size.x / 2.0);
+				solution.crpix[1] = (image_size.y / 2.0);
 			}
+
+			/* compute cd matrix */
+			double ra7, dec7, delta_ra;
+
+			/* first, convert center  coordinates from deg to radian: */
+			dec0 *= DEGTORAD;
+			ra0 *= DEGTORAD;
+
+			/* make 1 step in direction crpix1 */
+			double crpix1[] = { solution.crpix[0] + 1, solution.crpix[1] };
+			apply_match(solution.px_cat_center, crpix1, trans, &ra7, &dec7);
+
+			dec7 *= DEGTORAD;
+			ra7 *= DEGTORAD;
+
+		    delta_ra = ra7 - ra0;
+			if (delta_ra > +M_PI)
+				delta_ra = 2 * M_PI - delta_ra;
+			if (delta_ra < -M_PI)
+				delta_ra = delta_ra - 2 * M_PI;
+			double cd1_1 = (delta_ra) * cos(dec0) * (180 / M_PI);
+			double cd2_1 = (dec7 - dec0) * (180 / M_PI);
+			printf("cd: %lf et %lf\n", cd1_1, cd2_1);
+
+			/* make 1 step in direction crpix2 */
+			double crpix2[] = { solution.crpix[0], solution.crpix[1] + 1 };
+			apply_match(solution.px_cat_center, crpix2, trans, &ra7, &dec7);
+
+			dec7 *= DEGTORAD;
+			ra7 *= DEGTORAD;
+
+		    delta_ra = ra7 - ra0;
+			if (delta_ra > +M_PI)
+				delta_ra = 2 * M_PI - delta_ra;
+			if (delta_ra < -M_PI)
+				delta_ra = delta_ra - 2 * M_PI;
+			double cd1_2 = (delta_ra) * cos(dec0) * (180 / M_PI);
+			double cd2_2 = (dec7 - dec0) * (180 / M_PI);
+			printf("cd: %lf et %lf\n", cd1_2, cd2_2);
+
 			// saving state for undo before modifying fit structure
 			const char *undo_str = args->for_photometry_cc ? _("Photometric CC") : _("Plate Solve");
 			fits *undo_fit = args->downsample ? args->fit_backup : args->fit;
 
 			undo_save_state(undo_fit, undo_str);
 
-			print_platesolving_results(H, is_result, &(args->flip_image), args->downsample);
+			print_platesolving_results(H, solution, &(args->flip_image), args->downsample);
 		} else {
 			args->ret = 1;
 		}
@@ -1661,18 +1708,6 @@ SirilWorldCS *get_image_solved_px_cat_center(image_solved *image) {
 
 SirilWorldCS *get_image_solved_image_center(image_solved *image) {
 	return image->image_center;
-}
-
-void update_image_center_coord(image_solved *image, gdouble alpha, gdouble delta) {
-	image->image_center = siril_world_cs_new_from_a_d(alpha, delta);
-}
-
-double get_image_solved_x(image_solved *image) {
-	return image->x;
-}
-
-double get_image_solved_y(image_solved *image) {
-	return image->y;
 }
 
 void set_focal_and_pixel_pitch() {
