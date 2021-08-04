@@ -766,55 +766,55 @@ static void update_image_parameters_GUI() {
 	update_coords();
 }
 
-static void cd_x(wcs_info *wcs) {
-	double rot = (wcs->crota[0] + wcs->crota[1]) / 2.0;
-	rot = rot * M_PI / 180.0;
-	double sinrot, cosrot;
-	double2 sc;
-	int sign;
+//static void cd_x(wcs_info *wcs) {
+//	double rot = (wcs->crota[0] + wcs->crota[1]) / 2.0;
+//	rot = rot * M_PI / 180.0;
+//	double sinrot, cosrot;
+//	double2 sc;
+//	int sign;
+//
+//	sc = xsincos(rot);
+//	sinrot = sc.x;
+//	cosrot = sc.y;
+//	wcs->cd[0][0] = wcs->cdelt[0] * cosrot;
+//	sign = (wcs->cdelt[0] >= 0) ? 1 : -1;
+//	wcs->cd[0][1] = fabs(wcs->cdelt[1]) * sign * sinrot;
+//	sign = (wcs->cdelt[1] >= 0) ? 1 : -1;
+//	wcs->cd[1][0] = -fabs(wcs->cdelt[1]) * sign * sinrot;
+//	wcs->cd[1][1] = wcs->cdelt[1] * cosrot;
+//
+//	printf("old cd: %lf et %lf\n", wcs->cd[0][0], wcs->cd[1][0]);
+//	printf("old cd: %lf et %lf\n", wcs->cd[1][0], wcs->cd[1][1]);
+//
+//}
 
-	sc = xsincos(rot);
-	sinrot = sc.x;
-	cosrot = sc.y;
-	wcs->cd[0][0] = wcs->cdelt[0] * cosrot;
-	sign = (wcs->cdelt[0] >= 0) ? 1 : -1;
-	wcs->cd[0][1] = fabs(wcs->cdelt[1]) * sign * sinrot;
-	sign = (wcs->cdelt[1] >= 0) ? 1 : -1;
-	wcs->cd[1][0] = -fabs(wcs->cdelt[1]) * sign * sinrot;
-	wcs->cd[1][1] = wcs->cdelt[1] * cosrot;
-
-	printf("old cd: %lf et %lf\n", wcs->cd[0][0], wcs->cd[1][0]);
-	printf("old cd: %lf et %lf\n", wcs->cd[1][0], wcs->cd[1][1]);
-
-}
-
-static void update_gfit(image_solved image, double det, gboolean ask_for_flip) {
-	gfit.focal_length = image.focal;
-	gfit.pixel_size_x = gfit.pixel_size_y = image.pixel_size;
-	gfit.wcsdata.crpix[0] = image.crpix[0];
-	gfit.wcsdata.crpix[1] = image.crpix[1];
-	gfit.wcsdata.crval[0] = siril_world_cs_get_alpha(image.image_center);
-	gfit.wcsdata.crval[1] = siril_world_cs_get_delta(image.image_center);
-	gfit.wcsdata.equinox = 2000.0;
-	gfit.wcsdata.cdelt[0] = image.resolution / 3600.0;
-	gfit.wcsdata.cdelt[1] = -gfit.wcsdata.cdelt[0];
-	if (det < 0 && !ask_for_flip)
-		gfit.wcsdata.cdelt[0] = -gfit.wcsdata.cdelt[0];
-	gfit.wcsdata.crota[0] = gfit.wcsdata.crota[1] = -image.crota;
-	cd_x(&gfit.wcsdata);
-
-	gfit.wcsdata.ra = siril_world_cs_get_alpha(image.image_center);
-	gfit.wcsdata.dec = siril_world_cs_get_delta(image.image_center);
-
-	gchar *ra = siril_world_cs_alpha_format(image.image_center, "%02d %02d %.3lf");
-	gchar *dec = siril_world_cs_delta_format(image.image_center, "%c%02d %02d %.3lf");
-
-	g_sprintf(gfit.wcsdata.objctra, "%s", ra);
-	g_sprintf(gfit.wcsdata.objctdec, "%s", dec);
-
-	g_free(ra);
-	g_free(dec);
-}
+//static void update_gfit(image_solved image, double det, gboolean ask_for_flip) {
+//	gfit.focal_length = image.focal;
+//	gfit.pixel_size_x = gfit.pixel_size_y = image.pixel_size;
+//	gfit.wcsdata.crpix[0] = image.crpix[0];
+//	gfit.wcsdata.crpix[1] = image.crpix[1];
+//	gfit.wcsdata.crval[0] = siril_world_cs_get_alpha(image.image_center);
+//	gfit.wcsdata.crval[1] = siril_world_cs_get_delta(image.image_center);
+//	gfit.wcsdata.equinox = 2000.0;
+//	gfit.wcsdata.cdelt[0] = image.resolution / 3600.0;
+//	gfit.wcsdata.cdelt[1] = -gfit.wcsdata.cdelt[0];
+//	if (det < 0 && !ask_for_flip)
+//		gfit.wcsdata.cdelt[0] = -gfit.wcsdata.cdelt[0];
+//	gfit.wcsdata.crota[0] = gfit.wcsdata.crota[1] = -image.crota;
+//	cd_x(&gfit.wcsdata);
+//
+//	gfit.wcsdata.ra = siril_world_cs_get_alpha(image.image_center);
+//	gfit.wcsdata.dec = siril_world_cs_get_delta(image.image_center);
+//
+//	gchar *ra = siril_world_cs_alpha_format(image.image_center, "%02d %02d %.3lf");
+//	gchar *dec = siril_world_cs_delta_format(image.image_center, "%c%02d %02d %.3lf");
+//
+//	g_sprintf(gfit.wcsdata.objctra, "%s", ra);
+//	g_sprintf(gfit.wcsdata.objctdec, "%s", dec);
+//
+//	g_free(ra);
+//	g_free(dec);
+//}
 
 static void flip_astrometry_data(fits *fit) {
 	fit->wcsdata.cd[0][0] = -fit->wcsdata.cd[0][0];
@@ -884,7 +884,7 @@ static void print_platesolving_results(Homography H, image_solved image, gboolea
 	g_free(alpha);
 	g_free(delta);
 
-   	update_gfit(image, det, *flip_image);
+	//update_gfit(image, det, *flip_image);
 
 	*flip_image = *flip_image && det < 0;
 
@@ -1244,6 +1244,22 @@ static gboolean end_plate_solver(gpointer p) {
 	return FALSE;
 }
 
+static void new_to_old_WCS(double cd1_1, double cd1_2, double cd2_1,
+		double cd2_2, double *cdelt1, double *cdelt2, double *crota1,
+		double *crota2) {
+	int sign;
+	if ((cd1_1 * cd2_2 - cd1_2 * cd2_1) >= 0)
+		sign = +1;
+	else
+		sign = -1;
+
+	*cdelt1 = sqrt((cd1_1 * cd1_1) + (cd2_1 * cd2_1)) * sign;
+	*cdelt2 = sqrt((cd1_2 * cd1_2) + (cd2_2 * cd2_2));
+
+	*crota1 = +atan2(sign * cd1_2, cd2_2) * 180 / M_PI;
+	*crota2 = -atan2(cd2_1, sign * cd1_1) * 180 / M_PI;
+}
+
 gpointer match_catalog(gpointer p) {
 	struct plate_solver_data *args = (struct plate_solver_data *) p;
 	GError *error = NULL;
@@ -1330,8 +1346,8 @@ gpointer match_catalog(gpointer p) {
 			point image_size = { args->fit->rx, args->fit->ry };
 
 			solution.size = image_size;
-			solution.crpix[0] = (image_size.x / 2.0);
-			solution.crpix[1] = (image_size.y / 2.0);
+			solution.crpix[0] = ((image_size.x - 1) / 2.0);
+			solution.crpix[1] = ((image_size.y - 1) / 2.0);
 			solution.pixel_size = args->pixel_size;
 
 			apply_match(solution.px_cat_center, solution.crpix, trans, &ra0, &dec0);
@@ -1342,8 +1358,8 @@ gpointer match_catalog(gpointer p) {
 				double inv = 1.0 / DOWNSAMPLE_FACTOR;
 				solution.size.x *= inv;
 				solution.size.y *= inv;
-				solution.crpix[0] = (image_size.x / 2.0);
-				solution.crpix[1] = (image_size.y / 2.0);
+				solution.crpix[0] = ((image_size.x - 1) / 2.0);
+				solution.crpix[1] = ((image_size.y - 1) / 2.0);
 			}
 
 			/* compute cd matrix */
@@ -1367,7 +1383,6 @@ gpointer match_catalog(gpointer p) {
 				delta_ra = delta_ra - 2 * M_PI;
 			double cd1_1 = (delta_ra) * cos(dec0) * (180 / M_PI);
 			double cd2_1 = (dec7 - dec0) * (180 / M_PI);
-			printf("cd: %lf et %lf\n", cd1_1, cd2_1);
 
 			/* make 1 step in direction crpix2 */
 			double crpix2[] = { solution.crpix[0], solution.crpix[1] + 1 };
@@ -1383,7 +1398,6 @@ gpointer match_catalog(gpointer p) {
 				delta_ra = delta_ra - 2 * M_PI;
 			double cd1_2 = (delta_ra) * cos(dec0) * (180 / M_PI);
 			double cd2_2 = (dec7 - dec0) * (180 / M_PI);
-			printf("cd: %lf et %lf\n", cd1_2, cd2_2);
 
 			// saving state for undo before modifying fit structure
 			const char *undo_str = args->for_photometry_cc ? _("Photometric CC") : _("Plate Solve");
@@ -1392,6 +1406,59 @@ gpointer match_catalog(gpointer p) {
 			undo_save_state(undo_fit, undo_str);
 
 			print_platesolving_results(H, solution, &(args->flip_image), args->downsample);
+
+			/**** Fil gfit ***/
+
+			gfit.wcsdata.crpix[0] = solution.crpix[0];
+			gfit.wcsdata.crpix[1] = solution.crpix[1];
+			gfit.wcsdata.crval[0] = ra0 * (180 / M_PI);
+			gfit.wcsdata.crval[1] = dec0 * (180 / M_PI);
+			gfit.wcsdata.cd[0][0] = cd1_1;
+			gfit.wcsdata.cd[0][1] = -cd1_2;
+			gfit.wcsdata.cd[1][0] = cd2_1;
+			gfit.wcsdata.cd[1][1] = -cd2_2;
+
+			gfit.focal_length = solution.focal;
+			gfit.pixel_size_x = gfit.pixel_size_y = solution.pixel_size;
+			gfit.wcsdata.equinox = 2000.0;
+
+			gfit.wcsdata.ra = siril_world_cs_get_alpha(solution.image_center);
+			gfit.wcsdata.dec = siril_world_cs_get_delta(solution.image_center);
+
+			gchar *ra = siril_world_cs_alpha_format(solution.image_center, "%02d %02d %.3lf");
+			gchar *dec = siril_world_cs_delta_format(solution.image_center, "%c%02d %02d %.3lf");
+
+			g_sprintf(gfit.wcsdata.objctra, "%s", ra);
+			g_sprintf(gfit.wcsdata.objctdec, "%s", dec);
+
+			g_free(ra);
+			g_free(dec);
+
+			double cdelt1, cdelt2, crota1, crota2;
+
+			new_to_old_WCS(cd1_1, -cd1_2, cd2_1, -cd2_2, &cdelt1, &cdelt2,
+					&crota1, &crota2);
+
+			gfit.wcsdata.cdelt[0] = cdelt1;
+			gfit.wcsdata.cdelt[1] = cdelt2;
+			gfit.wcsdata.crota[0] = crota1;
+			gfit.wcsdata.crota[1] = crota2;
+
+			printf("*****************\n");
+			printf("crpix1 = %e\n", solution.crpix[0]);
+			printf("crpix2 = %e\n", solution.crpix[1]);
+			printf("crval1 = %e\n", ra0 * (180 / M_PI));
+			printf("crval2 = %e\n", dec0 * (180 / M_PI));
+			printf("cdelt1 = %e\n", cdelt1);
+			printf("cdelt2 = %e\n", cdelt2);
+			printf("crota1 = %e\n", crota1);
+			printf("crota2 = %e\n", crota2);
+			printf("cd1_1  = %e\n", cd1_1);
+			printf("cd1_2  = %e\n", -cd1_2);
+			printf("cd2_1  = %e\n", cd2_1);
+			printf("cd2_2  = %e\n", -cd2_2);
+			printf("*****************\n");
+
 		} else {
 			args->ret = 1;
 		}
