@@ -1365,7 +1365,7 @@ gpointer match_catalog(gpointer p) {
 			/* compute cd matrix */
 			double ra7, dec7, delta_ra;
 
-			/* first, convert center  coordinates from deg to radian: */
+			/* first, convert center coordinates from deg to rad: */
 			dec0 *= DEGTORAD;
 			ra0 *= DEGTORAD;
 
@@ -1385,7 +1385,7 @@ gpointer match_catalog(gpointer p) {
 			double cd2_1 = (dec7 - dec0) * (180 / M_PI);
 
 			/* make 1 step in direction crpix2 */
-			double crpix2[] = { solution.crpix[0], solution.crpix[1] + 1 };
+			double crpix2[] = { solution.crpix[0], solution.crpix[1] - 1 };
 			apply_match(solution.px_cat_center, crpix2, trans, &ra7, &dec7);
 
 			dec7 *= DEGTORAD;
@@ -1407,16 +1407,16 @@ gpointer match_catalog(gpointer p) {
 
 			print_platesolving_results(H, solution, &(args->flip_image), args->downsample);
 
-			/**** Fil gfit ***/
+			/**** Fill gfit ***/
 
 			gfit.wcsdata.crpix[0] = solution.crpix[0];
 			gfit.wcsdata.crpix[1] = solution.crpix[1];
 			gfit.wcsdata.crval[0] = ra0 * (180 / M_PI);
 			gfit.wcsdata.crval[1] = dec0 * (180 / M_PI);
 			gfit.wcsdata.cd[0][0] = cd1_1;
-			gfit.wcsdata.cd[0][1] = -cd1_2;
+			gfit.wcsdata.cd[0][1] = cd1_2;
 			gfit.wcsdata.cd[1][0] = cd2_1;
-			gfit.wcsdata.cd[1][1] = -cd2_2;
+			gfit.wcsdata.cd[1][1] = cd2_2;
 
 			gfit.focal_length = solution.focal;
 			gfit.pixel_size_x = gfit.pixel_size_y = solution.pixel_size;
@@ -1436,7 +1436,7 @@ gpointer match_catalog(gpointer p) {
 
 			double cdelt1, cdelt2, crota1, crota2;
 
-			new_to_old_WCS(cd1_1, -cd1_2, cd2_1, -cd2_2, &cdelt1, &cdelt2,
+			new_to_old_WCS(cd1_1, cd1_2, cd2_1, cd2_2, &cdelt1, &cdelt2,
 					&crota1, &crota2);
 
 			gfit.wcsdata.cdelt[0] = cdelt1;
@@ -1454,9 +1454,9 @@ gpointer match_catalog(gpointer p) {
 			printf("crota1 = %e\n", crota1);
 			printf("crota2 = %e\n", crota2);
 			printf("cd1_1  = %e\n", cd1_1);
-			printf("cd1_2  = %e\n", -cd1_2);
+			printf("cd1_2  = %e\n", cd1_2);
 			printf("cd2_1  = %e\n", cd2_1);
-			printf("cd2_2  = %e\n", -cd2_2);
+			printf("cd2_2  = %e\n", cd2_2);
 			printf("*****************\n");
 
 		} else {
