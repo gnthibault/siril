@@ -1675,8 +1675,8 @@ int fill_plate_solver_structure(struct plate_solver_data *args) {
 			siril_log_message(_("Solving on selected area: %d %d %d %d \n"), croparea.x, croparea.y, croparea.w, croparea.h);
 		}
 		if (com.selection.w != 0 && com.selection.h != 0) {
-			args->xoffset = (double)croparea.x + 0.5*(double)croparea.w - 0.5*(double)args->fit->rx;
-			args->yoffset = (double)croparea.y + 0.5*(double)croparea.h - 0.5*(double)args->fit->ry;
+			args->xoffset = (double) croparea.x + 0.5 * (double) croparea.w - 0.5 * (double) args->fit->rx;
+			args->yoffset = (double) croparea.y + 0.5 * (double) croparea.h - 0.5 * (double) args->fit->ry;
 		} else {
 			args->xoffset = 0.0;
 			args->yoffset = 0.0;
