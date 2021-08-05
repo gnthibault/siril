@@ -769,7 +769,7 @@ static void flip_astrometry_data(fits *fit) {
 	fit->wcsdata.cd[0][1] = -fit->wcsdata.cd[0][1];
 	fit->wcsdata.cd[1][1] = -fit->wcsdata.cd[1][1];
 	fit->wcsdata.crota[0] = -fit->wcsdata.crota[0] - 180.0;
-	fit->wcsdata.crota[1] = fit->wcsdata.crota[0];
+	fit->wcsdata.crota[1] = -fit->wcsdata.crota[1] - 180.0;
 
 	siril_debug_print("****Updated WCS data*************\n");
 	siril_debug_print("crota1 = %*.12e\n", 20, fit->wcsdata.crota[0]);
@@ -781,7 +781,7 @@ static void flip_astrometry_data(fits *fit) {
 	siril_debug_print("******************************************\n");
 }
 
-static void print_platesolving_results(image_solved image, gboolean *flip_image, gboolean downsample) {
+static void print_platesolving_results(image_solved image, gboolean downsample) {
 	double rotation, det, scaleX, scaleY, resolution;
 	double inliers;
 	gchar *alpha, *delta;
@@ -836,9 +836,6 @@ static void print_platesolving_results(image_solved image, gboolean *flip_image,
 
 	g_free(alpha);
 	g_free(delta);
-
-	*flip_image = *flip_image && det < 0;
-
 }
 
 static int read_NOMAD_catalog(GInputStream *stream, psf_star **cstars) {
@@ -1136,6 +1133,15 @@ static gboolean check_affine_TRANS_sanity(TRANS trans) {
 	return ((fabs(var1) < 0.3) && fabs(var2) < 0.3);
 }
 
+/* Determine if the image need to be flipped
+ * 1 - is the image flipped? Need to compute the determinant of H
+ * 2 - did the user asked for a flip?
+ */
+static gboolean flip_image(gboolean flip_image, Homography H) {
+	double det = (H.h00 * H.h11 - H.h01 * H.h10); // determinant of rotation matrix (ad - bc)
+	return flip_image && det < 0;
+}
+
 static gboolean end_plate_solver(gpointer p) {
 	struct plate_solver_data *args = (struct plate_solver_data *) p;
 	stop_processing_thread();
@@ -1167,8 +1173,7 @@ static gboolean end_plate_solver(gpointer p) {
 		}
 		siril_message_dialog(GTK_MESSAGE_ERROR, title, args->message);
 	} else {
-		/* print results AND compute if the image must be flipped */
-		print_platesolving_results(solution, &(args->flip_image), args->downsample);
+		print_platesolving_results(solution, args->downsample);
 
 		/* update UI */
 		update_image_parameters_GUI();
@@ -1182,7 +1187,7 @@ static gboolean end_plate_solver(gpointer p) {
 		if (args->for_photometry_cc) {
 			apply_photometric_cc();
 		}
-		if (args->flip_image) {
+		if (flip_image(args->flip_image, solution.H)) {
 			siril_log_color_message(_("Flipping image and updating astrometry data.\n"), "salmon");
 			fits_flip_top_to_bottom(args->fit);
 			flip_astrometry_data(args->fit);
