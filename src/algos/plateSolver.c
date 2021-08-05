@@ -96,6 +96,7 @@ struct image_solved_struct {
 	SirilWorldCS *image_center;
 	double crpix[2];
 	double pixel_size, focal;
+	Homography H;
 };
 
 void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
@@ -769,17 +770,27 @@ static void flip_astrometry_data(fits *fit) {
 	fit->wcsdata.cd[1][1] = -fit->wcsdata.cd[1][1];
 	fit->wcsdata.crota[0] = -fit->wcsdata.crota[0] - 180.0;
 	fit->wcsdata.crota[1] = fit->wcsdata.crota[0];
+
+	siril_debug_print("****Updated WCS data*************\n");
+	siril_debug_print("crota1 = %*.12e\n", 20, fit->wcsdata.crota[0]);
+	siril_debug_print("crota2 = %*.12e\n", 20, fit->wcsdata.crota[1]);
+	siril_debug_print("cd1_1  = %*.12e\n", 20, fit->wcsdata.cd[0][0]);
+	siril_debug_print("cd1_2  = %*.12e\n", 20, fit->wcsdata.cd[0][1]);
+	siril_debug_print("cd2_1  = %*.12e\n", 20, fit->wcsdata.cd[1][0]);
+	siril_debug_print("cd2_2  = %*.12e\n", 20, fit->wcsdata.cd[1][1]);
+	siril_debug_print("******************************************\n");
 }
 
-static void print_platesolving_results(Homography H, image_solved image, gboolean *flip_image, gboolean downsample) {
+static void print_platesolving_results(image_solved image, gboolean *flip_image, gboolean downsample) {
 	double rotation, det, scaleX, scaleY, resolution;
 	double inliers;
-	gchar *alpha;
-	gchar *delta;
+	gchar *alpha, *delta;
 	char field_x[256] = { 0 };
 	char field_y[256] = { 0 };
 	point fov;
+
 	float factor = (downsample) ? DOWNSAMPLE_FACTOR : 1.0;
+	Homography H = image.H;
 
 	/* Matching information */
 	gchar *str = ngettext("%d pair match.\n", "%d pair matches.\n", H.pair_matched);
@@ -1156,18 +1167,23 @@ static gboolean end_plate_solver(gpointer p) {
 		}
 		siril_message_dialog(GTK_MESSAGE_ERROR, title, args->message);
 	} else {
+		/* print results AND compute if the image must be flipped */
+		print_platesolving_results(solution, &(args->flip_image), args->downsample);
+
+		/* update UI */
 		update_image_parameters_GUI();
 		set_GUI_CAMERA();
 		update_coordinates(solution.image_center);
 		siril_world_cs_unref(solution.px_cat_center);
 		siril_world_cs_unref(solution.image_center);
+		/* ****** */
 
 		control_window_switch_to_tab(OUTPUT_LOGS);
 		if (args->for_photometry_cc) {
 			apply_photometric_cc();
 		}
 		if (args->flip_image) {
-			siril_log_message(_("Flipping image and updating astrometry data.\n"));
+			siril_log_color_message(_("Flipping image and updating astrometry data.\n"), "salmon");
 			fits_flip_top_to_bottom(args->fit);
 			flip_astrometry_data(args->fit);
 			redraw(com.cvport, REMAP_ALL);
@@ -1278,7 +1294,7 @@ gpointer match_catalog(gpointer p) {
 		attempt++;
 	}
 	if (!args->ret) {
-
+		memcpy(&solution.H, &H, sizeof(Homography));
 		/* we only want to compare with linear function
 		 * Maybe one day we will apply match with homography matrix
 		 */
@@ -1347,8 +1363,6 @@ gpointer match_catalog(gpointer p) {
 			fits *undo_fit = args->downsample ? args->fit_backup : args->fit;
 
 			undo_save_state(undo_fit, undo_str);
-
-			print_platesolving_results(H, solution, &(args->flip_image), args->downsample);
 
 			/**** Fill gfit ***/
 
