@@ -984,7 +984,7 @@ static void save_wcs_keywords(fits *fit) {
 		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "CROTA1", &(fit->wcsdata.crota[0]), "Image twist of X axis (deg)", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CROTA2", &(fit->wcsdata.crota[1]), " Image twist of Y axis (deg)", &status);
+		fits_update_key(fit->fptr, TDOUBLE, "CROTA2", &(fit->wcsdata.crota[1]), "Image twist of Y axis (deg)", &status);
 	}
 	if ((fit->wcsdata.cd[0][0] != 0.0) && (fit->wcsdata.cd[0][1] != 0.0) && (fit->wcsdata.cd[1][0] != 0.0) && (fit->wcsdata.cd[1][1] != 0.0)) {
 		status = 0;

@@ -765,13 +765,45 @@ static void update_image_parameters_GUI() {
 	update_coords();
 }
 
+/* convert to old WCS. Based on draft 1988,
+ * do not use conversion article Alain Klotz, give sometimes zero CROTA */
+static void new_to_old_WCS(double cd1_1, double cd1_2, double cd2_1,
+		double cd2_2, double *cdelt1, double *cdelt2, double *crota1,
+		double *crota2) {
+	int sign;
+	if ((cd1_1 * cd2_2 - cd1_2 * cd2_1) >= 0)
+		sign = +1;
+	else
+		sign = -1;
+
+	*cdelt1 = sqrt((cd1_1 * cd1_1) + (cd2_1 * cd2_1)) * sign;
+	*cdelt2 = sqrt((cd1_2 * cd1_2) + (cd2_2 * cd2_2));
+
+	*crota1 = +atan2(sign * cd1_2, cd2_2) * 180 / M_PI;
+	*crota2 = -atan2(cd2_1, sign * cd1_1) * 180 / M_PI;
+}
+
 static void flip_astrometry_data(fits *fit) {
+	double cdelt1, cdelt2, crota1, crota2;
+
+	/* flip cd matrix */
 	fit->wcsdata.cd[0][1] = -fit->wcsdata.cd[0][1];
 	fit->wcsdata.cd[1][1] = -fit->wcsdata.cd[1][1];
-	fit->wcsdata.crota[0] = -fit->wcsdata.crota[0] - 180.0;
-	fit->wcsdata.crota[1] = -fit->wcsdata.crota[1] - 180.0;
 
+	/* also update deprecated keywords */
+	new_to_old_WCS(fit->wcsdata.cd[0][0], fit->wcsdata.cd[0][1],
+			fit->wcsdata.cd[1][0], fit->wcsdata.cd[1][1], &cdelt1, &cdelt2,
+			&crota1, &crota2);
+
+	fit->wcsdata.cdelt[0] = cdelt1;
+	fit->wcsdata.cdelt[1] = cdelt2;
+	fit->wcsdata.crota[0] = crota1;
+	fit->wcsdata.crota[1] = crota2;
+
+	/* debug output */
 	siril_debug_print("****Updated WCS data*************\n");
+	siril_debug_print("cdelt1 = %*.12e\n", 20, fit->wcsdata.cdelt[0]);
+	siril_debug_print("cdelt2 = %*.12e\n", 20, fit->wcsdata.cdelt[1]);
 	siril_debug_print("crota1 = %*.12e\n", 20, fit->wcsdata.crota[0]);
 	siril_debug_print("crota2 = %*.12e\n", 20, fit->wcsdata.crota[1]);
 	siril_debug_print("cd1_1  = %*.12e\n", 20, fit->wcsdata.cd[0][0]);
@@ -1203,24 +1235,6 @@ static gboolean end_plate_solver(gpointer p) {
 	free(args);
 	
 	return FALSE;
-}
-
-/* convert to old WCS. Based on draft 1988,
- * do not use conversion article Alain Klotz, give sometimes zero CROTA */
-static void new_to_old_WCS(double cd1_1, double cd1_2, double cd2_1,
-		double cd2_2, double *cdelt1, double *cdelt2, double *crota1,
-		double *crota2) {
-	int sign;
-	if ((cd1_1 * cd2_2 - cd1_2 * cd2_1) >= 0)
-		sign = +1;
-	else
-		sign = -1;
-
-	*cdelt1 = sqrt((cd1_1 * cd1_1) + (cd2_1 * cd2_1)) * sign;
-	*cdelt2 = sqrt((cd1_2 * cd1_2) + (cd2_2 * cd2_2));
-
-	*crota1 = +atan2(sign * cd1_2, cd2_2) * 180 / M_PI;
-	*crota2 = -atan2(cd2_1, sign * cd1_1) * 180 / M_PI;
 }
 
 gpointer match_catalog(gpointer p) {
