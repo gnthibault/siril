@@ -938,6 +938,8 @@ static void save_wcs_keywords(fits *fit) {
 		status = 0;
 		fits_update_key(fit->fptr, TSTRING, "CTYPE2", "DEC--TAN", "Coordinate type for the second axis", &status);
 		status = 0;
+		fits_update_key(fit->fptr, TSTRING, "CUNIT1", "deg","Unit of coordinates", &status);
+		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "EQUINOX", &(fit->wcsdata.equinox),	"Equatorial equinox", &status);
 	}
 	status = 0;
@@ -968,9 +970,15 @@ static void save_wcs_keywords(fits *fit) {
 	}
 	if (fit->wcsdata.crval[0] != '\0') {
 		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CRVAL1", &(fit->wcsdata.crval[0]), "Axis1 reference value", &status);
+		fits_update_key(fit->fptr, TDOUBLE, "CRVAL1", &(fit->wcsdata.crval[0]), "Axis1 reference value (deg)", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcsdata.crval[1]), "Axis2 reference value", &status);
+		fits_update_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcsdata.crval[1]), "Axis2 reference value (deg)", &status);
+	}
+	if (fit->wcsdata.cdelt[0] != '\0') {
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CDELT1", &(fit->wcsdata.cdelt[0]), "X pixel size (deg)", &status);
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CDELT2", &(fit->wcsdata.cdelt[1]), "Y pixel size (deg)", &status);
 	}
 	if ((fit->wcsdata.cd[0][0] != 0.0) && (fit->wcsdata.cd[0][1] != 0.0) && (fit->wcsdata.cd[1][0] != 0.0) && (fit->wcsdata.cd[1][1] != 0.0)) {
 		status = 0;
