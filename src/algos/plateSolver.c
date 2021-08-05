@@ -765,7 +765,7 @@ static void update_image_parameters_GUI() {
 }
 
 static void flip_astrometry_data(fits *fit) {
-	fit->wcsdata.cd[0][0] = -fit->wcsdata.cd[0][0];
+	fit->wcsdata.cd[0][1] = -fit->wcsdata.cd[0][1];
 	fit->wcsdata.cd[1][1] = -fit->wcsdata.cd[1][1];
 	fit->wcsdata.crota[0] = -fit->wcsdata.crota[0] - 180.0;
 	fit->wcsdata.crota[1] = fit->wcsdata.crota[0];
