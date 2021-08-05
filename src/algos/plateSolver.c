@@ -1369,29 +1369,29 @@ gpointer match_catalog(gpointer p) {
 
 			undo_save_state(undo_fit, undo_str);
 
-			/**** Fill gfit ***/
+			/**** Fill wcsdata fit structure ***/
 
-			gfit.wcsdata.equinox = 2000.0;
-			gfit.focal_length = solution.focal;
-			gfit.pixel_size_x = gfit.pixel_size_y = solution.pixel_size;
+			args->fit->wcsdata.equinox = 2000.0;
+			args->fit->focal_length = solution.focal;
+			args->fit->pixel_size_x = args->fit->pixel_size_y = solution.pixel_size;
 
-			gfit.wcsdata.crpix[0] = solution.crpix[0];
-			gfit.wcsdata.crpix[1] = solution.crpix[1];
-			gfit.wcsdata.crval[0] = ra0 * (180 / M_PI);
-			gfit.wcsdata.crval[1] = dec0 * (180 / M_PI);
-			gfit.wcsdata.cd[0][0] = cd1_1;
-			gfit.wcsdata.cd[0][1] = cd1_2;
-			gfit.wcsdata.cd[1][0] = cd2_1;
-			gfit.wcsdata.cd[1][1] = cd2_2;
+			args->fit->wcsdata.crpix[0] = solution.crpix[0];
+			args->fit->wcsdata.crpix[1] = solution.crpix[1];
+			args->fit->wcsdata.crval[0] = ra0 * (180 / M_PI);
+			args->fit->wcsdata.crval[1] = dec0 * (180 / M_PI);
+			args->fit->wcsdata.cd[0][0] = cd1_1;
+			args->fit->wcsdata.cd[0][1] = cd1_2;
+			args->fit->wcsdata.cd[1][0] = cd2_1;
+			args->fit->wcsdata.cd[1][1] = cd2_2;
 
-			gfit.wcsdata.ra = siril_world_cs_get_alpha(solution.image_center);
-			gfit.wcsdata.dec = siril_world_cs_get_delta(solution.image_center);
+			args->fit->wcsdata.ra = siril_world_cs_get_alpha(solution.image_center);
+			args->fit->wcsdata.dec = siril_world_cs_get_delta(solution.image_center);
 
 			gchar *ra = siril_world_cs_alpha_format(solution.image_center, "%02d %02d %.3lf");
 			gchar *dec = siril_world_cs_delta_format(solution.image_center, "%c%02d %02d %.3lf");
 
-			g_sprintf(gfit.wcsdata.objctra, "%s", ra);
-			g_sprintf(gfit.wcsdata.objctdec, "%s", dec);
+			g_sprintf(args->fit->wcsdata.objctra, "%s", ra);
+			g_sprintf(args->fit->wcsdata.objctdec, "%s", dec);
 
 			g_free(ra);
 			g_free(dec);
@@ -1401,10 +1401,10 @@ gpointer match_catalog(gpointer p) {
 
 			new_to_old_WCS(cd1_1, cd1_2, cd2_1, cd2_2, &cdelt1, &cdelt2, &crota1, &crota2);
 
-			gfit.wcsdata.cdelt[0] = cdelt1;
-			gfit.wcsdata.cdelt[1] = cdelt2;
-			gfit.wcsdata.crota[0] = crota1;
-			gfit.wcsdata.crota[1] = crota2;
+			args->fit->wcsdata.cdelt[0] = cdelt1;
+			args->fit->wcsdata.cdelt[1] = cdelt2;
+			args->fit->wcsdata.crota[0] = crota1;
+			args->fit->wcsdata.crota[1] = crota2;
 
 			siril_debug_print("****Solution found: WCS data*************\n");
 			siril_debug_print("crpix1 = %*.12e\n", 20, solution.crpix[0]);

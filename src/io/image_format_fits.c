@@ -980,6 +980,12 @@ static void save_wcs_keywords(fits *fit) {
 		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "CDELT2", &(fit->wcsdata.cdelt[1]), "Y pixel size (deg)", &status);
 	}
+	if (fit->wcsdata.crota[0] != '\0') {
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CROTA1", &(fit->wcsdata.crota[0]), "Image twist of X axis (deg)", &status);
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CROTA2", &(fit->wcsdata.crota[1]), " Image twist of Y axis (deg)", &status);
+	}
 	if ((fit->wcsdata.cd[0][0] != 0.0) && (fit->wcsdata.cd[0][1] != 0.0) && (fit->wcsdata.cd[1][0] != 0.0) && (fit->wcsdata.cd[1][1] != 0.0)) {
 		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "CD1_1", &(fit->wcsdata.cd[0][0]), "Scale matrix (1, 1)", &status);
