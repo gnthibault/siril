@@ -94,10 +94,8 @@ struct image_solved_struct {
 	point size;
 	SirilWorldCS *px_cat_center;
 	SirilWorldCS *image_center;
-	point fov;
 	double crpix[2];
-	double resolution, pixel_size, focal;
-	double crota;
+	double pixel_size, focal;
 };
 
 void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
@@ -766,56 +764,6 @@ static void update_image_parameters_GUI() {
 	update_coords();
 }
 
-//static void cd_x(wcs_info *wcs) {
-//	double rot = (wcs->crota[0] + wcs->crota[1]) / 2.0;
-//	rot = rot * M_PI / 180.0;
-//	double sinrot, cosrot;
-//	double2 sc;
-//	int sign;
-//
-//	sc = xsincos(rot);
-//	sinrot = sc.x;
-//	cosrot = sc.y;
-//	wcs->cd[0][0] = wcs->cdelt[0] * cosrot;
-//	sign = (wcs->cdelt[0] >= 0) ? 1 : -1;
-//	wcs->cd[0][1] = fabs(wcs->cdelt[1]) * sign * sinrot;
-//	sign = (wcs->cdelt[1] >= 0) ? 1 : -1;
-//	wcs->cd[1][0] = -fabs(wcs->cdelt[1]) * sign * sinrot;
-//	wcs->cd[1][1] = wcs->cdelt[1] * cosrot;
-//
-//	printf("old cd: %lf et %lf\n", wcs->cd[0][0], wcs->cd[1][0]);
-//	printf("old cd: %lf et %lf\n", wcs->cd[1][0], wcs->cd[1][1]);
-//
-//}
-
-//static void update_gfit(image_solved image, double det, gboolean ask_for_flip) {
-//	gfit.focal_length = image.focal;
-//	gfit.pixel_size_x = gfit.pixel_size_y = image.pixel_size;
-//	gfit.wcsdata.crpix[0] = image.crpix[0];
-//	gfit.wcsdata.crpix[1] = image.crpix[1];
-//	gfit.wcsdata.crval[0] = siril_world_cs_get_alpha(image.image_center);
-//	gfit.wcsdata.crval[1] = siril_world_cs_get_delta(image.image_center);
-//	gfit.wcsdata.equinox = 2000.0;
-//	gfit.wcsdata.cdelt[0] = image.resolution / 3600.0;
-//	gfit.wcsdata.cdelt[1] = -gfit.wcsdata.cdelt[0];
-//	if (det < 0 && !ask_for_flip)
-//		gfit.wcsdata.cdelt[0] = -gfit.wcsdata.cdelt[0];
-//	gfit.wcsdata.crota[0] = gfit.wcsdata.crota[1] = -image.crota;
-//	cd_x(&gfit.wcsdata);
-//
-//	gfit.wcsdata.ra = siril_world_cs_get_alpha(image.image_center);
-//	gfit.wcsdata.dec = siril_world_cs_get_delta(image.image_center);
-//
-//	gchar *ra = siril_world_cs_alpha_format(image.image_center, "%02d %02d %.3lf");
-//	gchar *dec = siril_world_cs_delta_format(image.image_center, "%c%02d %02d %.3lf");
-//
-//	g_sprintf(gfit.wcsdata.objctra, "%s", ra);
-//	g_sprintf(gfit.wcsdata.objctdec, "%s", dec);
-//
-//	g_free(ra);
-//	g_free(dec);
-//}
-
 static void flip_astrometry_data(fits *fit) {
 	fit->wcsdata.cd[0][0] = -fit->wcsdata.cd[0][0];
 	fit->wcsdata.cd[1][1] = -fit->wcsdata.cd[1][1];
@@ -824,12 +772,13 @@ static void flip_astrometry_data(fits *fit) {
 }
 
 static void print_platesolving_results(Homography H, image_solved image, gboolean *flip_image, gboolean downsample) {
-	double rotation, det, scaleX, scaleY;
+	double rotation, det, scaleX, scaleY, resolution;
 	double inliers;
 	gchar *alpha;
 	gchar *delta;
 	char field_x[256] = { 0 };
 	char field_y[256] = { 0 };
+	point fov;
 	float factor = (downsample) ? DOWNSAMPLE_FACTOR : 1.0;
 
 	/* Matching information */
@@ -843,8 +792,8 @@ static void print_platesolving_results(Homography H, image_solved image, gboolea
 	/* Plate Solving */
 	scaleX = sqrt(H.h00 * H.h00 + H.h01 * H.h01);
 	scaleY = sqrt(H.h10 * H.h10 + H.h11 * H.h11);
-	image.resolution = (scaleX + scaleY) * 0.5 * factor; // we assume square pixels
-	siril_log_message(_("Resolution:%*.3lf arcsec/px\n"), 11, image.resolution);
+	resolution = (scaleX + scaleY) * 0.5 * factor; // we assume square pixels
+	siril_log_message(_("Resolution:%*.3lf arcsec/px\n"), 11, resolution);
 
 	/* rotation */
 	rotation = atan2(H.h00 + H.h01, H.h10 + H.h11) * 180 / M_PI + 135.0;
@@ -860,21 +809,14 @@ static void print_platesolving_results(Homography H, image_solved image, gboolea
 		rotation -= 360;
 	siril_log_message(_("Rotation:%+*.2lf deg %s\n"), 12, rotation, det < 0 ? _("(flipped)") : "");
 
-	/* set CROTA */
-	image.crota = rotation - 180.0;
-	if (image.crota < -180)
-		image.crota += 360;
-	if (image.crota > 180)
-		image.crota -= 360;
+	image.focal = RADCONV * image.pixel_size / resolution;
 
-	image.focal = RADCONV * image.pixel_size / image.resolution;
-
-	image.fov.x = get_fov(image.resolution, image.size.x);
-	image.fov.y = get_fov(image.resolution, image.size.y);
+	fov.x = get_fov(resolution, image.size.x);
+	fov.y = get_fov(resolution, image.size.y);
 	siril_log_message(_("Focal:%*.2lf mm\n"), 15, image.focal);
 	siril_log_message(_("Pixel size:%*.2lf µm\n"), 10, image.pixel_size);
-	fov_in_DHMS(image.fov.x / 60.0, field_x);
-	fov_in_DHMS(image.fov.y / 60.0, field_y);
+	fov_in_DHMS(fov.x / 60.0, field_x);
+	fov_in_DHMS(fov.y / 60.0, field_y);
 	siril_log_message(_("Field of view:    %s x %s\n"), field_x, field_y);
 
 	alpha = siril_world_cs_alpha_format(image.image_center, " %02dh%02dm%02ds");
@@ -883,8 +825,6 @@ static void print_platesolving_results(Homography H, image_solved image, gboolea
 
 	g_free(alpha);
 	g_free(delta);
-
-	//update_gfit(image, det, *flip_image);
 
 	*flip_image = *flip_image && det < 0;
 
