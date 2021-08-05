@@ -1184,6 +1184,8 @@ static gboolean end_plate_solver(gpointer p) {
 	return FALSE;
 }
 
+/* convert to old WCS. Based on draft 1988,
+ * do not use conversion article Alain Klotz, give sometimes zero CROTA */
 static void new_to_old_WCS(double cd1_1, double cd1_2, double cd2_1,
 		double cd2_2, double *cdelt1, double *cdelt2, double *crota1,
 		double *crota2) {
@@ -1324,7 +1326,8 @@ gpointer match_catalog(gpointer p) {
 			double cd1_1 = (delta_ra) * cos(dec0) * (180 / M_PI);
 			double cd2_1 = (dec7 - dec0) * (180 / M_PI);
 
-			/* make 1 step in direction crpix2 */
+			/* make 1 step in direction crpix2
+			 * WARNING: we use -1 because of the Y axis reversing */
 			double crpix2[] = { solution.crpix[0], solution.crpix[1] - 1 };
 			apply_match(solution.px_cat_center, crpix2, trans, &ra7, &dec7);
 
@@ -1349,6 +1352,10 @@ gpointer match_catalog(gpointer p) {
 
 			/**** Fill gfit ***/
 
+			gfit.wcsdata.equinox = 2000.0;
+			gfit.focal_length = solution.focal;
+			gfit.pixel_size_x = gfit.pixel_size_y = solution.pixel_size;
+
 			gfit.wcsdata.crpix[0] = solution.crpix[0];
 			gfit.wcsdata.crpix[1] = solution.crpix[1];
 			gfit.wcsdata.crval[0] = ra0 * (180 / M_PI);
@@ -1357,10 +1364,6 @@ gpointer match_catalog(gpointer p) {
 			gfit.wcsdata.cd[0][1] = cd1_2;
 			gfit.wcsdata.cd[1][0] = cd2_1;
 			gfit.wcsdata.cd[1][1] = cd2_2;
-
-			gfit.focal_length = solution.focal;
-			gfit.pixel_size_x = gfit.pixel_size_y = solution.pixel_size;
-			gfit.wcsdata.equinox = 2000.0;
 
 			gfit.wcsdata.ra = siril_world_cs_get_alpha(solution.image_center);
 			gfit.wcsdata.dec = siril_world_cs_get_delta(solution.image_center);
@@ -1374,30 +1377,30 @@ gpointer match_catalog(gpointer p) {
 			g_free(ra);
 			g_free(dec);
 
+			/* now we can compute old WCS data */
 			double cdelt1, cdelt2, crota1, crota2;
 
-			new_to_old_WCS(cd1_1, cd1_2, cd2_1, cd2_2, &cdelt1, &cdelt2,
-					&crota1, &crota2);
+			new_to_old_WCS(cd1_1, cd1_2, cd2_1, cd2_2, &cdelt1, &cdelt2, &crota1, &crota2);
 
 			gfit.wcsdata.cdelt[0] = cdelt1;
 			gfit.wcsdata.cdelt[1] = cdelt2;
 			gfit.wcsdata.crota[0] = crota1;
 			gfit.wcsdata.crota[1] = crota2;
 
-			printf("*****************\n");
-			printf("crpix1 = %e\n", solution.crpix[0]);
-			printf("crpix2 = %e\n", solution.crpix[1]);
-			printf("crval1 = %e\n", ra0 * (180 / M_PI));
-			printf("crval2 = %e\n", dec0 * (180 / M_PI));
-			printf("cdelt1 = %e\n", cdelt1);
-			printf("cdelt2 = %e\n", cdelt2);
-			printf("crota1 = %e\n", crota1);
-			printf("crota2 = %e\n", crota2);
-			printf("cd1_1  = %e\n", cd1_1);
-			printf("cd1_2  = %e\n", cd1_2);
-			printf("cd2_1  = %e\n", cd2_1);
-			printf("cd2_2  = %e\n", cd2_2);
-			printf("*****************\n");
+			siril_debug_print("****Solution found: WCS data*************\n");
+			siril_debug_print("crpix1 = %*.12e\n", 20, solution.crpix[0]);
+			siril_debug_print("crpix2 = %*.12e\n", 20, solution.crpix[1]);
+			siril_debug_print("crval1 = %*.12e\n", 20, ra0 * (180 / M_PI));
+			siril_debug_print("crval2 = %*.12e\n", 20, dec0 * (180 / M_PI));
+			siril_debug_print("cdelt1 = %*.12e\n", 20, cdelt1);
+			siril_debug_print("cdelt2 = %*.12e\n", 20, cdelt2);
+			siril_debug_print("crota1 = %*.12e\n", 20, crota1);
+			siril_debug_print("crota2 = %*.12e\n", 20, crota2);
+			siril_debug_print("cd1_1  = %*.12e\n", 20, cd1_1);
+			siril_debug_print("cd1_2  = %*.12e\n", 20, cd1_2);
+			siril_debug_print("cd2_1  = %*.12e\n", 20, cd2_1);
+			siril_debug_print("cd2_2  = %*.12e\n", 20, cd2_2);
+			siril_debug_print("******************************************\n");
 
 		} else {
 			args->ret = 1;
