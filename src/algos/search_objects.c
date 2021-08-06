@@ -24,9 +24,9 @@
 #include "gui/utils.h"
 #include "gui/image_display.h"
 #include "gui/progress_and_log.h"
-#include "algos/plateSolver.h"
 #include "algos/annotate.h"
 #include "algos/siril_wcs.h"
+#include "astrometry_solver.h"
 
 static gboolean parse_buffer(char *buffer) {
 	char **token, **fields, *realname= NULL;

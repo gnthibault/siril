@@ -33,7 +33,6 @@
 #include "core/OS_utils.h"
 #include "algos/siril_wcs.h"
 #include "algos/star_finder.h"
-#include "algos/plateSolver.h"
 #include "io/conversion.h"
 #include "io/films.h"
 #include "io/image_format_fits.h"
@@ -47,6 +46,8 @@
 #include "image_interactions.h"
 #include "single_image.h"
 #include "callbacks.h"
+
+#include "../algos/astrometry_solver.h"
 #include "utils.h"
 #include "plot.h"
 #include "message_dialog.h"

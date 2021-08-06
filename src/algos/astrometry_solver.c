@@ -62,7 +62,7 @@
 #include "registration/matching/atpmatch.h"
 #include "registration/matching/project_coords.h"
 
-#include "plateSolver.h"
+#include "astrometry_solver.h"
 
 #define DOWNSAMPLE_FACTOR 0.25
 
@@ -563,7 +563,7 @@ static gchar *download_catalog(online_catalog onlineCatalog, SirilWorldCS *catal
 		if (error != NULL) {
 			g_warning("%s\n", error->message);
 			g_clear_error(&error);
-			fprintf(stderr, "plateSolver: Cannot open catalogue\n");
+			fprintf(stderr, "astrometry_solver: Cannot open catalogue\n");
 		}
 		g_object_unref(file);
 		return NULL;

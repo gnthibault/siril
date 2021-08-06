@@ -29,7 +29,7 @@
 #include "algos/annotate.h"
 #include "algos/ccd-inspector.h"
 #include "algos/background_extraction.h"
-#include "algos/plateSolver.h"
+#include "../algos/astrometry_solver.h"
 #include "gui/image_interactions.h"
 #include "gui/image_display.h"
 #include "gui/utils.h"

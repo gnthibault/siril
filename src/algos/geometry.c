@@ -24,7 +24,6 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/OS_utils.h"
-#include "algos/plateSolver.h"
 #include "algos/statistics.h"
 #include "core/undo.h"
 #include "core/processing.h"
@@ -41,6 +40,7 @@
 #include "io/image_format_fits.h"
 
 #include "geometry.h"
+#include "astrometry_solver.h"
 
 /* this method rotates the image 180 degrees, useful after german mount flip.
  * fit->rx, fit->ry, fit->naxes[2] and fit->pdata[*] are required to be assigned correctly */

@@ -38,7 +38,7 @@
 #include "algos/statistics.h"
 #include "algos/photometry.h"
 #include "algos/PSF.h"
-#include "algos/plateSolver.h"
+#include "../algos/astrometry_solver.h"
 #include "algos/star_finder.h"
 #include "gui/image_display.h"
 #include "gui/message_dialog.h"
