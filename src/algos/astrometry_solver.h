@@ -25,7 +25,7 @@ typedef enum {
 	APASS
 } online_catalog;
 
-struct plate_solver_data {
+struct astrometry_data {
 	online_catalog onlineCatalog;
 	gchar *catalogStars;
 	gboolean for_photometry_cc;
@@ -46,7 +46,7 @@ struct plate_solver_data {
 
 void open_astrometry_dialog();
 gchar *search_in_catalogs(const gchar *object);
-int fill_plate_solver_structure(struct plate_solver_data *args);
+int fill_plate_solver_structure(struct astrometry_data *args);
 gpointer match_catalog(gpointer p);
 
 gboolean confirm_delete_wcs_keywords(fits *fit);

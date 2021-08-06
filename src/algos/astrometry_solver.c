@@ -1175,7 +1175,7 @@ static gboolean flip_image(gboolean flip_image, Homography H) {
 }
 
 static gboolean end_plate_solver(gpointer p) {
-	struct plate_solver_data *args = (struct plate_solver_data *) p;
+	struct astrometry_data *args = (struct astrometry_data *) p;
 	stop_processing_thread();
 
 	if (args->downsample) {
@@ -1258,7 +1258,7 @@ static void add_object_in_tree_view(const gchar *object) {
 }
 
 static void start_image_plate_solve() {
-	struct plate_solver_data *args = malloc(sizeof(struct plate_solver_data));
+	struct astrometry_data *args = malloc(sizeof(struct astrometry_data));
 
 	args->for_photometry_cc = FALSE;
 	if (!fill_plate_solver_structure(args)) {
@@ -1393,7 +1393,7 @@ void on_GtkCheckButton_OnlineCat_toggled(GtkToggleButton *button,
 
 
 gpointer match_catalog(gpointer p) {
-	struct plate_solver_data *args = (struct plate_solver_data *) p;
+	struct astrometry_data *args = (struct astrometry_data *) p;
 	GError *error = NULL;
 	psf_star **cstars;
 	int n_fit = 0, n_cat = 0, n = 0;
@@ -1636,7 +1636,7 @@ gchar *search_in_catalogs(const gchar *object) {
 	return result;
 }
 
-int fill_plate_solver_structure(struct plate_solver_data *args) {
+int fill_plate_solver_structure(struct astrometry_data *args) {
 	double fov, px_size, scale, m, usedfov, maindim, scalefactor;
 	SirilWorldCS *catalog_center;
 	rectangle croparea = { 0 };

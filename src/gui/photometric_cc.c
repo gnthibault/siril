@@ -54,7 +54,7 @@ enum {
 };
 
 static void start_photometric_cc() {
-	struct plate_solver_data *args = malloc(sizeof(struct plate_solver_data));
+	struct astrometry_data *args = malloc(sizeof(struct astrometry_data));
 
 	args->for_photometry_cc = TRUE;
 	if (!fill_plate_solver_structure(args)) {
