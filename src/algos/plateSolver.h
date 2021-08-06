@@ -55,6 +55,5 @@ void invalidate_WCS_keywords(fits *fit);
 SirilWorldCS *get_image_solved_px_cat_center(image_solved *image);
 SirilWorldCS *get_image_solved_image_center(image_solved *image);
 void set_focal_and_pixel_pitch();
-void update_image_center_coord(image_solved *image, gdouble alpha, gdouble delta);
 
 #endif /* SRC_ALGOS_PLATESOLVER_H_ */

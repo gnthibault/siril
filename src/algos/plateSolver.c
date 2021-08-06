@@ -106,7 +106,7 @@ static struct object platedObject[RESOLVER_NUMBER];
 static GtkListStore *list_IPS = NULL;
 static image_solved solution;
 
-void initialize_ips_dialog() {
+static void initialize_ips_dialog() {
 	GtkWidget *button_ips_ok, *button_cc_ok, *catalog_label, *catalog_box_ips,
 			*catalog_box_pcc, *catalog_auto, *frame_cc_bkg, *frame_cc_norm,
 			*catalog_label_pcc;
@@ -1237,6 +1237,161 @@ static gboolean end_plate_solver(gpointer p) {
 	return FALSE;
 }
 
+static void add_object_in_tree_view(const gchar *object) {
+	struct object obj;
+	GtkTreeView *GtkTreeViewIPS;
+
+	GtkTreeViewIPS = GTK_TREE_VIEW(lookup_widget("GtkTreeViewIPS"));
+
+	set_cursor_waiting(TRUE);
+
+	gchar *result = search_in_catalogs(object);
+	if (result) {
+		free_Platedobject();
+		parse_content_buffer(result, &obj);
+		g_signal_handlers_block_by_func(GtkTreeViewIPS, on_GtkTreeViewIPS_cursor_changed, NULL);
+		add_object_to_list();
+		g_signal_handlers_unblock_by_func(GtkTreeViewIPS, on_GtkTreeViewIPS_cursor_changed, NULL);
+		g_free(result);
+	}
+	set_cursor_waiting(FALSE);
+}
+
+static void start_image_plate_solve() {
+	struct plate_solver_data *args = malloc(sizeof(struct plate_solver_data));
+
+	args->for_photometry_cc = FALSE;
+	if (!fill_plate_solver_structure(args)) {
+		set_cursor_waiting(TRUE);
+		start_in_new_thread(match_catalog, args);
+	}
+}
+
+/*****
+ * CALLBACKS FUNCTIONS
+ */
+
+void on_GtkEntry_IPS_focal_changed(GtkEditable *editable, gpointer user_data) {
+	update_resolution_field();
+	com.pref.focal = g_ascii_strtod(gtk_editable_get_chars(editable, 0, -1), NULL);
+}
+
+void on_GtkEntry_IPS_pixels_changed(GtkEditable *editable, gpointer user_data) {
+	update_resolution_field();
+	com.pref.pitch = g_ascii_strtod(gtk_editable_get_chars(editable, 0, -1), NULL);
+}
+
+void on_GtkEntry_IPS_insert_text(GtkEntry *entry, const gchar *text, gint length,
+		gint *position, gpointer data) {
+	GtkEditable *editable = GTK_EDITABLE(entry);
+	int i, count = 0;
+
+	gchar *result = g_strndup(text, length);
+
+	for (i = 0; i < length; i++) {
+		if (!g_ascii_isdigit(text[i]) && text[i] != '.')
+			continue;
+		result[count++] = text[i];
+	}
+
+	if (count > 0) {
+		g_signal_handlers_block_by_func(G_OBJECT (editable),
+				G_CALLBACK (on_GtkEntry_IPS_insert_text), data);
+		gtk_editable_insert_text(editable, result, count, position);
+		g_signal_handlers_unblock_by_func(G_OBJECT (editable),
+				G_CALLBACK (on_GtkEntry_IPS_insert_text), data);
+	}
+	g_signal_stop_emission_by_name(G_OBJECT(editable), "insert_text");
+
+	g_free(result);
+}
+
+void on_info_menu_astrometry_clicked(GtkButton *button, gpointer user_data) {
+	open_astrometry_dialog();
+}
+
+void on_buttonIPS_close_clicked(GtkButton *button, gpointer user_data) {
+	siril_close_dialog("ImagePlateSolver_Dial");
+}
+
+void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
+		gpointer user_data) {
+
+	GtkTreeModel *treeModel = gtk_tree_view_get_model(tree_view);
+	GtkTreeSelection *selection = gtk_tree_view_get_selection (tree_view);
+	GtkTreeIter iter;
+	GValue value = G_VALUE_INIT;
+	int selected_item;
+
+	if (gtk_tree_model_get_iter_first(treeModel, &iter) == FALSE)
+		return;	//The tree is empty
+	if (gtk_tree_selection_get_selected(selection, &treeModel, &iter)) { //get selected item
+		gtk_tree_model_get_value(treeModel, &iter, COLUMN_RESOLVER, &value);
+		const gchar *res = g_value_get_string(&value);
+		if (!g_strcmp0(res, "NED")) {
+			selected_item = 0;
+		} else if (!g_strcmp0(res, "Simbad")) {
+			selected_item = 1;
+		} else if (!g_strcmp0(res, "VizieR")) {
+			selected_item = 2;
+		} else {
+			selected_item = -1;
+		}
+
+		if (selected_item >= 0) {
+			update_coordinates(platedObject[selected_item].world_cs);
+		}
+
+		g_value_unset(&value);
+	}
+}
+
+void on_GtkButton_IPS_metadata_clicked(GtkButton *button, gpointer user_data) {
+	if (!has_any_keywords()) {
+		char *msg = siril_log_message(_("There are no keywords stored in the FITS header.\n"));
+		siril_message_dialog(GTK_MESSAGE_WARNING, _("No metadata"), msg);
+	} else {
+		update_image_parameters_GUI();
+	}
+}
+
+void on_GtkButtonIPS_clicked(GtkButton *button, gpointer user_data) {
+	GtkEntry *entry;
+
+	entry = GTK_ENTRY(lookup_widget("GtkSearchIPS"));
+	add_object_in_tree_view(gtk_entry_get_text(GTK_ENTRY(entry)));
+}
+
+void on_buttonIPS_ok_clicked(GtkButton *button, gpointer user_data) {
+	start_image_plate_solve();
+}
+
+void on_GtkSearchIPS_activate(GtkEntry *entry, gpointer user_data) {
+	add_object_in_tree_view(gtk_entry_get_text(GTK_ENTRY(entry)));
+}
+
+void on_GtkCheckButton_Mag_Limit_toggled(GtkToggleButton *button,
+		gpointer user_data) {
+	GtkWidget *spinmag;
+
+	spinmag = lookup_widget("GtkSpinIPS_Mag_Limit");
+	gtk_widget_set_sensitive(spinmag, !gtk_toggle_button_get_active(button));
+}
+
+void on_GtkCheckButton_OnlineCat_toggled(GtkToggleButton *button,
+		gpointer user_data) {
+	GtkWidget *combobox;
+
+	combobox = lookup_widget("ComboBoxIPSCatalog");
+	gtk_widget_set_sensitive(combobox, !gtk_toggle_button_get_active(button));
+}
+
+/******
+ *
+ * Public functions
+ */
+
+
 gpointer match_catalog(gpointer p) {
 	struct plate_solver_data *args = (struct plate_solver_data *) p;
 	GError *error = NULL;
@@ -1448,159 +1603,6 @@ gpointer match_catalog(gpointer p) {
 	return GINT_TO_POINTER(args->ret);
 }
 
-static void add_object_in_tree_view(const gchar *object) {
-	struct object obj;
-	GtkTreeView *GtkTreeViewIPS;
-
-	GtkTreeViewIPS = GTK_TREE_VIEW(lookup_widget("GtkTreeViewIPS"));
-
-	set_cursor_waiting(TRUE);
-
-	gchar *result = search_in_catalogs(object);
-	if (result) {
-		free_Platedobject();
-		parse_content_buffer(result, &obj);
-		g_signal_handlers_block_by_func(GtkTreeViewIPS, on_GtkTreeViewIPS_cursor_changed, NULL);
-		add_object_to_list();
-		g_signal_handlers_unblock_by_func(GtkTreeViewIPS, on_GtkTreeViewIPS_cursor_changed, NULL);
-		g_free(result);
-	}
-	set_cursor_waiting(FALSE);
-}
-
-static void start_image_plate_solve() {
-	struct plate_solver_data *args = malloc(sizeof(struct plate_solver_data));
-
-	args->for_photometry_cc = FALSE;
-	if (!fill_plate_solver_structure(args)) {
-		set_cursor_waiting(TRUE);
-		start_in_new_thread(match_catalog, args);
-	}
-}
-
-/*****
- * CALLBACKS FUNCTIONS
- */
-
-void on_GtkEntry_IPS_focal_changed(GtkEditable *editable, gpointer user_data) {
-	update_resolution_field();
-	com.pref.focal = g_ascii_strtod(gtk_editable_get_chars(editable, 0, -1), NULL);
-}
-
-void on_GtkEntry_IPS_pixels_changed(GtkEditable *editable, gpointer user_data) {
-	update_resolution_field();
-	com.pref.pitch = g_ascii_strtod(gtk_editable_get_chars(editable, 0, -1), NULL);
-}
-
-void on_GtkEntry_IPS_insert_text(GtkEntry *entry, const gchar *text, gint length,
-		gint *position, gpointer data) {
-	GtkEditable *editable = GTK_EDITABLE(entry);
-	int i, count = 0;
-
-	gchar *result = g_strndup(text, length);
-
-	for (i = 0; i < length; i++) {
-		if (!g_ascii_isdigit(text[i]) && text[i] != '.')
-			continue;
-		result[count++] = text[i];
-	}
-
-	if (count > 0) {
-		g_signal_handlers_block_by_func(G_OBJECT (editable),
-				G_CALLBACK (on_GtkEntry_IPS_insert_text), data);
-		gtk_editable_insert_text(editable, result, count, position);
-		g_signal_handlers_unblock_by_func(G_OBJECT (editable),
-				G_CALLBACK (on_GtkEntry_IPS_insert_text), data);
-	}
-	g_signal_stop_emission_by_name(G_OBJECT(editable), "insert_text");
-
-	g_free(result);
-}
-
-void on_info_menu_astrometry_clicked(GtkButton *button, gpointer user_data) {
-	open_astrometry_dialog();
-}
-
-void on_buttonIPS_close_clicked(GtkButton *button, gpointer user_data) {
-	siril_close_dialog("ImagePlateSolver_Dial");
-}
-
-void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
-		gpointer user_data) {
-
-	GtkTreeModel *treeModel = gtk_tree_view_get_model(tree_view);
-	GtkTreeSelection *selection = gtk_tree_view_get_selection (tree_view);
-	GtkTreeIter iter;
-	GValue value = G_VALUE_INIT;
-	int selected_item;
-
-	if (gtk_tree_model_get_iter_first(treeModel, &iter) == FALSE)
-		return;	//The tree is empty
-	if (gtk_tree_selection_get_selected(selection, &treeModel, &iter)) { //get selected item
-		gtk_tree_model_get_value(treeModel, &iter, COLUMN_RESOLVER, &value);
-		const gchar *res = g_value_get_string(&value);
-		if (!g_strcmp0(res, "NED")) {
-			selected_item = 0;
-		} else if (!g_strcmp0(res, "Simbad")) {
-			selected_item = 1;
-		} else if (!g_strcmp0(res, "VizieR")) {
-			selected_item = 2;
-		} else {
-			selected_item = -1;
-		}
-
-		if (selected_item >= 0) {
-			update_coordinates(platedObject[selected_item].world_cs);
-		}
-
-		g_value_unset(&value);
-	}
-}
-
-void on_GtkButton_IPS_metadata_clicked(GtkButton *button, gpointer user_data) {
-	if (!has_any_keywords()) {
-		char *msg = siril_log_message(_("There are no keywords stored in the FITS header.\n"));
-		siril_message_dialog(GTK_MESSAGE_WARNING, _("No metadata"), msg);
-	} else {
-		update_image_parameters_GUI();
-	}
-}
-
-void on_GtkButtonIPS_clicked(GtkButton *button, gpointer user_data) {
-	GtkEntry *entry;
-
-	entry = GTK_ENTRY(lookup_widget("GtkSearchIPS"));
-	add_object_in_tree_view(gtk_entry_get_text(GTK_ENTRY(entry)));
-}
-
-void on_buttonIPS_ok_clicked(GtkButton *button, gpointer user_data) {
-	start_image_plate_solve();
-}
-
-void on_GtkSearchIPS_activate(GtkEntry *entry, gpointer user_data) {
-	add_object_in_tree_view(gtk_entry_get_text(GTK_ENTRY(entry)));
-}
-
-void on_GtkCheckButton_Mag_Limit_toggled(GtkToggleButton *button,
-		gpointer user_data) {
-	GtkWidget *spinmag;
-
-	spinmag = lookup_widget("GtkSpinIPS_Mag_Limit");
-	gtk_widget_set_sensitive(spinmag, !gtk_toggle_button_get_active(button));
-}
-
-void on_GtkCheckButton_OnlineCat_toggled(GtkToggleButton *button,
-		gpointer user_data) {
-	GtkWidget *combobox;
-
-	combobox = lookup_widget("ComboBoxIPSCatalog");
-	gtk_widget_set_sensitive(combobox, !gtk_toggle_button_get_active(button));
-}
-
-/******
- *
- * Public functions
- */
 
 void open_astrometry_dialog() {
 	if (single_image_is_loaded() || sequence_is_loaded()) {
