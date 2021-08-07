@@ -813,7 +813,7 @@ static void flip_astrometry_data(fits *fit) {
 	siril_debug_print("******************************************\n");
 }
 
-static void print_platesolving_results(image_solved image, gboolean downsample) {
+static void print_platesolving_results(image_solved *image, gboolean downsample) {
 	double rotation, det, scaleX, scaleY, resolution;
 	double inliers;
 	gchar *alpha, *delta;
@@ -822,7 +822,7 @@ static void print_platesolving_results(image_solved image, gboolean downsample) 
 	point fov;
 
 	float factor = (downsample) ? DOWNSAMPLE_FACTOR : 1.0;
-	Homography H = image.H;
+	Homography H = image->H;
 
 	/* Matching information */
 	gchar *str = ngettext("%d pair match.\n", "%d pair matches.\n", H.pair_matched);
@@ -852,18 +852,18 @@ static void print_platesolving_results(image_solved image, gboolean downsample) 
 		rotation -= 360;
 	siril_log_message(_("Rotation:%+*.2lf deg %s\n"), 12, rotation, det < 0 ? _("(flipped)") : "");
 
-	image.focal = RADCONV * image.pixel_size / resolution;
+	image->focal = RADCONV * image->pixel_size / resolution;
 
-	fov.x = get_fov(resolution, image.size.x);
-	fov.y = get_fov(resolution, image.size.y);
-	siril_log_message(_("Focal:%*.2lf mm\n"), 15, image.focal);
-	siril_log_message(_("Pixel size:%*.2lf µm\n"), 10, image.pixel_size);
+	fov.x = get_fov(resolution, image->size.x);
+	fov.y = get_fov(resolution, image->size.y);
+	siril_log_message(_("Focal:%*.2lf mm\n"), 15, image->focal);
+	siril_log_message(_("Pixel size:%*.2lf µm\n"), 10, image->pixel_size);
 	fov_in_DHMS(fov.x / 60.0, field_x);
 	fov_in_DHMS(fov.y / 60.0, field_y);
 	siril_log_message(_("Field of view:    %s x %s\n"), field_x, field_y);
 
-	alpha = siril_world_cs_alpha_format(image.image_center, " %02dh%02dm%02ds");
-	delta = siril_world_cs_delta_format(image.image_center, "%c%02d°%02d\'%02d\"");
+	alpha = siril_world_cs_alpha_format(image->image_center, " %02dh%02dm%02ds");
+	delta = siril_world_cs_delta_format(image->image_center, "%c%02d°%02d\'%02d\"");
 	siril_log_message(_("Image center: alpha: %s, delta: %s\n"), alpha, delta);
 
 	g_free(alpha);
@@ -1205,10 +1205,13 @@ static gboolean end_plate_solver(gpointer p) {
 		}
 		siril_message_dialog(GTK_MESSAGE_ERROR, title, args->message);
 	} else {
-		print_platesolving_results(solution, args->downsample);
+		print_platesolving_results(&solution, args->downsample);
+
+		args->fit->focal_length = solution.focal;
+		args->fit->pixel_size_x = args->fit->pixel_size_y = solution.pixel_size;
 
 		/* update UI */
-		update_image_parameters_GUI();
+		update_image_parameters_GUI(solution.focal, solution.pixel_size);
 		set_GUI_CAMERA();
 		update_coordinates(solution.image_center);
 		siril_world_cs_unref(solution.px_cat_center);
@@ -1541,8 +1544,6 @@ gpointer match_catalog(gpointer p) {
 			/**** Fill wcsdata fit structure ***/
 
 			args->fit->wcsdata.equinox = 2000.0;
-			args->fit->focal_length = solution.focal;
-			args->fit->pixel_size_x = args->fit->pixel_size_y = solution.pixel_size;
 
 			args->fit->wcsdata.crpix[0] = solution.crpix[0];
 			args->fit->wcsdata.crpix[1] = solution.crpix[1];
