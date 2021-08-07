@@ -1482,6 +1482,11 @@ gpointer match_catalog(gpointer p) {
 			solution.crpix[1] = ((image_size.y - 1) / 2.0);
 			solution.pixel_size = args->pixel_size;
 
+			double scaleX = sqrt(solution.H.h00 * solution.H.h00 + solution.H.h01 * solution.H.h01);
+			double scaleY = sqrt(solution.H.h10 * solution.H.h10 + solution.H.h11 * solution.H.h11);
+			double resolution = (scaleX + scaleY) * 0.5; // we assume square pixels
+			solution.focal = RADCONV * solution.pixel_size / resolution;
+
 			apply_match(solution.px_cat_center, solution.crpix, trans, &ra0, &dec0);
 
 			solution.image_center = siril_world_cs_new_from_a_d(ra0, dec0);
@@ -1490,6 +1495,7 @@ gpointer match_catalog(gpointer p) {
 				double inv = 1.0 / DOWNSAMPLE_FACTOR;
 				solution.size.x *= inv;
 				solution.size.y *= inv;
+				solution.focal *= inv;
 				solution.crpix[0] = ((image_size.x - 1) / 2.0);
 				solution.crpix[1] = ((image_size.y - 1) / 2.0);
 			}
