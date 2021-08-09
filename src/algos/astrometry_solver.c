@@ -1463,7 +1463,7 @@ gpointer match_catalog(gpointer p) {
 	}
 	if (abs(args->xoffset) > 0.0 || abs(args->yoffset) > 0.0 ) nbtrials = 1; //retry to converge if solve is done at an offset from the center
 
-	while (trial <= nbtrials){
+	while ((trial <= nbtrials) && (args->ret != 1)) {
 		cstars = new_fitted_stars(MAX_STARS);
 		if (cstars == NULL) {
 			PRINT_ALLOC_ERR;
@@ -1651,7 +1651,6 @@ gpointer match_catalog(gpointer p) {
 			} else {
 				args->ret = 1;
 			}
-
 		}
 	}
 	/* free data */
