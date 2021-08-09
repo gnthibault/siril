@@ -571,7 +571,7 @@ static gchar *download_catalog(gboolean use_cache, online_catalog onlineCatalog,
 
 	if (use_cache && g_file_test(filename, G_FILE_TEST_EXISTS)) {
 		file = g_file_new_for_path(filename);
-		siril_log_color_message(_("Using data in cache\n"), "bold");
+		siril_log_color_message(_("Using data in cache\n"), "salmon");
 		if (!g_file_load_contents(file, NULL, &buffer, NULL, NULL, &error)) {
 			siril_log_message(_("%s\n"), error->message);
 			g_clear_error(&error);
