@@ -1464,6 +1464,7 @@ gpointer match_catalog(gpointer p) {
 	if (abs(args->xoffset) > 0.0 || abs(args->yoffset) > 0.0 ) nbtrials = 1; //retry to converge if solve is done at an offset from the center
 
 	while (trial <= nbtrials){
+		trial += 1;
 		cstars = new_fitted_stars(MAX_STARS);
 		if (cstars == NULL) {
 			PRINT_ALLOC_ERR;
@@ -1532,9 +1533,7 @@ gpointer match_catalog(gpointer p) {
 
 				if (trial < nbtrials){
 					args->cat_center = siril_world_cs_new_from_a_d(ra0, dec0);
-					trial += 1;
 				} else {
-					trial += 1;
 					solution.pixel_size = args->pixel_size;
 					double scaleX = sqrt(solution.H.h00 * solution.H.h00 + solution.H.h01 * solution.H.h01);
 					double scaleY = sqrt(solution.H.h10 * solution.H.h10 + solution.H.h11 * solution.H.h11);
@@ -1651,7 +1650,6 @@ gpointer match_catalog(gpointer p) {
 			} else {
 				args->ret = 1;
 			}
-
 		}
 	}
 	/* free data */
