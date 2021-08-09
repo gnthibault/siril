@@ -311,6 +311,13 @@ static gboolean is_downsample_activated() {
 	return gtk_toggle_button_get_active(button);
 }
 
+static gboolean is_cache_activated() {
+	GtkToggleButton *button;
+
+	button = GTK_TOGGLE_BUTTON(lookup_widget("use_cache_ips"));
+	return gtk_toggle_button_get_active(button);
+}
+
 static gboolean is_autocrop_activated() {
 	GtkToggleButton *button;
 
@@ -546,16 +553,35 @@ static online_catalog get_online_catalog(double fov, double m) {
 	}
 }
 
-static gboolean download_catalog(online_catalog onlineCatalog, SirilWorldCS *catalog_center, double fov, double m) {
-	gchar *url;
+static gchar *download_catalog(gboolean use_cache, online_catalog onlineCatalog, SirilWorldCS *catalog_center, double fov, double m) {
 	gchar *buffer = NULL;
 	GError *error = NULL;
+	GFile *file;
 
 	/* ------------------- get Vizier catalog in catalog.dat -------------------------- */
 
-	url = get_catalog_url(catalog_center, m, fov, onlineCatalog);
+	/* check if catalogue already exist in cache */
+	gchar *str = g_strdup_printf("cat-%d-%lf-%lf-%lf-%lf.cat",
+			(int) onlineCatalog,
+			siril_world_cs_get_alpha(catalog_center),
+			siril_world_cs_get_delta(catalog_center),
+			fov, m);
+	gchar *filename = g_build_filename(g_get_tmp_dir(), str, NULL);
+	g_free(str);
 
-	GFile *file = g_file_new_build_filename(g_get_tmp_dir(), "catalog.dat", NULL);
+	if (use_cache && g_file_test(filename, G_FILE_TEST_EXISTS)) {
+		file = g_file_new_for_path(filename);
+		siril_log_color_message(_("Using data in cache\n"), "bold");
+		if (!g_file_load_contents(file, NULL, &buffer, NULL, NULL, &error)) {
+			siril_log_message(_("%s\n"), error->message);
+			g_clear_error(&error);
+		}
+	} else {
+		file = g_file_new_for_path(filename);
+		gchar *url = get_catalog_url(catalog_center, m, fov, onlineCatalog);
+		buffer = fetch_url(url);
+	}
+
 	GOutputStream *output_stream = (GOutputStream*) g_file_replace(file, NULL, FALSE,
 			G_FILE_CREATE_NONE, NULL, &error);
 
@@ -566,10 +592,10 @@ static gboolean download_catalog(online_catalog onlineCatalog, SirilWorldCS *cat
 			fprintf(stderr, "astrometry_solver: Cannot open catalogue\n");
 		}
 		g_object_unref(file);
-		return TRUE;
+		g_free(filename);
+		return NULL;
 	}
 
-	buffer = fetch_url(url);
 	if (buffer) {
 		if (!g_output_stream_write_all(output_stream, buffer, strlen(buffer), NULL, NULL, &error)) {
 			g_warning("%s\n", error->message);
@@ -577,21 +603,21 @@ static gboolean download_catalog(online_catalog onlineCatalog, SirilWorldCS *cat
 			g_free(buffer);
 			g_object_unref(output_stream);
 			g_object_unref(file);
-			return TRUE;
+			g_free(filename);
+			return NULL;
 		}
 		g_object_unref(output_stream);
 		g_free(buffer);
 	}
 
-	return FALSE;
+	return filename;
 }
 
 
-static gchar *project_catalog(SirilWorldCS *catalog_center) {
-	
+static gchar *project_catalog(gchar *catalogue_name, SirilWorldCS *catalog_center) {
 	GError *error = NULL;
 	gchar *foutput = NULL;
-	GFile *file = g_file_new_build_filename(g_get_tmp_dir(), "catalog.dat", NULL);
+	GFile *file = g_file_new_for_path(catalogue_name);
 	const gchar *filename = g_file_peek_path(file);
 	/* -------------------------------------------------------------------------------- */
 
@@ -1447,7 +1473,7 @@ gpointer match_catalog(gpointer p) {
 		}
 
 		/* project and open the file */
-		args->catalogStars = project_catalog(args->cat_center);
+		args->catalogStars = project_catalog(args->catalog_name, args->cat_center);
 		if (!args->catalogStars) {
 			siril_world_cs_unref(args->cat_center);
 			siril_message_dialog(GTK_MESSAGE_ERROR, _("No projection"), _("Cannot project the star catalog."));
@@ -1680,6 +1706,7 @@ int fill_plate_solver_structure(struct astrometry_data *args) {
 	args->autocrop = is_autocrop_activated();
 	args->manual = is_detection_manual();
 	args->downsample = is_downsample_activated();
+	args->use_cache = is_cache_activated();
 	args->fit = &gfit;
 	scalefactor = args->downsample ? DOWNSAMPLE_FACTOR : 1.0;
 	
@@ -1743,12 +1770,14 @@ int fill_plate_solver_structure(struct astrometry_data *args) {
 
 	/* Filling structure */
 	args->onlineCatalog = args->for_photometry_cc ? get_photometry_catalog() : get_online_catalog(usedfov * CROP_ALLOWANCE, m);
-	if (download_catalog(args->onlineCatalog, catalog_center, usedfov * CROP_ALLOWANCE, m)) { 
+	gchar *catalog_name = download_catalog(args->use_cache, args->onlineCatalog, catalog_center, usedfov * CROP_ALLOWANCE, m);
+	if (!catalog_name) {
 		siril_world_cs_unref(catalog_center);
 		siril_message_dialog(GTK_MESSAGE_ERROR, _("No catalog"), _("Cannot download the online star catalog."));
 		return 1;
 	}
 	args->cat_center = catalog_center; //for projection later on
+	args->catalog_name = catalog_name;
 	args->scale = scale;
 	args->pixel_size = px_size;
 	args->flip_image = flip_image_after_ps();
