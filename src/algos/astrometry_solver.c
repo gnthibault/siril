@@ -545,11 +545,10 @@ static online_catalog get_online_catalog(double fov, double m) {
 	}
 }
 
-static gchar *download_catalog(online_catalog onlineCatalog, SirilWorldCS *catalog_center, double fov, double m) {
+static gboolean download_catalog(online_catalog onlineCatalog, SirilWorldCS *catalog_center, double fov, double m) {
 	gchar *url;
 	gchar *buffer = NULL;
 	GError *error = NULL;
-	gchar *foutput = NULL;
 
 	/* ------------------- get Vizier catalog in catalog.dat -------------------------- */
 
@@ -566,7 +565,7 @@ static gchar *download_catalog(online_catalog onlineCatalog, SirilWorldCS *catal
 			fprintf(stderr, "astrometry_solver: Cannot open catalogue\n");
 		}
 		g_object_unref(file);
-		return NULL;
+		return TRUE;
 	}
 
 	buffer = fetch_url(url);
@@ -577,36 +576,45 @@ static gchar *download_catalog(online_catalog onlineCatalog, SirilWorldCS *catal
 			g_free(buffer);
 			g_object_unref(output_stream);
 			g_object_unref(file);
-			return NULL;
+			return TRUE;
 		}
-		const gchar *filename = g_file_peek_path(file);
 		g_object_unref(output_stream);
 		g_free(buffer);
-
-		/* -------------------------------------------------------------------------------- */
-
-		/* --------- Project coords of Vizier catalog and save it into catalog.proj ------- */
-
-		GFile *fproj = g_file_new_build_filename(g_get_tmp_dir(), "catalog.proj", NULL);
-
-		/* We want to remove the file if already exisit */
-		if (!g_file_delete(fproj, NULL, &error)
-				&& !g_error_matches(error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
-			// deletion failed for some reason other than the file not existing:
-			// so report the error
-			g_warning("Failed to delete %s: %s", g_file_peek_path(fproj),
-					error->message);
-		}
-
-		convert_catalog_coords(filename, catalog_center, fproj);
-		foutput = g_file_get_path(fproj);
-		g_object_unref(file);
-		g_object_unref(fproj);
-
-		/* -------------------------------------------------------------------------------- */
-
-		solution.px_cat_center = siril_world_cs_ref(catalog_center);
 	}
+
+	return FALSE;
+}
+
+
+static gchar *project_catalog(SirilWorldCS *catalog_center) {
+	
+	GError *error = NULL;
+	gchar *foutput = NULL;
+	GFile *file = g_file_new_build_filename(g_get_tmp_dir(), "catalog.dat", NULL);
+	const gchar *filename = g_file_peek_path(file);
+	/* -------------------------------------------------------------------------------- */
+
+	/* --------- Project coords of Vizier catalog and save it into catalog.proj ------- */
+
+	GFile *fproj = g_file_new_build_filename(g_get_tmp_dir(), "catalog.proj", NULL);
+
+	/* We want to remove the file if already exisit */
+	if (!g_file_delete(fproj, NULL, &error)
+			&& !g_error_matches(error, G_IO_ERROR, G_IO_ERROR_NOT_FOUND)) {
+		// deletion failed for some reason other than the file not existing:
+		// so report the error
+		g_warning("Failed to delete %s: %s", g_file_peek_path(fproj),
+				error->message);
+	}
+
+	convert_catalog_coords(filename, catalog_center, fproj);
+	foutput = g_file_get_path(fproj);
+	g_object_unref(file);
+	g_object_unref(fproj);
+
+	/* -------------------------------------------------------------------------------- */
+
+	solution.px_cat_center = siril_world_cs_ref(catalog_center);
 	return foutput;
 }
 
@@ -1716,10 +1724,15 @@ int fill_plate_solver_structure(struct astrometry_data *args) {
 
 	/* Filling structure */
 	args->onlineCatalog = args->for_photometry_cc ? get_photometry_catalog() : get_online_catalog(usedfov * CROP_ALLOWANCE, m);
-	args->catalogStars = download_catalog(args->onlineCatalog, catalog_center, usedfov * CROP_ALLOWANCE, m);
-	if (!args->catalogStars) {
+	if (download_catalog(args->onlineCatalog, catalog_center, usedfov * CROP_ALLOWANCE, m)) { 
 		siril_world_cs_unref(catalog_center);
 		siril_message_dialog(GTK_MESSAGE_ERROR, _("No catalog"), _("Cannot download the online star catalog."));
+		return 1;
+	}
+	args->catalogStars = project_catalog(catalog_center);
+	if (!args->catalogStars) {
+		siril_world_cs_unref(catalog_center);
+		siril_message_dialog(GTK_MESSAGE_ERROR, _("No projection"), _("Cannot project the star catalog."));
 		return 1;
 	}
 	args->scale = scale;
