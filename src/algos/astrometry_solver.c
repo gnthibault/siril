@@ -1431,7 +1431,7 @@ gpointer match_catalog(gpointer p) {
 	struct astrometry_data *args = (struct astrometry_data *) p;
 	GError *error = NULL;
 	psf_star **cstars;
-	int n_fit = 0, n_cat = 0, n = 0;
+	int n_fit = 0, n_cat = 0;
 	Homography H = { 0 };
 	int nobj = AT_MATCH_CATALOG_NBRIGHT;
 	int trial = 0, nbtrials = 0;
@@ -1497,7 +1497,7 @@ gpointer match_catalog(gpointer p) {
 
 		/* make sure that arrays are not too small
 		* make  sure that the max of stars is BRIGHTEST_STARS */
-		n = min(min(n_fit, n_cat), BRIGHTEST_STARS);
+		int n = min(min(n_fit, n_cat), BRIGHTEST_STARS);
 
 		double scale_min = args->scale - 0.2;
 		double scale_max = args->scale + 0.2;
