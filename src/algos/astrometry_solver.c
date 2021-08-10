@@ -887,11 +887,9 @@ static void print_platesolving_results(image_solved image, gboolean downsample) 
 		rotation -= 360;
 	siril_log_message(_("Rotation:%+*.2lf deg %s\n"), 12, rotation, det < 0 ? _("(flipped)") : "");
 
-	image.focal = RADCONV * image.pixel_size / resolution;
-
 	fov.x = get_fov(resolution, image.size.x);
 	fov.y = get_fov(resolution, image.size.y);
-	siril_log_message(_("Focal:%*.2lf mm\n"), 15, image.focal);
+	siril_log_message(_("Focal:%*.2lf mm\n"), 15, RADCONV * image.pixel_size / resolution);
 	siril_log_message(_("Pixel size:%*.2lf µm\n"), 10, image.pixel_size);
 	fov_in_DHMS(fov.x / 60.0, field_x);
 	fov_in_DHMS(fov.y / 60.0, field_y);
