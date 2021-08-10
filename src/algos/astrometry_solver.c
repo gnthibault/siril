@@ -944,7 +944,7 @@ static int read_NOMAD_catalog(GInputStream *stream, psf_star **cstars) {
 	}
 	g_object_unref(data_input);
 	sort_stars(cstars, i);
-	if (printcatcount)	siril_log_message(_("Catalog NOMAD size: %d objects\n"), i);
+	if (printcatcount) siril_log_message(_("Catalog NOMAD size: %d objects\n"), i);
 	return i;
 }
 
@@ -983,7 +983,7 @@ static int read_TYCHO2_catalog(GInputStream *stream, psf_star **cstars) {
 	}
 	g_object_unref(data_input);
 	sort_stars(cstars, i);
-	siril_log_message(_("Catalog TYCHO-2 size: %d objects\n"), i);
+	if (printcatcount) siril_log_message(_("Catalog TYCHO-2 size: %d objects\n"), i);
 	return i;
 }
 
@@ -1026,7 +1026,7 @@ static int read_GAIA_catalog(GInputStream *stream, psf_star **cstars) {
 	}
 	g_object_unref(data_input);
 	sort_stars(cstars, i);
-	siril_log_message(_("Catalog Gaia DR2 size: %d objects\n"), i);
+	if (printcatcount) siril_log_message(_("Catalog Gaia DR2 size: %d objects\n"), i);
 	return i;
 }
 
@@ -1069,7 +1069,7 @@ static int read_PPMXL_catalog(GInputStream *stream, psf_star **cstars) {
 	}
 	g_object_unref(data_input);
 	sort_stars(cstars, i);
-	siril_log_message(_("Catalog PPMXL size: %d objects\n"), i);
+	if (printcatcount) siril_log_message(_("Catalog PPMXL size: %d objects\n"), i);
 	return i;
 }
 
@@ -1112,7 +1112,7 @@ static int read_BRIGHT_STARS_catalog(GInputStream *stream, psf_star **cstars) {
 	}
 	g_object_unref(data_input);
 	sort_stars(cstars, i);
-	siril_log_message(_("Catalog Bright stars size: %d objects\n"), i);
+	if (printcatcount) siril_log_message(_("Catalog Bright stars size: %d objects\n"), i);
 	return i;
 }
 
@@ -1155,7 +1155,7 @@ static int read_APASS_catalog(GInputStream *stream, psf_star **cstars) {
 	}
 	g_object_unref(data_input);
 	sort_stars(cstars, i);
-	siril_log_message(_("Catalog APASS size: %d objects\n"), i);
+	if (printcatcount) siril_log_message(_("Catalog APASS size: %d objects\n"), i);
 	return i;
 }
 
@@ -1437,7 +1437,7 @@ gpointer match_catalog(gpointer p) {
 	int trial = 0, nbtrials = 0;
 	GFile *catalog;
 	GInputStream *input_stream;
-
+	args->catalogStars = NULL;
 	args->message = NULL;
 
 	if (args->downsample) {
