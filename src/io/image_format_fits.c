@@ -594,8 +594,8 @@ static void convert_data_float(int bitpix, const void *from, float *to, size_t n
 	int16_t *data16;
 	double *pixels_double;
 	long *sdata32;	// TO BE TESTED on 32-bit arch, seems to be a cfitsio bug
-	long mini = LONG_MAX;
-	long maxi = -LONG_MAX;
+	float mini = FLT_MAX;
+	float maxi = -FLT_MAX;
 	unsigned long *data32;
 	float *data32f;
 
