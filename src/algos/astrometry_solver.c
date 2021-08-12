@@ -818,36 +818,6 @@ static void new_to_old_WCS(double cd1_1, double cd1_2, double cd2_1,
 	*crota2 = -atan2(cd2_1, sign * cd1_1) * 180 / M_PI;
 }
 
-static void flip_astrometry_data(fits *fit) {
-	double cdelt1, cdelt2, crota1, crota2;
-
-	/* flip cd matrix */
-	fit->wcsdata.cd[0][1] = -fit->wcsdata.cd[0][1];
-	fit->wcsdata.cd[1][1] = -fit->wcsdata.cd[1][1];
-
-	/* also update deprecated keywords */
-	new_to_old_WCS(fit->wcsdata.cd[0][0], fit->wcsdata.cd[0][1],
-			fit->wcsdata.cd[1][0], fit->wcsdata.cd[1][1], &cdelt1, &cdelt2,
-			&crota1, &crota2);
-
-	fit->wcsdata.cdelt[0] = cdelt1;
-	fit->wcsdata.cdelt[1] = cdelt2;
-	fit->wcsdata.crota[0] = crota1;
-	fit->wcsdata.crota[1] = crota2;
-
-	/* debug output */
-	siril_debug_print("****Updated WCS data*************\n");
-	siril_debug_print("cdelt1 = %*.12e\n", 20, fit->wcsdata.cdelt[0]);
-	siril_debug_print("cdelt2 = %*.12e\n", 20, fit->wcsdata.cdelt[1]);
-	siril_debug_print("crota1 = %*.12e\n", 20, fit->wcsdata.crota[0]);
-	siril_debug_print("crota2 = %*.12e\n", 20, fit->wcsdata.crota[1]);
-	siril_debug_print("cd1_1  = %*.12e\n", 20, fit->wcsdata.cd[0][0]);
-	siril_debug_print("cd1_2  = %*.12e\n", 20, fit->wcsdata.cd[0][1]);
-	siril_debug_print("cd2_1  = %*.12e\n", 20, fit->wcsdata.cd[1][0]);
-	siril_debug_print("cd2_2  = %*.12e\n", 20, fit->wcsdata.cd[1][1]);
-	siril_debug_print("******************************************\n");
-}
-
 static void print_platesolving_results(image_solved image, gboolean downsample) {
 	double rotation, det, scaleX, scaleY, resolution;
 	double inliers;
@@ -1255,7 +1225,7 @@ static gboolean end_plate_solver(gpointer p) {
 		if (flip_image(args->flip_image, solution.H)) {
 			siril_log_color_message(_("Flipping image and updating astrometry data.\n"), "salmon");
 			fits_flip_top_to_bottom(args->fit);
-			flip_astrometry_data(args->fit);
+			flip_bottom_up_astrometry_data(args->fit);
 			redraw(com.cvport, REMAP_ALL);
 		} else {
 			redraw(com.cvport, REMAP_NONE);
@@ -1424,6 +1394,125 @@ void on_GtkCheckButton_OnlineCat_toggled(GtkToggleButton *button,
  * Public functions
  */
 
+void flip_bottom_up_astrometry_data(fits *fit) {
+	double cdelt1, cdelt2, crota1, crota2;
+
+	/* flip cd matrix */
+	fit->wcsdata.cd[0][1] = -fit->wcsdata.cd[0][1];
+	fit->wcsdata.cd[1][1] = -fit->wcsdata.cd[1][1];
+
+	/* also update deprecated keywords */
+	new_to_old_WCS(fit->wcsdata.cd[0][0], fit->wcsdata.cd[0][1],
+			fit->wcsdata.cd[1][0], fit->wcsdata.cd[1][1], &cdelt1, &cdelt2,
+			&crota1, &crota2);
+
+	fit->wcsdata.cdelt[0] = cdelt1;
+	fit->wcsdata.cdelt[1] = cdelt2;
+	fit->wcsdata.crota[0] = crota1;
+	fit->wcsdata.crota[1] = crota2;
+
+	/* debug output */
+	siril_debug_print("****Updated WCS data*************\n");
+	siril_debug_print("cdelt1 = %*.12e\n", 20, fit->wcsdata.cdelt[0]);
+	siril_debug_print("cdelt2 = %*.12e\n", 20, fit->wcsdata.cdelt[1]);
+	siril_debug_print("crota1 = %*.12e\n", 20, fit->wcsdata.crota[0]);
+	siril_debug_print("crota2 = %*.12e\n", 20, fit->wcsdata.crota[1]);
+	siril_debug_print("cd1_1  = %*.12e\n", 20, fit->wcsdata.cd[0][0]);
+	siril_debug_print("cd1_2  = %*.12e\n", 20, fit->wcsdata.cd[0][1]);
+	siril_debug_print("cd2_1  = %*.12e\n", 20, fit->wcsdata.cd[1][0]);
+	siril_debug_print("cd2_2  = %*.12e\n", 20, fit->wcsdata.cd[1][1]);
+	siril_debug_print("******************************************\n");
+}
+
+void flip_left_right_astrometry_data(fits *fit) {
+	double cdelt1, cdelt2, crota1, crota2;
+
+	/* flip cd matrix */
+	fit->wcsdata.cd[0][0] = -fit->wcsdata.cd[0][0];
+	fit->wcsdata.cd[1][0] = -fit->wcsdata.cd[1][0];
+
+	/* also update deprecated keywords */
+	new_to_old_WCS(fit->wcsdata.cd[0][0], fit->wcsdata.cd[0][1],
+			fit->wcsdata.cd[1][0], fit->wcsdata.cd[1][1], &cdelt1, &cdelt2,
+			&crota1, &crota2);
+
+	fit->wcsdata.cdelt[0] = cdelt1;
+	fit->wcsdata.cdelt[1] = cdelt2;
+	fit->wcsdata.crota[0] = crota1;
+	fit->wcsdata.crota[1] = crota2;
+
+	/* debug output */
+	siril_debug_print("****Updated WCS data*************\n");
+	siril_debug_print("cdelt1 = %*.12e\n", 20, fit->wcsdata.cdelt[0]);
+	siril_debug_print("cdelt2 = %*.12e\n", 20, fit->wcsdata.cdelt[1]);
+	siril_debug_print("crota1 = %*.12e\n", 20, fit->wcsdata.crota[0]);
+	siril_debug_print("crota2 = %*.12e\n", 20, fit->wcsdata.crota[1]);
+	siril_debug_print("cd1_1  = %*.12e\n", 20, fit->wcsdata.cd[0][0]);
+	siril_debug_print("cd1_2  = %*.12e\n", 20, fit->wcsdata.cd[0][1]);
+	siril_debug_print("cd2_1  = %*.12e\n", 20, fit->wcsdata.cd[1][0]);
+	siril_debug_print("cd2_2  = %*.12e\n", 20, fit->wcsdata.cd[1][1]);
+	siril_debug_print("******************************************\n");
+}
+
+void rotate_astrometry_data(fits *fit, double angle) {
+	double cd1_1, cd1_2, cd2_1, cd2_2;
+	double cdelt1, cdelt2, crota1, crota2;
+	double crpix1, crpix2;
+
+	if (angle == 90.0) {
+		cd1_1 = fit->wcsdata.cd[0][1];
+		cd1_2 = -fit->wcsdata.cd[0][0];
+		cd2_1 = fit->wcsdata.cd[1][1];
+		cd2_2 = -fit->wcsdata.cd[1][0];
+		crpix1 = fit->wcsdata.crpix[1];
+		crpix2 = fit->wcsdata.crpix[0];
+	} else if (angle == 180.0){
+		cd1_1 = -fit->wcsdata.cd[0][0];
+		cd1_2 = -fit->wcsdata.cd[0][1];
+		cd2_1 = -fit->wcsdata.cd[1][0];
+		cd2_2 = -fit->wcsdata.cd[1][1];
+	} else if (angle == 270.0) {
+		cd1_1 = -fit->wcsdata.cd[0][1];
+		cd1_2 = fit->wcsdata.cd[0][0];
+		cd2_1 = -fit->wcsdata.cd[1][1];
+		cd2_2 = fit->wcsdata.cd[1][0];
+		crpix1 = fit->wcsdata.crpix[1];
+		crpix2 = fit->wcsdata.crpix[0];
+	}
+
+	fit->wcsdata.cd[0][0] = cd1_1;
+	fit->wcsdata.cd[0][1] = cd1_2;
+	fit->wcsdata.cd[1][0] = cd2_1;
+	fit->wcsdata.cd[1][1] = cd2_2;
+	fit->wcsdata.crpix[0] = crpix1;
+	fit->wcsdata.crpix[1] = crpix2;
+
+	/* also update deprecated keywords */
+	new_to_old_WCS(fit->wcsdata.cd[0][0], fit->wcsdata.cd[0][1],
+			fit->wcsdata.cd[1][0], fit->wcsdata.cd[1][1], &cdelt1, &cdelt2,
+			&crota1, &crota2);
+
+	fit->wcsdata.cdelt[0] = cdelt1;
+	fit->wcsdata.cdelt[1] = cdelt2;
+	fit->wcsdata.crota[0] = crota1;
+	fit->wcsdata.crota[1] = crota2;
+
+	/* debug output */
+	siril_debug_print("****Updated WCS data*************\n");
+	siril_debug_print("crpix1 = %*.12e\n", 20, fit->wcsdata.crpix[0]);
+	siril_debug_print("crpix2 = %*.12e\n", 20, fit->wcsdata.crpix[1]);
+	siril_debug_print("crval1 = %*.12e\n", 20, fit->wcsdata.crval[0]);
+	siril_debug_print("crval2 = %*.12e\n", 20, fit->wcsdata.crval[1]);
+	siril_debug_print("cdelt1 = %*.12e\n", 20, fit->wcsdata.cdelt[0]);
+	siril_debug_print("cdelt2 = %*.12e\n", 20, fit->wcsdata.cdelt[1]);
+	siril_debug_print("crota1 = %*.12e\n", 20, fit->wcsdata.crota[0]);
+	siril_debug_print("crota2 = %*.12e\n", 20, fit->wcsdata.crota[1]);
+	siril_debug_print("cd1_1  = %*.12e\n", 20, fit->wcsdata.cd[0][0]);
+	siril_debug_print("cd1_2  = %*.12e\n", 20, fit->wcsdata.cd[0][1]);
+	siril_debug_print("cd2_1  = %*.12e\n", 20, fit->wcsdata.cd[1][0]);
+	siril_debug_print("cd2_2  = %*.12e\n", 20, fit->wcsdata.cd[1][1]);
+	siril_debug_print("******************************************\n");
+}
 
 gpointer match_catalog(gpointer p) {
 	struct astrometry_data *args = (struct astrometry_data *) p;

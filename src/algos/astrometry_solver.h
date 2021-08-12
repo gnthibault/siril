@@ -54,6 +54,9 @@ gpointer match_catalog(gpointer p);
 
 gboolean confirm_delete_wcs_keywords(fits *fit);
 void invalidate_WCS_keywords(fits *fit);
+void flip_bottom_up_astrometry_data(fits *fit);
+void flip_left_right_astrometry_data(fits *fit);
+void rotate_astrometry_data(fits *fit, double angle);
 
 SirilWorldCS *get_image_solved_px_cat_center(image_solved *image);
 SirilWorldCS *get_image_solved_image_center(image_solved *image);

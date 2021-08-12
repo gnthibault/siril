@@ -1127,7 +1127,7 @@ int process_rotatepi(int nb){
 		return 1;
 	}
 
-	verbose_rotate_image(&gfit, 180.0, OPENCV_AREA, 1);
+	verbose_rotate_image(&gfit, 180.0, -1, 1);
 
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
