@@ -923,8 +923,7 @@ static int read_TYCHO2_catalog(GInputStream *stream, psf_star **cstars) {
 
 	GDataInputStream *data_input = g_data_input_stream_new(stream);
 	while (i < MAX_STARS &&
-			(line = g_data_input_stream_read_line_utf8(data_input, NULL,
-								   NULL, NULL))) {
+			(line = g_data_input_stream_read_line_utf8(data_input, NULL, NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, Bmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
@@ -962,8 +961,7 @@ static int read_GAIA_catalog(GInputStream *stream, psf_star **cstars) {
 
 	GDataInputStream *data_input = g_data_input_stream_new(stream);
 	while (i < MAX_STARS &&
-			(line = g_data_input_stream_read_line_utf8(data_input, NULL,
-								   NULL, NULL))) {
+			(line = g_data_input_stream_read_line_utf8(data_input, NULL, NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Gmag = 0.0, BPmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
@@ -1005,8 +1003,7 @@ static int read_PPMXL_catalog(GInputStream *stream, psf_star **cstars) {
 
 	GDataInputStream *data_input = g_data_input_stream_new(stream);
 	while (i < MAX_STARS &&
-			(line = g_data_input_stream_read_line_utf8(data_input, NULL,
-								   NULL, NULL))) {
+			(line = g_data_input_stream_read_line_utf8(data_input, NULL, NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Jmag = 0.0, Hmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
@@ -1048,8 +1045,7 @@ static int read_BRIGHT_STARS_catalog(GInputStream *stream, psf_star **cstars) {
 
 	GDataInputStream *data_input = g_data_input_stream_new(stream);
 	while (i < MAX_STARS &&
-			(line = g_data_input_stream_read_line_utf8(data_input, NULL,
-								   NULL, NULL))) {
+			(line = g_data_input_stream_read_line_utf8(data_input, NULL, NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, BV = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
@@ -1091,8 +1087,7 @@ static int read_APASS_catalog(GInputStream *stream, psf_star **cstars) {
 
 	GDataInputStream *data_input = g_data_input_stream_new(stream);
 	while (i < MAX_STARS &&
-			(line = g_data_input_stream_read_line_utf8(data_input, NULL,
-								   NULL, NULL))) {
+			(line = g_data_input_stream_read_line_utf8(data_input, NULL, NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, Bmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
@@ -1477,7 +1472,7 @@ void rotate_astrometry_data(fits *fit, double angle) {
 		cd2_2 = fit->wcsdata.cd[1][0];
 		crpix1 = fit->wcsdata.crpix[1];
 		crpix2 = fit->wcsdata.crpix[0];
-	}
+	} else return;
 
 	fit->wcsdata.cd[0][0] = cd1_1;
 	fit->wcsdata.cd[0][1] = cd1_2;
@@ -1612,7 +1607,6 @@ gpointer match_catalog(gpointer p) {
 				solution.size = image_size;
 				solution.crpix[0] = ((image_size.x - 1) / 2.0);
 				solution.crpix[1] = ((image_size.y - 1) / 2.0);
-
 
 				apply_match(solution.px_cat_center, solution.crpix, trans, &ra0, &dec0);
 
