@@ -266,7 +266,3 @@ static gboolean show_catalog(const gchar *catalog) {
 
 	return show;
 }
-
-void initialize_wcs_toggle_button() {
-	gtk_toggle_tool_button_set_active(GTK_TOGGLE_TOOL_BUTTON(lookup_widget("annotate_button")), FALSE);
-}

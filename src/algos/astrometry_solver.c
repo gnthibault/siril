@@ -1889,7 +1889,7 @@ void invalidate_WCS_keywords(fits *fit) {
 	}
 	free_wcs(&gfit);
 	if (!com.headless) {
-		initialize_wcs_toggle_button();
+		update_MenuItem();
 	}
 }
 
