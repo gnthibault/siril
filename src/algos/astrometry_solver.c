@@ -814,8 +814,8 @@ static void new_to_old_WCS(double cd1_1, double cd1_2, double cd2_1,
 	*cdelt1 = sqrt((cd1_1 * cd1_1) + (cd2_1 * cd2_1)) * sign;
 	*cdelt2 = sqrt((cd1_2 * cd1_2) + (cd2_2 * cd2_2));
 
-	*crota1 = +atan2(sign * cd1_2, cd2_2) * 180 / M_PI;
-	*crota2 = -atan2(cd2_1, sign * cd1_1) * 180 / M_PI;
+	*crota1 = +atan2(sign * cd1_2, cd2_2) * 180.0 / M_PI;
+	*crota2 = -atan2(cd2_1, sign * cd1_1) * 180.0 / M_PI;
 }
 
 static void print_platesolving_results(image_solved image, gboolean downsample) {
@@ -844,18 +844,18 @@ static void print_platesolving_results(image_solved image, gboolean downsample) 
 	siril_log_message(_("Resolution:%*.3lf arcsec/px\n"), 11, resolution);
 
 	/* rotation */
-	rotation = atan2(H.h00 + H.h01, H.h10 + H.h11) * 180 / M_PI + 135.0;
+	rotation = atan2(H.h00 + H.h01, H.h10 + H.h11) * 180.0 / M_PI + 135.0;
 	det = (H.h00 * H.h11 - H.h01 * H.h10); // determinant of rotation matrix (ad - bc)
 	/* If the determinant of the top-left 2x2 rotation matrix is > 0
 	 * the transformation is orientation-preserving. */
 
 	if (det < 0)
-		rotation = -90 - rotation;
-	if (rotation < -180)
-		rotation += 360;
-	if (rotation > 180)
-		rotation -= 360;
-	siril_log_message(_("Rotation:%+*.2lf deg %s\n"), 12, rotation, det < 0 ? _("(flipped)") : "");
+		rotation = -90.0 - rotation;
+	if (rotation < -180.0)
+		rotation += 360.0;
+	if (rotation > 180.0)
+		rotation -= 360.0;
+	siril_log_message(_("Rotation:%+*.2lf deg %s\n"), 12, rotation, det < 0.0 ? _("(flipped)") : "");
 
 	fov.x = get_fov(resolution, image.size.x);
 	fov.y = get_fov(resolution, image.size.y);
@@ -881,8 +881,7 @@ static int read_NOMAD_catalog(GInputStream *stream, psf_star **cstars) {
 
 	GDataInputStream *data_input = g_data_input_stream_new(stream);
 	while (i < MAX_STARS &&
-			(line = g_data_input_stream_read_line_utf8(data_input, NULL,
-								   NULL, NULL))) {
+			(line = g_data_input_stream_read_line_utf8(data_input, NULL, NULL, NULL))) {
 		double r = 0.0, x = 0.0, y = 0.0, Vmag = 0.0, Bmag = 0.0;
 
 		if (line[0] == COMMENT_CHAR) {
@@ -1655,11 +1654,11 @@ gpointer match_catalog(gpointer p) {
 
 					delta_ra = ra7 - ra0;
 					if (delta_ra > +M_PI)
-						delta_ra = 2 * M_PI - delta_ra;
+						delta_ra = 2.0 * M_PI - delta_ra;
 					if (delta_ra < -M_PI)
-						delta_ra = delta_ra - 2 * M_PI;
-					double cd1_1 = (delta_ra) * cos(dec0) * (180 / M_PI);
-					double cd2_1 = (dec7 - dec0) * (180 / M_PI);
+						delta_ra = delta_ra - 2.0 * M_PI;
+					double cd1_1 = (delta_ra) * cos(dec0) * (180.0 / M_PI);
+					double cd2_1 = (dec7 - dec0) * (180.0 / M_PI);
 
 					/* make 1 step in direction crpix2
 					* WARNING: we use -1 because of the Y axis reversing */
@@ -1671,11 +1670,11 @@ gpointer match_catalog(gpointer p) {
 
 					delta_ra = ra7 - ra0;
 					if (delta_ra > +M_PI)
-						delta_ra = 2 * M_PI - delta_ra;
+						delta_ra = 2.0 * M_PI - delta_ra;
 					if (delta_ra < -M_PI)
-						delta_ra = delta_ra - 2 * M_PI;
-					double cd1_2 = (delta_ra) * cos(dec0) * (180 / M_PI);
-					double cd2_2 = (dec7 - dec0) * (180 / M_PI);
+						delta_ra = delta_ra - 2.0 * M_PI;
+					double cd1_2 = (delta_ra) * cos(dec0) * (180.0 / M_PI);
+					double cd2_2 = (dec7 - dec0) * (180.0 / M_PI);
 
 					// saving state for undo before modifying fit structure
 					const char *undo_str = args->for_photometry_cc ? _("Photometric CC") : _("Plate Solve");
@@ -1691,8 +1690,8 @@ gpointer match_catalog(gpointer p) {
 
 					args->fit->wcsdata.crpix[0] = solution.crpix[0];
 					args->fit->wcsdata.crpix[1] = solution.crpix[1];
-					args->fit->wcsdata.crval[0] = ra0 * (180 / M_PI);
-					args->fit->wcsdata.crval[1] = dec0 * (180 / M_PI);
+					args->fit->wcsdata.crval[0] = ra0 * (180.0 / M_PI);
+					args->fit->wcsdata.crval[1] = dec0 * (180.0 / M_PI);
 					args->fit->wcsdata.cd[0][0] = cd1_1;
 					args->fit->wcsdata.cd[0][1] = cd1_2;
 					args->fit->wcsdata.cd[1][0] = cd2_1;
@@ -1723,8 +1722,8 @@ gpointer match_catalog(gpointer p) {
 					siril_debug_print("****Solution found: WCS data*************\n");
 					siril_debug_print("crpix1 = %*.12e\n", 20, solution.crpix[0]);
 					siril_debug_print("crpix2 = %*.12e\n", 20, solution.crpix[1]);
-					siril_debug_print("crval1 = %*.12e\n", 20, ra0 * (180 / M_PI));
-					siril_debug_print("crval2 = %*.12e\n", 20, dec0 * (180 / M_PI));
+					siril_debug_print("crval1 = %*.12e\n", 20, ra0 * (180.0 / M_PI));
+					siril_debug_print("crval2 = %*.12e\n", 20, dec0 * (180.0 / M_PI));
 					siril_debug_print("cdelt1 = %*.12e\n", 20, cdelt1);
 					siril_debug_print("cdelt2 = %*.12e\n", 20, cdelt2);
 					siril_debug_print("crota1 = %*.12e\n", 20, crota1);
