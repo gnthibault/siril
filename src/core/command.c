@@ -1490,6 +1490,7 @@ int process_histo(int nb){
 int process_tilt(int nb) {
 	if (word[1] && !g_ascii_strcasecmp(word[1], "clear")) {
 		clear_sensor_tilt();
+		siril_log_message(_("Clearing tilt information\n"));
 		redraw(com.cvport, REMAP_NONE);
 	} else {
 		set_cursor_waiting(TRUE);
