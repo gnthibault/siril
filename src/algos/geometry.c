@@ -271,8 +271,10 @@ int verbose_rotate_image(fits *image, double angle, int interpolation,
 	if (interpolation != -1) {
 		invalidate_WCS_keywords(image);
 	} else {
-		rotate_astrometry_data(image, angle);
-		load_WCS_from_memory(image);
+		if (image->wcslib) {
+			rotate_astrometry_data(image, angle);
+			load_WCS_from_memory(image);
+		}
 	}
 
 	return 0;
