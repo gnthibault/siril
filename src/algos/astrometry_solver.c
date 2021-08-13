@@ -553,10 +553,9 @@ static online_catalog get_online_catalog(double fov, double m) {
 	}
 }
 
-static gchar *download_catalog(gboolean use_cache, online_catalog onlineCatalog, SirilWorldCS *catalog_center, double fov, double m) {
+static GFile *download_catalog(gboolean use_cache, online_catalog onlineCatalog, SirilWorldCS *catalog_center, double fov, double m) {
 	gchar *buffer = NULL;
 	GError *error = NULL;
-	GFile *file;
 
 	/* ------------------- get Vizier catalog in catalog.dat -------------------------- */
 
@@ -566,59 +565,51 @@ static gchar *download_catalog(gboolean use_cache, online_catalog onlineCatalog,
 			siril_world_cs_get_alpha(catalog_center),
 			siril_world_cs_get_delta(catalog_center),
 			fov, m);
-	gchar *filename = g_build_filename(g_get_tmp_dir(), str, NULL);
+	GFile *file = g_file_new_build_filename(g_get_tmp_dir(), str, NULL);
 	g_free(str);
 
-	if (use_cache && g_file_test(filename, G_FILE_TEST_EXISTS)) {
-		file = g_file_new_for_path(filename);
-		siril_log_color_message(_("Using data in cache\n"), "salmon");
-		if (!g_file_load_contents(file, NULL, &buffer, NULL, NULL, &error)) {
-			siril_log_message(_("%s\n"), error->message);
-			g_clear_error(&error);
-		}
-	} else {
-		file = g_file_new_for_path(filename);
-		gchar *url = get_catalog_url(catalog_center, m, fov, onlineCatalog);
-		buffer = fetch_url(url);
-	}
-
-	GOutputStream *output_stream = (GOutputStream*) g_file_replace(file, NULL, FALSE,
-			G_FILE_CREATE_NONE, NULL, &error);
+	GOutputStream *output_stream = (GOutputStream*) g_file_create(file, G_FILE_CREATE_NONE, NULL, &error);
 
 	if (output_stream == NULL) {
 		if (error != NULL) {
-			g_warning("%s\n", error->message);
-			g_clear_error(&error);
-			fprintf(stderr, "astrometry_solver: Cannot open catalogue\n");
+			/* if file exist and user uses cache */
+			if (error->code == G_IO_ERROR_EXISTS && use_cache) {
+				siril_log_color_message(_("Using data in cache\n"), "salmon");
+				g_clear_error(&error);
+			} else {
+				g_warning("%s\n", error->message);
+				g_clear_error(&error);
+				fprintf(stderr, "astrometry_solver: Cannot open catalogue\n");
+				g_object_unref(file);
+				return NULL;
+			}
 		}
-		g_object_unref(file);
-		g_free(filename);
-		return NULL;
+	} else {
+			gchar *url = get_catalog_url(catalog_center, m, fov, onlineCatalog);
+			buffer = fetch_url(url);
+			g_free(url);
+
+			if (buffer) {
+				if (!g_output_stream_write_all(output_stream, buffer, strlen(buffer), NULL, NULL, &error)) {
+					g_warning("%s\n", error->message);
+					g_clear_error(&error);
+					g_free(buffer);
+					g_object_unref(output_stream);
+					g_object_unref(file);
+					return NULL;
+				}
+				g_object_unref(output_stream);
+				g_free(buffer);
+			}
 	}
 
-	if (buffer) {
-		if (!g_output_stream_write_all(output_stream, buffer, strlen(buffer), NULL, NULL, &error)) {
-			g_warning("%s\n", error->message);
-			g_clear_error(&error);
-			g_free(buffer);
-			g_object_unref(output_stream);
-			g_object_unref(file);
-			g_free(filename);
-			return NULL;
-		}
-		g_object_unref(output_stream);
-		g_free(buffer);
-	}
-
-	return filename;
+	return file;
 }
 
 
-static gchar *project_catalog(gchar *catalogue_name, SirilWorldCS *catalog_center) {
+static gchar *project_catalog(GFile *catalogue_name, SirilWorldCS *catalog_center) {
 	GError *error = NULL;
 	gchar *foutput = NULL;
-	GFile *file = g_file_new_for_path(catalogue_name);
-	const gchar *filename = g_file_peek_path(file);
 	/* -------------------------------------------------------------------------------- */
 
 	/* --------- Project coords of Vizier catalog and save it into catalog.proj ------- */
@@ -634,9 +625,8 @@ static gchar *project_catalog(gchar *catalogue_name, SirilWorldCS *catalog_cente
 				error->message);
 	}
 
-	convert_catalog_coords(filename, catalog_center, fproj);
+	convert_catalog_coords(catalogue_name, catalog_center, fproj);
 	foutput = g_file_get_path(fproj);
-	g_object_unref(file);
 	g_object_unref(fproj);
 
 	/* -------------------------------------------------------------------------------- */
@@ -1227,6 +1217,7 @@ static gboolean end_plate_solver(gpointer p) {
 		load_WCS_from_memory(args->fit);
 	}
 	update_MenuItem();
+	g_object_unref(args->catalog_name);
 	g_free(args->catalogStars);
 	g_free(args->message);
 	free(args);
@@ -1849,7 +1840,7 @@ int fill_plate_solver_structure(struct astrometry_data *args) {
 
 	/* Filling structure */
 	args->onlineCatalog = args->for_photometry_cc ? get_photometry_catalog() : get_online_catalog(usedfov * CROP_ALLOWANCE, m);
-	gchar *catalog_name = download_catalog(args->use_cache, args->onlineCatalog, catalog_center, usedfov * CROP_ALLOWANCE, m);
+	GFile *catalog_name = download_catalog(args->use_cache, args->onlineCatalog, catalog_center, usedfov * CROP_ALLOWANCE, m);
 	if (!catalog_name) {
 		siril_world_cs_unref(catalog_center);
 		siril_message_dialog(GTK_MESSAGE_ERROR, _("No catalog"), _("Cannot download the online star catalog."));

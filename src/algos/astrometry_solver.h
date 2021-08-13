@@ -28,7 +28,7 @@ typedef enum {
 struct astrometry_data {
 	online_catalog onlineCatalog;
 	SirilWorldCS *cat_center;
-	gchar *catalog_name;
+	GFile *catalog_name;
 	gchar *catalogStars;
 	gboolean for_photometry_cc;
 	gboolean downsample;
