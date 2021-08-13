@@ -176,8 +176,15 @@ static void init_num_procs() {
 #endif
 }
 
-static void siril_app_startup (GApplication *application) {
+static void siril_app_startup(GApplication *application) {
 	signals_init();
+
+	/*
+	 * Force C locale for numbers to avoid "," being used as decimal separator.
+	 * Called here and not in main() because setlocale(LC_ALL, "") is called as
+	 * part of g_application_run().
+	 */
+	setlocale(LC_NUMERIC, "C");
 
 	g_set_application_name(PACKAGE_NAME);
 	gtk_window_set_default_icon_name("siril");
@@ -185,7 +192,6 @@ static void siril_app_startup (GApplication *application) {
 
 	g_action_map_add_action_entries(G_ACTION_MAP(application), app_entries,
 			G_N_ELEMENTS(app_entries), application);
-
 }
 
 static void siril_app_activate(GApplication *application) {
@@ -465,8 +471,6 @@ int main(int argc, char *argv[]) {
 	bindtextdomain(PACKAGE, dir);
 	bind_textdomain_codeset(PACKAGE, "UTF-8");
 	textdomain(PACKAGE);
-
-	g_setenv("LC_NUMERIC", "C", TRUE); // avoid possible bugs using french separator ","
 
 	app = gtk_application_new("org.free_astro.siril", G_APPLICATION_HANDLES_OPEN | G_APPLICATION_NON_UNIQUE);
 
