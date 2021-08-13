@@ -585,22 +585,22 @@ static GFile *download_catalog(gboolean use_cache, online_catalog onlineCatalog,
 			}
 		}
 	} else {
-			gchar *url = get_catalog_url(catalog_center, m, fov, onlineCatalog);
-			buffer = fetch_url(url);
-			g_free(url);
+		gchar *url = get_catalog_url(catalog_center, m, fov, onlineCatalog);
+		buffer = fetch_url(url);
+		g_free(url);
 
-			if (buffer) {
-				if (!g_output_stream_write_all(output_stream, buffer, strlen(buffer), NULL, NULL, &error)) {
-					g_warning("%s\n", error->message);
-					g_clear_error(&error);
-					g_free(buffer);
-					g_object_unref(output_stream);
-					g_object_unref(file);
-					return NULL;
-				}
-				g_object_unref(output_stream);
+		if (buffer) {
+			if (!g_output_stream_write_all(output_stream, buffer, strlen(buffer), NULL, NULL, &error)) {
+				g_warning("%s\n", error->message);
+				g_clear_error(&error);
 				g_free(buffer);
+				g_object_unref(output_stream);
+				g_object_unref(file);
+				return NULL;
 			}
+			g_object_unref(output_stream);
+			g_free(buffer);
+		}
 	}
 
 	return file;
