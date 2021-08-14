@@ -1579,7 +1579,9 @@ gpointer match_catalog(gpointer p) {
 	args->ret = 1;
 	int attempt = 1;
 	while (args->ret && attempt < NB_OF_MATCHING_TRY) {
-		args->ret = new_star_match(com.stars, cstars, n, nobj, scale_min, scale_max, &H, args->for_photometry_cc, FULLAFFINE_TRANSFORMATION, &star_list_A, &star_list_B);
+		args->ret = new_star_match(com.stars, cstars, n, nobj, scale_min,
+				scale_max, &H, args->for_photometry_cc,
+				FULLAFFINE_TRANSFORMATION, &star_list_A, &star_list_B);
 		if (attempt == 1) {
 			scale_min = -1.0;
 			scale_max = -1.0;
@@ -1626,7 +1628,7 @@ gpointer match_catalog(gpointer p) {
 				siril_log_message(_("Current focal: %0.2fmm\n"), solution.focal);
 				
 				if (atPrepareHomography(num_matched, &star_list_A, num_matched, &star_list_B, &H, FALSE, FULLAFFINE_TRANSFORMATION)){
-					siril_log_message(_("Updating homography failed"));
+					siril_log_color_message(_("Updating homography failed.\n"), "red");
 					args->ret = 1;
 				}
 				trans = H_to_linear_TRANS(H);
@@ -1641,7 +1643,7 @@ gpointer match_catalog(gpointer p) {
 			solution.focal = RADCONV * solution.pixel_size / resolution;
 
 			solution.image_center = siril_world_cs_new_from_a_d(ra0, dec0);
-			siril_log_message(_("Converged to: alpha: %0.8f, delta: %0.8f\n"), ra0, dec0);
+			siril_debug_print(_("Converged to: alpha: %0.8f, delta: %0.8f\n"), ra0, dec0);
 
 			if (args->downsample) {
 				double inv = 1.0 / DOWNSAMPLE_FACTOR;
@@ -1937,8 +1939,7 @@ void set_focal_and_pixel_pitch() {
 // All formulas from AIPS memo #27 III.A.ii
 // https://library.nrao.edu/public/memos/aips/memos/AIPSM_027.pdf
 
-static void deproject_starlist(int num_stars, s_star *star_list, double ra0, double dec0, int doASEC)
-{
+static void deproject_starlist(int num_stars, s_star *star_list, double ra0, double dec0, int doASEC) {
 	double xi, eta, ra, dec, delta_ra;
 	ra0 *= DEGTORAD;
 	dec0 *= DEGTORAD;
@@ -1964,8 +1965,7 @@ static void deproject_starlist(int num_stars, s_star *star_list, double ra0, dou
 // All formulas from AIPS memo #27 III.A.i
 // https://library.nrao.edu/public/memos/aips/memos/AIPSM_027.pdf
 
-static void project_starlist(int num_stars, s_star *star_list, double ra0, double dec0, int doASEC)
-{
+static void project_starlist(int num_stars, s_star *star_list, double ra0, double dec0, int doASEC) {
 	double xi, eta, ra, dec, delta_ra, xx, yy;
 	// ra0 *= DEGTORAD;
 	dec0 *= DEGTORAD;
@@ -1984,16 +1984,13 @@ static void project_starlist(int num_stars, s_star *star_list, double ra0, doubl
 		delta_ra *= DEGTORAD;
 		dec *= DEGTORAD;
 
-
 		/*
 		 * let's transform from (delta_RA, delta_Dec) to (xi, eta),
 		 */
 		xx = cos(dec) * sin(delta_ra);
-		yy = sin(dec0) * sin(dec)
-				+ cos(dec0) * cos(dec) * cos(delta_ra);
+		yy = sin(dec0) * sin(dec) + cos(dec0) * cos(dec) * cos(delta_ra);
 		xi = (xx / yy);
-		xx = cos(dec0) * sin(dec)
-				- sin(dec0) * cos(dec) * cos(delta_ra);
+		xx = cos(dec0) * sin(dec) - sin(dec0) * cos(dec) * cos(delta_ra);
 		eta = (xx / yy);
 
 		if (doASEC > 0) {
