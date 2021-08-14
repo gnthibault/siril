@@ -1980,7 +1980,7 @@ void invalidate_WCS_keywords(fits *fit) {
 	if (fit->wcsdata.equinox > 0.0) {
 		memset(&fit->wcsdata, 0, sizeof(fit->wcsdata));
 	}
-	free_wcs(&gfit);
+	free_wcs(fit);
 	if (!com.headless) {
 		update_MenuItem();
 	}
