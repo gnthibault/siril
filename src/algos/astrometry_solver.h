@@ -26,6 +26,7 @@ typedef enum {
 } online_catalog;
 
 struct astrometry_data {
+	image_solved *solution;
 	online_catalog onlineCatalog;
 	SirilWorldCS *cat_center;
 	GFile *catalog_name;
