@@ -106,7 +106,6 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 static struct object platedObject[RESOLVER_NUMBER];
 static GtkListStore *list_IPS = NULL;
 static image_solved solution;
-static gboolean printcatcount = TRUE; 
 static void deproject_starlist(int num_stars, s_star *star_list, double ra0, double dec0, int doASEC);
 static void project_starlist(int num_stars, s_star *star_list, double ra0, double dec0, int doASEC);
 
@@ -533,7 +532,6 @@ static gchar *fetch_url(const gchar *url) {
 #endif
 
 static online_catalog get_online_catalog(double fov, double m) {
-	GtkComboBox *box;
 	GtkToggleButton *auto_button;
 	int ret;
 
@@ -550,7 +548,7 @@ static online_catalog get_online_catalog(double fov, double m) {
 		}
 		return ret;
 	} else {
-		box = GTK_COMBO_BOX(lookup_widget("ComboBoxIPSCatalog"));
+		GtkComboBox *box = GTK_COMBO_BOX(lookup_widget("ComboBoxIPSCatalog"));
 		ret = gtk_combo_box_get_active(box);
 		return (ret < 0 ? NOMAD : ret);
 	}
@@ -763,13 +761,12 @@ static void update_pixel_size() {
 
 static void update_focal() {
 	GtkEntry *entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_focal"));
-	gchar *cfocal;
 	double focal;
 
 	focal = gfit.focal_length;
 
 	if (focal > 0.0) {
-		cfocal = g_strdup_printf("%.1lf", focal);
+		gchar *cfocal = g_strdup_printf("%.1lf", focal);
 		gtk_entry_set_text(entry, cfocal);
 		g_free(cfocal);
 	}
@@ -905,7 +902,7 @@ static int read_NOMAD_catalog(GInputStream *stream, psf_star **cstars) {
 	}
 	g_object_unref(data_input);
 	sort_stars(cstars, i);
-	if (printcatcount) siril_log_message(_("Catalog NOMAD size: %d objects\n"), i);
+	siril_log_message(_("Catalog NOMAD size: %d objects\n"), i);
 	return i;
 }
 
@@ -943,7 +940,7 @@ static int read_TYCHO2_catalog(GInputStream *stream, psf_star **cstars) {
 	}
 	g_object_unref(data_input);
 	sort_stars(cstars, i);
-	if (printcatcount) siril_log_message(_("Catalog TYCHO-2 size: %d objects\n"), i);
+	siril_log_message(_("Catalog TYCHO-2 size: %d objects\n"), i);
 	return i;
 }
 
@@ -985,7 +982,7 @@ static int read_GAIA_catalog(GInputStream *stream, psf_star **cstars) {
 	}
 	g_object_unref(data_input);
 	sort_stars(cstars, i);
-	if (printcatcount) siril_log_message(_("Catalog Gaia DR2 size: %d objects\n"), i);
+	siril_log_message(_("Catalog Gaia DR2 size: %d objects\n"), i);
 	return i;
 }
 
@@ -1027,7 +1024,7 @@ static int read_PPMXL_catalog(GInputStream *stream, psf_star **cstars) {
 	}
 	g_object_unref(data_input);
 	sort_stars(cstars, i);
-	if (printcatcount) siril_log_message(_("Catalog PPMXL size: %d objects\n"), i);
+	siril_log_message(_("Catalog PPMXL size: %d objects\n"), i);
 	return i;
 }
 
@@ -1069,7 +1066,7 @@ static int read_BRIGHT_STARS_catalog(GInputStream *stream, psf_star **cstars) {
 	}
 	g_object_unref(data_input);
 	sort_stars(cstars, i);
-	if (printcatcount) siril_log_message(_("Catalog Bright stars size: %d objects\n"), i);
+	siril_log_message(_("Catalog Bright stars size: %d objects\n"), i);
 	return i;
 }
 
@@ -1111,7 +1108,7 @@ static int read_APASS_catalog(GInputStream *stream, psf_star **cstars) {
 	}
 	g_object_unref(data_input);
 	sort_stars(cstars, i);
-	if (printcatcount) siril_log_message(_("Catalog APASS size: %d objects\n"), i);
+	siril_log_message(_("Catalog APASS size: %d objects\n"), i);
 	return i;
 }
 
@@ -1314,13 +1311,14 @@ void on_GtkTreeViewIPS_cursor_changed(GtkTreeView *tree_view,
 	GtkTreeSelection *selection = gtk_tree_view_get_selection (tree_view);
 	GtkTreeIter iter;
 	GValue value = G_VALUE_INIT;
-	int selected_item;
 
 	if (gtk_tree_model_get_iter_first(treeModel, &iter) == FALSE)
 		return;	//The tree is empty
 	if (gtk_tree_selection_get_selected(selection, &treeModel, &iter)) { //get selected item
 		gtk_tree_model_get_value(treeModel, &iter, COLUMN_RESOLVER, &value);
 		const gchar *res = g_value_get_string(&value);
+		int selected_item;
+
 		if (!g_strcmp0(res, "NED")) {
 			selected_item = 0;
 		} else if (!g_strcmp0(res, "Simbad")) {
@@ -1461,6 +1459,8 @@ void rotate_astrometry_data(fits *fit, double angle) {
 		cd1_2 = -fit->wcsdata.cd[0][1];
 		cd2_1 = -fit->wcsdata.cd[1][0];
 		cd2_2 = -fit->wcsdata.cd[1][1];
+		crpix1 = fit->wcsdata.crpix[0];
+		crpix2 = fit->wcsdata.crpix[1];
 	} else if (angle == 270.0) {
 		cd1_1 = -fit->wcsdata.cd[0][1];
 		cd1_2 = fit->wcsdata.cd[0][0];
@@ -1570,7 +1570,7 @@ gpointer match_catalog(gpointer p) {
 		g_object_unref(catalog);
 		return GINT_TO_POINTER(1);
 	}
-	if (trial > 0) printcatcount = FALSE; 
+
 	n_cat = read_catalog(input_stream, cstars, args->onlineCatalog);
 
 	/* make sure that arrays are not too small
@@ -1803,7 +1803,7 @@ gchar *search_in_catalogs(const gchar *object) {
 }
 
 int fill_plate_solver_structure(struct astrometry_data *args) {
-	double fov, px_size, scale, m, usedfov, maindim, scalefactor;
+	double fov, px_size, scale, m, usedfov, scalefactor;
 	SirilWorldCS *catalog_center;
 	rectangle croparea = { 0 };
 
@@ -1827,8 +1827,7 @@ int fill_plate_solver_structure(struct astrometry_data *args) {
 			croparea.w = args->fit->rx;
 			croparea.h = args->fit->ry;
 		}
-		maindim = max(croparea.w, croparea.h);
-		fov = get_fov(scale, maindim);
+		fov = get_fov(scale, max(croparea.w, croparea.h));
 
 		// then apply or not autocropping to 5deg (300 arcmin)
 		usedfov = (args->autocrop) ?  min(fov, 300.) : fov;
