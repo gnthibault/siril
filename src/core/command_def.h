@@ -8,7 +8,7 @@
 
 #define STR_BG N_("Returns the background level of the image loaded in memory")
 #define STR_BGNOISE N_("Returns the background noise level")
-#define STR_BOXSELECT N_("Make a selection with the arguments <b>x</b>, <b>y</b>, <b>width</b> and <b>height</b>, with <b>x</b> and <b>y</b> being the coordinates of the top left corner, and <b>width</b> and <b>height</b>, the size of the selection")
+#define STR_BOXSELECT N_("Make a selection with the arguments <b>x</b>, <b>y</b>, <b>width</b> and <b>height</b>, with <b>x</b> and <b>y</b> being the coordinates of the top left corner, and <b>width</b> and <b>height</b>, the size of the selection. If no argument is passed and a selection is active, it writes <b>x</b>, <b>y</b>, <b>width</b> and <b>height</b> in the console")
 
 #define STR_CD N_("Set the new current working directory. The argument \"directory\" can contain the ~ token, expanded as the home directory, directories with spaces in the name can be protected using single or double quotes")
 #define STR_CDG N_("Returns the coordinates of the center of gravity of the image")

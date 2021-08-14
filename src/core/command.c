@@ -4118,14 +4118,16 @@ int process_boxselect(int nb){
 			siril_log_message(_("Please specify x, y, w and h, aborting\n"));
 			return 1;
 		}
+		memcpy(&com.selection, &area, sizeof(rectangle));
+		redraw(com.cvport, REMAP_ALL);
+		redraw_previews();
 	} else {
-		siril_log_message(_("A selection is already made, aborting\n"));
-		return 1;
+		if (nb > 1) {
+			siril_log_message(_("A selection is already made, aborting\n"));
+			return 1;
+		} else {
+			siril_log_message(_("Current selection [x, y, w, h]: %d %d %d %d\n"), com.selection.x, com.selection.y, com.selection.w, com.selection.h);
+		}
 	}
-
-	memcpy(&com.selection, &area, sizeof(rectangle));
-	redraw(com.cvport, REMAP_ALL);
-	redraw_previews();
-	
 	return 0;
 }
