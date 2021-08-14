@@ -46,6 +46,7 @@
 #include "gui/dialogs.h"
 #include "gui/message_dialog.h"
 #include "gui/image_display.h"
+#include "gui/image_interactions.h"
 #include "gui/PSF_list.h"
 #include "algos/PSF.h"
 #include "algos/star_finder.h"
@@ -567,6 +568,7 @@ static GFile *download_catalog(gboolean use_cache, online_catalog onlineCatalog,
 			siril_world_cs_get_alpha(catalog_center),
 			siril_world_cs_get_delta(catalog_center),
 			fov, m);
+	siril_debug_print("Catalogue file: %s\n", str);
 	GFile *file = g_file_new_build_filename(g_get_tmp_dir(), str, NULL);
 	g_free(str);
 
@@ -1202,6 +1204,7 @@ static gboolean end_plate_solver(gpointer p) {
 		update_coordinates(solution.image_center);
 		siril_world_cs_unref(solution.px_cat_center);
 		siril_world_cs_unref(solution.image_center);
+		delete_selected_area();
 		/* ****** */
 
 		control_window_switch_to_tab(OUTPUT_LOGS);
