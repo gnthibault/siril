@@ -1614,18 +1614,21 @@ gpointer match_catalog(gpointer p) {
 				// }
 				double rainit = siril_world_cs_get_alpha(args->cat_center);
 				double decinit = siril_world_cs_get_delta(args->cat_center);
+
 				deproject_starlist(num_matched, &star_list_B, rainit, decinit, 1);
-				siril_log_message(_("Deprojecting from: alpha: %s, delta: %s\n"), siril_world_cs_alpha_format(args->cat_center, "%02d %02d %.3lf"), siril_world_cs_delta_format(args->cat_center, "%c%02d %02d %.3lf"));
+				siril_debug_print(_("Deprojecting from: alpha: %s, delta: %s\n"), siril_world_cs_alpha_format(args->cat_center, "%02d %02d %.3lf"), siril_world_cs_delta_format(args->cat_center, "%c%02d %02d %.3lf"));
 				args->cat_center = siril_world_cs_new_from_a_d(ra0, dec0);
 				solution.px_cat_center = siril_world_cs_new_from_a_d(ra0, dec0);
+
 				project_starlist(num_matched, &star_list_B, ra0, dec0, 1);
-				siril_log_message(_("Reprojecting to: alpha: %s, delta: %s\n"), siril_world_cs_alpha_format(args->cat_center, "%02d %02d %.3lf"), siril_world_cs_delta_format(args->cat_center, "%c%02d %02d %.3lf"));
+				siril_debug_print(_("Reprojecting to: alpha: %s, delta: %s\n"), siril_world_cs_alpha_format(args->cat_center, "%02d %02d %.3lf"), siril_world_cs_delta_format(args->cat_center, "%c%02d %02d %.3lf"));
 				solution.pixel_size = args->pixel_size;
+
 				double scaleX = sqrt(solution.H.h00 * solution.H.h00 + solution.H.h01 * solution.H.h01);
 				double scaleY = sqrt(solution.H.h10 * solution.H.h10 + solution.H.h11 * solution.H.h11);
 				double resolution = (scaleX + scaleY) * 0.5; // we assume square pixels
 				solution.focal = RADCONV * solution.pixel_size / resolution;
-				siril_log_message(_("Current focal: %0.2fmm\n"), solution.focal);
+				siril_debug_print(_("Current focal: %0.2fmm\n"), solution.focal);
 				
 				if (atPrepareHomography(num_matched, &star_list_A, num_matched, &star_list_B, &H, FALSE, FULLAFFINE_TRANSFORMATION)){
 					siril_log_color_message(_("Updating homography failed.\n"), "red");
@@ -1637,6 +1640,7 @@ gpointer match_catalog(gpointer p) {
 				trial += 1;
 			} 
 			solution.pixel_size = args->pixel_size;
+
 			double scaleX = sqrt(solution.H.h00 * solution.H.h00 + solution.H.h01 * solution.H.h01);
 			double scaleY = sqrt(solution.H.h10 * solution.H.h10 + solution.H.h11 * solution.H.h11);
 			double resolution = (scaleX + scaleY) * 0.5; // we assume square pixels
@@ -1820,7 +1824,6 @@ int fill_plate_solver_structure(struct astrometry_data *args) {
 			croparea.w = args->fit->rx;
 			croparea.h = args->fit->ry;
 		}
-		siril_log_message(_("Solving on selected area: %d %d %d %d \n"), croparea.x, croparea.y, croparea.w, croparea.h);
 		maindim = max(croparea.w, croparea.h);
 		fov = get_fov(scale, maindim);
 
@@ -1834,8 +1837,9 @@ int fill_plate_solver_structure(struct astrometry_data *args) {
 			croparea.h = (int) (args->cropfactor * croparea.h);
            // TODO calc center offset if need
 			siril_log_message(_("Auto-cropped factor: %.2f\n"), args->cropfactor);
-			siril_log_message(_("Solving on selected area: %d %d %d %d \n"), croparea.x, croparea.y, croparea.w, croparea.h);
 		}
+		siril_log_message(_("Solving on selected area: %d %d %d %d \n"), croparea.x, croparea.y, croparea.w, croparea.h);
+
 		if (com.selection.w != 0 && com.selection.h != 0) {
 			args->xoffset = (double) croparea.x + 0.5 * (double) croparea.w - 0.5 * (double) args->fit->rx;
 			args->yoffset = (double) croparea.y + 0.5 * (double) croparea.h - 0.5 * (double) args->fit->ry;
