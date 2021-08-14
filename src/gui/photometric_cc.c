@@ -38,7 +38,7 @@
 #include "algos/statistics.h"
 #include "algos/photometry.h"
 #include "algos/PSF.h"
-#include "algos/plateSolver.h"
+#include "../algos/astrometry_solver.h"
 #include "algos/star_finder.h"
 #include "gui/image_display.h"
 #include "gui/message_dialog.h"
@@ -54,7 +54,7 @@ enum {
 };
 
 static void start_photometric_cc() {
-	struct plate_solver_data *args = malloc(sizeof(struct plate_solver_data));
+	struct astrometry_data *args = malloc(sizeof(struct astrometry_data));
 
 	args->for_photometry_cc = TRUE;
 	if (!fill_plate_solver_structure(args)) {

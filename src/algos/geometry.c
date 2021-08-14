@@ -24,8 +24,8 @@
 #include "core/siril.h"
 #include "core/proto.h"
 #include "core/OS_utils.h"
-#include "algos/plateSolver.h"
 #include "algos/statistics.h"
+#include "algos/siril_wcs.h"
 #include "core/undo.h"
 #include "core/processing.h"
 #include "gui/utils.h"
@@ -41,6 +41,7 @@
 #include "io/image_format_fits.h"
 
 #include "geometry.h"
+#include "astrometry_solver.h"
 
 /* this method rotates the image 180 degrees, useful after german mount flip.
  * fit->rx, fit->ry, fit->naxes[2] and fit->pdata[*] are required to be assigned correctly */
@@ -142,29 +143,24 @@ static void fits_rotate_pi(fits *fit) {
 	} else if (fit->type == DATA_FLOAT) {
 		fits_rotate_pi_float(fit);
 	}
-	invalidate_WCS_keywords(fit);
 }
 
 void mirrorx_gui(fits *fit) {
-	if (confirm_delete_wcs_keywords(fit)) {
 		set_cursor_waiting(TRUE);
 		undo_save_state(fit, _("Mirror X"));
 		mirrorx(fit, TRUE);
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 		set_cursor_waiting(FALSE);
-	}
 }
 
 void mirrory_gui(fits *fit) {
-	if (confirm_delete_wcs_keywords(fit)) {
 		set_cursor_waiting(TRUE);
 		undo_save_state(fit, _("Mirror Y"));
 		mirrory(fit, TRUE);
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 		set_cursor_waiting(FALSE);
-	}
 }
 
 static void rotate_gui(fits *fit) {
@@ -272,7 +268,14 @@ int verbose_rotate_image(fits *image, double angle, int interpolation,
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
 
-	invalidate_WCS_keywords(image);
+	if (interpolation != -1) {
+		invalidate_WCS_keywords(image);
+	} else {
+		if (image->wcslib) {
+			rotate_astrometry_data(image, angle);
+			load_WCS_from_memory(image);
+		}
+	}
 
 	return 0;
 }
@@ -309,7 +312,6 @@ static void mirrorx_ushort(fits *fit, gboolean verbose) {
 		gettimeofday(&t_end, NULL);
 		show_time(t_start, t_end);
 	}
-	invalidate_WCS_keywords(fit);
 }
 
 static void mirrorx_float(fits *fit, gboolean verbose) {
@@ -344,7 +346,6 @@ static void mirrorx_float(fits *fit, gboolean verbose) {
 		gettimeofday(&t_end, NULL);
 		show_time(t_start, t_end);
 	}
-	invalidate_WCS_keywords(fit);
 }
 
 void mirrorx(fits *fit, gboolean verbose) {
@@ -352,6 +353,10 @@ void mirrorx(fits *fit, gboolean verbose) {
 		mirrorx_ushort(fit, verbose);
 	} else if (fit->type == DATA_FLOAT) {
 		mirrorx_float(fit, verbose);
+	}
+	if (fit->wcslib) {
+		flip_bottom_up_astrometry_data(fit);
+		load_WCS_from_memory(fit);
 	}
 }
 
@@ -370,7 +375,11 @@ void mirrory(fits *fit, gboolean verbose) {
 		gettimeofday(&t_end, NULL);
 		show_time(t_start, t_end);
 	}
-	invalidate_WCS_keywords(fit);
+
+	if (fit->wcslib) {
+		flip_left_right_astrometry_data(fit);
+		load_WCS_from_memory(fit);
+	}
 }
 
 /* inplace cropping of the image in fit
@@ -469,25 +478,21 @@ int crop(fits *fit, rectangle *bounds) {
  *  ROTATION
  */
 void siril_rotate90() {
-	if (confirm_delete_wcs_keywords(&gfit)) {
 		set_cursor_waiting(TRUE);
 		undo_save_state(&gfit, _("Rotation (90.0deg)"));
 		verbose_rotate_image(&gfit, 90.0, -1, 0);	// fast rotation, no interpolation, no crop
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 		set_cursor_waiting(FALSE);
-	}
 }
 
 void siril_rotate270() {
-	if (confirm_delete_wcs_keywords(&gfit)) {
 		set_cursor_waiting(TRUE);
 		undo_save_state(&gfit, _("Rotation (-90.0deg)"));
 		verbose_rotate_image(&gfit, 270.0, -1, 0);// fast rotation, no interpolation, no crop
 		redraw(com.cvport, REMAP_ALL);
 		redraw_previews();
 		set_cursor_waiting(FALSE);
-	}
 }
 
 void on_button_rotation_close_clicked(GtkButton *button, gpointer user_data) {

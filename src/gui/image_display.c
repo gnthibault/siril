@@ -670,8 +670,7 @@ static void draw_stars(const draw_data_t* dd) {
 				cairo_arc(cr, the_psf->xpos, the_psf->ypos, com.pref.phot_set.outer, 0.,
 						  2. * M_PI);
 				cairo_stroke(cr);
-				cairo_select_font_face(cr, "Purisa", CAIRO_FONT_SLANT_NORMAL,
-									   CAIRO_FONT_WEIGHT_BOLD);
+				cairo_select_font_face(cr, "Purisa", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 				cairo_set_font_size(cr, 40);
 				cairo_move_to(cr, the_psf->xpos + com.pref.phot_set.outer + 5, the_psf->ypos);
 				if (i == 0) {
@@ -813,6 +812,7 @@ static void draw_annotates(const draw_data_t* dd) {
 				cairo_stroke(cr);
 			}
 			if (code) {
+				cairo_select_font_face(cr, "Purisa", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 				cairo_set_font_size(cr, size / dd->zoom);
 				cairo_move_to(cr, x + offset.x, y + offset.y);
 				cairo_show_text(cr, code);
@@ -840,8 +840,7 @@ static void draw_analysis(const draw_data_t* dd) {
 		cairo_stroke(cr);
 
 		/* draw text */
-		cairo_select_font_face(cr, "Purisa", CAIRO_FONT_SLANT_NORMAL,
-							   CAIRO_FONT_WEIGHT_BOLD);
+		cairo_select_font_face(cr, "Purisa", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_BOLD);
 		int size = 20.0 / dd->zoom;
 		cairo_set_font_size(cr, size);
 

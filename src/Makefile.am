@@ -27,6 +27,8 @@ siril_common_SOURCES = \
 	core/proto.h \
 	algos/annotate.c \
 	algos/annotate.h \
+	algos/astrometry_solver.c \
+	algos/astrometry_solver.h \
 	algos/background_extraction.c \
 	algos/background_extraction.h \
 	algos/ccd-inspector.c \
@@ -51,8 +53,6 @@ siril_common_SOURCES = \
 	algos/pave.c \
 	algos/photometry.c \
 	algos/photometry.h \
-	algos/plateSolver.c \
-	algos/plateSolver.h \
 	algos/PSF.c \
 	algos/PSF.h \
 	algos/quality.c \

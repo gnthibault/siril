@@ -10,6 +10,7 @@ int	process_asinh(int nb);
 
 int	process_bg(int nb);
 int	process_bgnoise(int nb);
+int	process_boxselect(int nb);
 
 int	process_cd(int nb);
 int	process_cdg(int nb);

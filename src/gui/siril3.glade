@@ -7092,7 +7092,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                 <property name="margin-bottom">5</property>
                 <property name="expanded">True</property>
                 <child>
-                  <!-- n-columns=5 n-rows=10 -->
+                  <!-- n-columns=5 n-rows=12 -->
                   <object class="GtkGrid" id="GtkGridIPS">
                     <property name="visible">True</property>
                     <property name="can-focus">False</property>
@@ -7290,7 +7290,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                       </object>
                       <packing>
                         <property name="left-attach">1</property>
-                        <property name="top-attach">5</property>
+                        <property name="top-attach">6</property>
                       </packing>
                     </child>
                     <child>
@@ -7307,7 +7307,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                       </object>
                       <packing>
                         <property name="left-attach">1</property>
-                        <property name="top-attach">6</property>
+                        <property name="top-attach">7</property>
                       </packing>
                     </child>
                     <child>
@@ -7318,7 +7318,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
-                        <property name="top-attach">5</property>
+                        <property name="top-attach">6</property>
                       </packing>
                     </child>
                     <child>
@@ -7329,7 +7329,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
-                        <property name="top-attach">6</property>
+                        <property name="top-attach">7</property>
                       </packing>
                     </child>
                     <child>
@@ -7342,7 +7342,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                       </object>
                       <packing>
                         <property name="left-attach">2</property>
-                        <property name="top-attach">5</property>
+                        <property name="top-attach">6</property>
                         <property name="height">2</property>
                       </packing>
                     </child>
@@ -7361,7 +7361,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                       </object>
                       <packing>
                         <property name="left-attach">3</property>
-                        <property name="top-attach">5</property>
+                        <property name="top-attach">6</property>
                         <property name="height">2</property>
                       </packing>
                     </child>
@@ -7378,7 +7378,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
-                        <property name="top-attach">7</property>
+                        <property name="top-attach">8</property>
                         <property name="width">4</property>
                       </packing>
                     </child>
@@ -7391,7 +7391,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
-                        <property name="top-attach">4</property>
+                        <property name="top-attach">5</property>
                         <property name="width">5</property>
                       </packing>
                     </child>
@@ -7454,7 +7454,7 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
-                        <property name="top-attach">8</property>
+                        <property name="top-attach">9</property>
                         <property name="width">5</property>
                       </packing>
                     </child>
@@ -7470,7 +7470,40 @@ If not set manually, the first image of the sequence is taken as reference.</pro
                       </object>
                       <packing>
                         <property name="left-attach">0</property>
-                        <property name="top-attach">9</property>
+                        <property name="top-attach">10</property>
+                        <property name="width">5</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="autocrop_ips_button">
+                        <property name="label" translatable="yes">Auto-crop (for wide field)</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="halign">start</property>
+                        <property name="active">True</property>
+                        <property name="draw-indicator">True</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">11</property>
+                        <property name="width">5</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkCheckButton" id="use_cache_ips">
+                        <property name="label" translatable="yes">Using cache</property>
+                        <property name="visible">True</property>
+                        <property name="can-focus">True</property>
+                        <property name="receives-default">False</property>
+                        <property name="tooltip-text" translatable="yes">Using catalogue in cache if available</property>
+                        <property name="halign">start</property>
+                        <property name="active">True</property>
+                        <property name="draw-indicator">True</property>
+                      </object>
+                      <packing>
+                        <property name="left-attach">0</property>
+                        <property name="top-attach">4</property>
                         <property name="width">5</property>
                       </packing>
                     </child>

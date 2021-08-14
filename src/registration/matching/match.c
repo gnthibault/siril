@@ -123,7 +123,7 @@ static int prepare_to_recalc(int num_matched_A,
 
 int new_star_match(psf_star **s1, psf_star **s2, int n, int nobj_override,
 		double s_min, double s_max,
-		Homography *H, gboolean print_output, transformation_type type) {
+		Homography *H, gboolean print_output, transformation_type type, s_star *out_list_A, s_star *out_list_B) {
 	int ret;
 	int numA, numB;
 	int num_matched_A, num_matched_B;
@@ -435,12 +435,15 @@ int new_star_match(psf_star **s1, psf_star **s2, int n, int nobj_override,
 
 	print_H(Hom);
 	*H = *Hom;
+	*out_list_A = *matched_list_A;
+	*out_list_B = *matched_list_B;
+
 
 	/* clean up memory */
 	atTransDel(trans);
 	atHDel(Hom);
-	free_stars(matched_list_A);
-	free_stars(matched_list_B);
+	// free_stars(matched_list_A);
+	// free_stars(matched_list_B);
 	free_stars(star_list_A);
 	free_stars(star_list_B);
 	free_stars(star_list_A_copy);

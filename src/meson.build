@@ -18,6 +18,7 @@ configure_file(output : 'config.h',
 
 src_files = [ 
   'algos/annotate.c',
+  'algos/astrometry_solver.c',
   'algos/background_extraction.c',
   'algos/ccd-inspector.c',
   'algos/colors.c',
@@ -31,7 +32,6 @@ src_files = [
   'algos/noise.c',
   'algos/pave.c',
   'algos/photometry.c',
-  'algos/plateSolver.c',
   'algos/PSF.c',
   'algos/quality.c',
   'algos/quality_float.c',

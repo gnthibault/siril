@@ -23,9 +23,9 @@
 #define SRC_REGISTRATION_MATCHING_APPLY_MATCH_H_
 
 #include "misc.h"
-#include "algos/plateSolver.h"
+#include "core/siril_world_cs.h"
 
 
-int apply_match(image_solved *solved, TRANS trans);
+int apply_match(SirilWorldCS *px_cat_center, double *crpix, TRANS trans, double *alpha, double *delta);
 
 #endif /* SRC_REGISTRATION_MATCHING_APPLY_MATCH_H_ */

@@ -29,7 +29,6 @@
 #include "algos/noise.h"
 #include "algos/geometry.h"
 #include "algos/siril_wcs.h"
-#include "algos/plateSolver.h"
 #include "compositing/compositing.h"
 #include "gui/about_dialog.h"
 #include "gui/utils.h"
@@ -48,6 +47,7 @@
 #include "gui/photometric_cc.h"
 
 #include "siril_actions.h"
+#include "../algos/astrometry_solver.h"
 
 void open_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	header_open_button_clicked();

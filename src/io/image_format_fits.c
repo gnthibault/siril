@@ -938,6 +938,8 @@ static void save_wcs_keywords(fits *fit) {
 		status = 0;
 		fits_update_key(fit->fptr, TSTRING, "CTYPE2", "DEC--TAN", "Coordinate type for the second axis", &status);
 		status = 0;
+		fits_update_key(fit->fptr, TSTRING, "CUNIT1", "deg","Unit of coordinates", &status);
+		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "EQUINOX", &(fit->wcsdata.equinox),	"Equatorial equinox", &status);
 	}
 	status = 0;
@@ -950,15 +952,15 @@ static void save_wcs_keywords(fits *fit) {
 
 	if (fit->wcsdata.objctra[0] != '\0') {
 		status = 0;
-		fits_update_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcsdata.objctra),	"Image center R.A. (hms)", &status);
+		fits_update_key(fit->fptr, TSTRING, "OBJCTRA", &(fit->wcsdata.objctra),	"Image center Right Ascension (hms)", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TSTRING, "OBJCTDEC", &(fit->wcsdata.objctdec), "Image center declination (dms)", &status);
+		fits_update_key(fit->fptr, TSTRING, "OBJCTDEC", &(fit->wcsdata.objctdec), "Image center Declination (dms)", &status);
 	}
 	if (fit->wcsdata.ra > 0) {
 		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "RA", &(fit->wcsdata.ra),	"Image center Right Ascension in degrees", &status);
+		fits_update_key(fit->fptr, TDOUBLE, "RA", &(fit->wcsdata.ra), "Image center Right Ascension (deg)", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "DEC", &(fit->wcsdata.dec), "Image center Declination in degrees", &status);
+		fits_update_key(fit->fptr, TDOUBLE, "DEC", &(fit->wcsdata.dec), "Image center Declination (deg)", &status);
 	}
 	if (fit->wcsdata.crpix[0] != '\0') {
 		status = 0;
@@ -968,9 +970,21 @@ static void save_wcs_keywords(fits *fit) {
 	}
 	if (fit->wcsdata.crval[0] != '\0') {
 		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CRVAL1", &(fit->wcsdata.crval[0]), "Axis1 reference value", &status);
+		fits_update_key(fit->fptr, TDOUBLE, "CRVAL1", &(fit->wcsdata.crval[0]), "Axis1 reference value (deg)", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcsdata.crval[1]), "Axis2 reference value", &status);
+		fits_update_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcsdata.crval[1]), "Axis2 reference value (deg)", &status);
+	}
+	if (fit->wcsdata.cdelt[0] != '\0') {
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CDELT1", &(fit->wcsdata.cdelt[0]), "X pixel size (deg)", &status);
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CDELT2", &(fit->wcsdata.cdelt[1]), "Y pixel size (deg)", &status);
+	}
+	if (fit->wcsdata.crota[0] != '\0') {
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CROTA1", &(fit->wcsdata.crota[0]), "Image twist of X axis (deg)", &status);
+		status = 0;
+		fits_update_key(fit->fptr, TDOUBLE, "CROTA2", &(fit->wcsdata.crota[1]), "Image twist of Y axis (deg)", &status);
 	}
 	if ((fit->wcsdata.cd[0][0] != 0.0) && (fit->wcsdata.cd[0][1] != 0.0) && (fit->wcsdata.cd[1][0] != 0.0) && (fit->wcsdata.cd[1][1] != 0.0)) {
 		status = 0;
@@ -982,9 +996,9 @@ static void save_wcs_keywords(fits *fit) {
 		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "CD2_2", &(fit->wcsdata.cd[1][1]), "Scale matrix (2, 2)", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TINT, "IMAGEW", &(fit->rx), "Image width, in pixels.", &status);
+		fits_update_key(fit->fptr, TINT, "IMAGEW", &(fit->rx), "Image width, in pixels", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TINT, "IMAGEH", &(fit->ry), "Image height, in pixels.", &status);
+		fits_update_key(fit->fptr, TINT, "IMAGEH", &(fit->ry), "Image height, in pixels", &status);
 	}
 }
 
