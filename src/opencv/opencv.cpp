@@ -367,6 +367,7 @@ unsigned char *cvCalculH(s_star *star_array_img,
 	switch (type) {
 	case AFFINE_TRANSFORMATION:
 	case HOMOGRAPHY_TRANSFORMATION:
+	case FULLAFFINE_TRANSFORMATION:	
 		for (int i = 0; i < n; i++) {
 			ref.push_back(Point2f(star_array_ref[i].x, star_array_ref[i].y));
 			img.push_back(Point2f(star_array_img[i].x, star_array_img[i].y));
@@ -400,6 +401,12 @@ unsigned char *cvCalculH(s_star *star_array_img,
 	case HOMOGRAPHY_TRANSFORMATION:
 		H = findHomography(img, ref, CV_RANSAC, defaultRANSACReprojThreshold, mask);
 		if (countNonZero(H) < 1) return NULL;
+		break;
+	case FULLAFFINE_TRANSFORMATION:
+		a = estimateAffine2D(img, ref, mask, CV_RANSAC, defaultRANSACReprojThreshold);
+		if (countNonZero(a) < 1) return NULL; //must count before filling H, otherwise zero elements cannot be caught
+		H = Mat::eye(3, 3, CV_64FC1);
+		a.copyTo(H(cv::Rect_<int>(0,0,3,2))); //slicing is (x, y, w, h)
 		break;
 	default:
 		return NULL;
