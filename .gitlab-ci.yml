@@ -53,7 +53,7 @@ build-image:
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-debian-latest --cache=true --cache-ttl=120h
     
 # Image for GNU/Linux build
-build-image-old-stable:
+build-image-oldstable:
   except:
     - schedules
   stage: prepare
@@ -66,7 +66,7 @@ build-image-old-stable:
   script:
     - mkdir -p /kaniko/.docker
     - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - echo "FROM debian:old-stable" > Dockerfile
+    - echo "FROM debian:oldstable" > Dockerfile
     - echo "RUN apt-get update" >> Dockerfile
     - echo "RUN apt-get install -y --no-install-recommends \\" >> Dockerfile
     - echo "at-spi2-core build-essential desktop-file-utils cmake unzip hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev librsvg2-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev liblcms2-dev wget libtool libcurl4-gnutls-dev wcslib-dev python3 python3-pip libjson-glib-dev" >> Dockerfile
@@ -109,7 +109,7 @@ build-image-old-stable:
     - echo " && rm -rf opencv-4.5.3 opencv.zip \\" >> Dockerfile
     - echo " && python3 -m pip install meson \\" >> Dockerfile
     - echo " && python3 -m pip install ninja" >> Dockerfile
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-debian-old-stable --cache=true --cache-ttl=120h
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-debian-oldstable --cache=true --cache-ttl=120h
 
 # Image for Windows64 build
 build-image-win64:
@@ -378,7 +378,7 @@ appimage-nightly:
   except:
     - schedules
   stage: "packaging"
-  image: $CI_REGISTRY_IMAGE:build-debian-old-stable
+  image: $CI_REGISTRY_IMAGE:build-debian-oldstable
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   cache:
@@ -392,7 +392,7 @@ appimage-nightly:
     expire_in: 1 week
     paths:
       - build/appimage/Siril*.AppImage*
-  needs: ["build-image-old-stable"]
+  needs: ["build-image-oldstable"]
 
 ################################################################################
 # Analysis
