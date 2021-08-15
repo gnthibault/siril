@@ -472,8 +472,6 @@ int main(int argc, char *argv[]) {
 	bind_textdomain_codeset(PACKAGE, "UTF-8");
 	textdomain(PACKAGE);
 
-	g_setenv("LC_NUMERIC", "C", TRUE); // avoid possible bugs using french separator ","
-
 	app = gtk_application_new("org.free_astro.siril", G_APPLICATION_HANDLES_OPEN | G_APPLICATION_NON_UNIQUE);
 
 	g_signal_connect(app, "startup", G_CALLBACK(siril_app_startup), NULL);
