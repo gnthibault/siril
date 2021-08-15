@@ -180,6 +180,7 @@ void language_init(const gchar *language) {
 		g_setenv("LANGUAGE", language, TRUE);
 	}
 	setlocale(LC_ALL, "");
+	setlocale(LC_NUMERIC, "C");
 }
 
 gchar *get_interface_language() {
