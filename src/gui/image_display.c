@@ -812,7 +812,7 @@ static void draw_annotates(const draw_data_t* dd) {
 				cairo_stroke(cr);
 			}
 			if (code) {
-				cairo_select_font_face(cr, "Purisa", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
+				cairo_select_font_face(cr, "Liberation Sans", CAIRO_FONT_SLANT_NORMAL, CAIRO_FONT_WEIGHT_NORMAL);
 				cairo_set_font_size(cr, size / dd->zoom);
 				cairo_move_to(cr, x + offset.x, y + offset.y);
 				cairo_show_text(cr, code);

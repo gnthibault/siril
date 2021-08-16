@@ -66,7 +66,7 @@ static CatalogObjects *new_catalog_object(gchar *code, gdouble ra, gdouble dec, 
 	return object;
 }
 
-gboolean is_inside(double circle_x, double circle_y, double rad, double x, double y) {
+static gboolean is_inside(double circle_x, double circle_y, double rad, double x, double y) {
 	// Compare radius of circle with distance
 	// of its center from given point
 	if ((x - circle_x) * (x - circle_x) + (y - circle_y) * (y - circle_y)
@@ -162,6 +162,74 @@ static gboolean is_catalogue_loaded() {
 	return siril_catalogue_list != NULL;
 }
 
+typedef struct {
+	char *greek;			// Greek letter of stars
+	char *latin;			// Greek letter written in Latin
+} GreekLetters;
+
+static GreekLetters convert_to_greek[] = {
+        { "\u03b1", "alf" },
+        { "\u03b2", "bet" },
+        { "\u03b3", "gam" },
+        { "\u03b4", "del" },
+        { "\u03b5", "eps" },
+        { "\u03b6", "zet" },
+        { "\u03b7", "eta" },
+        { "\u03b8", "tet" },
+        { "\u03b9", "iot" },
+        { "\u03ba", "kap" },
+        { "\u03bb", "lam" },
+        { "\u03bc", "mu." },
+        { "\u03bd", "nu." },
+        { "\u03be", "ksi" },
+        { "\u03bf", "omi" },
+        { "\u03c0", "pi." },
+        { "\u03c1", "rho" },
+        { "\u03c3", "sig" },
+        { "\u03c4", "tau" },
+        { "\u03c5", "ups" },
+        { "\u03c6", "phi" },
+        { "\u03c7", "chi" },
+        { "\u03c8", "psi" },
+        { "\u03c9", "ome" },
+		{ NULL, NULL }
+};
+
+static gchar* replace_str(const gchar *s, const gchar *old, const gchar *new) {
+	gchar *result;
+	int i, cnt = 0;
+	int newlen = strlen(new);
+	int oldlen = strlen(old);
+
+	// Counting the number of times old word
+	// occur in the string
+	for (i = 0; s[i] != '\0'; i++) {
+		if (g_strstr_len(&s[i], -1, old) == &s[i]) {
+			cnt++;
+
+			// Jumping to index after the old word.
+			i += oldlen - 1;
+		}
+	}
+
+	// Making new string of enough length
+	result = malloc(i + cnt * (newlen - oldlen) + 1);
+
+	i = 0;
+	while (*s) {
+		// compare the substring with the result
+		if (g_strstr_len(s, -1, old) == s) {
+			strcpy(&result[i], new);
+			i += newlen;
+			s += oldlen;
+		} else
+			result[i++] = *s++;
+	}
+
+	result[i] = '\0';
+	return result;
+}
+
 GSList *find_objects(fits *fit) {
 	if (!has_wcs(fit)) return NULL;
 	GSList *targets = NULL;
@@ -220,6 +288,23 @@ void add_object_in_catalogue(gchar *code, SirilWorldCS *wcs) {
 }
 
 gchar *get_catalogue_object_code(CatalogObjects *object) {
+	gboolean found = FALSE;
+	int i = 0;
+
+	/* in case of stars we want to convert to greek letter */
+	while (convert_to_greek[i].latin) {
+		gchar *latin_code = g_strstr_len(object->code, -1, convert_to_greek[i].latin);
+		if (latin_code) {
+			found = TRUE;
+			break;
+		}
+		i++;
+	}
+	if (found) {
+		gchar *code = g_strdup(replace_str(object->code, convert_to_greek[i].latin, convert_to_greek[i].greek));
+		g_free(object->code);
+		object->code = code;
+	}
 	return object->code;
 }
 
