@@ -47,7 +47,7 @@
 #include "gui/photometric_cc.h"
 
 #include "siril_actions.h"
-#include "../algos/astrometry_solver.h"
+#include "algos/astrometry_solver.h"
 
 void open_action_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	header_open_button_clicked();

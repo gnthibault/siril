@@ -47,7 +47,7 @@
 #include "single_image.h"
 #include "callbacks.h"
 
-#include "../algos/astrometry_solver.h"
+#include "algos/astrometry_solver.h"
 #include "utils.h"
 #include "plot.h"
 #include "message_dialog.h"

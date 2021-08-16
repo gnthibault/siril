@@ -38,9 +38,10 @@
 #include "algos/statistics.h"
 #include "algos/photometry.h"
 #include "algos/PSF.h"
-#include "../algos/astrometry_solver.h"
+#include "algos/astrometry_solver.h"
 #include "algos/star_finder.h"
 #include "gui/image_display.h"
+#include "gui/image_interactions.h"
 #include "gui/message_dialog.h"
 #include "gui/utils.h"
 #include "gui/progress_and_log.h"
@@ -687,4 +688,6 @@ void on_button_cc_bkg_selection_clicked(GtkButton *button, gpointer user_data) {
 	gtk_spin_button_set_value(selection_cc_bkg_value[1], com.selection.y);
 	gtk_spin_button_set_value(selection_cc_bkg_value[2], com.selection.w);
 	gtk_spin_button_set_value(selection_cc_bkg_value[3], com.selection.h);
+
+	delete_selected_area(); // needed because we don't want the selection being used for astrometry
 }

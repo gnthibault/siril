@@ -105,7 +105,7 @@
 #include "core/siril.h"
 #include "core/siril_world_cs.h"
 #include "algos/PSF.h"
-#include "../../algos/astrometry_solver.h"
+#include "algos/astrometry_solver.h"
 #include "apply_match.h"
 #include "misc.h"
 #include "degtorad.h"
