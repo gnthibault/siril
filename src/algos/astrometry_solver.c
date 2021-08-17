@@ -1945,7 +1945,7 @@ int fill_plate_solver_structure(struct astrometry_data *args) {
 	m = get_mag_limit(usedfov * CROP_ALLOWANCE);
 	catalog_center = get_center_of_catalog();
 
-	if (siril_world_cs_get_alpha(catalog_center) == 0.0 && siril_world_cs_get_delta(catalog_center)) {
+	if (siril_world_cs_get_alpha(catalog_center) == 0.0 && siril_world_cs_get_delta(catalog_center) == 0.0) {
 		siril_message_dialog(GTK_MESSAGE_WARNING, _("No coordinates"), _("Please enter object coordinates."));
 		return 1;
 	}
