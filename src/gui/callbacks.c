@@ -1006,6 +1006,7 @@ static void load_accels() {
 		"win.zoom-out",               "<Primary>minus", "<Primary>KP_Subtract", NULL,
 		"win.zoom-in",                "<Primary>plus", "<Primary>KP_Add", NULL,
 		"win.zoom-fit",               "<Primary>0", NULL,
+		"win.zoom-one",               "<Primary>1", NULL,
 
 		"win.search-object",          "<Primary>slash", NULL,
 		"win.astrometry",             "<Primary><Shift>a", NULL,
