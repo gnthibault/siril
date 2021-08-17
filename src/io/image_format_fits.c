@@ -268,9 +268,14 @@ void read_fits_header(fits *fit) {
 	 */
 	status = 0;
 	fits_read_key(fit->fptr, TSTRING, "PROGRAM", &str, NULL, &status);
-	gboolean not_from_siril = g_ascii_strncasecmp(str, PACKAGE, strlen(PACKAGE));
-
-	if ((fit->bitpix == FLOAT_IMG && not_from_siril) || (fit->bitpix == DOUBLE_IMG)) {
+	/* we comment the following code for now. Indeed, in the case of the file was
+	 * first saved with siril and changes in ASTAP then saved by ASTAP, we cannot
+	 * read the FITS anymore.
+	 * It looks like we always must apply the fit_stats check.....
+	 */
+//	gboolean not_from_siril = g_ascii_strncasecmp(str, PACKAGE, strlen(PACKAGE));
+//
+//	if ((fit->bitpix == FLOAT_IMG && not_from_siril) || (fit->bitpix == DOUBLE_IMG)) {
 		status = 0;
 		fits_read_key(fit->fptr, TDOUBLE, "DATAMAX", &(fit->data_max), NULL, &status);
 		if (status == KEY_NO_EXIST) {
@@ -278,7 +283,7 @@ void read_fits_header(fits *fit) {
 			fit_stats(fit, &mini, &maxi);
 			fit->data_max = (double) maxi;
 		}
-	}
+//	}
 
 	status = 0;
 	fits_read_key(fit->fptr, TSTRING, "ROWORDER", &(fit->row_order), NULL,
