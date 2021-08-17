@@ -1608,7 +1608,7 @@ gpointer match_catalog(gpointer p) {
 		siril_add_idle(end_plate_solver, args);
 		return GINT_TO_POINTER(1);
 	}
-	if (abs(args->xoffset) > 0.0 || abs(args->yoffset) > 0.0 ) nbtrials = 5; //retry to converge if solve is done at an offset from the center
+	if (fabs(args->xoffset) > 0.0 || fabs(args->yoffset) > 0.0 ) nbtrials = 5; //retry to converge if solve is done at an offset from the center
 
 
 	cstars = new_fitted_stars(MAX_STARS);
@@ -1687,12 +1687,16 @@ gpointer match_catalog(gpointer p) {
 				double decinit = siril_world_cs_get_delta(args->cat_center);
 
 				deproject_starlist(num_matched, &star_list_B, rainit, decinit, 1);
-				siril_debug_print("Deprojecting from: alpha: %s, delta: %s\n", siril_world_cs_alpha_format(args->cat_center, "%02d %02d %.3lf"), siril_world_cs_delta_format(args->cat_center, "%c%02d %02d %.3lf"));
+				siril_debug_print("Deprojecting from: alpha: %s, delta: %s\n",
+						siril_world_cs_alpha_format(args->cat_center, "%02d %02d %.3lf"),
+						siril_world_cs_delta_format(args->cat_center, "%c%02d %02d %.3lf"));
 				args->cat_center = siril_world_cs_new_from_a_d(ra0, dec0);
 				solution->px_cat_center = siril_world_cs_new_from_a_d(ra0, dec0);
 
 				project_starlist(num_matched, &star_list_B, ra0, dec0, 1);
-				siril_debug_print("Reprojecting to: alpha: %s, delta: %s\n", siril_world_cs_alpha_format(args->cat_center, "%02d %02d %.3lf"), siril_world_cs_delta_format(args->cat_center, "%c%02d %02d %.3lf"));
+				siril_debug_print("Reprojecting to: alpha: %s, delta: %s\n",
+						siril_world_cs_alpha_format(args->cat_center, "%02d %02d %.3lf"),
+						siril_world_cs_delta_format(args->cat_center, "%c%02d %02d %.3lf"));
 				solution->pixel_size = args->pixel_size;
 
 				double scaleX = sqrt(solution->H.h00 * solution->H.h00 + solution->H.h01 * solution->H.h01);
