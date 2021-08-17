@@ -1798,6 +1798,9 @@ gpointer match_catalog(gpointer p) {
 			args->fit->wcsdata.ra = siril_world_cs_get_alpha(solution->image_center);
 			args->fit->wcsdata.dec = siril_world_cs_get_delta(solution->image_center);
 
+			args->fit->wcsdata.pltsolvd = TRUE;
+			g_snprintf(args->fit->wcsdata.pltsolvd_comment, 21, "Siril internal solver");
+
 			gchar *ra = siril_world_cs_alpha_format(solution->image_center, "%02d %02d %.3lf");
 			gchar *dec = siril_world_cs_delta_format(solution->image_center, "%c%02d %02d %.3lf");
 

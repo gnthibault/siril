@@ -368,6 +368,8 @@ struct wcs_struct {
 	char objctdec[FLEN_VALUE];
 	double ra;
 	double dec;
+	gboolean pltsolvd;
+	char pltsolvd_comment[FLEN_COMMENT];
 };
 
 struct dft_struct {

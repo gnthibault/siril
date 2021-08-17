@@ -406,6 +406,10 @@ void read_fits_header(fits *fit) {
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "CROTA2", &(fit->wcsdata.crota[1]), NULL, &status);
 
+	status = 0;
+	fits_read_key(fit->fptr, TLOGICAL, "PLTSOLVD", &(fit->wcsdata.pltsolvd), fit->wcsdata.pltsolvd_comment, &status);
+
+	/* so now, fill the wcslib structure */
 	load_WCS_from_file(fit);
 
 	/*******************************************************************
@@ -996,9 +1000,9 @@ static void save_wcs_keywords(fits *fit) {
 		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "CD2_2", &(fit->wcsdata.cd[1][1]), "Scale matrix (2, 2)", &status);
 		status = 0;
-		fits_update_key(fit->fptr, TINT, "IMAGEW", &(fit->rx), "Image width, in pixels", &status);
-		status = 0;
-		fits_update_key(fit->fptr, TINT, "IMAGEH", &(fit->ry), "Image height, in pixels", &status);
+	}
+	if (fit->wcsdata.pltsolvd) {
+		fits_update_key(fit->fptr, TLOGICAL, "PLTSOLVD", &(fit->wcsdata.pltsolvd), fit->wcsdata.pltsolvd_comment, &status);
 	}
 }
 
