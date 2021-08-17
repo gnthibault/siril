@@ -1712,6 +1712,7 @@ gpointer match_catalog(gpointer p) {
 			} 
 			solution->pixel_size = args->pixel_size;
 
+
 			double scaleX = sqrt(solution->H.h00 * solution->H.h00 + solution->H.h01 * solution->H.h01);
 			double scaleY = sqrt(solution->H.h10 * solution->H.h10 + solution->H.h11 * solution->H.h11);
 			double resolution = (scaleX + scaleY) * 0.5; // we assume square pixels
@@ -1720,11 +1721,11 @@ gpointer match_catalog(gpointer p) {
 			solution->image_center = siril_world_cs_new_from_a_d(ra0, dec0);
 			siril_debug_print("Converged to: alpha: %0.8f, delta: %0.8f\n", ra0, dec0);
 
+			double scalefactor = (args->downsample) ? 1.0 / DOWNSAMPLE_FACTOR : 1.0;
 			if (args->downsample) {
-				double inv = 1.0 / DOWNSAMPLE_FACTOR;
-				solution->size.x *= inv;
-				solution->size.y *= inv;
-				solution->focal *= inv;
+				solution->size.x *= scalefactor;
+				solution->size.y *= scalefactor;
+				solution->focal *= scalefactor;
 				solution->crpix[0] = ((image_size.x - 1) / 2.0);
 				solution->crpix[1] = ((image_size.y - 1) / 2.0);
 			}
@@ -1737,7 +1738,7 @@ gpointer match_catalog(gpointer p) {
 			ra0 *= DEGTORAD;
 
 			/* make 1 step in direction crpix1 */
-			double crpix1[] = { solution->crpix[0] + 1, solution->crpix[1] };
+			double crpix1[] = { solution->crpix[0] + 1.0 / scalefactor, solution->crpix[1] };
 			apply_match(solution->px_cat_center, crpix1, trans, &ra7, &dec7);
 
 			dec7 *= DEGTORAD;
@@ -1753,7 +1754,7 @@ gpointer match_catalog(gpointer p) {
 
 			/* make 1 step in direction crpix2
 			* WARNING: we use -1 because of the Y axis reversing */
-			double crpix2[] = { solution->crpix[0], solution->crpix[1] - 1 };
+			double crpix2[] = { solution->crpix[0], solution->crpix[1] - 1.0 / scalefactor };
 			apply_match(solution->px_cat_center, crpix2, trans, &ra7, &dec7);
 
 			dec7 *= DEGTORAD;
@@ -1778,6 +1779,8 @@ gpointer match_catalog(gpointer p) {
 			args->fit->wcsdata.equinox = 2000.0;
 			args->fit->focal_length = solution->focal;
 			args->fit->pixel_size_x = args->fit->pixel_size_y = solution->pixel_size;
+			solution->crpix[0] *= scalefactor;
+			solution->crpix[1] *= scalefactor;
 
 			args->fit->wcsdata.crpix[0] = solution->crpix[0];
 			args->fit->wcsdata.crpix[1] = solution->crpix[1];

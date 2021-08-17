@@ -291,7 +291,7 @@ gchar *get_catalogue_object_code(CatalogObjects *object) {
 	gboolean found = FALSE;
 	int i = 0;
 
-	/* in case of stars we want to convert to greek letter */
+	/* in case of stars we want to convert to Greek letter */
 	while (convert_to_greek[i].latin) {
 		gchar *latin_code = g_strstr_len(object->code, -1, convert_to_greek[i].latin);
 		if (latin_code) {
