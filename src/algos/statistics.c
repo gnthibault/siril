@@ -689,8 +689,10 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 	struct stat_data *s_args = (struct stat_data*) args->user;
 
 	for (int layer = 0; layer < fit->naxes[2]; layer++) {
+		/* we first check for data in cache */
 		imstats* stat = statistics(args->seq, i, NULL, layer, &s_args->selection, s_args->option, TRUE);
 		if (!stat) {
+			/* if no cache */
 			stat = statistics(args->seq, i, fit, layer, &s_args->selection, s_args->option, TRUE);
 			if (!stat) {
 				siril_log_message(_("Error: statistics computation failed.\n"));
