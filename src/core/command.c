@@ -2825,6 +2825,7 @@ int process_seq_stat(int nb) {
 	} else {
 		args->option = STATS_BASIC;
 	}
+	memcpy(&com.selection, &args->selection, sizeof(rectangle));
 
 	set_cursor_waiting(TRUE);
 

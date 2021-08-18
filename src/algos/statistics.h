@@ -4,6 +4,7 @@
 struct stat_data {
 	fits *fit;
 	int option;
+	rectangle selection;
 	gchar **list;
 	sequence *seq;
 	gchar *csv_name;

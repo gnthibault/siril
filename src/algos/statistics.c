@@ -689,10 +689,13 @@ static int stat_image_hook(struct generic_seq_args *args, int o, int i, fits *fi
 	struct stat_data *s_args = (struct stat_data*) args->user;
 
 	for (int layer = 0; layer < fit->naxes[2]; layer++) {
-		imstats* stat = statistics(NULL, -1, fit, layer, &com.selection, s_args->option, TRUE);
+		imstats* stat = statistics(args->seq, i, NULL, layer, &s_args->selection, s_args->option, TRUE);
 		if (!stat) {
-			siril_log_message(_("Error: statistics computation failed.\n"));
-			return 1;
+			stat = statistics(args->seq, i, fit, layer, &s_args->selection, s_args->option, TRUE);
+			if (!stat) {
+				siril_log_message(_("Error: statistics computation failed.\n"));
+				return 1;
+			}
 		}
 
 		int new_index = i * s_args->seq->nb_layers;
@@ -764,8 +767,7 @@ static int stat_finalize_hook(struct generic_seq_args *args) {
 
 	int size = s_args->seq->nb_layers * args->nb_filtered_images;
 	GFile *file = g_file_new_for_path(s_args->csv_name);
-	GOutputStream* output_stream = (GOutputStream*) g_file_replace(file, NULL, FALSE,
-			G_FILE_CREATE_NONE, NULL, &error);
+	GOutputStream* output_stream = (GOutputStream*) g_file_replace(file, NULL, FALSE, G_FILE_CREATE_NONE, NULL, &error);
 	g_free(s_args->csv_name);
 	if (output_stream == NULL) {
 		if (error != NULL) {
@@ -808,6 +810,7 @@ static int stat_finalize_hook(struct generic_seq_args *args) {
 	}
 
 	siril_log_message(_("Statistic file %s was successfully created.\n"), g_file_peek_path(file));
+	writeseqfile(args->seq);
 	g_object_unref(output_stream);
 	g_object_unref(file);
 	free_stat_list(s_args->list, size);
