@@ -1789,7 +1789,7 @@ gpointer match_catalog(gpointer p) {
 			 * according to Calabretta private discussion
 			 *
 			 *    |cd11 cd12|  = |cdelt1      0| * |pc11 pc12|
-             *    |cd21 cd22|    |0      cdelt2|   |pc21 pc22|
+			 *    |cd21 cd22|    |0      cdelt2|   |pc21 pc22|
 			 */
 
 			args->fit->wcsdata.pc[0][0] = cd1_1 / cdelt1;

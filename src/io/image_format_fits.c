@@ -409,8 +409,10 @@ void read_fits_header(fits *fit) {
 		fits_read_key(fit->fptr, TDOUBLE, "CD2_2", &cd[1][1], NULL, &status);
 
 		if (status == 0) {
-			/* we compute pc and cdelt */
-			wcs_cd_to_pc(cd, fit->wcsdata.pc, fit->wcsdata.cdelt);
+			/* we compute PC and cdelt, but before check that CD is not singular */
+			if ((cd[0][0] * cd[1][1] - cd[1][0] * cd[0][1]) != 0.0) {
+				wcs_cd_to_pc(cd, fit->wcsdata.pc, fit->wcsdata.cdelt);
+			}
 		}
 	} else {
 		status = 0;
@@ -997,15 +999,15 @@ static void save_wcs_keywords(fits *fit) {
 		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcsdata.crval[1]), "Axis2 reference value (deg)", &status);
 	}
-	if (fit->wcsdata.cdelt[0] != '\0') {
-		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CDELT1", &(fit->wcsdata.cdelt[0]), "X pixel size (deg)", &status);
-		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CDELT2", &(fit->wcsdata.cdelt[1]), "Y pixel size (deg)", &status);
-	}
+
 	/* check if pc matrix exists */
-	if (!(fit->wcsdata.pc[0][0] == 0.0 && fit->wcsdata.pc[0][1] == 0.0 && fit->wcsdata.pc[1][0] == 0.0 && fit->wcsdata.pc[1][1] == 0.0)) {
+	if ((fit->wcsdata.pc[0][0] * fit->wcsdata.pc[1][1] - fit->wcsdata.pc[1][0] * fit->wcsdata.pc[0][1]) != 0.0) {
 		if (com.pref.wcs_formalism == WCS_FORMALISM_1) {
+			status = 0;
+			fits_update_key(fit->fptr, TDOUBLE, "CDELT1", &(fit->wcsdata.cdelt[0]), "X pixel size (deg)", &status);
+			status = 0;
+			fits_update_key(fit->fptr, TDOUBLE, "CDELT2", &(fit->wcsdata.cdelt[1]), "Y pixel size (deg)", &status);
+
 			status = 0;
 			fits_update_key(fit->fptr, TDOUBLE, "PC1_1", &(fit->wcsdata.pc[0][0]), "Linear transformation matrix (1, 1)", &status);
 			status = 0;
