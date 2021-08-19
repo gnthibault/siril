@@ -362,8 +362,7 @@ struct wcs_struct {
 	double crpix[2];
 	double crval[2];
 	double cdelt[2];
-	double cd[2][2];
-	double crota[2];
+	double pc[2][2];
 	char objctra[FLEN_VALUE];
 	char objctdec[FLEN_VALUE];
 	double ra;
@@ -587,6 +586,7 @@ struct pref_struct {
 	struct debayer_config debayer;	// debayer settings
 	phot phot_set;          // photometry settings
 	gboolean catalog[6]; // Yet 6 catalogs
+	int wcs_formalism; // formalism used in FITS header
 
 	stackconf stack; // stacking option
 	compconf comp; // compression option

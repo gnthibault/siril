@@ -76,12 +76,10 @@ gboolean load_WCS_from_memory(fits *fit) {
 
 	const char CTYPE[2][9] = {"RA---TAN", "DEC--TAN"};
 
-	double *cdij = fit->wcslib->cd;
 	double *pcij = fit->wcslib->pc;
 	for (int i = 0; i < NAXIS; i++) {
 		for (int j = 0; j < NAXIS; j++) {
-			*(cdij++) = fit->wcsdata.cd[i][j];
-			*(pcij++) = fit->wcsdata.cd[i][j];
+			*(pcij++) = fit->wcsdata.pc[i][j];
 		}
 	}
 
@@ -90,15 +88,11 @@ gboolean load_WCS_from_memory(fits *fit) {
 	}
 
 	for (int i = 0; i < NAXIS; i++) {
-		fit->wcslib->crota[i] = fit->wcsdata.crota[i];
-	}
-
-	for (int i = 0; i < NAXIS; i++) {
 		fit->wcslib->crpix[i] = fit->wcsdata.crpix[i];
 	}
 
 	for (int i = 0; i < NAXIS; i++) {
-		fit->wcslib->cdelt[i] = 1;
+		fit->wcslib->cdelt[i] = fit->wcsdata.cdelt[i];
 	}
 
 	for (int i = 0; i < NAXIS; i++) {

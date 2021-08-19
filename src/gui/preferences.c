@@ -23,6 +23,7 @@
 #include "core/initfile.h"
 #include "core/siril_language.h"
 #include "algos/photometry.h"
+#include "algos/astrometry_solver.h"
 #include "gui/callbacks.h"
 #include "gui/utils.h"
 #include "gui/message_dialog.h"
@@ -128,6 +129,7 @@ static preferences pref_init = {
 		.catalog[3] = TRUE,
 		.catalog[4] = TRUE,
 		.catalog[5] = TRUE,
+		.wcs_formalism = WCS_FORMALISM_1,
 		{ // stack_config
 				.method = 0,
 				.normalisation_method = ADDITIVE_SCALING,
@@ -212,6 +214,7 @@ static void update_astrometry_preferences() {
 	com.pref.catalog[3] = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_ldn")));
 	com.pref.catalog[4] = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_sh2")));
 	com.pref.catalog[5] = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_stars")));
+	com.pref.wcs_formalism = gtk_combo_box_get_active(GTK_COMBO_BOX(lookup_widget("wcs_formalism_combobox")));
 }
 
 static void update_prepro_preferences() {
@@ -645,6 +648,7 @@ static void set_preferences_ui(preferences *pref) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_ldn")), pref->catalog[3]);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_sh2")), pref->catalog[4]);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_stars")), pref->catalog[5]);
+	gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget("wcs_formalism_combobox")), pref->wcs_formalism);
 
 	/* tab 5*/
 	if (pref->prepro_bias_lib && (g_file_test(pref->prepro_bias_lib, G_FILE_TEST_EXISTS))) {

@@ -19569,6 +19569,57 @@ The technique gives very good compression for astronomical images and is relativ
                         <property name="position">1</property>
                       </packing>
                     </child>
+                    <child>
+                      <object class="GtkFrame" id="frame29">
+                        <property name="visible">True</property>
+                        <property name="can-focus">False</property>
+                        <property name="label-xalign">0</property>
+                        <property name="shadow-type">none</property>
+                        <child>
+                          <object class="GtkAlignment" id="alignment34">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="left-padding">12</property>
+                            <child>
+                              <object class="GtkComboBoxText" id="wcs_formalism_combobox">
+                                <property name="visible">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="tooltip-markup" translatable="yes">&lt;b&gt;Formalism 1&lt;/b&gt;: it encodes Mij in so called PCi_j keywords and scale factor Si are the values of the CDELTi keywords from the FITS header. It is obvious that the value of CDELT should not be 0.0.
+
+&lt;b&gt;Formalism 2&lt;/b&gt;: If the matrix and scaling are combined we get for the intermediate WORLD COORDINATE Xi:
+
+               Xi = Sigma_j=1^N (Si*Mij)(Pj-Rj)
+
+FITS keywords CDi_j encodes the product Si*Mij. The units of xi are given by FITS keyword CTYPEi.</property>
+                                <property name="active">0</property>
+                                <items>
+                                  <item id="&lt;Saisir un identifiant&gt;" translatable="yes">Formalism 1 (PC keywords)</item>
+                                  <item translatable="yes">Formalism 2 (CD keywords)</item>
+                                </items>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                        <child type="label">
+                          <object class="GtkLabel" id="label108">
+                            <property name="visible">True</property>
+                            <property name="can-focus">False</property>
+                            <property name="margin-top">10</property>
+                            <property name="margin-bottom">10</property>
+                            <property name="label" translatable="yes">World Coordinate System</property>
+                            <property name="single-line-mode">True</property>
+                            <attributes>
+                              <attribute name="weight" value="bold"/>
+                            </attributes>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
+                    </child>
                   </object>
                   <packing>
                     <property name="name">preferences_p9</property>

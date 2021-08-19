@@ -39,6 +39,7 @@
 #include "gui/utils.h"
 #include "gui/progress_and_log.h"
 #include "algos/statistics.h"
+#include "algos/astrometry_solver.h"
 #include "io/sequence.h"
 #include "io/single_image.h"
 #include "image_format_fits.h"
@@ -384,28 +385,43 @@ void read_fits_header(fits *fit) {
 	fits_read_key(fit->fptr, TDOUBLE, "CRVAL2", &(fit->wcsdata.crval[1]), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CD1_1", &(fit->wcsdata.cd[0][0]), NULL, &status);
-
-	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CD1_2", &(fit->wcsdata.cd[0][1]), NULL, &status);
-
-	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CD2_1", &(fit->wcsdata.cd[1][0]), NULL, &status);
-
-	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CD2_2", &(fit->wcsdata.cd[1][1]), NULL, &status);
-
-	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "CDELT1", &(fit->wcsdata.cdelt[0]), NULL, &status);
 
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "CDELT2", &(fit->wcsdata.cdelt[1]), NULL, &status);
 
 	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CROTA1", &(fit->wcsdata.crota[0]), NULL, &status);
+	fits_read_key(fit->fptr, TDOUBLE, "PC1_1", &(fit->wcsdata.pc[0][0]), NULL, &status);
 
-	status = 0;
-	fits_read_key(fit->fptr, TDOUBLE, "CROTA2", &(fit->wcsdata.crota[1]), NULL, &status);
+	/* IF PC does not exist, check for CD */
+	if (status == KEY_NO_EXIST) {
+		double cd[2][2];
+		status = 0;
+		fits_read_key(fit->fptr, TDOUBLE, "CD1_1", &cd[0][0], NULL, &status);
+
+		status = 0;
+		fits_read_key(fit->fptr, TDOUBLE, "CD1_2", &cd[0][1], NULL, &status);
+
+		status = 0;
+		fits_read_key(fit->fptr, TDOUBLE, "CD2_1", &cd[1][0], NULL, &status);
+
+		status = 0;
+		fits_read_key(fit->fptr, TDOUBLE, "CD2_2", &cd[1][1], NULL, &status);
+
+		if (status == 0) {
+			/* we compute pc and cdelt */
+			wcs_cd_to_pc(cd, fit->wcsdata.pc, fit->wcsdata.cdelt);
+		}
+	} else {
+		status = 0;
+		fits_read_key(fit->fptr, TDOUBLE, "PC1_2", &(fit->wcsdata.pc[0][1]), NULL, &status);
+
+		status = 0;
+		fits_read_key(fit->fptr, TDOUBLE, "PC2_1", &(fit->wcsdata.pc[1][0]), NULL, &status);
+
+		status = 0;
+		fits_read_key(fit->fptr, TDOUBLE, "PC2_2", &(fit->wcsdata.pc[1][1]), NULL, &status);
+	}
 
 	status = 0;
 	fits_read_key(fit->fptr, TLOGICAL, "PLTSOLVD", &(fit->wcsdata.pltsolvd), fit->wcsdata.pltsolvd_comment, &status);
@@ -945,6 +961,8 @@ static void save_wcs_keywords(fits *fit) {
 		status = 0;
 		fits_update_key(fit->fptr, TSTRING, "CUNIT1", "deg","Unit of coordinates", &status);
 		status = 0;
+		fits_update_key(fit->fptr, TSTRING, "CUNIT2", "deg","Unit of coordinates", &status);
+		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "EQUINOX", &(fit->wcsdata.equinox),	"Equatorial equinox", &status);
 	}
 	status = 0;
@@ -985,16 +1003,32 @@ static void save_wcs_keywords(fits *fit) {
 		status = 0;
 		fits_update_key(fit->fptr, TDOUBLE, "CDELT2", &(fit->wcsdata.cdelt[1]), "Y pixel size (deg)", &status);
 	}
-	if ((fit->wcsdata.cd[0][0] != 0.0) && (fit->wcsdata.cd[0][1] != 0.0) && (fit->wcsdata.cd[1][0] != 0.0) && (fit->wcsdata.cd[1][1] != 0.0)) {
-		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CD1_1", &(fit->wcsdata.cd[0][0]), "Scale matrix (1, 1)", &status);
-		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CD1_2", &(fit->wcsdata.cd[0][1]), "Scale matrix (1, 2)", &status);
-		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CD2_1", &(fit->wcsdata.cd[1][0]), "Scale matrix (2, 1)", &status);
-		status = 0;
-		fits_update_key(fit->fptr, TDOUBLE, "CD2_2", &(fit->wcsdata.cd[1][1]), "Scale matrix (2, 2)", &status);
-		status = 0;
+	/* check if pc matrix exists */
+	if (!(fit->wcsdata.pc[0][0] == 0.0 && fit->wcsdata.pc[0][1] == 0.0 && fit->wcsdata.pc[1][0] == 0.0 && fit->wcsdata.pc[1][1] == 0.0)) {
+		if (com.pref.wcs_formalism == WCS_FORMALISM_1) {
+			status = 0;
+			fits_update_key(fit->fptr, TDOUBLE, "PC1_1", &(fit->wcsdata.pc[0][0]), "Linear transformation matrix (1, 1)", &status);
+			status = 0;
+			fits_update_key(fit->fptr, TDOUBLE, "PC1_2", &(fit->wcsdata.pc[0][1]), "Linear transformation matrix (1, 2)", &status);
+			status = 0;
+			fits_update_key(fit->fptr, TDOUBLE, "PC2_1", &(fit->wcsdata.pc[1][0]), "Linear transformation matrix (2, 1)", &status);
+			status = 0;
+			fits_update_key(fit->fptr, TDOUBLE, "PC2_2", &(fit->wcsdata.pc[1][1]), "Linear transformation matrix (2, 2)", &status);
+			status = 0;
+		} else {
+			double cd[2][2];
+
+			wcs_pc_to_cd(fit->wcsdata.pc, fit->wcsdata.cdelt, cd);
+			status = 0;
+			fits_update_key(fit->fptr, TDOUBLE, "CD1_1", &cd[0][0], "Scale matrix (1, 1)", &status);
+			status = 0;
+			fits_update_key(fit->fptr, TDOUBLE, "CD1_2", &cd[0][1], "Scale matrix (1, 2)", &status);
+			status = 0;
+			fits_update_key(fit->fptr, TDOUBLE, "CD2_1", &cd[1][0], "Scale matrix (2, 1)", &status);
+			status = 0;
+			fits_update_key(fit->fptr, TDOUBLE, "CD2_2", &cd[1][1], "Scale matrix (2, 2)", &status);
+			status = 0;
+		}
 	}
 	if (fit->wcsdata.pltsolvd) {
 		fits_update_key(fit->fptr, TLOGICAL, "PLTSOLVD", &(fit->wcsdata.pltsolvd), fit->wcsdata.pltsolvd_comment, &status);
@@ -1170,43 +1204,6 @@ void save_fits_header(fits *fit) {
 				"Conversion factor (e-/adu)", &status);
 
 	/*******************************************************************
-	 * ******************* PLATE SOLVING KEYWORDS **********************
-	 * ****************************************************************/
-
-	save_wcs_keywords(fit);
-
-	/*******************************************************************
-	 * ******************** PROGRAMM KEYWORDS **************************
-	 * ****************************************************************/
-
-	status = 0;
-	char programm[32];
-	sprintf(programm, "%s v%s", PACKAGE, VERSION);
-	programm[0] = toupper(programm[0]);			// convert siril to Siril
-	fits_update_key(fit->fptr, TSTRING, "PROGRAM", programm,
-			"Software that created this HDU", &status);
-
-	/*******************************************************************
-	 * ********************* HISTORY KEYWORDS **************************
-	 * ****************************************************************/
-
-	status = 0;
-	if (fit->history) {
-		GSList *list;
-		for (list = fit->history; list; list = list->next) {
-			fits_write_history(fit->fptr, (char *)list->data, &status);
-		}
-	}
-
-	status = 0;
-	if (com.history) {
-		for (i = 0; i < com.hist_display; i++) {
-			if (com.history[i].history[0] != '\0')
-				fits_write_history(fit->fptr, com.history[i].history, &status);
-		}
-	}
-
-	/*******************************************************************
 	 * ************************* DFT KEYWORDS **************************
 	 * ****************************************************************/
 
@@ -1244,6 +1241,43 @@ void save_fits_header(fits *fit) {
 			status = 0;
 			fits_update_key(fit->fptr, TDOUBLE, key_str, &(fit->dft.norm[i]),
 					comment_str, &status);
+		}
+	}
+
+	/*******************************************************************
+	 * ******************** PROGRAMM KEYWORDS **************************
+	 * ****************************************************************/
+
+	status = 0;
+	char programm[32];
+	sprintf(programm, "%s v%s", PACKAGE, VERSION);
+	programm[0] = toupper(programm[0]);			// convert siril to Siril
+	fits_update_key(fit->fptr, TSTRING, "PROGRAM", programm,
+			"Software that created this HDU", &status);
+
+	/*******************************************************************
+	 * ******************* PLATE SOLVING KEYWORDS **********************
+	 * ****************************************************************/
+
+	save_wcs_keywords(fit);
+
+	/*******************************************************************
+	 * ********************* HISTORY KEYWORDS **************************
+	 * ****************************************************************/
+
+	status = 0;
+	if (fit->history) {
+		GSList *list;
+		for (list = fit->history; list; list = list->next) {
+			fits_write_history(fit->fptr, (char *)list->data, &status);
+		}
+	}
+
+	status = 0;
+	if (com.history) {
+		for (i = 0; i < com.hist_display; i++) {
+			if (com.history[i].history[0] != '\0')
+				fits_write_history(fit->fptr, com.history[i].history, &status);
 		}
 	}
 }

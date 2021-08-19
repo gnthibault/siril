@@ -25,6 +25,11 @@ typedef enum {
 	APASS
 } online_catalog;
 
+enum {
+	WCS_FORMALISM_1,
+	WCS_FORMALISM_2
+};
+
 struct astrometry_data {
 	image_solved *solution;
 	online_catalog onlineCatalog;
@@ -51,6 +56,8 @@ struct astrometry_data {
 void open_astrometry_dialog();
 gchar *search_in_catalogs(const gchar *object);
 int fill_plate_solver_structure(struct astrometry_data *args);
+void wcs_cd_to_pc(double cd[2][2], double pc[2][2], double cdelt[2]);
+void wcs_pc_to_cd(double pc[2][2], double cdelt[2], double cd[2][2]);
 gpointer match_catalog(gpointer p);
 
 gboolean confirm_delete_wcs_keywords(fits *fit);
