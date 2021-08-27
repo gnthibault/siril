@@ -80,7 +80,7 @@ void copy_backup_to_gfit() {
 }
 
 fits *get_preview_gfit_backup() {
-	return &preview_gfit_backup;
+	return (is_preview_active()) ? &preview_gfit_backup : &gfit;
 }
 
 gboolean is_preview_active() {
