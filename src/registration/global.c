@@ -149,6 +149,8 @@ static int star_align_prepare_hook(struct generic_seq_args *args) {
 	fits fit = { 0 };
 	int i, nb_stars = 0;
 
+	clear_stars_list(); //to avoid problems with com.stars later on in the process
+
 	sadata->current_regdata = star_align_get_current_regdata(regargs);
 	if (!sadata->current_regdata) return -2;
 	
