@@ -196,6 +196,18 @@ typedef struct save_config_struct save_config;
 
 /* global structures */
 
+/* same order as in the combo box 'comboExport' */
+typedef enum {
+	EXPORT_FITS,
+	EXPORT_FITSEQ,
+	EXPORT_TIFF,
+	EXPORT_SER,
+	EXPORT_AVI,
+	EXPORT_MP4,
+	EXPORT_MP4_H265,
+	EXPORT_WEBM_VP9
+} export_format;
+
 typedef enum {
 	LINEAR_DISPLAY,	
 	LOG_DISPLAY,
