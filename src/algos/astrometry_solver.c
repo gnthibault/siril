@@ -1451,6 +1451,9 @@ void flip_bottom_up_astrometry_data(fits *fit) {
 	fit->wcsdata.pc[0][1] = -fit->wcsdata.pc[0][1];
 	fit->wcsdata.pc[1][1] = -fit->wcsdata.pc[1][1];
 
+	/* update crpix */
+	fit->wcsdata.crpix[1] = fit->ry - fit->wcsdata.crpix[1];
+
 	/* debug output */
 	siril_debug_print("****Updated WCS data*************\n");
 	siril_debug_print("cdelt1 = %*.12e\n", 20, fit->wcsdata.cdelt[0]);
@@ -1466,6 +1469,9 @@ void flip_left_right_astrometry_data(fits *fit) {
 	/* flip pc matrix */
 	fit->wcsdata.pc[0][0] = -fit->wcsdata.pc[0][0];
 	fit->wcsdata.pc[1][0] = -fit->wcsdata.pc[1][0];
+
+	/* update crpix */
+	fit->wcsdata.crpix[0] = fit->rx - fit->wcsdata.crpix[0];
 
 	/* debug output */
 	siril_debug_print("****Updated WCS data*************\n");
@@ -1488,20 +1494,20 @@ void rotate_astrometry_data(fits *fit, double angle) {
 		pc2_1 =  fit->wcsdata.pc[1][1];
 		pc2_2 = -fit->wcsdata.pc[1][0];
 		crpix1 = fit->wcsdata.crpix[1];
-		crpix2 = fit->wcsdata.crpix[0];
+		crpix2 = fit->ry - fit->wcsdata.crpix[0];
 	} else if (angle == 180.0){
 		pc1_1 = -fit->wcsdata.pc[0][0];
 		pc1_2 = -fit->wcsdata.pc[0][1];
 		pc2_1 = -fit->wcsdata.pc[1][0];
 		pc2_2 = -fit->wcsdata.pc[1][1];
-		crpix1 = fit->wcsdata.crpix[0];
-		crpix2 = fit->wcsdata.crpix[1];
+		crpix1 = fit->rx - fit->wcsdata.crpix[0];
+		crpix2 = fit->ry - fit->wcsdata.crpix[1];
 	} else if (angle == 270.0) {
 		pc1_1 = -fit->wcsdata.pc[0][1];
 		pc1_2 =  fit->wcsdata.pc[0][0];
 		pc2_1 = -fit->wcsdata.pc[1][1];
 		pc2_2 =  fit->wcsdata.pc[1][0];
-		crpix1 = fit->wcsdata.crpix[1];
+		crpix1 = fit->rx - fit->wcsdata.crpix[1];
 		crpix2 = fit->wcsdata.crpix[0];
 	} else return;
 

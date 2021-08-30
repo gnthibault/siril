@@ -246,7 +246,7 @@ int cvRotateImage(fits *image, point center, double angle, int interpolation, in
 	Rect frame;
 	Point2f pt(center.x, center.y);
 
-	gboolean is_fast = fmod(angle, 90.0) == 0.0 && fmod(angle, 180) != 0.0;
+	gboolean is_fast = fmod(angle, 90.0) == 0.0;
 	if (interpolation == -1)
 		assert(is_fast);
 
