@@ -266,7 +266,7 @@ void on_menu_display_selection_done(GtkMenuShell *menushell, gpointer user_data)
 
 	gtk_label_set_text((GtkLabel *)user_data, text);
 
-	copy_rendering_settings(TRUE);
+	copy_rendering_settings();
 	redraw(com.cvport, REMAP_ALL);
 
 	redraw_previews();
@@ -458,8 +458,6 @@ display_mode get_display_mode_from_menu() {
  * Synchronized data: hi and lo cursors, cut over box, rendering mode.
  * DOES NOT REMAP/REDRAW.
  *
- * from_GUI: TRUE if get values from the GUI, FALSE if get the values from structs.
- * Returns 1 if chained, 0 if not.
  */
 int copy_rendering_settings() {
 	static GtkRange *range_lo = NULL, *range_hi = NULL;
@@ -478,7 +476,6 @@ int copy_rendering_settings() {
 				gtk_builder_get_object(builder, "checkcut_max"));
 	}
 
-//	if (com.cvport == RGB_VPORT) return 0;
 	int cvport = com.cvport == RGB_VPORT ? 0 : com.cvport;
 
 	if (single_image_is_loaded() &&
@@ -515,7 +512,7 @@ int copy_rendering_settings() {
 		layers[i].cut_over = cut_over;
 	}
 
-	return 1;
+	return 0;
 }
 
 void update_prepro_interface(gboolean allow_debayer) {
@@ -1364,7 +1361,7 @@ gboolean on_minscale_release(GtkWidget *widget, GdkEvent *event,
 		com.sliders = USER;
 		sliders_mode_set_state(com.sliders);
 	}
-	copy_rendering_settings(TRUE);
+	copy_rendering_settings();
 	redraw(com.cvport, REMAP_ALL);
 
 	redraw_previews();
@@ -1377,7 +1374,7 @@ gboolean on_maxscale_release(GtkWidget *widget, GdkEvent *event,
 		com.sliders = USER;
 		sliders_mode_set_state(com.sliders);
 	}
-	copy_rendering_settings(TRUE);
+	copy_rendering_settings();
 	redraw(com.cvport, REMAP_ALL);
 
 	redraw_previews();
@@ -1386,7 +1383,7 @@ gboolean on_maxscale_release(GtkWidget *widget, GdkEvent *event,
 
 /* a checkcut checkbox was toggled. Update the layer_info and others if chained. */
 void on_checkcut_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	copy_rendering_settings(TRUE);
+	copy_rendering_settings();
 	redraw(com.cvport, REMAP_ALL);
 
 	redraw_previews();
@@ -1597,7 +1594,7 @@ void on_max_entry_changed(GtkEditable *editable, gpointer user_data) {
 
 		set_cutoff_sliders_values();
 
-		copy_rendering_settings(TRUE);
+		copy_rendering_settings();
 		redraw(com.cvport, REMAP_ALL);
 
 		redraw_previews();
@@ -1653,7 +1650,7 @@ void on_min_entry_changed(GtkEditable *editable, gpointer user_data) {
 			return;
 		set_cutoff_sliders_values();
 
-		copy_rendering_settings(TRUE);
+		copy_rendering_settings();
 		redraw(com.cvport, REMAP_ALL);
 
 		redraw_previews();

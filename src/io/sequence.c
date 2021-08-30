@@ -549,7 +549,7 @@ int seq_load_image(sequence *seq, int index, gboolean load_it) {
 			set_cutoff_sliders_values();	// update values for contrast sliders for this image
 			set_display_mode();		// display the display mode in the combo box
 		}
-		copy_rendering_settings(TRUE);
+		copy_rendering_settings();
 		redraw(com.cvport, REMAP_ALL);
 
 		redraw_previews();		// redraw registration preview areas
