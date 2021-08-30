@@ -1456,6 +1456,10 @@ void flip_bottom_up_astrometry_data(fits *fit) {
 
 	/* debug output */
 	siril_debug_print("****Updated WCS data*************\n");
+	siril_debug_print("crpix1 = %*.12e\n", 20, fit->wcsdata.crpix[0]);
+	siril_debug_print("crpix2 = %*.12e\n", 20, fit->wcsdata.crpix[1]);
+	siril_debug_print("crval1 = %*.12e\n", 20, fit->wcsdata.crval[0]);
+	siril_debug_print("crval2 = %*.12e\n", 20, fit->wcsdata.crval[1]);
 	siril_debug_print("cdelt1 = %*.12e\n", 20, fit->wcsdata.cdelt[0]);
 	siril_debug_print("cdelt2 = %*.12e\n", 20, fit->wcsdata.cdelt[1]);
 	siril_debug_print("pc1_1  = %*.12e\n", 20, fit->wcsdata.pc[0][0]);
@@ -1475,6 +1479,10 @@ void flip_left_right_astrometry_data(fits *fit) {
 
 	/* debug output */
 	siril_debug_print("****Updated WCS data*************\n");
+	siril_debug_print("crpix1 = %*.12e\n", 20, fit->wcsdata.crpix[0]);
+	siril_debug_print("crpix2 = %*.12e\n", 20, fit->wcsdata.crpix[1]);
+	siril_debug_print("crval1 = %*.12e\n", 20, fit->wcsdata.crval[0]);
+	siril_debug_print("crval2 = %*.12e\n", 20, fit->wcsdata.crval[1]);
 	siril_debug_print("cdelt1 = %*.12e\n", 20, fit->wcsdata.cdelt[0]);
 	siril_debug_print("cdelt2 = %*.12e\n", 20, fit->wcsdata.cdelt[1]);
 	siril_debug_print("pc1_1  = %*.12e\n", 20, fit->wcsdata.pc[0][0]);
