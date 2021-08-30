@@ -96,7 +96,7 @@
 #define STR_SAVETIF32 N_("Same command as SAVE_TIF but the output file is saved in 32-bit per channel: \"filename\".tif")
 #define STR_SAVETIF8 N_("Same command as SAVE_TIF but the output file is saved in 8-bit per channel: \"filename\".tif")
 #define STR_SELECT N_("This command allows easy mass selection of images in the loaded sequence (from \"from\" to \"to\" included)")
-#define STR_SEQCROP N_("Crops the loaded sequence. The output sequence name starts with the prefix \"cropped_\" unless otherwise specified with \"-prefix=\" option")
+#define STR_SEQCROP N_("Crops the sequence given in argument \"sequencename\". The output sequence name starts with the prefix \"cropped_\" unless otherwise specified with \"-prefix=\" option")
 #define STR_SEQEXTRACTHA N_("Same command as EXTRACT_HA but for the sequence \"sequencename\". The output sequence name starts with the prefix \"Ha_\" unless otherwise specified with option \"-prefix=\"")
 #define STR_SEQEXTRACTGREEN N_("Same command as EXTRACT_GREEN but for the sequence \"sequencename\". The output sequence name starts with the prefix \"Green_\" unless otherwise specified with option \"-prefix=\"")
 #define STR_SEQEXTRACTHAOIII N_("Same command as EXTRACT_HAOIII but for the sequence \"sequencename\". The output sequence name start with the prefix \"Ha_\" and \"OIII_\"")

@@ -1320,51 +1320,46 @@ int process_seq_psf(int nb) {
 }
 
 int process_seq_crop(int nb) {
-	if (!sequence_is_loaded()) {
-		PRINT_NOT_FOR_SINGLE;
-		return 1;
-	}
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
 		return 1;
 	}
 
+	sequence *seq = load_sequence(word[1], NULL);
+	if (!seq)
+		return 1;
+
 	rectangle area;
 
-	int startoptargs = 5;
+	int startoptargs = 6;
 
-	if ((!com.selection.h) || (!com.selection.w)) {
-		if (nb >= startoptargs) {
-			if (g_ascii_strtoull(word[1], NULL, 10) < 0 || g_ascii_strtoull(word[2], NULL, 10) < 0) {
-				siril_log_message(_("Crop: x and y must be positive values.\n"));
-				return 1;
-			}
-			if (g_ascii_strtoull(word[3], NULL, 10) <= 0 || g_ascii_strtoull(word[4], NULL, 10) <= 0) {
-				siril_log_message(_("Crop: width and height must be greater than 0.\n"));
-				return 1;
-			}
-			area.x = g_ascii_strtoull(word[1], NULL, 10);
-			area.y = g_ascii_strtoull(word[2], NULL, 10);
-			area.w = g_ascii_strtoull(word[3], NULL, 10);
-			area.h = g_ascii_strtoull(word[4], NULL, 10);
-		} else {
-			siril_log_message(_("Crop: select a region or provide x, y, width, height\n"));
+	if (nb >= startoptargs) {
+		if (g_ascii_strtoull(word[2], NULL, 10) < 0 || g_ascii_strtoull(word[3], NULL, 10) < 0) {
+			siril_log_message(_("Crop: x and y must be positive values.\n"));
 			return 1;
 		}
+		if (g_ascii_strtoull(word[4], NULL, 10) <= 0 || g_ascii_strtoull(word[5], NULL, 10) <= 0) {
+			siril_log_message(_("Crop: width and height must be greater than 0.\n"));
+			return 1;
+		}
+		area.x = g_ascii_strtoull(word[2], NULL, 10);
+		area.y = g_ascii_strtoull(word[3], NULL, 10);
+		area.w = g_ascii_strtoull(word[4], NULL, 10);
+		area.h = g_ascii_strtoull(word[5], NULL, 10);
 	} else {
-		memcpy(&area, &com.selection, sizeof(rectangle));
+		siril_log_message(_("Crop: select a region or provide x, y, width, height\n"));
+		return 1;
 	}
 
-
-	if (g_ascii_strtoull(word[3], NULL, 10) > com.seq.rx || g_ascii_strtoull(word[4], NULL, 10) > com.seq.ry) {
+	if (g_ascii_strtoull(word[4], NULL, 10) > seq->rx || g_ascii_strtoull(word[5], NULL, 10) > seq->ry) {
 		siril_log_message(_("Crop: width and height, respectively, must be less than %d and %d.\n"),
-				com.seq.rx, com.seq.ry);
+				seq->rx, seq->ry);
 		return 1;
 	}
 
 	struct crop_sequence_data *args = malloc(sizeof(struct crop_sequence_data));
 
-	args->seq = &com.seq;
+	args->seq = seq;
 	args->area = area;
 	args->prefix = "cropped_";
 	
