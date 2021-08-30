@@ -1497,7 +1497,7 @@ void rotate_astrometry_data(fits *fit, double angle) {
 	double crpix1, crpix2;
 
 	/*  the angle will be mapped to the range of [-360, 360] */
-	angle = ((angle / 90) % 4) * 90;
+	angle = (fmod((angle / 90), 4)) * 90;
 
 	if (angle == 90.0) {
 		pc1_1 =  fit->wcsdata.pc[0][1];
