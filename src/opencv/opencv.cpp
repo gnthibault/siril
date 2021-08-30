@@ -249,8 +249,6 @@ int cvRotateImage(fits *image, point center, double angle, int interpolation, in
 	/*  the angle will be mapped to the range of [-360, 360] */
 	angle = (fmod((angle / 90), 4)) * 90;
 
-	printf("angle = %lf\n\n", angle);
-
 	gboolean is_fast = fmod(angle, 90.0) == 0.0;
 	if (interpolation == -1)
 		assert(is_fast);
