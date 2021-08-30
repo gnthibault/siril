@@ -266,10 +266,9 @@ void on_menu_display_selection_done(GtkMenuShell *menushell, gpointer user_data)
 
 	gtk_label_set_text((GtkLabel *)user_data, text);
 
-	if (copy_rendering_settings_when_chained(TRUE))
-		redraw(com.cvport, REMAP_ALL);
-	else
-		redraw(com.cvport, REMAP_ONLY);
+	copy_rendering_settings(TRUE);
+	redraw(com.cvport, REMAP_ALL);
+
 	redraw_previews();
 }
 
@@ -462,28 +461,24 @@ display_mode get_display_mode_from_menu() {
  * from_GUI: TRUE if get values from the GUI, FALSE if get the values from structs.
  * Returns 1 if chained, 0 if not.
  */
-int copy_rendering_settings_when_chained(gboolean from_GUI) {
-	static GtkToggleButton *chainedbutton = NULL;
+int copy_rendering_settings() {
 	static GtkRange *range_lo = NULL, *range_hi = NULL;
 	static GtkToggleButton *cutmax = NULL;
 
-	gboolean is_chained;
 	display_mode mode;
 	WORD lo, hi;
 	gboolean cut_over;
 	int i, nb_layers;
 	layer_info *layers = NULL;
 
-	if (!chainedbutton) {	// init widgets
-		chainedbutton = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_chain"));
+	if (!range_lo) {	// init widgets
 		range_lo = GTK_RANGE(gtk_builder_get_object(builder, "scalemin"));
 		range_hi = GTK_RANGE(gtk_builder_get_object(builder, "scalemax"));
 		cutmax = GTK_TOGGLE_BUTTON(
 				gtk_builder_get_object(builder, "checkcut_max"));
 	}
 
-	is_chained = gtk_toggle_button_get_active(chainedbutton);
-	if (com.cvport == RGB_VPORT && !is_chained) return 0;
+//	if (com.cvport == RGB_VPORT) return 0;
 	int cvport = com.cvport == RGB_VPORT ? 0 : com.cvport;
 
 	if (single_image_is_loaded() &&
@@ -498,17 +493,14 @@ int copy_rendering_settings_when_chained(gboolean from_GUI) {
 	} else
 		return 0;
 
-	if (from_GUI) {
-		int raw_mode = get_display_mode_from_menu();
-		/* update values in the layer_info for cvport */
-		layers[cvport].rendering_mode =
-			raw_mode >= 0 ? raw_mode : LINEAR_DISPLAY;
-		layers[cvport].lo = round_to_WORD(gtk_range_get_value(range_lo));
-		layers[cvport].hi = round_to_WORD(gtk_range_get_value(range_hi));
-		layers[cvport].cut_over = gtk_toggle_button_get_active(cutmax);
-	}
-	if (!is_chained)
-		return 0;
+	int raw_mode = get_display_mode_from_menu();
+	/* update values in the layer_info for cvport */
+	layers[cvport].rendering_mode =
+		raw_mode >= 0 ? raw_mode : LINEAR_DISPLAY;
+	layers[cvport].lo = round_to_WORD(gtk_range_get_value(range_lo));
+	layers[cvport].hi = round_to_WORD(gtk_range_get_value(range_hi));
+	layers[cvport].cut_over = gtk_toggle_button_get_active(cutmax);
+
 	mode = layers[cvport].rendering_mode;
 	lo = layers[cvport].lo;
 	hi = layers[cvport].hi;
@@ -1035,7 +1027,6 @@ void set_accel_map(const gchar * const *accelmap) {
 
 /* Initialize the combobox when loading new single_image */
 void initialize_display_mode() {
-	static GtkToggleButton *chainedbutton = NULL;
 	display_mode mode;
 	int i;
 
@@ -1053,16 +1044,6 @@ void initialize_display_mode() {
 	} else if (sequence_is_loaded()) {
 		for (i = 0; i < com.seq.nb_layers; i++)
 			com.seq.layers[i].rendering_mode = mode;
-	}
-	/* In the case where the layer were unchained, we chaine it */
-	if (!chainedbutton)
-		chainedbutton = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_chain"));
-	if (!gtk_toggle_button_get_active(chainedbutton)) {
-		g_signal_handlers_block_by_func(chainedbutton, on_checkchain_toggled,
-				NULL);
-		gtk_toggle_button_set_active(chainedbutton, TRUE);
-		g_signal_handlers_unblock_by_func(chainedbutton, on_checkchain_toggled,
-				NULL);
 	}
 }
 
@@ -1383,10 +1364,9 @@ gboolean on_minscale_release(GtkWidget *widget, GdkEvent *event,
 		com.sliders = USER;
 		sliders_mode_set_state(com.sliders);
 	}
-	if (copy_rendering_settings_when_chained(TRUE))
-		redraw(com.cvport, REMAP_ALL);
-	else
-		redraw(com.cvport, REMAP_ONLY);
+	copy_rendering_settings(TRUE);
+	redraw(com.cvport, REMAP_ALL);
+
 	redraw_previews();
 	return FALSE;
 }
@@ -1397,20 +1377,18 @@ gboolean on_maxscale_release(GtkWidget *widget, GdkEvent *event,
 		com.sliders = USER;
 		sliders_mode_set_state(com.sliders);
 	}
-	if (copy_rendering_settings_when_chained(TRUE))
-		redraw(com.cvport, REMAP_ALL);
-	else
-		redraw(com.cvport, REMAP_ONLY);
+	copy_rendering_settings(TRUE);
+	redraw(com.cvport, REMAP_ALL);
+
 	redraw_previews();
 	return FALSE;
 }
 
 /* a checkcut checkbox was toggled. Update the layer_info and others if chained. */
 void on_checkcut_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	if (copy_rendering_settings_when_chained(TRUE))
-		redraw(com.cvport, REMAP_ALL);
-	else
-		redraw(com.cvport, REMAP_ONLY);
+	copy_rendering_settings(TRUE);
+	redraw(com.cvport, REMAP_ALL);
+
 	redraw_previews();
 }
 
@@ -1599,11 +1577,6 @@ void on_radiobutton_user_toggled(GtkToggleButton *togglebutton,
 	}
 }
 
-void on_checkchain_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
-	if (copy_rendering_settings_when_chained(FALSE))
-		redraw(com.cvport, REMAP_ALL);
-}
-
 void on_max_entry_changed(GtkEditable *editable, gpointer user_data) {
 	const gchar *txt = gtk_entry_get_text(GTK_ENTRY(editable));
 	if (g_ascii_isalnum(txt[0])) {
@@ -1624,10 +1597,9 @@ void on_max_entry_changed(GtkEditable *editable, gpointer user_data) {
 
 		set_cutoff_sliders_values();
 
-		if (copy_rendering_settings_when_chained(FALSE))
-			redraw(com.cvport, REMAP_ALL);
-		else
-			redraw(com.cvport, REMAP_ONLY);
+		copy_rendering_settings(TRUE);
+		redraw(com.cvport, REMAP_ALL);
+
 		redraw_previews();
 	}
 }
@@ -1680,10 +1652,10 @@ void on_min_entry_changed(GtkEditable *editable, gpointer user_data) {
 		else
 			return;
 		set_cutoff_sliders_values();
-		if (copy_rendering_settings_when_chained(FALSE))
-			redraw(com.cvport, REMAP_ALL);
-		else
-			redraw(com.cvport, REMAP_ONLY);
+
+		copy_rendering_settings(TRUE);
+		redraw(com.cvport, REMAP_ALL);
+
 		redraw_previews();
 	}
 }

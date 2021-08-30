@@ -21,7 +21,7 @@ void set_icon_entry(GtkEntry *entry, gchar *string);
 void update_MenuItem();
 void sliders_mode_set_state(sliders_mode);
 display_mode get_display_mode_from_menu();
-int copy_rendering_settings_when_chained(gboolean from_GUI);
+int copy_rendering_settings();
 
 void clear_sampling_setting_box();
 void set_GUI_CAMERA();
@@ -67,7 +67,6 @@ void set_viewer_mode_widgets_sensitive(gboolean sensitive);
 void on_radiobutton_minmax_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 void on_radiobutton_hilo_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 void on_radiobutton_user_toggled(GtkToggleButton *togglebutton, gpointer user_data);
-void on_checkchain_toggled(GtkToggleButton *togglebutton, gpointer user_data);
 void on_max_entry_changed(GtkEditable *editable, gpointer user_data);
 void on_min_entry_changed(GtkEditable *editable, gpointer user_data);
 

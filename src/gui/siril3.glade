@@ -6637,11 +6637,6 @@ Modifying parameters in this windows afterward will void the colour balance, and
     <property name="can-focus">False</property>
     <property name="icon-name">help-browser</property>
   </object>
-  <object class="GtkImage" id="image_chain">
-    <property name="visible">True</property>
-    <property name="can-focus">False</property>
-    <property name="pixbuf">pixmaps/chain.svg</property>
-  </object>
   <object class="GtkImage" id="image_colormap">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -16243,48 +16238,16 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
             <property name="can-focus">False</property>
             <property name="spacing">2</property>
             <child>
-              <object class="GtkBox" id="box22">
+              <object class="GtkCheckButton" id="checkcut_max">
+                <property name="label" translatable="yes">cut</property>
                 <property name="visible">True</property>
-                <property name="can-focus">False</property>
-                <property name="orientation">vertical</property>
-                <property name="homogeneous">True</property>
-                <child>
-                  <object class="GtkCheckButton" id="checkcut_max">
-                    <property name="label" translatable="yes">cut</property>
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="has-tooltip">True</property>
-                    <property name="tooltip-markup" translatable="yes">Instead of keeping pixels with values above the &amp;quot;hi&amp;quot; value white, put them in black to see in which part of the image the threshold is exceeded.</property>
-                    <property name="tooltip-text" translatable="yes">Instead of keeping pixels with values above the "hi" value white, put them in black to see in which part of the image the threshold is exceeded.</property>
-                    <property name="draw-indicator">True</property>
-                    <signal name="toggled" handler="on_checkcut_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">False</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkCheckButton" id="checkbutton_chain">
-                    <property name="visible">True</property>
-                    <property name="can-focus">True</property>
-                    <property name="receives-default">False</property>
-                    <property name="has-tooltip">True</property>
-                    <property name="tooltip-markup" translatable="yes">Click on this button to chain the layers all together</property>
-                    <property name="tooltip-text" translatable="yes">Click on this button to chain the layers all together</property>
-                    <property name="image">image_chain</property>
-                    <property name="active">True</property>
-                    <property name="draw-indicator">True</property>
-                    <signal name="toggled" handler="on_checkchain_toggled" swapped="no"/>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
+                <property name="can-focus">True</property>
+                <property name="receives-default">False</property>
+                <property name="has-tooltip">True</property>
+                <property name="tooltip-markup" translatable="yes">Instead of keeping pixels with values above the &amp;quot;hi&amp;quot; value white, put them in black to see in which part of the image the threshold is exceeded.</property>
+                <property name="tooltip-text" translatable="yes">Instead of keeping pixels with values above the "hi" value white, put them in black to see in which part of the image the threshold is exceeded.</property>
+                <property name="draw-indicator">True</property>
+                <signal name="toggled" handler="on_checkcut_toggled" swapped="no"/>
               </object>
               <packing>
                 <property name="expand">False</property>
