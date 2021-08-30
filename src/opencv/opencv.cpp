@@ -246,13 +246,18 @@ int cvRotateImage(fits *image, point center, double angle, int interpolation, in
 	Rect frame;
 	Point2f pt(center.x, center.y);
 
+	/*  the angle will be mapped to the range of [-360, 360] */
+	angle = ((angle / 90) % 4) * 90;
+
 	gboolean is_fast = fmod(angle, 90.0) == 0.0;
 	if (interpolation == -1)
 		assert(is_fast);
 
 	if (is_fast && (interpolation == -1 || !cropped)) {
-		target_rx = image->ry;
-		target_ry = image->rx;
+		if (fmod(angle, 180.0) != 0.0) {
+			target_rx = image->ry;
+			target_ry = image->rx;
+		}
 	}
 	else if (!cropped) {
 		frame = RotatedRect(pt, Size(image->rx, image->ry), angle).boundingRect();
@@ -265,15 +270,20 @@ int cvRotateImage(fits *image, point center, double angle, int interpolation, in
 		return 1;
 
 	if (is_fast && (interpolation == -1 || !cropped)) {	// fast rotation
-		transpose(in, out);
 		/* flip third argument: how to flip the array; 0 means flipping around the
 		 * x-axis and positive value (for example, 1) means flipping around y-axis.
 		 * Negative value (for example, -1) means flipping around both axes. 
 		 */
-		if (angle == 90.0)
+		if (angle == 90 || angle == -270) {
+			transpose(in, out);
 			flip(out, out, 0);
-		else // 270, -90
+		} else if (angle == 180 || angle == -180) {
+			flip(in, out, -1);
+		}
+		else { // 270, -90
+			transpose(in, out);
 			flip(out, out, 1);
+		}
 	} else {
 		Mat r = getRotationMatrix2D(pt, angle, 1.0);
 		if (cropped == 1) {
