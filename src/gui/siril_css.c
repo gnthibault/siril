@@ -51,9 +51,16 @@ void load_css_style_sheet () {
 	else {
 		gchar *css_buffer = get_buffer_from_css_file(CSSFile);
 		if (css_buffer) {
-			/* update font scale */
+			/* make sure that scale is ok */
 			if (com.pref.font_scale < 70.0) com.pref.font_scale = 100;
-			gchar *updated_css = g_strdup_printf(css_buffer, 1.0 + (com.pref.font_scale - 100.0) / 1000.0, com.pref.icon_symbolic ? "symbolic" : "regular");
+
+			GString *string = g_string_new(css_buffer);
+			g_string_replace(string,
+					"* { font-size: 1.0em; -gtk-icon-style: regular; }",
+					"* { font-size: %lfem; -gtk-icon-style: %s; }", 1);
+
+			gchar *new_buffer = g_string_free(string, FALSE);
+			gchar *updated_css = g_strdup_printf(new_buffer, 1.0 + (com.pref.font_scale - 100.0) / 1000.0, com.pref.icon_symbolic ? "symbolic" : "regular");
 
 			GtkCssProvider *css_provider = gtk_css_provider_new();
 			GdkDisplay *display = gdk_display_get_default();
@@ -65,6 +72,7 @@ void load_css_style_sheet () {
 			gtk_css_provider_load_from_data(css_provider, updated_css, -1, NULL);
 
 			g_fprintf(stdout, _("Successfully loaded '%s'\n"), CSSFile);
+			g_free(new_buffer);
 			g_free(css_buffer);
 			g_free(updated_css);
 			g_object_unref(css_provider);
