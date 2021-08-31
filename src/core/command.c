@@ -3833,10 +3833,6 @@ int process_preprocess(int nb) {
 				args->is_cfa = TRUE;
 			} else if (!strcmp(word[i], "-debayer")) {
 				args->debayer = TRUE;
-			} else if (!strcmp(word[i], "-stretch")) {
-				siril_log_message(_("-stretch option is now deprecated.\n")); // TODO. Should we keep it only for compatibility?
-			} else if (!strcmp(word[i], "-flip")) {
-				siril_log_message(_("-flip option is now deprecated.\n")); // TODO. Should we keep it only for compatibility?
 			} else if (!strcmp(word[i], "-equalize_cfa")) {
 				args->equalize_cfa = TRUE;
 			} else if (!strcmp(word[i], "-fitseq")) {
