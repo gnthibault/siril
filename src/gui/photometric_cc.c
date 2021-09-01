@@ -250,7 +250,11 @@ static int get_white_balance_coeff(psf_star **stars, int nb_stars, fits *fit, fl
 		data[BLUE][k] = FLT_MAX;
 	}
 
-	siril_log_message(_("Applying aperture photometry to %d stars.\n"), nb_stars);
+	gchar *str = ngettext("Applying aperture photometry to %d star.\n", "Applying aperture photometry to %d stars.\n", nb_stars);
+	str = g_strdup_printf(str, nb_stars);
+	siril_log_message(str);
+	g_free(str);
+
 	set_progress_bar_data(_("Photometry color calibration in progress..."), PROGRESS_RESET);
 
 	while (stars[i]) {
@@ -300,7 +304,7 @@ static int get_white_balance_coeff(psf_star **stars, int nb_stars, fits *fit, fl
 		ngood++;
 	}
 	int excl = nb_stars - ngood;
-	gchar *str = ngettext("%d star excluded from the calculation\n", "%d stars excluded from the calculation\n", excl);
+	str = ngettext("%d star excluded from the calculation\n", "%d stars excluded from the calculation\n", excl);
 	str = g_strdup_printf(str, excl);
 	siril_log_message(str);
 	g_free(str);
