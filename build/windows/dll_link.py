@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 ################################################################################
-# Small python script to retrieve DLL depencies with objdump
+# Small python script to retrieve DLL dependencies with objdump
 ################################################################################
 
 ################################################################################
@@ -9,82 +9,122 @@
 #
 # python3 dll_link.py /path/to/run.exe /winenv/ /path/install
 #
-# In this case, the DLL depencies for executable run.exe will be extracted and
-# copied into /path/install/bin folder. To copy the DLL, the root path to
-# Windows environnement should be passed, here /winenv/.
+# In this case, the DLL dependencies for executable run.exe will be extracted
+# and copied into /path/install/bin folder. To copy the DLL, the root path to
+# Windows environnment should be passed, here /winenv/.
 
-import sys
+import argparse
 import os
 import subprocess
 import re
-import string
 import shutil
-from pathlib import Path
+import sys
 
 ################################################################################
 # Global variables
 
 # Sets for executable and system DLL
-dll_siril_set = set()
-dll_sys_set = set()
-
-# Install prefix
-prefix = ''
-
-# Windows environement root
-basedir = ''
+dlls = set()
+sys_dlls = set()
 
 # Common paths
-binary_dir = '/bin/'
-lib_dir = '/lib/'
-etc_dir = '/etc/'
-share_dir = '/share/'
+bindir = 'bin'
 
 ################################################################################
 # Functions
 
 # Main function
-def main():
-  global basedir
-  global prefix
+def main(binary, srcdir, destdir, debug):
+    sys.stdout.write("{} (INFO): searching for dependencies of {} in {}\n".format(
+        os.path.basename(__file__), binary, srcdir))
+    find_dependencies(binary, srcdir)
+    if args.debug:
+        print("Running in debug mode (no DLL moved)")
+        if len(dlls) > 0:
+            sys.stdout.write("Needed DLLs:\n\t- ")
+            sys.stdout.write("\n\t- ".join(list(dlls)))
+            print()
+        if len(sys_dlls) > 0:
+            sys.stdout.write('System DLLs:\n\t- ')
+            sys.stdout.write("\n\t- ".join(sys_dlls))
+            print()
+        removed_dlls = sys_dlls & dlls
+        if len(removed_dlls) > 0:
+            sys.stdout.write('Non installed DLLs:\n\t- ')
+            sys.stdout.write("\n\t- ".join(removed_dlls))
+            print()
+        installed_dlls = dlls - sys_dlls
+        if len(installed_dlls) > 0:
+            sys.stdout.write('Installed DLLs:\n\t- ')
+            sys.stdout.write("\n\t- ".join(installed_dlls))
+            print()
+    else:
+        copy_dlls(dlls - sys_dlls, srcdir, destdir)
 
-  if len(sys.argv) < 4:
-    exit(1)
 
-  filename = sys.argv[1]
-  basedir = sys.argv[2]
-  prefix = sys.argv[3]
+def find_dependencies(obj, srcdir):
+    '''
+    List DLLs of an object file in a recursive way.
+    '''
+    if os.path.exists(obj):
+        # If DLL exists, extract dependencies.
+        objdump = None
 
-  recursive(filename)
-  copy_dll(dll_siril_set-dll_sys_set)
+        result = subprocess.run(['file', obj], stdout=subprocess.PIPE)
+        file_type = result.stdout.decode('utf-8')
+        if 'PE32+' in file_type:
+            objdump = 'x86_64-w64-mingw32-objdump'
+        elif 'PE32' in file_type:
+            objdump = 'i686-w64-mingw32-objdump'
 
-# List DLL of an executable file in a recursive way
-def recursive(filename):
-  # Check if DLL exist in /bin folder, if true extract depencies too.
-  if os.path.exists(filename):
-    result = subprocess.run(
-        ['x86_64-w64-mingw32-objdump', '-p', filename], stdout=subprocess.PIPE)
-    out = result.stdout.decode('utf-8')
-    # Parse lines with DLL Name instead of lib*.dll directly
-    items = re.findall(r"DLL Name: \S+.dll", out, re.MULTILINE)
-    for x in items:
-      x = x.split(' ')[2]
-      l = len(dll_siril_set)
-      dll_siril_set.add(x)
-      if len(dll_siril_set) > l:
-        new_dll = basedir + binary_dir + x
-        recursive(new_dll)
-  # Otherwise, it is a system DLL 
-  else:
-    dll_sys_set.add(os.path.basename(filename))
+        if objdump is None:
+            sys.stderr.write(
+                'File type of {} unknown: {}\n'.format(obj, file_type))
+            sys.exit(os.EX_UNAVAILABLE)
+        elif shutil.which(objdump) is None:
+            # For native objdump case.
+            objdump = 'objdump.exe'
 
-# Copy a DLL set into the /prefix/bin directory
-def copy_dll(dll_list):
-  for file in dll_list:
-    full_file_name = os.path.join(basedir + binary_dir, file)
-    if os.path.isfile(full_file_name):
-      shutil.copy(full_file_name, prefix+binary_dir)
+        if shutil.which(objdump) is None:
+            sys.stderr.write("Executable doesn't exist: {}\n".format(objdump))
+            sys.exit(os.EX_UNAVAILABLE)
+
+        result = subprocess.run([objdump, '-p', obj], stdout=subprocess.PIPE)
+        out = result.stdout.decode('utf-8')
+        # Parse lines with DLL Name instead of lib*.dll directly
+        for match in re.finditer(r"DLL Name: *(\S+.dll)", out, re.MULTILINE):
+            dll = match.group(1)
+            if dll not in dlls:
+                dlls.add(dll)
+                next_dll = os.path.join(srcdir, bindir, dll)
+                find_dependencies(next_dll, srcdir)
+    else:
+        # Otherwise, it is a system DLL
+        sys_dlls.add(os.path.basename(obj))
+
+# Copy a DLL set into the /destdir/bin directory
+def copy_dlls(dll_list, srcdir, destdir):
+    destbin = os.path.join(destdir, bindir)
+    os.makedirs(destbin, exist_ok=True)
+    for dll in dll_list:
+        full_file_name = os.path.join(srcdir, bindir, dll)
+        if os.path.isfile(full_file_name):
+            if not os.path.exists(os.path.join(destbin, dll)):
+                sys.stdout.write("{} (INFO): copying {} to {}\n".format(
+                    os.path.basename(__file__), full_file_name, destbin))
+                shutil.copy(full_file_name, destbin)
+        else:
+            sys.stderr.write("Missing DLL: {}\n".format(full_file_name))
+            sys.exit(os.EX_DATAERR)
 
 
 if __name__ == "__main__":
-  main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--debug', dest='debug',
+                        action='store_true', default=False)
+    parser.add_argument('bin')
+    parser.add_argument('src')
+    parser.add_argument('dest')
+    args = parser.parse_args(sys.argv[1:])
+
+    main(args.bin, args.src, args.dest, args.debug)
