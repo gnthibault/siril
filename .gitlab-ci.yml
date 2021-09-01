@@ -42,14 +42,8 @@ build-image:
     - echo "FROM debian:testing" > Dockerfile
     - echo "RUN apt-get update" >> Dockerfile
     - echo "RUN apt-get install -y --no-install-recommends \\" >> Dockerfile
-    - echo "at-spi2-core build-essential desktop-file-utils cmake hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev libopencv-dev librsvg2-dev libraw-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev libcurl4-gnutls-dev wcslib-dev python3 ninja-build meson libjson-glib-dev" >> Dockerfile
-    - echo "RUN git clone --recurse-submodules --depth=1 -b bleeding https://github.com/Snaipe/Criterion.git \\" >> Dockerfile
-    - echo " && cd Criterion \\" >> Dockerfile
-    - echo " && meson build --prefix /usr \\" >> Dockerfile
-    - echo " && ninja -C build install \\" >> Dockerfile
-    - echo " && cd .. \\" >> Dockerfile
-    - echo " && rm -rf Criterion" >> Dockerfile
-
+    - echo "at-spi2-core build-essential desktop-file-utils cmake hicolor-icon-theme git intltool libexiv2-dev libgtk-3-dev libcfitsio-dev libfftw3-dev libgsl-dev libconfig-dev libopencv-dev librsvg2-dev libraw-dev libffms2-dev libtiff-dev libjpeg-dev libheif-dev libpng-dev libavformat-dev libavutil-dev libavcodec-dev libswscale-dev libswresample-dev libcurl4-gnutls-dev wcslib-dev python3 python3-pip libjson-glib-dev gcovr" >> Dockerfile
+    - echo "RUN python3 -m pip install meson ninja" >> Dockerfile
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-debian-latest --cache=true --cache-ttl=120h
     
 # Image for GNU/Linux build
@@ -128,33 +122,37 @@ build-image-win64:
     - echo "FROM debian:testing" > Dockerfile
     - echo "RUN apt-get update" >> Dockerfile
     - echo "RUN apt-get install -y --no-install-recommends \\" >> Dockerfile
-    - echo "build-essential cmake cpio g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64 git intltool libglib2.0-bin meson pkg-config python3 python3-distutils python3-docutils python3-pip rpm xsltproc wget" >> Dockerfile
+    - echo "build-essential cmake cpio g++-mingw-w64-x86-64 gcc-mingw-w64-x86-64 git intltool libglib2.0-bin meson pkg-config python3 python3-distutils python3-docutils python3-pip rpm xsltproc wget libtool" >> Dockerfile
     - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $CI_REGISTRY_IMAGE:build-win64-latest --cache=true --cache-ttl=120h
 
 ################################################################################
 # GNU/Linux 64-bit CIs
 
 # Currently Siril does not need dependency compilation, so we can skip that.
-# deps-debian/testing:
-#   stage: dependencies
-#   image: $CI_REGISTRY_IMAGE:build-debian-latest
-#   cache:
-#     paths:
-#     - apt-cache
-#   artifacts:
-#     expire_in: 2 hours
-#     when: always
-#     paths:
-#     - "${INSTALL_DIR}"
-#   before_script:
-#     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/pkgconfig"
-#     - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`/pkgconfig/:$PKG_CONFIG_PATH"
-#     - export LD_LIBRARY_PATH="${INSTALL_PREFIX}/lib:${LD_LIBRARY_PATH}"
-#     - export LD_LIBRARY_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`:$LD_LIBRARY_PATH"
-#     - export XDG_DATA_DIRS="${INSTALL_PREFIX}/share:/usr/local/share:/usr/share"
-#   script:
-#     - echo ""
-#   needs: ["build-image"]
+deps-debian:
+  stage: dependencies
+  image: $CI_REGISTRY_IMAGE:build-debian-latest
+  cache:
+    paths:
+    - apt-cache
+  artifacts:
+    expire_in: 2 hours
+    when: always
+    paths:
+    - "${INSTALL_DIR}"
+    - _Criterion/_build
+  before_script:
+    - git clone --recurse-submodules --depth=1 -b bleeding https://github.com/Snaipe/Criterion.git _Criterion
+    - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/pkgconfig"
+    - export PKG_CONFIG_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`/pkgconfig/:$PKG_CONFIG_PATH"
+    - export LD_LIBRARY_PATH="${INSTALL_PREFIX}/lib:${LD_LIBRARY_PATH}"
+    - export LD_LIBRARY_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`:$LD_LIBRARY_PATH"
+    - export XDG_DATA_DIRS="${INSTALL_PREFIX}/share:/usr/local/share:/usr/share"
+  script:
+    - cd _Criterion
+    - meson _build --prefix ${INSTALL_PREFIX}
+    - ninja -C _build install
+  needs: ["build-image"]
 
 .siril-debian/testing-base:
   except:
@@ -162,7 +160,7 @@ build-image-win64:
   stage: siril
   image: $CI_REGISTRY_IMAGE:build-debian-latest
   dependencies:
-    - build-image
+    - deps-debian
   variables:
     GIT_SUBMODULE_STRATEGY: recursive
   cache:
@@ -183,7 +181,7 @@ build-image-win64:
     - export LD_LIBRARY_PATH="${INSTALL_PREFIX}/lib/`gcc -print-multiarch`:$LD_LIBRARY_PATH"
     - export XDG_DATA_DIRS="${INSTALL_PREFIX}/share:/usr/local/share:/usr/share"
     - export PATH="${INSTALL_PREFIX}/bin:$PATH"
-  needs: ["build-image"]
+  needs: ["deps-debian"]
 
 siril-debian/testing-autotools:
   extends: .siril-debian/testing-base
@@ -196,14 +194,21 @@ siril-debian/testing-autotools:
 siril-debian/testing-meson:
   extends: .siril-debian/testing-base
   script:
-    - meson --prefix="${INSTALL_PREFIX}" ${BUILD_DIR}
+    - meson --prefix="${INSTALL_PREFIX}" ${BUILD_DIR} -Db_coverage=true
     - ninja -C ${BUILD_DIR} install
-    - meson test -C ${BUILD_DIR} -v --no-suite perfs --test-args="--xml=tests_results.xml"
+    - meson test -C ${BUILD_DIR} -v --no-suite perfs
+    - cd ${BUILD_DIR}
+    - gcovr --xml-pretty --exclude-unreachable-branches --exclude-directories subprojects --exclude-directories  src/tests  --root ../ -o coverage.xml --print-summary
+    - cd ..
   artifacts:
     paths:
-      - ${BUILD_DIR}/tests_results.xml
+      - ${BUILD_DIR}/meson-logs/testlog.junit.xml
+      - ${BUILD_DIR}/coverage.xml    
     reports:
-      junit: ${BUILD_DIR}/tests_results.xml
+      junit: ${BUILD_DIR}/meson-logs/testlog.junit.xml
+      cobertura: ${BUILD_DIR}/coverage.xml
+
+
 
 ################################################################################
 # WINDOWS 64-bit CI
