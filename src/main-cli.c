@@ -167,6 +167,8 @@ static void siril_app_activate(GApplication *application) {
 
 	/* initialize peaker variables */
 	init_peaker_default();
+	/* initialize photometry variables */
+	initialize_photometric_param();
 	/* initialize sequence-related stuff */
 	initialize_sequence(&com.seq, TRUE);
 
