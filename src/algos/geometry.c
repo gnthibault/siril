@@ -164,29 +164,27 @@ void mirrory_gui(fits *fit) {
 }
 
 static void rotate_gui(fits *fit) {
-	if (confirm_delete_wcs_keywords(fit)) {
-		static GtkToggleButton *crop_rotation = NULL;
-		double angle = gtk_spin_button_get_value(
-				GTK_SPIN_BUTTON(lookup_widget("spinbutton_rotation")));
-		int interpolation = gtk_combo_box_get_active(
-				GTK_COMBO_BOX(lookup_widget("combo_interpolation_rotation")));
-		int cropped;
+	static GtkToggleButton *crop_rotation = NULL;
+	double angle = gtk_spin_button_get_value(
+			GTK_SPIN_BUTTON(lookup_widget("spinbutton_rotation")));
+	int interpolation = gtk_combo_box_get_active(
+			GTK_COMBO_BOX(lookup_widget("combo_interpolation_rotation")));
+	int cropped;
 
-		if (crop_rotation == NULL) {
-			crop_rotation = GTK_TOGGLE_BUTTON(
-					lookup_widget("checkbutton_rotation_crop"));
-		}
-		cropped = gtk_toggle_button_get_active(crop_rotation);
-
-		set_cursor_waiting(TRUE);
-		undo_save_state(fit, _("Rotation (%.1lfdeg, cropped=%s)"), angle,
-				cropped ? "TRUE" : "FALSE");
-		verbose_rotate_image(fit, angle, interpolation, cropped);
-		
-		redraw(com.cvport, REMAP_ALL);
-		redraw_previews();
-		set_cursor_waiting(FALSE);
+	if (crop_rotation == NULL) {
+		crop_rotation = GTK_TOGGLE_BUTTON(
+				lookup_widget("checkbutton_rotation_crop"));
 	}
+	cropped = gtk_toggle_button_get_active(crop_rotation);
+
+	set_cursor_waiting(TRUE);
+	undo_save_state(fit, _("Rotation (%.1lfdeg, cropped=%s)"), angle,
+			cropped ? "TRUE" : "FALSE");
+	verbose_rotate_image(fit, angle, interpolation, cropped);
+	
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
+	set_cursor_waiting(FALSE);
 }
 
 /* These functions do not more than resize_gaussian and rotate_image
@@ -263,18 +261,15 @@ int verbose_rotate_image(fits *image, double angle, int interpolation,
 	gettimeofday(&t_start, NULL);
 
 	point center = {image->rx / 2.0, image->ry / 2.0};
+
 	cvRotateImage(image, center, angle, interpolation, cropped);
 
 	gettimeofday(&t_end, NULL);
 	show_time(t_start, t_end);
 
-	if (interpolation != -1) {
-		invalidate_WCS_keywords(image);
-	} else {
-		if (image->wcslib) {
-			rotate_astrometry_data(image, angle);
-			load_WCS_from_memory(image);
-		}
+	if (image->wcslib) {
+		rotate_astrometry_data(image, center, angle, cropped);
+		load_WCS_from_memory(image);
 	}
 
 	return 0;
@@ -421,7 +416,6 @@ static void crop_ushort(fits *fit, rectangle *bounds) {
 		show_time(t_start, t_end);
 	}
 	invalidate_stats_from_fit(fit);
-	invalidate_WCS_keywords(fit);
 }
 
 static void crop_float(fits *fit, rectangle *bounds) {
@@ -458,16 +452,22 @@ static void crop_float(fits *fit, rectangle *bounds) {
 		show_time(t_start, t_end);
 	}
 	invalidate_stats_from_fit(fit);
-	invalidate_WCS_keywords(fit);
 }
 
 int crop(fits *fit, rectangle *bounds) {
+	point shift; //need to be computed before fit rx/ry are altered by crop
+	shift.x = (double)(bounds->x);
+	shift.y = fit->ry - (double)(bounds->h) - (double)(bounds->y) - 1; // for top-bottom flip
 	if (fit->type == DATA_USHORT) {
 		crop_ushort(fit, bounds);
 	} else if (fit->type == DATA_FLOAT) {
 		crop_float(fit, bounds);
 	} else {
 		return -1;
+	}
+	if (fit->wcslib) {
+		crop_astrometry_data(fit, shift);
+		load_WCS_from_memory(fit);
 	}
 	return 0;
 }
@@ -576,24 +576,21 @@ void on_button_sample_ratio_toggled(GtkToggleButton *button, gpointer user_data)
  * CROP
  */
 void siril_crop() {
-	// if astrometry exists
-	if (confirm_delete_wcs_keywords(&gfit)) {
-		undo_save_state(&gfit, _("Crop (x=%d, y=%d, w=%d, h=%d)"),
-				com.selection.x, com.selection.y, com.selection.w,
-				com.selection.h);
-		if (is_preview_active()) {
-			siril_message_dialog(GTK_MESSAGE_INFO, _("A live preview session is active"),
-					_("It is impossible to crop the image when a filter with preview session is active. "
-							"Please consider to close the filter dialog first."));
-			return;
-		}
-		crop(&gfit, &com.selection);
-		delete_selected_area();
-		reset_display_offset();
-		adjust_cutoff_from_updated_gfit();
-		redraw(com.cvport, REMAP_ALL);
-		redraw_previews();
+	undo_save_state(&gfit, _("Crop (x=%d, y=%d, w=%d, h=%d)"),
+			com.selection.x, com.selection.y, com.selection.w,
+			com.selection.h);
+	if (is_preview_active()) {
+		siril_message_dialog(GTK_MESSAGE_INFO, _("A live preview session is active"),
+				_("It is impossible to crop the image when a filter with preview session is active. "
+						"Please consider to close the filter dialog first."));
+		return;
 	}
+	crop(&gfit, &com.selection);
+	delete_selected_area();
+	reset_display_offset();
+	adjust_cutoff_from_updated_gfit();
+	redraw(com.cvport, REMAP_ALL);
+	redraw_previews();
 }
 
 gint64 crop_compute_size_hook(struct generic_seq_args *args, int nb_frames) {
