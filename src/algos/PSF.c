@@ -124,17 +124,15 @@ static gsl_vector* psf_init_data(gsl_matrix* z, double bg) {
  * failed and for star detection when magnitude is not needed.
  */
 static double psf_get_mag(gsl_matrix* z, double B) {
-	double intensity = 0.0, magnitude;
+	double intensity = 1.0;
 	size_t NbRows = z->size1;
 	size_t NbCols = z->size2;
-	size_t i, j;
 
-	for (i = 0; i < NbRows; i++) {
-		for (j = 0; j < NbCols; j++)
+	for (size_t i = 0; i < NbRows; i++) {
+		for (size_t j = 0; j < NbCols; j++)
 			intensity += gsl_matrix_get(z, i, j) - B;
 	}
-	magnitude = -2.5 * log10(intensity);
-	return magnitude;
+	return -2.5 * log10(intensity);
 }
 
 /* No angle */

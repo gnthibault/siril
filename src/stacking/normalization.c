@@ -135,7 +135,7 @@ static int normalization_get_max_number_of_threads(sequence *seq) {
 }
 
 static int compute_normalization(struct stacking_args *args) {
-	int i, ref_image_filtred_idx = -1, retval = 0, cur_nb = 1;
+	int ref_image_filtred_idx = -1, retval = 0, cur_nb = 1;
 	double *scale0, *mul0, *offset0;	// for reference frame
 	char *tmpmsg;
 	norm_coeff *coeff = &args->coeff;
@@ -148,7 +148,7 @@ static int compute_normalization(struct stacking_args *args) {
 		coeff->pscale[layer] = coeff->scale + layer * nb_frames;
 	}
 
-	for (i = 0; i < args->nb_images_to_stack; ++i) {
+	for (int i = 0; i < args->nb_images_to_stack; ++i) {
 		for (int layer = 0; layer < nb_layers; ++layer) {
 			coeff->poffset[layer][i] = 0.0;
 			coeff->pmul[layer][i] = 1.0;
