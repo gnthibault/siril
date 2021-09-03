@@ -807,8 +807,14 @@ double convert_single_fwhm_to_pixels(double fwhm, double s) {
 	return sqrt(s * 0.5) * _2_SQRT_2_LOG2;
 }
 
-double convert_single_fwhm_to_arcsec(double fwhm, double bin, double px_size, double flenght) {
-	return fwhm * (radian_conversion * px_size / flenght) * bin;
+gboolean convert_single_fwhm_to_arcsec_if_possible(double fwhm, double bin, double px_size, double flenght, double *result) {
+	double arcsec = fwhm * (radian_conversion * px_size / flenght) * bin;
+	if (arcsec <= 0.0 || isnan(arcsec) || !isfinite(arcsec)) {
+		*result = 0;
+		return FALSE;
+	}
+	*result = arcsec;
+	return TRUE;
 }
 
 psf_star *new_psf_star() {

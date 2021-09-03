@@ -117,7 +117,7 @@ static void build_registration_dataset(sequence *seq, int layer, int ref_image,
 		double fwhm;
 		if (is_arcsec) {
 			double bin = gfit.unbinned ? (double) gfit.binning_x : 1.0;
-			fwhm = convert_single_fwhm_to_arcsec(seq->regparam[layer][i].fwhm, bin, (double) gfit.pixel_size_x, gfit.focal_length);
+			convert_single_fwhm_to_arcsec_if_possible(seq->regparam[layer][i].fwhm, bin, (double) gfit.pixel_size_x, gfit.focal_length, &fwhm);
 		} else {
 			fwhm = seq->regparam[layer][i].fwhm;
 		}
@@ -131,8 +131,7 @@ static void build_registration_dataset(sequence *seq, int layer, int ref_image,
 	double fwhm;
 	if (is_arcsec) {
 		double bin = gfit.unbinned ? (double) gfit.binning_x : 1.0;
-		fwhm = convert_single_fwhm_to_arcsec(seq->regparam[layer][ref_image].fwhm, bin, (double) gfit.pixel_size_x, gfit.focal_length);
-		printf("fwhm=%lf/%lf\n", seq->regparam[layer][ref_image].fwhm, fwhm);
+		convert_single_fwhm_to_arcsec_if_possible(seq->regparam[layer][ref_image].fwhm, bin, (double) gfit.pixel_size_x, gfit.focal_length, &fwhm);
 	} else {
 		fwhm = seq->regparam[layer][ref_image].fwhm;
 	}
