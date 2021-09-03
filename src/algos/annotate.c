@@ -234,19 +234,17 @@ GSList *find_objects(fits *fit) {
 	if (!has_wcs(fit)) return NULL;
 	GSList *targets = NULL;
 	gdouble x1, y1, x2, y2;
-	double *crval;
 	double resolution;
 
-	crval = get_wcs_crval(fit);
+	double ra0 = fit->wcsdata.ra;
+	double dec0 = fit->wcsdata.dec;
 	resolution = get_wcs_image_resolution(fit);
 
-	if (crval == NULL) return NULL;
-	if (crval[0] == 0.0 && crval[1] == 0.0) return NULL;
 	if (resolution <= 0.0) return NULL;
 
 	/* get center of the image */
-	x1 = crval[0];
-	y1 = crval[1];
+	x1 = ra0;
+	y1 = dec0;
 
 	/* get radius of the fov */
 	x2 = x1 + fit->rx * resolution;

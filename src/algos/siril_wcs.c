@@ -242,18 +242,3 @@ double get_wcs_image_resolution(fits *fit) {
 	}
 	return resolution;
 }
-
-double *get_wcs_crval(fits *fit) {
-#ifdef HAVE_WCSLIB
-	static double ret[NWCSFIX] = { 0 };
-	if (fit->wcslib) {
-		for (int i = 0; i < NAXIS; i++) {
-			ret[i] = fit->wcslib->crval[i];
-		}
-	}
-	return ret;
-#else
-	return NULL;
-#endif
-}
-

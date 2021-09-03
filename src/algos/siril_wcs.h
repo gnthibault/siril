@@ -29,6 +29,5 @@ gboolean load_WCS_from_memory(fits *fit);
 void pix2wcs(fits *fit, double pixel_x, double pixel_y, double *world_x, double *world_y);
 void wcs2pix(fits *fit, double world_x, double world_y, double *pixel_x, double *pixel_y);
 double get_wcs_image_resolution(fits *fit);
-double *get_wcs_crval(fits *fit);
 
 #endif /* SRC_ALGOS_SIRIL_WCS_H_ */
