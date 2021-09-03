@@ -331,11 +331,6 @@ void init_layers_hi_and_lo_values(sliders_mode force_minmax) {
 	if (force_minmax == USER) return;
 	int i, nb_layers;
 	layer_info *layers=NULL;
-	static GtkToggleButton *chainedbutton = NULL;
-	gboolean is_chained;
-	
-	chainedbutton = GTK_TOGGLE_BUTTON(lookup_widget("checkbutton_chain"));
-	is_chained = gtk_toggle_button_get_active(chainedbutton);
 
 	if (com.uniq && com.uniq->layers && com.seq.current != RESULT_IMAGE) {
 		nb_layers = com.uniq->nb_layers;
@@ -350,14 +345,8 @@ void init_layers_hi_and_lo_values(sliders_mode force_minmax) {
 	for (i=0; i<nb_layers; i++) {
 		if (gfit.hi == 0 || force_minmax == MINMAX) {
 			com.sliders = MINMAX;
-			if (!is_chained) {
-				fit_lohi_to_layers(&gfit, fit_get_min(&gfit, i),
-						fit_get_max(&gfit, i), &layers[i]);
-			}
-			else {
-				image_find_minmax(&gfit);
-				fit_lohi_to_layers(&gfit, gfit.mini, gfit.maxi, &layers[i]);
-			}
+			image_find_minmax(&gfit);
+			fit_lohi_to_layers(&gfit, gfit.mini, gfit.maxi, &layers[i]);
 		} else {
 			com.sliders = MIPSLOHI;
 			layers[i].hi = gfit.hi;
