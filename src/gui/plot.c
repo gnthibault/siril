@@ -114,18 +114,31 @@ static void build_registration_dataset(sequence *seq, int layer, int ref_image,
 	for (i = 0, j = 0; i < plot->nb; i++) {
 		if (!seq->imgparam[i].incl)
 			continue;
+		double fwhm;
+		if (is_arcsec) {
+			double bin = gfit.unbinned ? (double) gfit.binning_x : 1.0;
+			fwhm = convert_single_fwhm_to_arcsec(seq->regparam[layer][i].fwhm, bin, (double) gfit.pixel_size_x, gfit.focal_length);
+		} else {
+			fwhm = seq->regparam[layer][i].fwhm;
+		}
 		plot->data[j].x = (double) i + 1;
-		plot->data[j].y = is_fwhm ?	seq->regparam[layer][i].fwhm :
-						seq->regparam[layer][i].quality;
+		plot->data[j].y = is_fwhm ?	fwhm : seq->regparam[layer][i].quality;
 		plot->frame[j] =  plot->data[j].x;
 		j++;
 	}
 	plot->nb = j;
 
+	double fwhm;
+	if (is_arcsec) {
+		double bin = gfit.unbinned ? (double) gfit.binning_x : 1.0;
+		fwhm = convert_single_fwhm_to_arcsec(seq->regparam[layer][ref_image].fwhm, bin, (double) gfit.pixel_size_x, gfit.focal_length);
+		printf("fwhm=%lf/%lf\n", seq->regparam[layer][ref_image].fwhm, fwhm);
+	} else {
+		fwhm = seq->regparam[layer][ref_image].fwhm;
+	}
+
 	ref.x = (double) ref_image + 1;
-	ref.y = is_fwhm ?
-			seq->regparam[layer][ref_image].fwhm :
-			seq->regparam[layer][ref_image].quality;
+	ref.y = is_fwhm ? fwhm : seq->regparam[layer][ref_image].quality;
 
 }
 
@@ -520,7 +533,6 @@ void on_plotSourceCombo_changed(GtkComboBox *box, gpointer user_data) {
 	use_photometry = gtk_combo_box_get_active(GTK_COMBO_BOX(box));
 	gtk_widget_set_visible(combo, use_photometry);
 	gtk_widget_set_visible(varCurve, use_photometry);
-	gtk_widget_set_visible(arcsec, use_photometry);
 	gtk_widget_set_visible(julianw, use_photometry);
 	drawPlot();
 }
@@ -532,7 +544,6 @@ void reset_plot() {
 		gtk_widget_set_visible(sourceCombo, FALSE);
 		gtk_widget_set_visible(combo, FALSE);
 		gtk_widget_set_visible(varCurve, FALSE);
-		gtk_widget_set_visible(arcsec, FALSE);
 		gtk_widget_set_visible(julianw, FALSE);
 		gtk_widget_set_sensitive(buttonClearLatest, FALSE);
 		gtk_widget_set_sensitive(buttonClearAll, FALSE);
@@ -608,7 +619,10 @@ void drawPlot() {
 
 		if (seq->regparam[layer][ref_image].fwhm > 0.0f) {
 			is_fwhm = TRUE;
-			ylabel = _("FWHM");
+			if (is_arcsec)
+				ylabel = _("FWHM ('')");
+			else
+				ylabel = _("FWHM (px)");
 		} else if (seq->regparam[layer][ref_image].quality > 0.0) {
 			is_fwhm = FALSE;
 			ylabel = _("Quality");

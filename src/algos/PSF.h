@@ -50,6 +50,7 @@ void fwhm_to_arcsec_if_needed(fits*, psf_star*);
 void fwhm_to_pixels(psf_star *result);
 gboolean get_fwhm_as_arcsec_if_possible(psf_star *star, double *fwhmx, double *fwhmy, char **unit);
 double convert_single_fwhm_to_pixels(double fwhm, double s);
+double convert_single_fwhm_to_arcsec(double fwhm, double bin, double px_size, double flenght);
 
 psf_star *new_psf_star();
 psf_star *duplicate_psf(psf_star *);

@@ -807,6 +807,10 @@ double convert_single_fwhm_to_pixels(double fwhm, double s) {
 	return sqrt(s * 0.5) * _2_SQRT_2_LOG2;
 }
 
+double convert_single_fwhm_to_arcsec(double fwhm, double bin, double px_size, double flenght) {
+	return fwhm * (radian_conversion * px_size / flenght) * bin;
+}
+
 psf_star *new_psf_star() {
 	psf_star *star = malloc(sizeof(psf_star));
 	star->phot = NULL;
