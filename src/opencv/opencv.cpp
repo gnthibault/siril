@@ -300,6 +300,28 @@ int cvRotateImage(fits *image, point center, double angle, int interpolation, in
 	return Mat_to_image(image, &in, &out, bgr, target_rx, target_ry);
 }
 
+void cvRotateImageRefPoint(fits *image, point center, double angle, int cropped, point refpointin, point *refpointout) {
+	Point2f pt(center.x, center.y);
+	Point3d refptin(refpointin.x, refpointin.y, 1);
+	Mat refptout;
+	Rect frame;
+
+	if (!cropped) {
+		frame = RotatedRect(pt, Size(center.x *2, center.y *2), angle).boundingRect2f();
+	}
+
+	Mat r = getRotationMatrix2D(pt, angle, 1.0);
+	if (!cropped) {
+		// adjust transformation matrix
+		r.at<double>(0, 2) += frame.width / 2.0 - pt.x;
+		r.at<double>(1, 2) += frame.height / 2.0 - pt.y;
+	}
+	refptout = r * Mat(refptin);
+	refpointout->x = refptout.at<double>(0, 0);
+	refpointout->y = refptout.at<double>(0, 1);
+}
+
+
 int cvAffineTransformation(fits *image, pointf *refpoints, pointf *curpoints, int nb_points, gboolean upscale2x, int interpolation) {
 	// see https://docs.opencv.org/3.4/d4/d61/tutorial_warp_affine.html
 	std::vector<Point2f> ref;

@@ -32,6 +32,8 @@ int cvUnsharpFilter(fits*, double, double);
 
 int cvClahe(fits *image, double clip_limit, int size);
 
+void cvRotateImageRefPoint(fits *image, point center, double angle, int cropped, point refpointin, point *refpointout);
+
 #ifdef __cplusplus
 }
 #endif
