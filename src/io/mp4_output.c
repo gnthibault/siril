@@ -323,38 +323,53 @@ static int write_video_frame(struct mp4_struct *ost, fits *input_image)
 {
 	int ret;
 	AVCodecContext *c = ost->enc;
-	AVPacket pkt = { 0 };
+	AVPacket *pkt;
+
+	pkt = av_packet_alloc();
+	if (!pkt)
+		return 1;
 	fprintf(stdout, "writing video frame\n");
 
 	ost->frame = get_video_frame(ost, input_image);
 
-	av_init_packet(&pkt);
-
 	/* encode the image */
 	ret = avcodec_send_frame(c, ost->frame);
 	if (ret < 0) {
+		av_packet_unref(pkt);
+		av_packet_free(&pkt);
 		fprintf(stderr, "Error encoding video frame: %s\n", av_err2str(ret));
 		return 1;
 	}
 
-	ret = avcodec_receive_packet(c, &pkt);
+	ret = avcodec_receive_packet(c, pkt);
 	if (ret == 0) {
-		ret = write_frame(ost->oc, &c->time_base, ost->st, &pkt);
+		ret = write_frame(ost->oc, &c->time_base, ost->st, pkt);
+		av_packet_unref(pkt);
+		av_packet_free(&pkt);
 		if (ret < 0) {
 			fprintf(stderr, "Error while writing video frame: %s\n", av_err2str(ret));
 			return 1;
 		}
 	}
 	else if (ret == AVERROR(EINVAL)) {
+		av_packet_unref(pkt);
+		av_packet_free(&pkt);
 		fprintf(stderr, "Error while getting video packet: %s\n", av_err2str(ret));
 		return 1;
 	}
 	else if (ret == AVERROR_EOF) {
+		av_packet_unref(pkt);
+		av_packet_free(&pkt);
 		fprintf(stderr, "End of stream met while adding a frame\n");
 		return 1;
 	}
-	else if (ret == AVERROR(EAGAIN))
+	else if (ret == AVERROR(EAGAIN)) {
+		av_packet_unref(pkt);
+		av_packet_free(&pkt);
 		return 0;
+	}
+	av_packet_unref(pkt);
+	av_packet_free(&pkt);
 	//else retry later
 	return 0;
 }
@@ -362,30 +377,41 @@ static int write_video_frame(struct mp4_struct *ost, fits *input_image)
 static void flush_stream(struct mp4_struct *ost)
 {
 	int ret;
-	AVPacket pkt = { 0 };
-	av_init_packet(&pkt);
+	AVPacket *pkt;
+
+	pkt = av_packet_alloc();
+	if (!pkt)
+		return;
 
 	ret = avcodec_send_frame(ost->enc, NULL);
 	if (ret < 0) {
+		av_packet_unref(pkt);
+		av_packet_free(&pkt);
 		fprintf(stderr, "Error encoding video frame: %s\n", av_err2str(ret));
 		return;
 	}
 
 	do {
-		ret = avcodec_receive_packet(ost->enc, &pkt);
+		ret = avcodec_receive_packet(ost->enc, pkt);
 		if (ret == 0) {
-			ret = write_frame(ost->oc, &ost->enc->time_base, ost->st, &pkt);
+			ret = write_frame(ost->oc, &ost->enc->time_base, ost->st, pkt);
 			if (ret < 0) {
+				av_packet_unref(pkt);
+				av_packet_free(&pkt);
 				fprintf(stderr, "Error while writing video frame: %s\n", av_err2str(ret));
 				return;
 			}
 		}
 		else if (ret == AVERROR(EINVAL)) {
+			av_packet_unref(pkt);
+			av_packet_free(&pkt);
 			fprintf(stderr, "Error while getting video packet: %s\n", av_err2str(ret));
 			return;
 		}
 	}
-	while (ret != AVERROR_EOF) ;
+	while (ret != AVERROR_EOF);
+	av_packet_unref(pkt);
+	av_packet_free(&pkt);
 }
 
 static void close_stream(struct mp4_struct *ost)
