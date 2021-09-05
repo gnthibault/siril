@@ -74,7 +74,12 @@ gboolean load_WCS_from_memory(fits *fit) {
 	}
 	wcsinit(1, NAXIS, fit->wcslib, 0, 0, 0);
 
-	const char CTYPE[2][9] = {"RA---TAN", "DEC--TAN"};
+	const char CTYPE[2][9] = { "RA---TAN", "DEC--TAN" };
+	const char CUNIT[2][9] = { "deg", "deg" };
+
+	for (int i = 0; i < NAXIS; i++) {
+		strcpy(fit->wcslib->cunit[i], &CUNIT[i][0]);
+	}
 
 	double *pcij = fit->wcslib->pc;
 	for (int i = 0; i < NAXIS; i++) {

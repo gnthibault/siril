@@ -904,7 +904,7 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 		i = i + stepRA;
 		r += 1;
 		c = 0;
-	} while (i <= centra + 6. * stepRA);
+	} while (i <= (centra + 6. * stepRA) * 2);
 
 	// plot RA grid
 	cairo_set_source_rgb(cr, 0., 0.5, 1.);
@@ -929,7 +929,7 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 				cairo_stroke(cr);
 			}
 			i = i + step;
-		} while (i <= (centra + 6 * stepRA));
+		} while (i <= (centra + 6 * stepRA) * 2.0);
 		j = j + step;
 	} while (j <= min(centdec + step * 6, 90));
 
