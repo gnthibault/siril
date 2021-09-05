@@ -1518,7 +1518,7 @@ void crop_astrometry_data(fits *fit, point shift) {
 	print_updated_wcs_data(fit);
 	load_WCS_from_memory(fit); //need to update before pix2wcs - will be called once again by the crop function to update ra/dec
 
-	pix2wcs(fit, (double)(fit->rx) /2 , (double)(fit->ry) /2 , &fit->wcsdata.ra, &fit->wcsdata.dec);
+	center2wcs(fit, &fit->wcsdata.ra, &fit->wcsdata.dec);
 	if (fit->wcsdata.ra != -1.) update_coords(); //to have plate solve window well-centered in case of subsequent call
 }
 

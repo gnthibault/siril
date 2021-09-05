@@ -697,6 +697,7 @@ struct cominf {
 	
 	GSList *grad_samples;
 	GSList *found_object;
+	gboolean show_wcs_grid;
 	psf_star *qphot;      // quick photometry result
 	sensor_tilt *tilt;     // tilt information
 

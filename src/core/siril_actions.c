@@ -318,7 +318,21 @@ void annotate_object_state(GSimpleAction *action, GVariant *state, gpointer user
 	redraw(com.cvport, REMAP_NONE);
 }
 
+void wcs_grid_state(GSimpleAction *action, GVariant *state, gpointer user_data) {
+	com.show_wcs_grid = g_variant_get_boolean(state);
+	g_simple_action_set_state(action, state);
+	redraw(com.cvport, REMAP_NONE);
+}
+
 void annotate_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
+	GVariant *state;
+
+	state = g_action_get_state(G_ACTION(action));
+	g_action_change_state(G_ACTION(action), g_variant_new_boolean(!g_variant_get_boolean(state)));
+	g_variant_unref(state);
+}
+
+void wcs_grid_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
 	GVariant *state;
 
 	state = g_action_get_state(G_ACTION(action));

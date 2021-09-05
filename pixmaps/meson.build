@@ -40,6 +40,8 @@ siril_icons = [
   'siril.svg',
   'tilt.svg',
   'tilt_dark.svg',
+  'wcs-grid.svg',
+  'wcs-grid_dark.svg',
 ]
 
 ################################################################################

@@ -58,6 +58,7 @@ static GActionEntry image_entries[] = {
 		{ "image-information", image_information_activate },
 		{ "dyn-psf", dyn_psf_activate },
 		{ "annotate-object", annotate_object_activate, NULL, "false", annotate_object_state },
+		{ "wcs-grid", wcs_grid_activate, NULL, "false", wcs_grid_state },
 		{ "search-object", search_object_activate },
 		{ "seq-list", seq_list_activate }
 };

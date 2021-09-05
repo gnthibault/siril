@@ -111,6 +111,7 @@ static void update_icons_to_theme(gboolean is_dark) {
 	siril_debug_print("Loading %s theme...\n", is_dark ? "dark" : "light");
 	if (is_dark) {
 		update_theme_button("annotate_button", "astrometry_dark.svg");
+		update_theme_button("wcs_grid_button", "wcs-grid_dark.svg");
 		update_theme_button("photometry_button", "photometry_dark.svg");
 
 		update_theme_button("rotate90_anticlock_button", "rotate-acw_dark.svg");
@@ -126,6 +127,7 @@ static void update_icons_to_theme(gboolean is_dark) {
 		update_theme_button("histoToolAutoStretch", "mtf_dark.svg");
 	} else {
 		update_theme_button("annotate_button", "astrometry.svg");
+		update_theme_button("wcs_grid_button", "wcs-grid.svg");
 		update_theme_button("photometry_button", "photometry.svg");
 
 		update_theme_button("rotate90_anticlock_button", "rotate-acw.svg");
@@ -367,11 +369,19 @@ void update_MenuItem() {
 	gboolean enable_button = any_image_is_loaded && has_wcs(&gfit);
 	GAction *action_annotate = g_action_map_lookup_action(G_ACTION_MAP(app_win), "annotate-object");
 	g_simple_action_set_enabled(G_SIMPLE_ACTION(action_annotate), enable_button);
+	GAction *action_grid = g_action_map_lookup_action(G_ACTION_MAP(app_win), "wcs-grid");
+	g_simple_action_set_enabled(G_SIMPLE_ACTION(action_grid), enable_button);
+
 	/* untoggle if disabled */
 	if (!enable_button) {
 		GVariant *state = g_action_get_state(action_annotate);
 		if (g_variant_get_boolean(g_action_get_state(action_annotate))) {
 			g_action_change_state(action_annotate, g_variant_new_boolean(FALSE));
+		}
+		g_variant_unref(state);
+		state = g_action_get_state(action_grid);
+		if (g_variant_get_boolean(g_action_get_state(action_grid))) {
+			g_action_change_state(action_grid, g_variant_new_boolean(FALSE));
 		}
 		g_variant_unref(state);
 	}

@@ -236,15 +236,12 @@ GSList *find_objects(fits *fit) {
 	gdouble x1, y1, x2, y2;
 	double resolution;
 
-	double ra0 = fit->wcsdata.ra;
-	double dec0 = fit->wcsdata.dec;
 	resolution = get_wcs_image_resolution(fit);
-
 	if (resolution <= 0.0) return NULL;
 
-	/* get center of the image */
-	x1 = ra0;
-	y1 = dec0;
+	/* get ra and dec of center of the image */
+	center2wcs(fit, &x1, &y1);
+	if (x1 == -1.) return targets;
 
 	/* get radius of the fov */
 	x2 = x1 + fit->rx * resolution;
