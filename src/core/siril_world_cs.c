@@ -147,6 +147,15 @@ gchar* siril_world_cs_delta_format(SirilWorldCS *world_cs, const gchar *format) 
 	int degree = (int) dec;
 	int min = abs((int) ((dec - degree) * 60.0));
 	double sec = (fabs((dec - degree) * 60.0) - min) * 60.0;
+	if (round(sec) >= 60.) {
+		sec -= 60.;
+		min += 1;
+	}
+	if (min >= 60) {
+		min -= 60;
+		degree += 1;
+	}
+	if (degree >= 360) degree = 0;
 
 	gchar *ptr = g_strrstr(format, "lf");
 	if (ptr) { // floating point for second
@@ -167,6 +176,15 @@ gchar* siril_world_cs_alpha_format(SirilWorldCS *world_cs, const gchar *format) 
 	int hour = (int)(ra / 15.0);
 	int min = (int)(((ra / 15.0) - hour) * 60.0);
 	double sec = ((((ra / 15.0) - hour) * 60.0) - min) * 60.0;
+	if (round(sec) >= 60.) {
+		sec -= 60.;
+		min += 1;
+	}
+	if (min >= 60) {
+		min -= 60;
+		hour += 1;
+	}
+	if (hour >= 24) hour = 0;
 
 	gchar *ptr = g_strrstr(format, "lf");
 	if (ptr) { // floating point for second

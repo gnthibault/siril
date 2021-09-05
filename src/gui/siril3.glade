@@ -6632,6 +6632,11 @@ Modifying parameters in this windows afterward will void the colour balance, and
     <property name="can-focus">False</property>
     <property name="pixbuf">pixmaps/tilt_dark.svg</property>
   </object>
+  <object class="GtkImage" id="image3">
+    <property name="visible">True</property>
+    <property name="can-focus">False</property>
+    <property name="pixbuf">pixmaps/wcs-grid_dark.svg</property>
+  </object>
   <object class="GtkImage" id="imageHelp">
     <property name="visible">True</property>
     <property name="can-focus">False</property>
@@ -16566,6 +16571,20 @@ Siril uses a 32-bit internal image to process the stacking, which is then saved 
                     <property name="action-name">win.annotate-object</property>
                     <property name="use-underline">True</property>
                     <property name="icon-widget">astrometry</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="homogeneous">False</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkToggleToolButton" id="wcs_grid_button">
+                    <property name="visible">True</property>
+                    <property name="can-focus">False</property>
+                    <property name="tooltip-text" translatable="yes">Show celestial grid if WCS information is available</property>
+                    <property name="action-name">win.wcs-grid</property>
+                    <property name="use-underline">True</property>
+                    <property name="icon-widget">image3</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>

@@ -69,6 +69,8 @@ void seq_crop_activate(GSimpleAction *action, GVariant *parameter, gpointer user
 void search_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void annotate_object_state(GSimpleAction *action, GVariant *state, gpointer user_data);
 void annotate_object_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
+void wcs_grid_state(GSimpleAction *action, GVariant *state, gpointer user_data);
+void wcs_grid_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void seq_list_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void statistics_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);
 void noise_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data);

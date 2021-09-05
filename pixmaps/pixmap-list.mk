@@ -32,4 +32,6 @@ pixmaps = \
 	sum.svg \
 	sum_dark.svg \
 	tilt.svg \
-	tilt_dark.svg
+	tilt_dark.svg \
+	wcs-grid.svg \
+	wcs-grid_dark.svg

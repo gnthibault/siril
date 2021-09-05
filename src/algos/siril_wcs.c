@@ -226,6 +226,26 @@ void wcs2pix(fits *fit, double r, double d, double *x, double *y) {
 #endif
 }
 
+/* get image center celestial coordinates */
+void center2wcs(fits *fit, double *r, double *d) {
+	*r = -1.0;
+	*d = -1.0;
+#ifdef HAVE_WCSLIB
+	int status, stat[NWCSFIX];
+	double imgcrd[NWCSFIX], phi, pixcrd[NWCSFIX], theta, world[NWCSFIX];
+
+	pixcrd[0] = (double)(fit->rx + 1) / 2.;
+	pixcrd[1] = (double)(fit->ry + 1) / 2.;
+
+	status = wcsp2s(fit->wcslib, 1, 2, pixcrd, imgcrd, &phi, &theta, world, stat);
+	if (status != 0)
+		return;
+
+	*r = world[0];
+	*d = world[1];
+#endif
+}
+
 /* get resolution in arcsec/pixel */
 double get_wcs_image_resolution(fits *fit) {
 	double resolution = -1.0;
