@@ -51,7 +51,8 @@ typedef struct draw_data {
 } draw_data_t;
 
 typedef struct plot_point_struct {
-	double x, y, ra, dec;
+	double x, y, ra, dec, angle;
+	gboolean isRA;
 } plot_point;
 
 /* remap index data, an index for each layer */
@@ -894,7 +895,10 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 					pt->x = x1;
 					pt->y = y1;
 					pt->ra = i;
-					pt->dec = j;					
+					pt->dec = j;
+					pt->angle = atan2(y2 - y1, x2 - x1);
+					if (fabs(pt->angle) > M_PI_2) pt->angle += M_PI;
+					pt->isRA = TRUE;
 					ptlist = g_list_append(ptlist, pt);
 				}
 			}
@@ -907,6 +911,7 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 	} while (i <= (centra + 6. * stepRA) * 2);
 
 	// plot RA grid
+	r = 0; c = 0;
 	cairo_set_source_rgb(cr, 0., 0.5, 1.);
 	double j = max(centdec - step * 6, -90);
 	do { // ra lines
@@ -927,10 +932,24 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 				cairo_move_to(cr, x1, y1);
 				cairo_line_to(cr, x2, y2);
 				cairo_stroke(cr);
+				if (((r % 2 == 0) && (c % 2 == 1)) || ((r % 2 == 1) && (c % 2 == 0))) {
+					plot_point *pt = malloc(sizeof(plot_point)); // store this crossing for adding a label afterwards
+					pt->x = x1;
+					pt->y = y1;
+					pt->ra = i;
+					pt->dec = j;
+					pt->angle = atan2(y2 - y1, x2 - x1);
+					if (fabs(pt->angle) > M_PI_2) pt->angle += M_PI;
+					pt->isRA = FALSE;
+					ptlist = g_list_append(ptlist, pt);
+				}
 			}
 			i = i + step;
+			c += 1;
 		} while (i <= (centra + 6 * stepRA) * 2.0);
 		j = j + step;
+		r += 1;
+		c = 0;
 	} while (j <= min(centdec + step * 6, 90));
 
 	// Add crossings labels
@@ -938,20 +957,17 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 	for (GList *l = ptlist; l != NULL; l = l->next) {
 		// getting the label
 		gchar *label = NULL;
-		gchar *ra, *dec;
 		SirilWorldCS *world_cs;
 		plot_point *pt = (plot_point*) l->data;
 		world_cs = siril_world_cs_new_from_a_d(pt->ra, pt->dec);
 		if (world_cs) {
-			ra = siril_world_cs_alpha_format(world_cs, "%02dh%02dm");
-			dec = siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'");
-			label = g_strconcat(ra, ",", dec, NULL);
+			label = (pt->isRA) ? siril_world_cs_alpha_format(world_cs, "%02dh%02dm") : siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'");
 			siril_world_cs_unref(world_cs);
-			g_free(ra);
-			g_free(dec);
 		}
 		cairo_move_to(cr, pt->x, pt->y);
+		cairo_rotate(cr, pt->angle);
 		cairo_show_text(cr, label);
+		cairo_rotate(cr, -pt->angle);
 		g_free(label);
 	}
 	g_list_free_full(ptlist, (GDestroyNotify) g_free);
