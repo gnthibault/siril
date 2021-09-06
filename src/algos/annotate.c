@@ -66,14 +66,11 @@ static CatalogObjects *new_catalog_object(gchar *code, gdouble ra, gdouble dec, 
 	return object;
 }
 
-static gboolean is_inside(double circle_x, double circle_y, double rad, double x, double y) {
-	// Compare radius of circle with distance
-	// of its center from given point
-	if ((x - circle_x) * (x - circle_x) + (y - circle_y) * (y - circle_y)
-			<= rad * rad)
-		return TRUE;
-	else
-		return FALSE;
+static gboolean is_inside(fits *fit, double ra, double dec) {
+	double x, y;
+
+	wcs2pix(fit, ra, dec, &x, &y);
+	return (x > 0 && x < fit->rx && y > 0 && y < fit->ry);
 }
 
 static gboolean already_exist(GSList *list, CatalogObjects *obj) {
@@ -233,19 +230,6 @@ static gchar* replace_str(const gchar *s, const gchar *old, const gchar *new) {
 GSList *find_objects(fits *fit) {
 	if (!has_wcs(fit)) return NULL;
 	GSList *targets = NULL;
-	gdouble x1, y1, x2, y2;
-	double resolution;
-
-	resolution = get_wcs_image_resolution(fit);
-	if (resolution <= 0.0) return NULL;
-
-	/* get ra and dec of center of the image */
-	center2wcs(fit, &x1, &y1);
-	if (x1 == -1.) return targets;
-
-	/* get radius of the fov */
-	x2 = x1 + fit->rx * resolution;
-	y2 = y1 + fit->ry * resolution;
 
 	if (!is_catalogue_loaded())
 		load_all_catalogues();
@@ -256,8 +240,7 @@ GSList *find_objects(fits *fit) {
 		if (cur->catalogue && !show_catalog(cur->catalogue)) continue;
 
 		/* Search for objects in the circle of radius defined by the image */
-		if (is_inside(x1, y1, sqrt(pow((x2 - x1), 2) + pow((y2 - y1), 2)),
-				cur->ra, cur->dec)) {
+		if (is_inside(fit, cur->ra, cur->dec)) {
 			if (!already_exist(targets, cur)) {
 				CatalogObjects *new_object = new_catalog_object(cur->code, cur->ra, cur->dec, cur->radius, cur->name, cur->catalogue);
 				targets = g_slist_prepend(targets, new_object);
