@@ -464,7 +464,7 @@ gboolean ser_is_cfa(struct ser_struct *ser_file) {
 	return ser_file && (ser_file->color_id == SER_BAYER_RGGB || 
 			ser_file->color_id == SER_BAYER_GRBG || 
 			ser_file->color_id == SER_BAYER_GBRG || 
-			ser_file->color_id == SER_BAYER_BGGR); 
+			ser_file->color_id == SER_BAYER_BGGR);
 	// SER_BAYER_CYYM SER_BAYER_YCMY SER_BAYER_YMCY SER_BAYER_MYYC are not
 	// supported yet so returning false for them here is good
 }
@@ -750,9 +750,10 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit, gboolea
 	fit->binning_x = fit->binning_y = 1;
 
 	/* If opening images debayered is not activated, read the image as CFA monochrome */
+	const gchar *pattern = NULL;
+
 	ser_color type_ser = ser_file->color_id;
 	if (!open_debayer && type_ser != SER_RGB && type_ser != SER_BGR) {
-		const gchar *pattern = NULL;
 		type_ser = SER_MONO;
 
 		if (com.pref.debayer.use_bayer_header) {
@@ -767,8 +768,13 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit, gboolea
 		} else {
 			pattern = filter_pattern[com.pref.debayer.bayer_pattern];
 		}
-		if (pattern)
-			strcpy(fit->bayer_pattern, pattern);
+
+	} else if (open_debayer && type_ser == SER_MONO && !com.pref.debayer.use_bayer_header) {
+		const gchar *pattern = filter_pattern[com.pref.debayer.bayer_pattern];
+		type_ser = retrieveBayerPatternFromChar(pattern) + 8;
+	}
+	if (pattern) {
+		strcpy(fit->bayer_pattern, pattern);
 		g_snprintf(fit->row_order, FLEN_VALUE, "%s", "BOTTOM-UP");
 	}
 

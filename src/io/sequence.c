@@ -400,7 +400,7 @@ int seq_check_basic_data(sequence *seq, gboolean load_ref_into_gfit) {
 		seq->ry = fit->ry;
 		seq->bitpix = fit->orig_bitpix;	// for partial read
 		fprintf(stdout, "bitpix for the sequence is set as %d\n", seq->bitpix);
-		if (seq->nb_layers == -1) {
+		if (seq->nb_layers == -1 || seq->nb_layers != fit->naxes[2]) {
 			seq->nb_layers = fit->naxes[2];
 			seq->regparam = calloc(seq->nb_layers, sizeof(regdata*));
 			seq->layers = calloc(seq->nb_layers, sizeof(layer_info));

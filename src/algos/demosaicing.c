@@ -1172,7 +1172,7 @@ int debayer(fits *fit, interpolation_method interpolation, sensor_pattern patter
 	else return -1;
 }
 
-int retrieveBayerPatternFromChar(char *bayer) {
+int retrieveBayerPatternFromChar(const char *bayer) {
 	for (int i = 0; i < G_N_ELEMENTS(filter_pattern); i++) {
 		if (g_ascii_strcasecmp(bayer, filter_pattern[i]) == 0) {
 			return i;
