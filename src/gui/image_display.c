@@ -29,6 +29,7 @@
 #include "algos/background_extraction.h"
 #include "algos/PSF.h"
 #include "algos/siril_wcs.h"
+#include "algos/sorting.h"
 #include "algos/annotate.h"
 #include "io/single_image.h"
 #include "io/sequence.h"
@@ -38,6 +39,11 @@
 #include "histogram.h"
 #include "registration/matching/degtorad.h"
 #include "git-version.h"
+
+#ifdef HAVE_WCSLIB
+#include <wcslib.h>
+#include <wcsfix.h>
+#endif
 
 #include "image_display.h"
 
@@ -50,10 +56,11 @@ typedef struct draw_data {
 	guint window_width, window_height;
 } draw_data_t;
 
-typedef struct plot_point_struct {
+typedef struct label_point_struct {
 	double x, y, ra, dec, angle;
 	gboolean isRA;
-} plot_point;
+	int border;
+} label_point;
 
 /* remap index data, an index for each layer */
 static BYTE *remap_index[MAXGRAYVPORT];
@@ -758,56 +765,101 @@ static void draw_brg_boxes(const draw_data_t* dd) {
 static void draw_compass(const draw_data_t* dd) {
 	fits *fit = &gfit;
 	cairo_t *cr = dd->cr;
-	cairo_set_line_width(cr, 3 / dd->zoom);
-	double x, y, x1, y1;
+	cairo_set_line_width(cr, 3.0 / dd->zoom);
+	cairo_set_font_size(cr, 12.0 / dd->zoom);
 	double ra0, dec0;
+	double xN, yN, xE, yE;
 
 	double xpos = -1 + (fit->rx + 1) / 2.0;
 	double ypos = -1 + (fit->ry + 1) / 2.0;
 	pix2wcs(fit, xpos, ypos, &ra0, &dec0);
-	if (ra0 == -1) return; // checks implicitely that wcslib member exists
-	int len = (int) fit->ry / (int) 20;
-	double resolution = get_wcs_image_resolution(fit);
-	if (resolution <= 0.0) return;
-	double len_at_res = (double)len * resolution;
+	if (ra0 == -1) return; // checks implicitly that wcslib member exists
+	double len = (double) fit->ry / 20.;
+	wcs2pix(fit, ra0, dec0 + 0.1, &xN, &yN);
+	wcs2pix(fit, ra0 - 0.1, dec0, &xE, &yE);
+	if (fabs(dec0 - 90.) < len * get_wcs_image_resolution(fit)) return; //If within one arrow length of the North Pole, do not plot
+	double angleN = -atan2(yN - ypos, xN - xpos);
+	double angleE = -atan2(yE - ypos, xE - xpos);
 
-	/* draw north line */
+	/* draw north line and filled-arrow*/
 	cairo_set_source_rgba(cr, 1., 0., 0., 1.0);
-	cairo_move_to(cr, xpos, ypos);
-
-	wcs2pix(fit, ra0, dec0 + len_at_res, &x, &y);
-	x1 = x - 1;
-	y1 = fit->ry - y;
-	cairo_line_to(cr, x1, y1);
+	cairo_save(cr); // save the orginal transform
+	cairo_translate(cr, xpos, ypos);
+	cairo_rotate(cr, angleN);
+	cairo_move_to(cr, 0., 0.);
+	cairo_line_to(cr, len, 0.);
 	cairo_stroke(cr);
-
-	/* draw north arrow */
-	wcs2pix(fit, ra0 + len_at_res * 3. / 20., dec0 + len_at_res * 15. / 20., &x, &y);
-	x1 = x - 1;
-	y1 = fit->ry - y;
-	cairo_line_to(cr, x1, y1);
-
-	wcs2pix(fit, ra0 - len_at_res * 3. / 20., dec0 + len_at_res * 15. / 20., &x, &y);
-	x1 = x - 1;
-	y1 = fit->ry - y;
-	cairo_line_to(cr, x1, y1);
-
-	wcs2pix(fit, ra0, dec0 + len_at_res, &x, &y);
-	x1 = x - 1;
-	y1 = fit->ry - y;
-	cairo_line_to(cr, x1, y1);
-
+	cairo_line_to(cr, 0.75 * len, -0.15 * len);
+	cairo_line_to(cr, 0.75 * len, +0.15 * len);
+	cairo_line_to(cr, len, 0.);
 	cairo_fill(cr);
+	cairo_move_to(cr, len, 0.1 * len);
+	cairo_show_text(cr, "N");
+	cairo_restore(cr); // restore the orginal transform
 
 	/* draw east line */
 	cairo_set_source_rgba(cr, 1., 1., 1., 1.0);
-	cairo_move_to(cr, xpos, ypos);
-	wcs2pix(fit, ra0 - len_at_res, dec0, &x, &y);
-	x1 = x - 1;
-	y1 = fit->ry - y;
-	cairo_line_to(cr, x1, y1);
-
+	cairo_save(cr); // save the orginal transform
+	cairo_translate(cr, xpos, ypos);
+	cairo_rotate(cr, angleE);
+	cairo_move_to(cr, 0., 0.);
+	cairo_line_to(cr, len / 2., 0.);
 	cairo_stroke(cr);
+	cairo_move_to(cr, len / 2, -0.1 * len);
+	cairo_show_text(cr, "E");
+	cairo_restore(cr); // restore the orginal transform
+}
+
+static label_point *new_label_point(double height, double *pix1, double *pix2, double *world, gboolean isRA, int border) {
+	label_point *pt = g_new(label_point, 1);
+
+	pt->x = pix1[0];
+	pt->y = height - pix1[1];
+	pt->ra = world[0];
+	pt->dec = world[1];
+	pt->angle = -atan2(pix2[1] - pix1[1], pix2[0] - pix1[0]);
+	pt->isRA = isRA;
+	pt->border = border;
+
+	return pt;
+}
+
+static int has_pole(fits *fit, double width, double height) {
+	double x, y;
+	wcs2pix(fit, 0., 90., &x, &y);
+	if ((x >= 0.) && (x <= width) && (y >= 0.) && (y <= height)) return 1;
+	wcs2pix(fit, 0., -90., &x, &y);
+	if ((x >= 0.) && (x <= width) && (y >= 0.) && (y <= height)) return -1;
+	return 0;
+}
+
+static gboolean get_line_intersection(double p0_x, double p0_y, double p1_x,
+		double p1_y, double p2_x, double p2_y, double p3_x, double p3_y,
+		double *i_x, double *i_y) {
+	double s1_x, s1_y, s2_x, s2_y;
+    s1_x = p1_x - p0_x;     s1_y = p1_y - p0_y;
+    s2_x = p3_x - p2_x;     s2_y = p3_y - p2_y;
+	double det = -s2_x * s1_y + s1_x * s2_y;
+	if (fabs(det) < DBL_EPSILON) return FALSE;
+    double s, t;
+    s = (-s1_y * (p0_x - p2_x) + s1_x * (p0_y - p2_y)) / det;
+    t = ( s2_x * (p0_y - p2_y) - s2_y * (p0_x - p2_x)) / det;
+    if (s >= 0 && s <= 1 && t >= 0 && t <= 1)
+    {
+        // Collision detected
+        if (i_x != NULL)
+            *i_x = p0_x + (t * s1_x);
+        if (i_y != NULL)
+            *i_y = p0_y + (t * s1_y);
+        return TRUE;
+    }
+    return FALSE; // No collision
+}
+
+static gint border_compare(label_point *a, label_point *b) {
+	if (a->border > b->border) return 1;
+	if (a->border < b->border) return -1;
+	return 0;
 }
 
 static double ra_values[] = { 45, 30, 15, 10, 7.5, 5, 3.75, 2.5, 1.5, 1.25, 1, 3. / 4., 1.
@@ -817,13 +869,16 @@ static double ra_values[] = { 45, 30, 15, 10, 7.5, 5, 3.75, 2.5, 1.5, 1.25, 1, 3
 static void draw_wcs_grid(const draw_data_t* dd) {
 	if (!com.show_wcs_grid) return;
 	fits *fit = &gfit;
+	if (!has_wcs(fit)) return;
 	cairo_t *cr = dd->cr;
 	cairo_set_dash(cr, NULL, 0, 0);
 	cairo_set_line_width(cr, 1. / dd->zoom);
 	cairo_set_font_size(cr, 12.0 / dd->zoom);
 	double ra0, dec0;
-	int r = 0, c = 0;
 	GList *ptlist = NULL;
+	double world[2], pix[2], pix2[2], img[2];
+	double phi, theta;
+	int status;
 
 	double width = (double) fit->rx;
 	double height = (double) fit->ry;
@@ -836,6 +891,12 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 	ra0  *= (M_PI / 180.0);
 	double range = fit->wcsdata.cdelt[1] * sqrt(pow((width / 2.0), 2) + pow((height / 2.0), 2)); // range in degrees, FROM CENTER
 	double step;
+
+	/* Compute borders in pixel for tags*/
+	double pixbox[5][2] = { { 0., 0. }, { width, 0. }, { width, height }, { 0., height }, { 0., 0. } };
+	double pixval[4] = { 0., width, height, 0. }; // bottom, right, top, left with ref bottom left
+	int pixtype[4] = { 1, 0, 1, 0 }; // y, x, y, x
+	int polesign = has_pole(fit, width, height);
 
 	/* calculate DEC step size */
 	if (range > 16.0) {
@@ -858,12 +919,13 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 
 	// calculate RA step size
 	double step2 = min(45, step / (cos(dec0) + 0.000001)); // exact value for stepRA, but not well rounded
-	int k = 0;
+	int iter = 0;
 	double stepRA;
 	do { // select nice rounded values for ra_step
-		stepRA = ra_values[k];
-		k++;
-	} while ((stepRA >= step2) && (k < G_N_ELEMENTS(ra_values))); // repeat until compatible value is found in ra_values
+		stepRA = ra_values[iter];
+		iter++;
+	} while ((stepRA >= step2) && (iter < G_N_ELEMENTS(ra_values))); // repeat until compatible value is found in ra_values
+	if (polesign) stepRA = 45.;
 
 	// round image centers
 	double centra = stepRA * round(ra0 * 180 / (M_PI * stepRA)); // rounded image centers
@@ -871,106 +933,143 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 
 	// plot DEC grid
 	cairo_set_source_rgb(cr, 0.8, 0., 0.);
-	double i = centra - 6 * stepRA;
+	double di = (polesign) ? 0. : centra - 6 * stepRA;
 	do { // dec lines
-		double j = max(centdec - 6 * step, -90);
+		double dj = max(centdec - 6 * step, -90);
 		do {
-			double x, y, x1, x2, y1, y2;
+			double xa, ya, xb, yb, x1, x2, y1, y2;
 
-			wcs2pix(fit, i, j, &x, &y);
-			x1 = round(x - 1);
-			y1 = round(height - y);
+			wcs2pix(fit, di, dj, &xa, &ya);
+			x1 = round(xa - 1);
+			y1 = round(height - ya);
 
-			wcs2pix(fit, i, (j + step), &x, &y);
-			x2 = round(x - 1);
-			y2 = round(height - y);
+			wcs2pix(fit, di, (dj + step), &xb, &yb);
+			x2 = round(xb - 1);
+			y2 = round(height - yb);
 
 			if (((x1 >= 0) && (y1 >= 0) && (x1 < width) && (y1 < height))
 					|| ((x2 >= 0) && (y2 >= 0) && (x2 < width) && (y2 < height))) {
 				cairo_move_to(cr, x1, y1);
 				cairo_line_to(cr, x2, y2);
 				cairo_stroke(cr);
-				if (((r % 2 == 0) && (c % 2 == 0)) || ((r % 2 == 1) && (c % 2 == 1))) {
-					plot_point *pt = malloc(sizeof(plot_point)); // store this crossing for adding a label afterwards
-					pt->x = x1;
-					pt->y = y1;
-					pt->ra = i;
-					pt->dec = j;
-					pt->angle = atan2(y2 - y1, x2 - x1);
-					if (fabs(pt->angle) > M_PI_2) pt->angle += M_PI;
-					pt->isRA = TRUE;
-					ptlist = g_list_append(ptlist, pt);
+				// check crossing
+				if (!(((x1 >= 0) && (y1 >= 0) && (x1 < width) && (y1 < height))
+					&& ((x2 >= 0) && (y2 >= 0) && (x2 < width) && (y2 < height)))) {
+						for (int k = 0; k < 4; k ++) {
+							if (get_line_intersection(xa, ya, xb, yb, pixbox[k][0], pixbox[k][1], pixbox[k+1][0], pixbox[k+1][1], NULL, NULL)) {
+								world[0] = di;
+								pix[pixtype[k]] = pixval[k];
+								double latspan[2] = {dj, dj+step};
+								status = wcsmix(fit->wcslib, pixtype[k], 1, latspan, 1.0, 0, world, &phi, &theta, img, pix);
+								if(!status) {
+									wcs2pix(fit, world[0], world[1] + 0.1, &pix2[0], &pix2[1]);
+									ptlist = g_list_append(ptlist, new_label_point(height, pix, pix2, world, TRUE, k));
+								}
+								break;
+							}
+						}
+					}
 				}
-			}
-			j = j + step;
-			c += 1;
-		} while (j <= min(centdec + 6 * step, 90.));
-		i = i + stepRA;
-		r += 1;
-		c = 0;
-	} while (i <= (centra + 6. * stepRA) * 2);
+			dj = dj + step;
+		} while (dj <= min(centdec + 6 * step, 90.));
+		di = di + stepRA;
+	} while (di <= ((polesign) ? 360. : centra + 6 * stepRA));
 
 	// plot RA grid
-	r = 0; c = 0;
 	cairo_set_source_rgb(cr, 0., 0.5, 1.);
-	double j = max(centdec - step * 6, -90);
+	double dj = max(centdec - step * 6, -90);
 	do { // ra lines
-		i = centra - stepRA * 6;
+		di = (polesign) ? 0. : centra - 6 * stepRA;
 		do {
-			double x, y, x1, x2, y1, y2;
+			double xa, ya, xb, yb, x1, x2, y1, y2;
 
-			wcs2pix(fit, i, j, &x, &y);
-			x1 = round(x - 1);
-			y1 = round(height - y);
+			wcs2pix(fit, di, dj, &xa, &ya);
+			x1 = round(xa - 1);
+			y1 = round(height - ya);
 
-			wcs2pix(fit, (i + step), j, &x, &y);
-			x2 = round(x - 1);
-			y2 = round(height - y);
+			wcs2pix(fit, (di + step), dj, &xb, &yb);
+			x2 = round(xb - 1);
+			y2 = round(height - yb);
 
 			if (((x1 >= 0) && (y1 >= 0) && (x1 < width) && (y1 < height))
 					|| ((x2 >= 0) && (y2 >= 0) && (x2 < width) && (y2 < height))) {
 				cairo_move_to(cr, x1, y1);
 				cairo_line_to(cr, x2, y2);
 				cairo_stroke(cr);
-				if (((r % 2 == 0) && (c % 2 == 1)) || ((r % 2 == 1) && (c % 2 == 0))) {
-					plot_point *pt = malloc(sizeof(plot_point)); // store this crossing for adding a label afterwards
-					pt->x = x1;
-					pt->y = y1;
-					pt->ra = i;
-					pt->dec = j;
-					pt->angle = atan2(y2 - y1, x2 - x1);
-					if (fabs(pt->angle) > M_PI_2) pt->angle += M_PI;
-					pt->isRA = FALSE;
-					ptlist = g_list_append(ptlist, pt);
+				// check crossing
+				if (!(((x1 >= 0) && (y1 >= 0) && (x1 < width) && (y1 < height))
+					&& ((x2 >= 0) && (y2 >= 0) && (x2 < width) && (y2 < height)))) {
+						for (int k = 0; k < 4; k ++) {
+							if (get_line_intersection(xa, ya, xb, yb, pixbox[k][0], pixbox[k][1], pixbox[k+1][0], pixbox[k+1][1], NULL, NULL)) {
+								world[1] = dj;
+								pix[pixtype[k]] = pixval[k];
+								double lngspan[2] = {di, di+step};
+								status = wcsmix(fit->wcslib, pixtype[k], 2, lngspan, 1.0, 0, world, &phi, &theta, img, pix);
+								if(!status) {
+									wcs2pix(fit, world[0] + 0.1, world[1], &pix2[0], &pix2[1]);
+									ptlist = g_list_append(ptlist, new_label_point(height, pix, pix2, world, FALSE, k));
+								}
+								break;
+							}
+						}
+					}
 				}
-			}
-			i = i + step;
-			c += 1;
-		} while (i <= (centra + 6 * stepRA) * 2.0);
-		j = j + step;
-		r += 1;
-		c = 0;
-	} while (j <= min(centdec + step * 6, 90));
+			di = di + step;
+		} while (di <= ((polesign) ? 360. : centra + 6 * stepRA));
+		dj = dj + step;
+	} while (dj <= min(centdec + step * 6, 90));
 
 	// Add crossings labels
+	ptlist = g_list_sort(ptlist, (GCompareFunc) border_compare); // sort potential tags by increasing border number
 	cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);
+	GSList *existingtags = NULL;
 	for (GList *l = ptlist; l != NULL; l = l->next) {
 		// getting the label
-		gchar *label = NULL;
 		SirilWorldCS *world_cs;
-		plot_point *pt = (plot_point*) l->data;
+		label_point *pt = (label_point*) l->data;
 		world_cs = siril_world_cs_new_from_a_d(pt->ra, pt->dec);
 		if (world_cs) {
-			label = (pt->isRA) ? siril_world_cs_alpha_format(world_cs, "%02dh%02dm") : siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'");
+			gchar *tag = (pt->isRA) ? siril_world_cs_alpha_format(world_cs, "%02dh%02dm") : siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'");
 			siril_world_cs_unref(world_cs);
+			if (!g_slist_find_custom(existingtags, tag, (GCompareFunc) strcompare)) { // this tag has already been used - skipping
+				existingtags = g_slist_append(existingtags, (gpointer) tag);
+				cairo_text_extents_t te1, te2;
+				cairo_text_extents(cr, tag, &te1); // getting the dimensions of the textbox
+				cairo_save(cr); // save the orginal transform
+				cairo_translate(cr, pt->x, pt->y);
+				// add pi for angles larger than +/- pi/2
+				if (pt->angle > M_PI_2)
+					pt->angle -= M_PI;
+				if (pt->angle < -M_PI_2)
+					pt->angle += M_PI;
+				double dx = 0.;
+				switch (pt->border) { // shift to get back in the image
+				case 0:
+					if (pt->angle > 0.)
+						dx -= te1.width;
+					break;
+				case 1:
+					dx -= te1.width;
+					break;
+				case 2:
+					if (pt->angle < 0.)
+						dx -= te1.width;
+					break;
+				default:
+					break;
+				}
+				cairo_rotate(cr, pt->angle);
+				cairo_move_to(cr, dx, 0.);
+				cairo_text_extents(cr, tag, &te2);
+				cairo_show_text(cr, tag);
+				cairo_restore(cr); // restore the orginal transform
+			} else {
+				g_free(tag);
+			}
 		}
-		cairo_move_to(cr, pt->x, pt->y);
-		cairo_rotate(cr, pt->angle);
-		cairo_show_text(cr, label);
-		cairo_rotate(cr, -pt->angle);
-		g_free(label);
 	}
 	g_list_free_full(ptlist, (GDestroyNotify) g_free);
+	g_slist_free_full(existingtags, (GDestroyNotify) g_free);
 
 	draw_compass(dd);
 }

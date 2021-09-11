@@ -133,6 +133,26 @@ static double siril_stats_float_bwmv(const float* data, const size_t n,
 	return bwmv;
 }
 
+float siril_stats_trmean_from_sorted_data(const float trim,
+		const float sorted_data[], const size_t stride, const size_t size) {
+	if (trim >= 0.5f) {
+		return (float) gsl_stats_float_median_from_sorted_data(sorted_data, stride, size);
+	} else {
+		size_t ilow = (size_t) floorf(trim * size);
+		size_t ihigh = size - ilow - 1;
+		float mean = 0.f;
+		float k = 0.f;
+
+		/* compute mean of middle samples in [ilow,ihigh] */
+		for (size_t i = ilow; i <= ihigh; ++i) {
+			float delta = sorted_data[i * stride] - mean;
+			k += 1.f;
+			mean += delta / k;
+		}
+		return mean;
+	}
+}
+
 #if 0
 int IKSS(float *data, size_t n, double *location, double *scale, gboolean multithread) {
 	size_t i, j;

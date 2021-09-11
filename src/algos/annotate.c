@@ -73,28 +73,23 @@ static gboolean is_inside(fits *fit, double ra, double dec) {
 	return (x > 0 && x < fit->rx && y > 0 && y < fit->ry);
 }
 
-static gboolean already_exist(GSList *list, CatalogObjects *obj) {
-	/* we exclude from the check the star catalogue */
-	if (!g_strcmp0(obj->catalogue, "stars.txt") || (obj->catalogue == NULL)) {
-		return FALSE;
+static gint object_compare(gconstpointer *a, gconstpointer *b) {
+	const CatalogObjects *s1 = (const CatalogObjects *) a;
+	const CatalogObjects *s2 = (const CatalogObjects *) b;
+
+	double minDec = s1->dec - TOLERANCE;
+	double maxDec = s1->dec + TOLERANCE;
+
+	double minRa = s1->ra - TOLERANCE;
+	double maxRa = s1->ra + TOLERANCE;
+
+	/* compare */
+	if (s2->dec > minDec && s2->dec < maxDec && s2->ra > minRa
+			&& s2->ra < maxRa) {
+		return 0;
 	}
-	for (GSList *l = list; l; l = l->next) {
-		gdouble cur_dec = ((CatalogObjects*) l->data)->dec;
-		gdouble cur_ra = ((CatalogObjects*) l->data)->ra;
 
-		double minDec = cur_dec - TOLERANCE;
-		double maxDec = cur_dec + TOLERANCE;
-
-		double minRa = cur_ra - TOLERANCE;
-		double maxRa = cur_ra + TOLERANCE;
-
-		/* compare */
-		if (obj->dec > minDec && obj->dec < maxDec && obj->ra > minRa
-				&& obj->ra < maxRa) {
-			return TRUE;
-		}
-	}
-	return FALSE;
+	return 1;
 }
 
 static GSList *load_catalog(const gchar *catalogue) {
@@ -241,7 +236,7 @@ GSList *find_objects(fits *fit) {
 
 		/* Search for objects in the circle of radius defined by the image */
 		if (is_inside(fit, cur->ra, cur->dec)) {
-			if (!already_exist(targets, cur)) {
+			if (!g_slist_find_custom(targets, cur, (GCompareFunc) object_compare)) {
 				CatalogObjects *new_object = new_catalog_object(cur->code, cur->ra, cur->dec, cur->radius, cur->name, cur->catalogue);
 				targets = g_slist_prepend(targets, new_object);
 			}
@@ -261,7 +256,7 @@ void add_object_in_catalogue(gchar *code, SirilWorldCS *wcs) {
 	CatalogObjects *new_object = new_catalog_object(code,
 			siril_world_cs_get_alpha(wcs), siril_world_cs_get_delta(wcs), 0,
 			NULL, NULL);
-	/* We need to add it at the end of the list, if not double rejection could reject it */
+	/* We need to add it at the end of the list, if not duplicates test could reject it */
 	siril_catalogue_list = g_slist_append(siril_catalogue_list, new_object);
 }
 

@@ -177,26 +177,6 @@ static float Qn0(const float sorted_data[], const size_t stride, const size_t n)
 	return Qn;
 }
 
-static float siril_stats_trmean_from_sorted_data(const float trim,
-		const float sorted_data[], const size_t stride, const size_t size) {
-	if (trim >= 0.5f) {
-		return (float) gsl_stats_float_median_from_sorted_data(sorted_data, stride, size);
-	} else {
-		size_t ilow = (size_t) floorf(trim * size);
-		size_t ihigh = size - ilow - 1;
-		float mean = 0.f;
-		float k = 0.f;
-
-		/* compute mean of middle samples in [ilow,ihigh] */
-		for (size_t i = ilow; i <= ihigh; ++i) {
-			float delta = sorted_data[i * stride] - mean;
-			k += 1.f;
-			mean += delta / k;
-		}
-		return mean;
-	}
-}
-
 static float siril_stats_robust_mean(const float sorted_data[],
 		const size_t stride, const size_t size) {
 	float mx = (float) gsl_stats_float_median_from_sorted_data(sorted_data, stride, size);
@@ -220,8 +200,7 @@ static float siril_stats_robust_mean(const float sorted_data[],
 	}
 	/* not enough stars, try something anyway */
 	if (j < 5) {
-		mean = (float) siril_stats_trmean_from_sorted_data(0.3f, sorted_data, stride,
-				size);
+		mean = siril_stats_trmean_from_sorted_data(0.3f, sorted_data, stride, size);
 	} else {
 		mean = (float) gsl_stats_float_mean(x, stride, j);
 	}
