@@ -76,16 +76,15 @@ static double dhampel(double x) {
 static double qmedD(int n, double *a)
 	/* Vypocet medianu algoritmem Quick Median (Wirth) */
 {
-	double w, x;
-	int i, j;
+	double w;
 	int k = ((n & 1) ? (n / 2) : ((n / 2) - 1));
 	int l = 0;
 	int r = n - 1;
 
 	while (l < r) {
-		x = a[k];
-		i = l;
-		j = r;
+		double x = a[k];
+		int i = l;
+		int j = r;
 		do {
 			while (a[i] < x)
 				i++;
@@ -111,7 +110,7 @@ static int robustmean(int n, double *x, double *mean, double *stdev)
 	/* Newton's iterations */
 {
 	int i, it;
-	double a, c, d, dt, r, s, sum1, sum2, sum3, psir;
+	double a, c, dt, r, s, psir;
 	double *xx;
 
 	if (n < 1) {
@@ -161,6 +160,7 @@ static int robustmean(int n, double *x, double *mean, double *stdev)
 	dt = 0;
 	c = s * s * n * n / (n - 1);
 	for (it = 1; it <= maxit; it++) {
+		double sum1, sum2, sum3;
 		sum1 = sum2 = sum3 = 0.0;
 		for (i = 0; i < n; i++) {
 			r = (x[i] - a) / s;
@@ -171,7 +171,7 @@ static int robustmean(int n, double *x, double *mean, double *stdev)
 		}
 		if (fabs(sum2) < epsilon(sum2))
 			break;
-		d = s * sum1 / sum2;
+		double d = s * sum1 / sum2;
 		a = a + d;
 		dt = c * sum3 / (sum2 * sum2);
 		if ((it > 2) && ((d * d < 1e-4 * dt) || (fabs(d) < 10.0 * epsilon(d))))
@@ -258,7 +258,6 @@ photometry *getPhotometryData(gsl_matrix* z, psf_star *psf, gboolean verbose) {
 	double r1, r2, r, rmin_sq, appRadius;
 	double xc, yc;
 	double apmag = 0.0, mean = 0.0, stdev = 0.0, area = 0.0;
-	double signalIntensity;
 	gboolean valid = TRUE;
 	photometry *phot;
 
@@ -350,7 +349,7 @@ photometry *getPhotometryData(gsl_matrix* z, psf_star *psf, gboolean verbose) {
 	if (phot) {
 		double SNR = 0.0;
 
-		signalIntensity = apmag - (area * mean);
+		double signalIntensity = apmag - (area * mean);
 
 		phot->mag = getMagnitude(signalIntensity);
 		phot->s_mag = getMagErr(signalIntensity, area, n_sky, stdev, &SNR);

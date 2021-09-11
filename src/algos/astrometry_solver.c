@@ -744,13 +744,12 @@ static void update_coords() {
 
 static void update_pixel_size() {
 	GtkEntry *entry = GTK_ENTRY(lookup_widget("GtkEntry_IPS_pixels"));
-	gchar *cpixels;
 	float pixel;
 
 	pixel = gfit.pixel_size_x > gfit.pixel_size_y ? gfit.pixel_size_x : gfit.pixel_size_y;
 
 	if (pixel > 0.f) {
-		cpixels = g_strdup_printf("%.2lf", (double) pixel);
+		gchar *cpixels = g_strdup_printf("%.2lf", (double) pixel);
 		gtk_entry_set_text(entry, cpixels);
 		g_free(cpixels);
 	}
@@ -1256,21 +1255,20 @@ static void start_image_plate_solve() {
 // https://library.nrao.edu/public/memos/aips/memos/AIPSM_027.pdf
 
 static void deproject_starlist(int num_stars, s_star *star_list, double ra0, double dec0, int doASEC) {
-	double xi, eta, ra, dec, delta_ra;
 	ra0 *= DEGTORAD;
 	dec0 *= DEGTORAD;
 	s_star *currstar;
 	currstar = star_list;
 	for (int i = 0; i < num_stars; i++) {
-		xi = currstar->x;
-		eta = currstar->y;
+		double xi = currstar->x;
+		double eta = currstar->y;
 		if (doASEC > 0) {
 			xi /= RADtoASEC;
 			eta /= RADtoASEC;
 		}
-		delta_ra = atan(xi / (cos(dec0) - eta * sin(dec0)));
-		ra = ra0 + delta_ra;
-		dec = atan(cos(delta_ra) * (eta * cos(dec0) + sin(dec0)) / (cos(dec0) - eta * sin(dec0)));
+		double delta_ra = atan(xi / (cos(dec0) - eta * sin(dec0)));
+		double ra = ra0 + delta_ra;
+		double dec = atan(cos(delta_ra) * (eta * cos(dec0) + sin(dec0)) / (cos(dec0) - eta * sin(dec0)));
 		currstar->x = ra / DEGTORAD;
 		currstar->y = dec / DEGTORAD;
 		currstar = currstar->next;
@@ -1282,14 +1280,13 @@ static void deproject_starlist(int num_stars, s_star *star_list, double ra0, dou
 // https://library.nrao.edu/public/memos/aips/memos/AIPSM_027.pdf
 
 static void project_starlist(int num_stars, s_star *star_list, double ra0, double dec0, int doASEC) {
-	double xi, eta, ra, dec, delta_ra, xx, yy;
-	// ra0 *= DEGTORAD;
+	double delta_ra;
 	dec0 *= DEGTORAD;
 	s_star *currstar;
 	currstar = star_list;
 	for (int i = 0; i < num_stars; i++) {
-		ra = currstar->x;
-		dec = currstar->y;
+		double ra = currstar->x;
+		double dec = currstar->y;
 		if ((ra < 10) && (ra0 > 350)) {
 			delta_ra = (ra + 360) - ra0;
 		} else if ((ra > 350) && (ra0 < 10)) {
@@ -1303,11 +1300,11 @@ static void project_starlist(int num_stars, s_star *star_list, double ra0, doubl
 		/*
 		 * let's transform from (delta_RA, delta_Dec) to (xi, eta),
 		 */
-		xx = cos(dec) * sin(delta_ra);
-		yy = sin(dec0) * sin(dec) + cos(dec0) * cos(dec) * cos(delta_ra);
-		xi = (xx / yy);
+		double xx = cos(dec) * sin(delta_ra);
+		double yy = sin(dec0) * sin(dec) + cos(dec0) * cos(dec) * cos(delta_ra);
+		double xi = (xx / yy);
 		xx = cos(dec0) * sin(dec) - sin(dec0) * cos(dec) * cos(delta_ra);
-		eta = (xx / yy);
+		double eta = (xx / yy);
 
 		if (doASEC > 0) {
 			xi *= RADtoASEC;
@@ -1315,7 +1312,6 @@ static void project_starlist(int num_stars, s_star *star_list, double ra0, doubl
 		}
 		currstar->x = xi;
 		currstar->y = eta;
-		// siril_log_message(_("x,y: %.2f,%.2f\n"), xi, eta);
 		currstar = currstar->next;
 	}
 }
@@ -1545,7 +1541,7 @@ gpointer match_catalog(gpointer p) {
 	int n_fit = 0, n_cat = 0;
 	Homography H = { 0 };
 	int nobj = AT_MATCH_CATALOG_NBRIGHT;
-	int trial = 0, nbtrials = 0;
+	int nbtrials = 0;
 	GFile *catalog;
 	GInputStream *input_stream;
 	s_star star_list_A, star_list_B;
@@ -1646,6 +1642,7 @@ gpointer match_catalog(gpointer p) {
 
 			apply_match(solution->px_cat_center, solution->crpix, trans, &ra0, &dec0);
 			int num_matched = H.pair_matched;
+			int trial = 0;
 
 			while ((trial < nbtrials) && (!args->ret)){
 				double rainit = siril_world_cs_get_alpha(args->cat_center);

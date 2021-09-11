@@ -76,7 +76,6 @@ void clear_sensor_tilt() {
 int draw_sensor_tilt(fits *fit) {
 	int i1 = 0, i2 = 0, i3 = 0, i4 = 0, ir1 = 0, ir2 = 0;
 	int nbstars = 0;
-	float best, worst;
 	pointf center = {fit->rx / 2.f, fit->ry / 2.f };
 	float r = sqrtf(center.x * center.x + center.y * center.y);
 	float r1 = 0.25f * r;
@@ -139,8 +138,8 @@ int draw_sensor_tilt(fits *fit) {
 		float mr1 = siril_stats_trmean_from_sorted_data(0.25, fr1, 1, ir1);
 		float mr2 = siril_stats_trmean_from_sorted_data(0.25, fr2, 1, ir2);
 
-		best = min(min(m1, m2), min(m3, m4));
-		worst = max(max(m1, m2), max(m3, m4));
+		float best = min(min(m1, m2), min(m3, m4));
+		float worst = max(max(m1, m2), max(m3, m4));
 
 		draw_polygon((float) fit->rx, (float) fit->ry, m1, m2, m3, m4, mr1);
 		siril_log_message(_("Stars: %d, Truncated mean[FWHM]: %.2f, Sensor tilt[FWHM]: %.2f, Off-axis aberration[FWHM]: %.2f\n"), nbstars, m, worst - best, mr2 - mr1);

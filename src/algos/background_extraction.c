@@ -101,7 +101,6 @@ static double poly_1(gsl_vector *c, double x, double y) {
 static gboolean computeBackground(GSList *list, double *background, int channel, unsigned int width, unsigned int height, poly_order order, gchar **err) {
 	size_t k = 0;
 	double chisq, pixel;
-	double row, col;
 	gsl_matrix *J, *cov;
 	gsl_vector *y, *w, *c;
 	GSList *l;
@@ -141,8 +140,8 @@ static gboolean computeBackground(GSList *list, double *background, int channel,
 	for (l = list; l; l = l->next) {
 		background_sample *sample = (background_sample *) l->data;
 
-		col = sample->position.x;
-		row = sample->position.y;
+		double col = sample->position.x;
+		double row = sample->position.y;
 		pixel = sample->median[channel];
 		// here, it is a bit sketchy in the sense that if there is not value to report in a box (because the threshold is too
 		// low for example, then I just skip the initialization of J and y. gsl automatically discard the non assigned values
