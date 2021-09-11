@@ -25,6 +25,7 @@
 #include <math.h>
 
 #include "core/siril.h"
+#include "algos/astrometry_solver.h"
 #include "io/image_format_fits.h"
 
 #ifdef HAVE_WCSLIB
@@ -256,8 +257,24 @@ double get_wcs_image_resolution(fits *fit) {
 	double resolution = -1.0;
 #ifdef HAVE_WCSLIB
 	if (fit->wcslib) {
-		double res_x = sqrt(fit->wcslib->cd[0] * fit->wcslib->cd[0] + fit->wcslib->cd[2] * fit->wcslib->cd[2]);
-		double res_y = sqrt(fit->wcslib->cd[1] * fit->wcslib->cd[1] + fit->wcslib->cd[3] * fit->wcslib->cd[3]);
+		double cd[NAXIS][NAXIS], pc[NAXIS][NAXIS];
+		double cdelt[NAXIS];
+
+		double *pcij = fit->wcslib->pc;
+		for (int i = 0; i < NAXIS; i++) {
+			for (int j = 0; j < NAXIS; j++) {
+				pc[i][j] = *(pcij++);
+			}
+		}
+
+		for (int i = 0; i < NAXIS; i++) {
+			cdelt[i] = fit->wcslib->cdelt[i];
+		}
+
+		wcs_pc_to_cd(pc, cdelt, cd);
+
+		double res_x = sqrt(cd[0][0] * cd[0][0] + cd[1][0] * cd[1][0]);
+		double res_y = sqrt(cd[0][1] * cd[0][1] + cd[1][1] * cd[1][1]);
 		resolution = (res_x + res_y) * 0.5;
 	}
 #endif

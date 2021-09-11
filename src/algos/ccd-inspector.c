@@ -25,19 +25,19 @@
 #include "core/command.h"
 #include "algos/PSF.h"
 #include "algos/star_finder.h"
+#include "algos/statistics.h"
 #include "algos/sorting.h"
 #include "gui/image_display.h"
 #include "gui/image_interactions.h"
 #include "gui/progress_and_log.h"
-#include <gsl/gsl_statistics.h>
 
 #include "ccd-inspector.h"
 
-static void draw_polygon(double rx, double ry, double m1, double m2, double m3, double m4, double mcentre) {
-	double r1, r2, r3, r4;
-	point c = { rx / 2.0, ry / 2.0 };
-	double m = (m1 + m2 + m3 + m4) / 4.0;
-	double diag = sqrt(rx * rx + ry * ry) / 4.0;
+static void draw_polygon(float rx, float ry, float m1, float m2, float m3, float m4, float mcentre) {
+	float r1, r2, r3, r4;
+	pointf c = { rx / 2.f, ry / 2.f };
+	float m = (m1 + m2 + m3 + m4) / 4.f;
+	float diag = sqrtf(rx * rx + ry * ry) / 4.f;
 
 	/* now we compute the four radius. */
 	r1 = diag * (((m1 - m) / m) + 1);
@@ -47,20 +47,20 @@ static void draw_polygon(double rx, double ry, double m1, double m2, double m3, 
 
 	com.tilt = malloc(sizeof(sensor_tilt));
 
-	com.tilt->pt[0].x = c.x + (r1 * sin(7.0 * M_PI / 4));
-	com.tilt->pt[0].y = ry - (c.y + (r1 * cos(7.0 * M_PI / 4)));
+	com.tilt->pt[0].x = c.x + (r1 * sin(7.0 * M_PI / 4.0));
+	com.tilt->pt[0].y = ry - (c.y + (r1 * cos(7.0 * M_PI / 4.0)));
 	com.tilt->fwhm[0] = m1;
 
 	com.tilt->pt[1].x = c.x + (r2 * sin(M_PI / 4));
-	com.tilt->pt[1].y = ry - (c.y + (r2 * cos(M_PI / 4)));
+	com.tilt->pt[1].y = ry - (c.y + (r2 * cos(M_PI / 4.0)));
 	com.tilt->fwhm[1] = m2;
 
 	com.tilt->pt[2].x = c.x + (r3 * sin(5.0 * M_PI / 4));
-	com.tilt->pt[2].y = ry - (c.y + (r3 * cos(5.0 * M_PI / 4)));
+	com.tilt->pt[2].y = ry - (c.y + (r3 * cos(5.0 * M_PI / 4.0)));
 	com.tilt->fwhm[2] = m3;
 
 	com.tilt->pt[3].x = c.x + (r4 * sin(3.0 * M_PI / 4));
-	com.tilt->pt[3].y = ry - (c.y + (r4 * cos(3.0 * M_PI / 4)));
+	com.tilt->pt[3].y = ry - (c.y + (r4 * cos(3.0 * M_PI / 4.0)));
 	com.tilt->fwhm[3] = m4;
 
 	com.tilt->fwhm_centre = mcentre;
@@ -98,8 +98,8 @@ int draw_sensor_tilt(fits *fit) {
 	float *fr2 = calloc(nbstars, sizeof(float));
 
 	for (int i = 0; i < nbstars; i++) {
-		double x = stars[i]->xpos;
-		double y = stars[i]->ypos;
+		float x = (float) stars[i]->xpos;
+		float y = (float) stars[i]->ypos;
 
 		/* global */
 		f[i] = (float) (stars[i]->fwhmx + stars[i]->fwhmy) * 0.5f;
@@ -130,20 +130,20 @@ int draw_sensor_tilt(fits *fit) {
 		quicksort_f(fr1, ir1);
 		quicksort_f(fr2, ir2);
 
-		double m = gsl_stats_float_trmean_from_sorted_data(0.25, f, 1, nbstars);
-		double m1 = gsl_stats_float_trmean_from_sorted_data(0.25, f1, 1, i1);
-		double m2 = gsl_stats_float_trmean_from_sorted_data(0.25, f2, 1, i2);
-		double m3 = gsl_stats_float_trmean_from_sorted_data(0.25, f3, 1, i3);
-		double m4 = gsl_stats_float_trmean_from_sorted_data(0.25, f4, 1, i4);
+		float m = siril_stats_trmean_from_sorted_data(0.25, f, 1, nbstars);
+		float m1 = siril_stats_trmean_from_sorted_data(0.25, f1, 1, i1);
+		float m2 = siril_stats_trmean_from_sorted_data(0.25, f2, 1, i2);
+		float m3 = siril_stats_trmean_from_sorted_data(0.25, f3, 1, i3);
+		float m4 = siril_stats_trmean_from_sorted_data(0.25, f4, 1, i4);
 
-		double mr1 = gsl_stats_float_trmean_from_sorted_data(0.25, fr1, 1, ir1);
-		double mr2 = gsl_stats_float_trmean_from_sorted_data(0.25, fr2, 1, ir2);
+		float mr1 = siril_stats_trmean_from_sorted_data(0.25, fr1, 1, ir1);
+		float mr2 = siril_stats_trmean_from_sorted_data(0.25, fr2, 1, ir2);
 
 		best = min(min(m1, m2), min(m3, m4));
 		worst = max(max(m1, m2), max(m3, m4));
 
-		draw_polygon((double) fit->rx, (double) fit->ry, m1, m2, m3, m4, mr1);
-		siril_log_message(_("Stars: %d, Truncated mean[FWHM]: %.2lf, Sensor tilt[FWHM]: %.2f, Off-axis aberration[FWHM]: %.2lf\n"), nbstars, m, worst - best, mr2 - mr1);
+		draw_polygon((float) fit->rx, (float) fit->ry, m1, m2, m3, m4, mr1);
+		siril_log_message(_("Stars: %d, Truncated mean[FWHM]: %.2f, Sensor tilt[FWHM]: %.2f, Off-axis aberration[FWHM]: %.2f\n"), nbstars, m, worst - best, mr2 - mr1);
 	}
 
 	free(f);

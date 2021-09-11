@@ -53,6 +53,7 @@ float siril_stats_ushort_sd_32(const WORD data[], const int N);
 float siril_stats_ushort_mad(const WORD* data, const size_t n, const double m, gboolean multithread);
 float siril_stats_float_sd(const float data[], const int N, float *mean);
 double siril_stats_float_mad(const float *data, const size_t n, const double m, gboolean multithread, float *buffer);
+float siril_stats_trmean_from_sorted_data(const float trim, const float sorted_data[], const size_t stride, const size_t size);
 
 #endif
 

@@ -1771,7 +1771,6 @@ gpointer match_catalog(gpointer p) {
 			g_free(ra);
 			g_free(dec);
 
-			/* now we can compute old WCS data */
 			double cdelt1, cdelt2;
 
 			extract_cdelt_from_cd(cd1_1, cd1_2, cd2_1, cd2_2, &cdelt1, &cdelt2);
