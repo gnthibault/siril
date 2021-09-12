@@ -1023,13 +1023,14 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 	ptlist = g_list_sort(ptlist, (GCompareFunc) border_compare); // sort potential tags by increasing border number
 	cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);
 	GSList *existingtags = NULL;
+	gchar *RAfmt = (stepRA < 1./4.) ? "%02dh%02dm%02ds" : "%02dh%02dm";
 	for (GList *l = ptlist; l != NULL; l = l->next) {
 		// getting the label
 		SirilWorldCS *world_cs;
 		label_point *pt = (label_point*) l->data;
 		world_cs = siril_world_cs_new_from_a_d(pt->ra, pt->dec);
 		if (world_cs) {
-			gchar *tag = (pt->isRA) ? siril_world_cs_alpha_format(world_cs, "%02dh%02dm") : siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'");
+			gchar *tag = (pt->isRA) ? siril_world_cs_alpha_format(world_cs, RAfmt) : siril_world_cs_delta_format(world_cs, "%c%02d°%02d\'");
 			siril_world_cs_unref(world_cs);
 			if (!g_slist_find_custom(existingtags, tag, (GCompareFunc) strcompare)) { // this tag has already been used - skipping
 				existingtags = g_slist_append(existingtags, (gpointer) tag);
