@@ -766,7 +766,6 @@ static void draw_compass(const draw_data_t* dd) {
 	fits *fit = &gfit;
 	cairo_t *cr = dd->cr;
 	cairo_set_line_width(cr, 3.0 / dd->zoom);
-	cairo_set_font_size(cr, 12.0 / dd->zoom);
 	double ra0, dec0;
 	double xN, yN, xE, yE;
 
@@ -781,6 +780,9 @@ static void draw_compass(const draw_data_t* dd) {
 	double angleN = -atan2(yN - ypos, xN - xpos);
 	double angleE = -atan2(yE - ypos, xE - xpos);
 
+	cairo_set_font_size(cr, len / 3);
+
+
 	/* draw north line and filled-arrow*/
 	cairo_set_source_rgba(cr, 1., 0., 0., 1.0);
 	cairo_save(cr); // save the original transform
@@ -794,6 +796,7 @@ static void draw_compass(const draw_data_t* dd) {
 	cairo_line_to(cr, len, 0.);
 	cairo_fill(cr);
 	cairo_move_to(cr, len, 0.1 * len);
+//	cairo_rotate(cr, -angleN);
 	cairo_show_text(cr, "N");
 	cairo_restore(cr); // restore the original transform
 
@@ -806,6 +809,7 @@ static void draw_compass(const draw_data_t* dd) {
 	cairo_line_to(cr, len / 2., 0.);
 	cairo_stroke(cr);
 	cairo_move_to(cr, len / 2, -0.1 * len);
+//	cairo_rotate(cr, -angleE);
 	cairo_show_text(cr, "E");
 	cairo_restore(cr); // restore the original transform
 }
