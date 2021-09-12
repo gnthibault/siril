@@ -116,13 +116,8 @@ static void global_initialization() {
 	/* initialize the com struct and zoom level */
 	com.sliders = MINMAX;
 	com.zoom_value = ZOOM_DEFAULT;
-	com.pref.font_scale = 100.0;
-	/* first initialization of compression settings */
-	com.pref.comp.fits_enabled = FALSE;
-	com.pref.comp.fits_method = 0;
-	com.pref.comp.fits_quantization = 16;
-	/* show compass initialization*/
-	com.pref.show_compass = TRUE;
+
+	initialize_default_preferences();
 }
 
 static void init_num_procs() {
@@ -169,8 +164,6 @@ static void siril_app_activate(GApplication *application) {
 
 	/* initialize peaker variables */
 	init_peaker_default();
-	/* initialize photometry variables */
-	initialize_photometric_param();
 	/* initialize sequence-related stuff */
 	initialize_sequence(&com.seq, TRUE);
 

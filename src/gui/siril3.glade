@@ -19564,14 +19564,19 @@ The technique gives very good compression for astronomical images and is relativ
                             <property name="can-focus">False</property>
                             <property name="left-padding">12</property>
                             <child>
-                              <object class="GtkCheckButton" id="check_button_compass">
-                                <property name="label" translatable="yes">Show compass</property>
+                              <object class="GtkComboBoxText" id="compass_combobox">
                                 <property name="visible">True</property>
-                                <property name="can-focus">True</property>
-                                <property name="receives-default">False</property>
-                                <property name="tooltip-text" translatable="yes">Show compass in the middle of the image</property>
-                                <property name="active">True</property>
-                                <property name="draw-indicator">True</property>
+                                <property name="can-focus">False</property>
+                                <property name="tooltip-markup" translatable="yes">Choose the position of the compass being displayed with the celestial grid.</property>
+                                <property name="active">0</property>
+                                <items>
+                                  <item translatable="yes">None</item>
+                                  <item translatable="yes">Center</item>
+                                  <item translatable="yes">Top-left</item>
+                                  <item translatable="yes">Top-right</item>
+                                  <item translatable="yes">Bottom-left</item>
+                                  <item translatable="yes">Bottom-right</item>
+                                </items>
                               </object>
                             </child>
                           </object>
@@ -19582,7 +19587,7 @@ The technique gives very good compression for astronomical images and is relativ
                             <property name="can-focus">False</property>
                             <property name="margin-top">10</property>
                             <property name="margin-bottom">10</property>
-                            <property name="label" translatable="yes">Celestial grid</property>
+                            <property name="label" translatable="yes">Compass</property>
                             <property name="single-line-mode">True</property>
                             <attributes>
                               <attribute name="weight" value="bold"/>

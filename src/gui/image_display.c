@@ -763,6 +763,8 @@ static void draw_brg_boxes(const draw_data_t* dd) {
 }
 
 static void draw_compass(const draw_data_t* dd) {
+	int pos = com.pref.position_compass;
+	if (!pos) return; // User chose None
 	fits *fit = &gfit;
 	cairo_t *cr = dd->cr;
 	cairo_set_line_width(cr, 3.0 / dd->zoom);
@@ -782,11 +784,15 @@ static void draw_compass(const draw_data_t* dd) {
 
 	cairo_set_font_size(cr, len / 3);
 
+	double xdraw, ydraw;
+	double pos_values[5][2] = { { 0.5, 0.5 }, { 0.1, 0.1 }, { 0.9, 0.1 }, { 0.1, 0.9 }, { 0.9, 0.9 } };
+	xdraw = pos_values[pos - 1][0] * fit->rx;
+	ydraw = pos_values[pos - 1][1] * fit->ry;
 
 	/* draw north line and filled-arrow*/
 	cairo_set_source_rgba(cr, 1., 0., 0., 1.0);
 	cairo_save(cr); // save the original transform
-	cairo_translate(cr, xpos, ypos);
+	cairo_translate(cr, xdraw, ydraw);
 	cairo_rotate(cr, angleN);
 	cairo_move_to(cr, 0., 0.);
 	cairo_line_to(cr, len, 0.);
@@ -803,7 +809,7 @@ static void draw_compass(const draw_data_t* dd) {
 	/* draw east line */
 	cairo_set_source_rgba(cr, 1., 1., 1., 1.0);
 	cairo_save(cr); // save the original transform
-	cairo_translate(cr, xpos, ypos);
+	cairo_translate(cr, xdraw, ydraw);
 	cairo_rotate(cr, angleE);
 	cairo_move_to(cr, 0., 0.);
 	cairo_line_to(cr, len / 2., 0.);
@@ -1076,8 +1082,7 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 	g_list_free_full(ptlist, (GDestroyNotify) g_free);
 	g_slist_free_full(existingtags, (GDestroyNotify) g_free);
 
-	if (com.pref.show_compass)
-		draw_compass(dd);
+	draw_compass(dd);
 }
 
 static gdouble x_circle(gdouble x, gdouble radius) {
