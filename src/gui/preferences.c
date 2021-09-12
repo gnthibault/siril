@@ -129,6 +129,7 @@ static preferences pref_init = {
 		.catalog[3] = TRUE,
 		.catalog[4] = TRUE,
 		.catalog[5] = TRUE,
+		.show_compass = TRUE,
 		.wcs_formalism = WCS_FORMALISM_1,
 		{ // stack_config
 				.method = 0,
@@ -214,6 +215,7 @@ static void update_astrometry_preferences() {
 	com.pref.catalog[3] = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_ldn")));
 	com.pref.catalog[4] = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_sh2")));
 	com.pref.catalog[5] = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_stars")));
+	com.pref.show_compass = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_compass")));
 	com.pref.wcs_formalism = gtk_combo_box_get_active(GTK_COMBO_BOX(lookup_widget("wcs_formalism_combobox")));
 }
 
@@ -648,6 +650,7 @@ static void set_preferences_ui(preferences *pref) {
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_ldn")), pref->catalog[3]);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_sh2")), pref->catalog[4]);
 	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_stars")), pref->catalog[5]);
+	gtk_toggle_button_set_active(GTK_TOGGLE_BUTTON(lookup_widget("check_button_compass")), pref->show_compass);
 	gtk_combo_box_set_active(GTK_COMBO_BOX(lookup_widget("wcs_formalism_combobox")), pref->wcs_formalism);
 
 	/* tab 5*/

@@ -783,7 +783,7 @@ static void draw_compass(const draw_data_t* dd) {
 
 	/* draw north line and filled-arrow*/
 	cairo_set_source_rgba(cr, 1., 0., 0., 1.0);
-	cairo_save(cr); // save the orginal transform
+	cairo_save(cr); // save the original transform
 	cairo_translate(cr, xpos, ypos);
 	cairo_rotate(cr, angleN);
 	cairo_move_to(cr, 0., 0.);
@@ -795,11 +795,11 @@ static void draw_compass(const draw_data_t* dd) {
 	cairo_fill(cr);
 	cairo_move_to(cr, len, 0.1 * len);
 	cairo_show_text(cr, "N");
-	cairo_restore(cr); // restore the orginal transform
+	cairo_restore(cr); // restore the original transform
 
 	/* draw east line */
 	cairo_set_source_rgba(cr, 1., 1., 1., 1.0);
-	cairo_save(cr); // save the orginal transform
+	cairo_save(cr); // save the original transform
 	cairo_translate(cr, xpos, ypos);
 	cairo_rotate(cr, angleE);
 	cairo_move_to(cr, 0., 0.);
@@ -807,7 +807,7 @@ static void draw_compass(const draw_data_t* dd) {
 	cairo_stroke(cr);
 	cairo_move_to(cr, len / 2, -0.1 * len);
 	cairo_show_text(cr, "E");
-	cairo_restore(cr); // restore the orginal transform
+	cairo_restore(cr); // restore the original transform
 }
 
 static label_point *new_label_point(double height, double *pix1, double *pix2, double *world, gboolean isRA, int border) {
@@ -1072,7 +1072,8 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 	g_list_free_full(ptlist, (GDestroyNotify) g_free);
 	g_slist_free_full(existingtags, (GDestroyNotify) g_free);
 
-	draw_compass(dd);
+	if (com.pref.show_compass)
+		draw_compass(dd);
 }
 
 static gdouble x_circle(gdouble x, gdouble radius) {

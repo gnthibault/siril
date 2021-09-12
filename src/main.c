@@ -155,6 +155,8 @@ static void global_initialization() {
 	com.pref.comp.fits_enabled = FALSE;
 	com.pref.comp.fits_method = 0;
 	com.pref.comp.fits_quantization = 16;
+	/* show compass initialization*/
+	com.pref.show_compass = TRUE;
 }
 
 static void init_num_procs() {

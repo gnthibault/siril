@@ -182,6 +182,7 @@ static int readinitfile() {
 		config_setting_lookup_bool(astrometry_setting, "sh2", &com.pref.catalog[4]);
 		config_setting_lookup_bool(astrometry_setting, "stars", &com.pref.catalog[5]);
 		config_setting_lookup_bool(astrometry_setting, "stars", &com.pref.catalog[5]);
+		config_setting_lookup_bool(astrometry_setting, "show_compass", &com.pref.show_compass);
 		config_setting_lookup_int(astrometry_setting, "wcs_formalism", &com.pref.wcs_formalism);
 
 	} else {
@@ -478,6 +479,8 @@ static void _save_astrometry(config_t *config, config_setting_t *root) {
 	config_setting_set_bool(astrometry_setting, com.pref.catalog[4]);
 	astrometry_setting = config_setting_add(astrometry_group, "stars", CONFIG_TYPE_BOOL);
 	config_setting_set_bool(astrometry_setting, com.pref.catalog[5]);
+	astrometry_setting = config_setting_add(astrometry_group, "show_compass", CONFIG_TYPE_BOOL);
+	config_setting_set_bool(astrometry_setting, com.pref.show_compass);
 	astrometry_setting = config_setting_add(astrometry_group, "wcs_formalism", CONFIG_TYPE_INT);
 	config_setting_set_int(astrometry_setting, com.pref.wcs_formalism);
 }

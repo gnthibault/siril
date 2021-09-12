@@ -598,6 +598,7 @@ struct pref_struct {
 	struct debayer_config debayer;	// debayer settings
 	phot phot_set;          // photometry settings
 	gboolean catalog[6]; // Yet 6 catalogs
+	gboolean show_compass; // Show compass
 	int wcs_formalism; // formalism used in FITS header
 
 	stackconf stack; // stacking option
