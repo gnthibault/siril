@@ -225,8 +225,10 @@ int IKSSlite(float *data, size_t n, const float median, float mad, double *locat
 
 	*location = histogram_median_float(data, kept, multithread);
 	mad = siril_stats_float_mad(data, kept, *location, multithread, NULL);
-	if (mad == 0.0f)
+	if (mad == 0.0f) {
+		siril_log_color_message(_("MAD is null. Statistics cannot be computed.\n"), "red");
 		return 1;
+	}
 
 	*scale = sqrt(siril_stats_float_bwmv(data, kept, mad, *location, multithread)) *.991;
 	/* 0.991 factor is to keep consistency with IKSS scale */
