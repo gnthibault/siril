@@ -978,24 +978,24 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 				cairo_move_to(cr, x1, y1);
 				cairo_line_to(cr, x2, y2);
 				cairo_stroke(cr);
+			}
 				// check crossing
-				if (!(((x1 >= 0) && (y1 >= 0) && (x1 < width) && (y1 < height))
-					&& ((x2 >= 0) && (y2 >= 0) && (x2 < width) && (y2 < height)))) {
-						for (int k = 0; k < 4; k ++) {
-							if (get_line_intersection(xa, ya, xb, yb, pixbox[k][0], pixbox[k][1], pixbox[k+1][0], pixbox[k+1][1], NULL, NULL)) {
-								world[0] = di;
-								pix[pixtype[k]] = pixval[k];
-								double latspan[2] = {dj, dj+step};
-								status = wcsmix(fit->wcslib, pixtype[k], 1, latspan, 1.0, 0, world, &phi, &theta, img, pix);
-								if(!status) {
-									wcs2pix(fit, world[0], world[1] + 0.1, &pix2[0], &pix2[1]);
-									ptlist = g_list_append(ptlist, new_label_point(height, pix, pix2, world, TRUE, k));
-								}
-								break;
-							}
+			if (!(((xa >= 0) && (ya >= 0) && (xa < width) && (ya < height))
+				&& ((xb >= 0) && (yb >= 0) && (xb < width) && (yb < height)))) {
+				for (int k = 0; k < 4; k ++) {
+					if (get_line_intersection(xa, ya, xb, yb, pixbox[k][0], pixbox[k][1], pixbox[k+1][0], pixbox[k+1][1], NULL, NULL)) {
+						world[0] = di;
+						pix[pixtype[k]] = pixval[k];
+						double latspan[2] = {dj, dj+step};
+						status = wcsmix(fit->wcslib, pixtype[k], 1, latspan, 1.0, 0, world, &phi, &theta, img, pix);
+						if(!status) {
+							wcs2pix(fit, world[0], world[1] + 0.1, &pix2[0], &pix2[1]);
+							ptlist = g_list_append(ptlist, new_label_point(height, pix, pix2, world, TRUE, k));
 						}
+						break;
 					}
 				}
+			}
 			dj = dj + step;
 		} while (dj <= min(centdec + 6 * step, 90.));
 		di = di + stepRA;
@@ -1022,24 +1022,24 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 				cairo_move_to(cr, x1, y1);
 				cairo_line_to(cr, x2, y2);
 				cairo_stroke(cr);
+			}
 				// check crossing
-				if (!(((x1 >= 0) && (y1 >= 0) && (x1 < width) && (y1 < height))
-					&& ((x2 >= 0) && (y2 >= 0) && (x2 < width) && (y2 < height)))) {
-						for (int k = 0; k < 4; k ++) {
-							if (get_line_intersection(xa, ya, xb, yb, pixbox[k][0], pixbox[k][1], pixbox[k+1][0], pixbox[k+1][1], NULL, NULL)) {
-								world[1] = dj;
-								pix[pixtype[k]] = pixval[k];
-								double lngspan[2] = {di, di+step};
-								status = wcsmix(fit->wcslib, pixtype[k], 2, lngspan, 1.0, 0, world, &phi, &theta, img, pix);
-								if(!status) {
-									wcs2pix(fit, world[0] + 0.1, world[1], &pix2[0], &pix2[1]);
-									ptlist = g_list_append(ptlist, new_label_point(height, pix, pix2, world, FALSE, k));
-								}
-								break;
-							}
+			if (!(((xa >= 0) && (ya >= 0) && (xa < width) && (ya < height))
+				&& ((xb >= 0) && (yb >= 0) && (xb < width) && (yb < height)))) {
+				for (int k = 0; k < 4; k ++) {
+					if (get_line_intersection(xa, ya, xb, yb, pixbox[k][0], pixbox[k][1], pixbox[k+1][0], pixbox[k+1][1], NULL, NULL)) {
+						world[1] = dj;
+						pix[pixtype[k]] = pixval[k];
+						double lngspan[2] = {di, di+step};
+						status = wcsmix(fit->wcslib, pixtype[k], 2, lngspan, 1.0, 0, world, &phi, &theta, img, pix);
+						if(!status) {
+							wcs2pix(fit, world[0] + 0.1, world[1], &pix2[0], &pix2[1]);
+							ptlist = g_list_append(ptlist, new_label_point(height, pix, pix2, world, FALSE, k));
 						}
+						break;
 					}
 				}
+			}
 			di = di + step;
 		} while (di <= ((polesign) ? 360. : centra + 6 * stepRA));
 		dj = dj + step;
