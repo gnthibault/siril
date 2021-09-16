@@ -1441,8 +1441,14 @@ point get_center_of_vport() {
 
 void add_image_and_label_to_cairo(cairo_t *cr, int vport) {
 	draw_data_t dd;
-
 	GtkWidget *widget = lookup_widget("drawingarear");
+	static GtkApplicationWindow *app_win = NULL;
+	if (app_win == NULL) {
+		app_win = GTK_APPLICATION_WINDOW(lookup_widget("control_window"));
+	}
+	GAction *action_neg = g_action_map_lookup_action(G_ACTION_MAP(app_win), "negative-view");
+	GVariant *state = g_action_get_state(action_neg);
+
 
 	dd.vport = vport;
 	dd.cr = cr;
@@ -1452,6 +1458,7 @@ void add_image_and_label_to_cairo(cairo_t *cr, int vport) {
 	dd.image_width = gfit.rx;
 	dd.image_height = gfit.ry;
 	dd.filter = (dd.zoom < 1.0) ? CAIRO_FILTER_GOOD : CAIRO_FILTER_FAST;
+	dd.neg_view = g_variant_get_boolean(state);
 
 	/* RGB or gray images */
 	draw_main_image(&dd);
