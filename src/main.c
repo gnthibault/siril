@@ -104,7 +104,6 @@ static GOptionEntry main_option[] = {
 
 static GActionEntry app_entries[] = {
 	{ "quit", quit_action_activate },
-	{ "full-screen", full_screen_activated},
 	{ "preferences", preferences_action_activate },
 	{ "open",  open_action_activate },
 	{ "save", save_action_activate },

@@ -51,6 +51,7 @@ typedef struct draw_data {
 	cairo_t *cr;
 	int vport;
 	double zoom;
+	gboolean neg_view;
 	cairo_filter_t filter;
 	guint image_width, image_height;
 	guint window_width, window_height;
@@ -637,7 +638,6 @@ static void draw_stars(const draw_data_t* dd) {
 
 	/* quick photometry */
 	if (!com.script && com.qphot && mouse_status == MOUSE_ACTION_PHOTOMETRY) {
-		gboolean inverted = gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(lookup_widget("neg_button")));
 		double size = com.qphot->fwhmx * 2.0;
 
 		cairo_set_dash(cr, NULL, 0, 0);
@@ -649,7 +649,7 @@ static void draw_stars(const draw_data_t* dd) {
 		cairo_stroke(cr);
 
 		/* sky annulus */
-		if (inverted) {
+		if (dd->neg_view) {
 			cairo_set_source_rgba(cr, 0.5, 0.0, 0.7, 0.9);
 		} else {
 			cairo_set_source_rgba(cr, 0.5, 1.0, 0.3, 0.9);
@@ -807,7 +807,11 @@ static void draw_compass(const draw_data_t* dd) {
 	cairo_restore(cr); // restore the original transform
 
 	/* draw east line */
-	cairo_set_source_rgba(cr, 1., 1., 1., 1.0);
+	if (dd->neg_view)
+		cairo_set_source_rgba(cr, 0.0, 0.0, 0.0, 1.0);
+	else
+		cairo_set_source_rgba(cr, 1.0, 1.0, 1.0, 1.0);
+
 	cairo_save(cr); // save the original transform
 	cairo_translate(cr, xdraw, ydraw);
 	cairo_rotate(cr, angleE);
@@ -942,7 +946,7 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 	double centdec = step * round(dec0 * 180 / (M_PI * step));
 
 	// plot DEC grid
-	cairo_set_source_rgb(cr, 0.8, 0., 0.);
+	cairo_set_source_rgb(cr, 0.8, 0.0, 0.0);
 	double di = (polesign) ? 0. : centra - 6 * stepRA;
 	do { // dec lines
 		double dj = max(centdec - 6 * step, -90);
@@ -986,7 +990,7 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 	} while (di <= ((polesign) ? 360. : centra + 6 * stepRA));
 
 	// plot RA grid
-	cairo_set_source_rgb(cr, 0., 0.5, 1.);
+	cairo_set_source_rgb(cr, 0.0, 0.5, 1.0);
 	double dj = max(centdec - step * 6, -90);
 	do { // ra lines
 		di = (polesign) ? 0. : centra - 6 * stepRA;
@@ -1031,7 +1035,11 @@ static void draw_wcs_grid(const draw_data_t* dd) {
 
 	// Add crossings labels
 	ptlist = g_list_sort(ptlist, (GCompareFunc) border_compare); // sort potential tags by increasing border number
-	cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);
+	if (dd->neg_view) {
+		cairo_set_source_rgb(cr, 0.2, 0.2, 0.2);
+	} else {
+		cairo_set_source_rgb(cr, 0.8, 0.8, 0.8);
+	}
 	GSList *existingtags = NULL;
 	gchar *RAfmt = (stepRA < 1./4.) ? "%02dh%02dm%02ds" : "%02dh%02dm";
 	for (GList *l = ptlist; l != NULL; l = l->next) {
@@ -1101,8 +1109,7 @@ static void draw_annotates(const draw_data_t* dd) {
 	cairo_t *cr = dd->cr;
 	cairo_set_dash(cr, NULL, 0, 0);
 
-	gboolean inverted = gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(lookup_widget("neg_button")));
-	if (inverted) {
+	if (dd->neg_view) {
 		cairo_set_source_rgba(cr, 0.5, 0.0, 0.7, 0.9);
 	} else {
 		cairo_set_source_rgba(cr, 0.5, 1.0, 0.3, 0.9);
@@ -1351,6 +1358,12 @@ void queue_redraw(int doremap) {
  */
 gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	draw_data_t dd;
+	static GtkApplicationWindow *app_win = NULL;
+	if (app_win == NULL) {
+		app_win = GTK_APPLICATION_WINDOW(lookup_widget("control_window"));
+	}
+	GAction *action_neg = g_action_map_lookup_action(G_ACTION_MAP(app_win), "negative-view");
+	GVariant *state = g_action_get_state(action_neg);
 
 	// we need to identify which vport is being redrawn
 	dd.vport = match_drawing_area_widget(widget, TRUE);
@@ -1367,6 +1380,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	dd.image_width = gfit.rx;
 	dd.image_height = gfit.ry;
 	dd.filter = (dd.zoom < 1.0) ? CAIRO_FILTER_GOOD : CAIRO_FILTER_FAST;
+	dd.neg_view = g_variant_get_boolean(g_action_get_state(action_neg));
 
 	adjust_vport_size_to_image();
 
@@ -1396,6 +1410,8 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	draw_brg_boxes(&dd);
 
 	cairo_restore(cr);
+
+	g_variant_unref(state);
 
 	return FALSE;
 }
