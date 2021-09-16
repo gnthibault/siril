@@ -52,16 +52,21 @@ struct _CatalogObjects {
 	gdouble dec;
 	gdouble radius;
 	gchar *name;
+	gchar *alias;
 	const gchar *catalogue;
 };
 
-static CatalogObjects *new_catalog_object(gchar *code, gdouble ra, gdouble dec, gdouble radius, gchar *name, const gchar *catalogue) {
+static CatalogObjects* new_catalog_object(const gchar *code, gdouble ra,
+		gdouble dec, gdouble radius, const gchar *name, const gchar *alias,
+		const gchar *catalogue) {
 	CatalogObjects *object = g_new(CatalogObjects, 1);
+
 	object->code = g_strdup(code);
 	object->ra = ra;
 	object->dec = dec;
 	object->radius = radius;
 	object->name = g_strdup(name);
+	object->alias = g_strdup(alias);
 	object->catalogue = catalogue;
 	return object;
 }
@@ -77,19 +82,21 @@ static gint object_compare(gconstpointer *a, gconstpointer *b) {
 	const CatalogObjects *s1 = (const CatalogObjects *) a;
 	const CatalogObjects *s2 = (const CatalogObjects *) b;
 
-	double minDec = s1->dec - TOLERANCE;
-	double maxDec = s1->dec + TOLERANCE;
+	if (!s1->alias) return 1;
 
-	double minRa = s1->ra - TOLERANCE;
-	double maxRa = s1->ra + TOLERANCE;
+	gchar **token = g_strsplit(s1->alias, "/", -1);
+	guint nargs = g_strv_length(token);
 
-	/* compare */
-	if (s2->dec > minDec && s2->dec < maxDec && s2->ra > minRa
-			&& s2->ra < maxRa) {
-		return 0;
+	if (nargs == 1)
+		return g_strcmp0(s1->alias, s2->code);
+	else {
+		for (int i = 0; i < nargs; i++) {
+			if (!g_strcmp0(token[i], s2->code)) {
+				return 0;
+			}
+		}
+		return 1;
 	}
-
-	return 1;
 }
 
 static GSList *load_catalog(const gchar *catalogue) {
@@ -117,15 +124,27 @@ static GSList *load_catalog(const gchar *catalogue) {
 			g_free(line);
 			continue;
 		}
-		gchar **token = g_strsplit(line, "\t", -1);
+		gchar **token = g_strsplit(line, ";", -1);
+		guint nargs = g_strv_length(token);
 
-		CatalogObjects *object = new_catalog_object(
-				g_strdup(token[0]),
-				g_ascii_strtod(token[1], NULL) * 15.0,
-				g_strcmp0(token[2], "-") ? g_ascii_strtod(token[3], NULL) :	g_ascii_strtod(token[3], NULL) * -1.0,
-				g_ascii_strtod(token[4], NULL) * 0.5,
-				g_strdup(token[6]),
-				catalogue);
+		const gchar *code = NULL, *name = NULL, *alias = NULL;
+		gdouble ra, dec, radius;
+
+		/* mandatory tokens */
+		code = token[0];
+		ra = g_ascii_strtod(token[1], NULL) * 15.0;
+		dec = g_strcmp0(token[2], "-") ? g_ascii_strtod(token[3], NULL) : g_ascii_strtod(token[3], NULL) * -1.0;
+		radius = g_ascii_strtod(token[4], NULL) * 0.5;
+
+		/* optional tokens */
+		if (nargs > 5) {
+			name = token[6];
+			if (nargs > 6) {
+				alias = token[7];
+			}
+		}
+
+		CatalogObjects *object = new_catalog_object(code, ra, dec, radius, name, alias, catalogue);
 
 		list = g_slist_prepend(list, (gpointer) object);
 
@@ -237,7 +256,7 @@ GSList *find_objects(fits *fit) {
 		/* Search for objects in the circle of radius defined by the image */
 		if (is_inside(fit, cur->ra, cur->dec)) {
 			if (!g_slist_find_custom(targets, cur, (GCompareFunc) object_compare)) {
-				CatalogObjects *new_object = new_catalog_object(cur->code, cur->ra, cur->dec, cur->radius, cur->name, cur->catalogue);
+				CatalogObjects *new_object = new_catalog_object(cur->code, cur->ra, cur->dec, cur->radius, cur->name, cur->alias, cur->catalogue);
 				targets = g_slist_prepend(targets, new_object);
 			}
 		}
@@ -255,7 +274,7 @@ void add_object_in_catalogue(gchar *code, SirilWorldCS *wcs) {
 
 	CatalogObjects *new_object = new_catalog_object(code,
 			siril_world_cs_get_alpha(wcs), siril_world_cs_get_delta(wcs), 0,
-			NULL, NULL);
+			NULL, NULL, NULL);
 	/* We need to add it at the end of the list, if not duplicates test could reject it */
 	siril_catalogue_list = g_slist_append(siril_catalogue_list, new_object);
 }
