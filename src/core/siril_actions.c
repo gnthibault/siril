@@ -213,11 +213,11 @@ void zoom_one_activate(GSimpleAction *action, GVariant *parameter, gpointer user
 }
 
 void negative_view_state(GSimpleAction *action, GVariant *state, gpointer user_data) {
+	g_simple_action_set_state(action, state);
 	set_cursor_waiting(TRUE);
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	set_cursor_waiting(FALSE);
-	g_simple_action_set_state(action, state);
 }
 
 void negative_view_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {
@@ -245,11 +245,11 @@ void photometry_activate(GSimpleAction *action, GVariant *parameter, gpointer us
 }
 
 void color_map_state(GSimpleAction *action, GVariant *state, gpointer user_data) {
+	g_simple_action_set_state(action, state);
 	set_cursor_waiting(TRUE);
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
 	set_cursor_waiting(FALSE);
-	g_simple_action_set_state(action, state);
 }
 
 void color_map_activate(GSimpleAction *action, GVariant *parameter, gpointer user_data) {

@@ -209,7 +209,16 @@ static void remap(int vport) {
 			return;
 		}
 	}
-	inverted = gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(lookup_widget("neg_button")));
+
+	static GtkApplicationWindow *app_win = NULL;
+	if (app_win == NULL) {
+		app_win = GTK_APPLICATION_WINDOW(lookup_widget("control_window"));
+	}
+	GAction *action_neg = g_action_map_lookup_action(G_ACTION_MAP(app_win), "negative-view");
+	GVariant *state = g_action_get_state(action_neg);
+
+	inverted = g_variant_get_boolean(state);
+	g_variant_unref(state);
 
 	if (single_image_is_loaded() && com.seq.current != RESULT_IMAGE) {
 		mode = com.uniq->layers[vport].rendering_mode;
@@ -295,7 +304,10 @@ static void remap(int vport) {
 	fsrc = gfit.fpdata[vport];
 	dst = com.graybuf[vport];
 
-	color = gtk_toggle_tool_button_get_active(GTK_TOGGLE_TOOL_BUTTON(lookup_widget("colormap_button")));
+	GAction *action_color = g_action_map_lookup_action(G_ACTION_MAP(app_win), "color-map");
+	state = g_action_get_state(action_color);
+	color = g_variant_get_boolean(state);
+	g_variant_unref(state);
 
 	if (color == RAINBOW_COLOR)
 		make_index_for_rainbow(rainbow_index);
@@ -1380,7 +1392,7 @@ gboolean redraw_drawingarea(GtkWidget *widget, cairo_t *cr, gpointer data) {
 	dd.image_width = gfit.rx;
 	dd.image_height = gfit.ry;
 	dd.filter = (dd.zoom < 1.0) ? CAIRO_FILTER_GOOD : CAIRO_FILTER_FAST;
-	dd.neg_view = g_variant_get_boolean(g_action_get_state(action_neg));
+	dd.neg_view = g_variant_get_boolean(state);
 
 	adjust_vport_size_to_image();
 
