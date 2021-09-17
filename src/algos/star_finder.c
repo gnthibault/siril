@@ -100,11 +100,7 @@ static float compute_threshold(fits *fit, double ksigma, int layer, rectangle *a
 }
 
 static gboolean is_star(psf_star *result, star_finder_params *sf ) {
-	/* here this is a bit trick, bu if no resolution is computed
-	 * we take a greater factor for star size. This is less optimize
-	 * but at least it reproduces almost the old behavior
-	 */
-	int factor = sf->no_guess ? 10 : 3;
+
 	if (isnan(result->fwhmx) || isnan(result->fwhmy))
 		return FALSE;
 	if (isnan(result->x0) || isnan(result->y0))
@@ -113,7 +109,7 @@ static gboolean is_star(psf_star *result, star_finder_params *sf ) {
 		return FALSE;
 	if ((result->x0 <= 0.0) || (result->y0 <= 0.0))
 		return FALSE;
-	if (result->sx > factor * sf->adj_radius || result->sy > factor * sf->adj_radius)
+	if (result->sx > 10 * sf->adj_radius || result->sy > 10 * sf->adj_radius)
 		return FALSE;
 	if (result->fwhmx <= 0.0 || result->fwhmy <= 0.0)
 		return FALSE;
@@ -165,7 +161,6 @@ void init_peaker_default() {
 	com.starfinder_conf.adjust = TRUE;
 	com.starfinder_conf.sigma = 1.0;
 	com.starfinder_conf.roundness = 0.5;
-	com.starfinder_conf.no_guess = FALSE;
 }
 
 void on_toggle_radius_adjust_toggled(GtkToggleButton *togglebutton, gpointer user_data) {
@@ -300,7 +295,6 @@ psf_star **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars, r
 	double res = guess_resolution(fit);
 
 	if (res < 0) {
-		sf->no_guess = TRUE;
 		res = 1.0;
 	}
 

@@ -538,9 +538,6 @@ struct star_finder_struct {
 	gboolean adjust;
 	double sigma;
 	double roundness;
-
-	/** internal variable **/
-	gboolean no_guess; // TRUE means no guess about resolution
 };
 
 struct save_config_struct {
