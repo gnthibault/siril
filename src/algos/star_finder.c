@@ -47,6 +47,7 @@
 struct star_candidate_struct {
 	int x, y;
 	float mag_est;
+	float bg;
 };
 
 static double guess_resolution(fits *fit) {
@@ -109,7 +110,7 @@ static gboolean is_star(psf_star *result, star_finder_params *sf ) {
 		return FALSE;
 	if ((result->x0 <= 0.0) || (result->y0 <= 0.0))
 		return FALSE;
-	if (result->sx > 10 * sf->adj_radius || result->sy > 10 * sf->adj_radius)
+	if (result->fwhmx > 2 * sf->adj_radius || result->fwhmx > 2 * sf->adj_radius) // do not compare sx and sy which are 2*SQR(sigma) of the PSF
 		return FALSE;
 	if (result->fwhmx <= 0.0 || result->fwhmy <= 0.0)
 		return FALSE;
@@ -218,7 +219,7 @@ void confirm_peaker_GUI() {
  Original algorithm come from:
  Copyleft (L) 1998 Kenneth J. Mighell (Kitt Peak National Observatory)
  */
-static int minimize_candidates(fits *image, star_finder_params *sf, double bg, starc *candidates, int nb_candidates, int layer, psf_star ***retval, gboolean limit_nbstars);
+static int minimize_candidates(fits *image, star_finder_params *sf, starc *candidates, int nb_candidates, int layer, psf_star ***retval, gboolean limit_nbstars);
 
 psf_star **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars, rectangle *area, gboolean showtime, gboolean limit_nbstars) {
 	int nx = fit->rx;
@@ -299,7 +300,7 @@ psf_star **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars, r
 	}
 
 	sf->adj_radius = sf->adjust ? sf->radius / res : sf->radius;
-	// siril_log_message("Adjusted radius: %d\n", sf->adj_radius);
+	siril_log_message("Adjusted radius: %d\n", sf->adj_radius);
 	int r = sf->adj_radius;
 	int boxsize = (2 * r + 1)*(2 * r + 1);
 	double locthreshold = sf->sigma * 5.0 * bgnoise;
@@ -374,6 +375,7 @@ psf_star **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars, r
 					candidates[nbstars].x = x - r; // x corrected by the anticipated shift
 					candidates[nbstars].y = y;
 					candidates[nbstars].mag_est = meanhigh;
+					candidates[nbstars].bg = mean; //using local background
 					nbstars++;
 					if (nbstars == MAX_STARS) break;
 				}
@@ -386,7 +388,7 @@ psf_star **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars, r
 
 	/* Check if candidates are stars by minimizing a PSF on each */
 	psf_star **results;
-	nbstars = minimize_candidates(fit, sf, bg, candidates, nbstars, layer, &results, limit_nbstars);
+	nbstars = minimize_candidates(fit, sf, candidates, nbstars, layer, &results, limit_nbstars);
 	if (nbstars == 0)
 		results = NULL;
 	sort_stars(results, nbstars);
@@ -402,7 +404,7 @@ psf_star **peaker(fits *fit, int layer, star_finder_params *sf, int *nb_stars, r
 }
 
 /* returns number of stars found, result is in parameters */
-static int minimize_candidates(fits *image, star_finder_params *sf, double bg, starc *candidates, int nb_candidates, int layer, psf_star ***retval, gboolean limit_nbstars) {
+static int minimize_candidates(fits *image, star_finder_params *sf, starc *candidates, int nb_candidates, int layer, psf_star ***retval, gboolean limit_nbstars) {
 	int radius = sf->adj_radius;
 	int nx = image->rx;
 	int ny = image->ry;
@@ -452,7 +454,7 @@ static int minimize_candidates(fits *image, star_finder_params *sf, double bg, s
 			}
 		}
 
-		psf_star *cur_star = psf_global_minimisation(z, bg, FALSE, FALSE, FALSE);
+		psf_star *cur_star = psf_global_minimisation(z, candidates[candidate].bg, FALSE, FALSE, FALSE);
 		if (cur_star) {
 			if (is_star(cur_star, sf)) {
 				//fwhm_to_arcsec_if_needed(image, cur_star);	// should we do this here?
