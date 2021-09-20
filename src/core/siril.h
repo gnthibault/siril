@@ -423,6 +423,8 @@ struct ffit {
 	char row_order[FLEN_VALUE];
 	GDateTime *date, *date_obs;
 	double expstart, expend;
+	char filter[FLEN_VALUE];		// FILTER key
+	char object[FLEN_VALUE];		// OBJECT key
 	char instrume[FLEN_VALUE];		// INSTRUME key
 	char telescop[FLEN_VALUE];		// TELESCOP key
 	char observer[FLEN_VALUE];		// OBSERVER key

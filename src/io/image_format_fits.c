@@ -54,14 +54,15 @@ const char *fit_extension[] = {
 
 static char *MIPSHI[] = {"MIPS-HI", "CWHITE", "DATAMAX", NULL };
 static char *MIPSLO[] = {"MIPS-LO", "CBLACK", "DATAMIN", NULL };
-static char *PixSizeX[] = { "XPIXSZ", "XPIXELSZ", "PIXSIZE1", "PIXSIZEX", NULL };
-static char *PixSizeY[] = { "YPIXSZ", "YPIXELSZ", "PIXSIZE2", "PIXSIZEY", NULL };
-static char *BinX[] = { "XBINNING", "BINX", NULL };
-static char *BinY[] = { "YBINNING", "BINY", NULL };
-static char *Focal[] = { "FOCAL", "FOCALLEN", NULL };
+static char *PIXELSIZEX[] = { "XPIXSZ", "XPIXELSZ", "PIXSIZE1", "PIXSIZEX", NULL };
+static char *PIXELSIZEY[] = { "YPIXSZ", "YPIXELSZ", "PIXSIZE2", "PIXSIZEY", NULL };
+static char *BINX[] = { "XBINNING", "BINX", NULL };
+static char *BINY[] = { "YBINNING", "BINY", NULL };
+static char *FOCAL[] = { "FOCAL", "FOCALLEN", NULL };
 static char *CCD_TEMP[] = { "CCD-TEMP", "CCD_TEMP", "CCDTEMP", "TEMPERAT", NULL };
-static char *Exposure[] = { "EXPTIME", "EXPOSURE", NULL };
-static char *Cvf[] = { "CVF", "EGAIN", NULL };
+static char *EXPOSURE[] = { "EXPTIME", "EXPOSURE", NULL };
+static char *FILTER[] = {"FILTER", NULL };
+static char *CVF[] = { "CVF", "EGAIN", NULL };
 static char *OffsetLevel[] = { "OFFSET", "BLKLEVEL", NULL };  //Used for synthetic offset
 static int CompressionMethods[] = { RICE_1, GZIP_1, GZIP_2, HCOMPRESS_1};
 
@@ -97,7 +98,7 @@ static void read_fits_date_obs_header(fits *fit) {
 
 void fit_get_photometry_data(fits *fit) {
 	read_fits_date_obs_header(fit);
-	__tryToFindKeywords(fit->fptr, TDOUBLE, Exposure, &fit->exposure);
+	__tryToFindKeywords(fit->fptr, TDOUBLE, EXPOSURE, &fit->exposure);
 }
 
 static int fit_stats(fits *fit, float *mini, float *maxi) {
@@ -290,11 +291,11 @@ void read_fits_header(fits *fit) {
 	 * ************* CAMERA AND INSTRUMENT KEYWORDS ********************
 	 * ****************************************************************/
 
-	__tryToFindKeywords(fit->fptr, TFLOAT, PixSizeX, &fit->pixel_size_x);
-	__tryToFindKeywords(fit->fptr, TFLOAT, PixSizeY, &fit->pixel_size_y);
-	__tryToFindKeywords(fit->fptr, TUINT, BinX, &fit->binning_x);
+	__tryToFindKeywords(fit->fptr, TFLOAT, PIXELSIZEX, &fit->pixel_size_x);
+	__tryToFindKeywords(fit->fptr, TFLOAT, PIXELSIZEY, &fit->pixel_size_y);
+	__tryToFindKeywords(fit->fptr, TUINT, BINX, &fit->binning_x);
 	if (fit->binning_x <= 0) fit->binning_x = 1;
-	__tryToFindKeywords(fit->fptr, TUINT, BinY, &fit->binning_y);
+	__tryToFindKeywords(fit->fptr, TUINT, BINY, &fit->binning_y);
 	if (fit->binning_y <= 0) fit->binning_y = 1;
 
 	status = 0;
@@ -328,7 +329,7 @@ void read_fits_header(fits *fit) {
 	fits_read_key(fit->fptr, TSTRING, "DATE", &date, NULL, &status);
 	fit->date = FITS_date_to_date_time(date);
 
-	__tryToFindKeywords(fit->fptr, TDOUBLE, Focal, &fit->focal_length);
+	__tryToFindKeywords(fit->fptr, TDOUBLE, FOCAL, &fit->focal_length);
 	if (fit->focal_length <= 0.0) {
 		/* this keyword is seen in some professional images, FLENGTH is in m. */
 		double flength;
@@ -340,7 +341,11 @@ void read_fits_header(fits *fit) {
 	}
 
 	__tryToFindKeywords(fit->fptr, TDOUBLE, CCD_TEMP, &fit->ccd_temp);
-	__tryToFindKeywords(fit->fptr, TDOUBLE, Exposure, &fit->exposure);
+	__tryToFindKeywords(fit->fptr, TDOUBLE, EXPOSURE, &fit->exposure);
+	__tryToFindKeywords(fit->fptr, TSTRING, FILTER, &fit->filter);
+
+	status = 0;
+	fits_read_key(fit->fptr, TSTRING, "OBJECT", &(fit->object), NULL, &status);
 
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "APERTURE", &(fit->aperture), NULL, &status);
@@ -348,7 +353,7 @@ void read_fits_header(fits *fit) {
 	status = 0;
 	fits_read_key(fit->fptr, TDOUBLE, "ISOSPEED", &(fit->iso_speed), NULL, &status);	// Non-standard keywords used in MaxIm DL
 
-	__tryToFindKeywords(fit->fptr, TDOUBLE, Cvf, &fit->cvf); // conversion gain in e-/ADU
+	__tryToFindKeywords(fit->fptr, TDOUBLE, CVF, &fit->cvf); // conversion gain in e-/ADU
 
 	status = 0;
 	fits_read_key(fit->fptr, TUSHORT, "GAIN", &(fit->key_gain), NULL, &status);  // Gain setting from camera
@@ -1166,6 +1171,16 @@ void save_fits_header(fits *fit) {
 				"CCD temp in C", &status);
 
 	status = 0;
+	if (fit->filter[0] != '\0')
+		fits_update_key(fit->fptr, TSTRING, "FILTER", &(fit->filter),
+				"Active filter name", &status);
+
+	status = 0;
+	if (fit->object[0] != '\0')
+		fits_update_key(fit->fptr, TSTRING, "OBJECT", &(fit->object),
+				"Name of the object of interest", &status);
+
+	status = 0;
 	if (fit->aperture > 0.)
 		fits_update_key(fit->fptr, TDOUBLE, "APERTURE", &(fit->aperture),
 				"Aperture of the instrument", &status);
@@ -1289,7 +1304,7 @@ void save_fits_header(fits *fit) {
 void get_date_data_from_fitsfile(fitsfile *fptr, GDateTime **dt, double *exposure) {
 	char date_obs[FLEN_VALUE];
 
-	__tryToFindKeywords(fptr, TDOUBLE, Exposure, exposure);
+	__tryToFindKeywords(fptr, TDOUBLE, EXPOSURE, exposure);
 	int status = 0;
 	fits_read_key(fptr, TSTRING, "DATE-OBS", &date_obs, NULL, &status);
 	if (!status) {
@@ -2100,6 +2115,8 @@ int copy_fits_metadata(fits *from, fits *to) {
 		to->date = g_date_time_ref(from->date);
 	if (from->date_obs)
 		to->date_obs = g_date_time_ref(from->date_obs);
+	strncpy(to->filter, from->filter, FLEN_VALUE);
+	strncpy(to->object, from->object, FLEN_VALUE);
 	strncpy(to->instrume, from->instrume, FLEN_VALUE);
 	strncpy(to->telescop, from->telescop, FLEN_VALUE);
 	strncpy(to->observer, from->observer, FLEN_VALUE);

@@ -34,9 +34,6 @@
 static GSList *siril_catalogue_list = NULL;
 static gboolean show_catalog(const gchar *catalog);
 
-/* set a tolerance for "same object" test, in degree */
-#define TOLERANCE 20.0 / 3600.0;
-
 static const gchar *cat[] = {
 		"messier.txt",
 		"ngc.txt",
