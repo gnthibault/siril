@@ -112,6 +112,7 @@ int	process_set_mag(int nb);
 int	process_set_mag_seq(int nb);
 int	process_set_mem(int nb);
 int	process_set_ref(int nb);
+int process_seq_cosme(int nb);
 int	process_seq_crop(int nb);
 int	process_seq_mtf(int nb);
 int	process_seq_psf(int nb);

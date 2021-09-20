@@ -40,6 +40,7 @@
 #include "algos/sorting.h"
 #include "algos/median_fast.h"
 #include "filters/median.h"
+#include "opencv/opencv.h"
 
 #include "cosmetic_correction.h"
 
@@ -410,6 +411,134 @@ gpointer autoDetectThreaded(gpointer p) {
 	free(args);
 	siril_add_idle(end_autoDetect, NULL);
 	return GINT_TO_POINTER(retval);
+}
+
+int apply_cosme_to_image(fits *fit, GFile *file, int is_cfa) {
+	int i = 0;
+	gchar *line;
+	deviant_pixel dev;
+	int nb_tokens, retval = 0;
+	double dirty;
+	char type;
+	GError *error = NULL;
+	GInputStream *input_stream = (GInputStream *)g_file_read(file, NULL, &error);
+
+	if (input_stream == NULL) {
+		if (error != NULL) {
+			g_clear_error(&error);
+			siril_log_message(_("File [%s] does not exist\n"), g_file_peek_path(file));
+		}
+
+		g_object_unref(file);
+		return 1;
+	}
+
+	GDataInputStream *data_input = g_data_input_stream_new(input_stream);
+	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
+				NULL, NULL))) {
+		++i;
+		switch (line[0]) {
+		case '#': // comments.
+			g_free(line);
+			continue;
+			break;
+		case 'P':
+			nb_tokens = sscanf(line + 2, "%lf %lf %c", &dev.p.x, &dev.p.y, &type);
+			if (nb_tokens != 2 && nb_tokens != 3) {
+				fprintf(stderr, "cosmetic correction: "
+						"cosme file format error at line %d: %s", i, line);
+				retval = 1;
+				g_free(line);
+				continue;
+			}
+			if (nb_tokens == 2)	{
+				type = 'H';
+			}
+			if (type == 'H')
+				dev.type = HOT_PIXEL;
+			else
+				dev.type = COLD_PIXEL;
+			dev.p.y = fit->ry - dev.p.y - 1;  /* FITS are stored bottom to top */
+			cosmeticCorrOnePoint(fit, dev, is_cfa);
+			break;
+		case 'L':
+			nb_tokens = sscanf(line + 2, "%lf %lf %c", &dev.p.y, &dirty, &type);
+			if (nb_tokens != 2 && nb_tokens != 3) {
+				fprintf(stderr, "cosmetic correction: "
+						"cosme file format error at line %d: %s\n", i, line);
+				retval = 1;
+				g_free(line);
+				continue;
+			}
+			dev.type = HOT_PIXEL; // we force it
+			dev.p.y = fit->ry - dev.p.y - 1; /* FITS are stored bottom to top */
+			cosmeticCorrOneLine(fit, dev, is_cfa);
+			break;
+		case 'C':
+			nb_tokens = sscanf(line + 2, "%lf %lf %c", &dev.p.y, &dirty, &type);
+			if (nb_tokens != 2 && nb_tokens != 3) {
+				fprintf(stderr, "cosmetic correction: "
+						"cosme file format error at line %d: %s\n", i, line);
+				retval = 1;
+				g_free(line);
+				continue;
+			}
+			point center = { fit->rx / 2.0, fit->ry / 2.0 };
+			dev.type = HOT_PIXEL; // we force it
+			dev.p.y = fit->rx - dev.p.y - 1; /* FITS are stored bottom to top */
+			cvRotateImage(fit, center, 90.0, -1, OPENCV_AREA);
+			cosmeticCorrOneLine(&gfit, dev, is_cfa);
+			cvRotateImage(fit, center, -90.0, -1, OPENCV_AREA);
+
+			break;
+		default:
+			fprintf(stderr, _("cosmetic correction: "
+					"cosme file format error at line %d: %s\n"), i, line);
+			retval = 1;
+		}
+		g_free(line);
+	}
+
+	g_object_unref(input_stream);
+
+	return retval;
+}
+
+int cosme_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
+		rectangle *_) {
+	struct cosme_data *c_args = (struct cosme_data*) args->user;
+
+	return apply_cosme_to_image(fit, c_args->file, c_args->is_cfa);
+}
+
+static int cosme_finalize_hook(struct generic_seq_args *args) {
+	int retval = seq_finalize_hook(args);
+	struct cosme_data *c_args = (struct cosme_data*) args->user;
+
+	g_object_unref(c_args->file);
+
+	free(args->user);
+	return retval;
+}
+
+void apply_cosme_to_sequence(struct cosme_data *cosme_args) {
+	struct generic_seq_args *args = create_default_seqargs(cosme_args->seq);
+	args->filtering_criterion = seq_filter_included;
+	args->nb_filtered_images = cosme_args->seq->selnum;
+	args->prepare_hook = seq_prepare_hook;
+	args->finalize_hook = cosme_finalize_hook;
+	args->image_hook = cosme_image_hook;
+	args->stop_on_error = FALSE;
+	args->description = _("Cosmetic Correction");
+	args->has_output = TRUE;
+	args->output_type = get_data_type(args->seq->bitpix);
+	args->new_seq_prefix = cosme_args->prefix;
+	args->load_new_sequence = TRUE;
+	args->user = cosme_args;
+
+	cosme_args->fit = NULL;	// not used here
+
+	start_in_new_thread(generic_sequence_worker, args);
 }
 
 /* this is an autodetect algorithm. Cold and hot pixels

@@ -16,6 +16,15 @@ struct cosmetic_data {
 	const gchar *seqEntry;
 };
 
+/* structure for cosme command */
+struct cosme_data {
+	fits *fit;
+	sequence *seq;
+	int is_cfa;
+	GFile *file;
+	const gchar *prefix;
+};
+
 typedef enum {
 	COLD_PIXEL, HOT_PIXEL
 } typeOfDeviant;
@@ -29,6 +38,8 @@ deviant_pixel *find_deviant_pixels(fits *fit, double sig[2], long *icold, long *
 int autoDetect(fits *fit, int layer, double sig[2], long *icold, long *ihot,
 		double amount, gboolean is_cfa, gboolean multithread);
 void apply_cosmetic_to_sequence(struct cosmetic_data *cosme_args);
+int apply_cosme_to_image(fits *fit, GFile *file, int is_cfa);
+void apply_cosme_to_sequence(struct cosme_data *cosme_args);
 gpointer autoDetectThreaded(gpointer p);
 int cosmeticCorrection(fits *fit, deviant_pixel *dev, int size, gboolean is_CFA);
 int cosmeticCorrOneLine(fits *fit, deviant_pixel dev, gboolean is_cfa);

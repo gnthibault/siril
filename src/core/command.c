@@ -1793,14 +1793,8 @@ int process_fix_xtrans(int nb) {
 }
 
 int process_cosme(int nb) {
-	GError *error = NULL;
-	deviant_pixel dev;
 	gchar *filename;
-	double dirty;
-	int is_cfa, i = 0, retval = 0;
-	int nb_tokens;
-	gchar *line;
-	char type;
+	int retval = 0;
 
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
@@ -1813,89 +1807,12 @@ int process_cosme(int nb) {
 		filename = g_strdup(word[1]);
 	}
 	GFile *file = g_file_new_for_path(filename);
+
+	int is_cfa = (word[0][5] == '_') ? 1 : 0;
+
+	retval = apply_cosme_to_image(&gfit, file, is_cfa);
+
 	g_free(filename);
-
-	GInputStream *input_stream = (GInputStream *)g_file_read(file, NULL, &error);
-
-	if (input_stream == NULL) {
-		if (error != NULL) {
-			g_clear_error(&error);
-			siril_log_message(_("File [%s] does not exist\n"), filename);
-		}
-
-		g_object_unref(file);
-		return 1;
-	}
-
-	is_cfa = (word[0][5] == '_') ? 1 : 0;
-
-	GDataInputStream *data_input = g_data_input_stream_new(input_stream);
-	while ((line = g_data_input_stream_read_line_utf8(data_input, NULL,
-				NULL, NULL))) {
-		++i;
-		switch (line[0]) {
-		case '#': // comments.
-			g_free(line);
-			continue;
-			break;
-		case 'P':
-			nb_tokens = sscanf(line + 2, "%lf %lf %c", &dev.p.x, &dev.p.y, &type);
-			if (nb_tokens != 2 && nb_tokens != 3) {
-				fprintf(stderr, "cosmetic correction: "
-						"cosme file format error at line %d: %s", i, line);
-				retval = 1;
-				g_free(line);
-				continue;
-			}
-			if (nb_tokens == 2)	{
-				type = 'H';
-			}
-			if (type == 'H')
-				dev.type = HOT_PIXEL;
-			else
-				dev.type = COLD_PIXEL;
-			dev.p.y = gfit.ry - dev.p.y - 1;  /* FITS are stored bottom to top */
-			cosmeticCorrOnePoint(&gfit, dev, is_cfa);
-			break;
-		case 'L':
-			nb_tokens = sscanf(line + 2, "%lf %lf %c", &dev.p.y, &dirty, &type);
-			if (nb_tokens != 2 && nb_tokens != 3) {
-				fprintf(stderr, "cosmetic correction: "
-						"cosme file format error at line %d: %s\n", i, line);
-				retval = 1;
-				g_free(line);
-				continue;
-			}
-			dev.type = HOT_PIXEL; // we force it
-			dev.p.y = gfit.ry - dev.p.y - 1; /* FITS are stored bottom to top */
-			cosmeticCorrOneLine(&gfit, dev, is_cfa);
-			break;
-		case 'C':
-			nb_tokens = sscanf(line + 2, "%lf %lf %c", &dev.p.y, &dirty, &type);
-			if (nb_tokens != 2 && nb_tokens != 3) {
-				fprintf(stderr, "cosmetic correction: "
-						"cosme file format error at line %d: %s\n", i, line);
-				retval = 1;
-				g_free(line);
-				continue;
-			}
-			point center = {gfit.rx / 2.0, gfit.ry / 2.0};
-			dev.type = HOT_PIXEL; // we force it
-			dev.p.y = gfit.rx - dev.p.y - 1; /* FITS are stored bottom to top */
-			cvRotateImage(&gfit, center, 90.0, -1, OPENCV_AREA);
-			cosmeticCorrOneLine(&gfit, dev, is_cfa);
-			cvRotateImage(&gfit, center, -90.0, -1, OPENCV_AREA);
-
-			break;
-		default:
-			fprintf(stderr, _("cosmetic correction: "
-					"cosme file format error at line %d: %s\n"), i, line);
-			retval = 1;
-		}
-		g_free(line);
-	}
-
-	g_object_unref(input_stream);
 	g_object_unref(file);
 	if (retval)
 		siril_log_color_message(_("There were some errors, please check your input file.\n"), "salmon");
@@ -1904,6 +1821,52 @@ int process_cosme(int nb) {
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
+	return 0;
+}
+
+int process_seq_cosme(int nb) {
+	gchar *filename;
+
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
+	sequence *seq = load_sequence(word[1], NULL);
+	if (!seq)
+		return 1;
+
+	if (!g_str_has_suffix(word[2], ".lst")) {
+		filename = g_strdup_printf("%s.lst", word[2]);
+	} else {
+		filename = g_strdup(word[1]);
+	}
+
+	printf("filename=%s\n", filename);
+
+	GFile *file = g_file_new_for_path(filename);
+
+	struct cosme_data *args = malloc(sizeof(struct cosme_data));
+
+	if (g_str_has_prefix(word[3], "-prefix=")) {
+		char *current = word[3], *value;
+		value = current + 8;
+		if (value[0] == '\0') {
+			siril_log_message(_("Missing argument to %s, aborting.\n"), current);
+			return 1;
+		}
+		args->prefix = strdup(value);
+	} else {
+		args->prefix = "cosme_";
+	}
+
+	args->seq = seq;
+	args->is_cfa = (word[0][8] == '_') ? 1 : 0;
+	args->file = file;
+	args->fit = &gfit;
+
+	apply_cosme_to_sequence(args);
+
 	return 0;
 }
 
