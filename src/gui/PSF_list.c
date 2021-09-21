@@ -586,8 +586,8 @@ void popup_psf_result(psf_star *result, rectangle *area) {
 	}
 
 	double fwhmx, fwhmy;
-	char *units;
-	get_fwhm_as_arcsec_if_possible(result, &fwhmx, &fwhmy, &units);
+	char *unts;
+	get_fwhm_as_arcsec_if_possible(result, &fwhmx, &fwhmy, &unts);
 	msg = g_strdup_printf(_("Centroid Coordinates:\n\t\t%s\n\n"
 				"Full Width Half Maximum:\n\t\tFWHMx=%.2f%s\n\t\tFWHMy=%.2f%s\n\n"
 				"Angle:\n\t\t%0.2fdeg\n\n"
@@ -596,7 +596,7 @@ void popup_psf_result(psf_star *result, rectangle *area) {
 				"Magnitude (%s):\n\t\tm=%.4f\u00B1%.4f\n\n"
 				"Signal-to-noise ratio:\n\t\tSNR=%.1fdB (%s)\n\n"
 				"RMSE:\n\t\tRMSE=%.3e"),
-			coordinates, fwhmx, units, fwhmy, units,
+			coordinates, fwhmx, unts, fwhmy, unts,
 			result->angle, result->B, result->A, str,
 			result->mag + com.magOffset, result->s_mag, result->SNR,
 			SNR_quality(result->SNR), result->rmse);

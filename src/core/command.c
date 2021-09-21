@@ -1842,8 +1842,6 @@ int process_seq_cosme(int nb) {
 		filename = g_strdup(word[1]);
 	}
 
-	printf("filename=%s\n", filename);
-
 	GFile *file = g_file_new_for_path(filename);
 
 	struct cosme_data *args = malloc(sizeof(struct cosme_data));
@@ -1852,6 +1850,10 @@ int process_seq_cosme(int nb) {
 		char *current = word[3], *value;
 		value = current + 8;
 		if (value[0] == '\0') {
+			free_sequence(seq, TRUE);
+			g_free(filename);
+			g_object_unref(file);
+			free(args);
 			siril_log_message(_("Missing argument to %s, aborting.\n"), current);
 			return 1;
 		}

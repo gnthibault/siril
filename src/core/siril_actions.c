@@ -311,7 +311,7 @@ void annotate_object_state(GSimpleAction *action, GVariant *state, gpointer user
 			com.found_object = find_objects(&gfit);
 		}
 	} else {
-		g_slist_free_full(com.found_object, (GDestroyNotify) free_object);
+		g_slist_free_full(com.found_object, (GDestroyNotify) free_catalogue_object);
 		com.found_object = NULL;
 	}
 	g_simple_action_set_state(action, state);

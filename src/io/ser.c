@@ -768,9 +768,8 @@ int ser_read_frame(struct ser_struct *ser_file, int frame_no, fits *fit, gboolea
 		} else {
 			pattern = filter_pattern[com.pref.debayer.bayer_pattern];
 		}
-
 	} else if (open_debayer && type_ser == SER_MONO && !com.pref.debayer.use_bayer_header) {
-		const gchar *pattern = filter_pattern[com.pref.debayer.bayer_pattern];
+		pattern = filter_pattern[com.pref.debayer.bayer_pattern];
 		type_ser = retrieveBayerPatternFromChar(pattern) + 8;
 	}
 	if (pattern) {

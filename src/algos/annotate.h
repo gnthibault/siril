@@ -32,6 +32,6 @@ gdouble get_catalogue_object_ra(CatalogObjects *object);
 gdouble get_catalogue_object_dec(CatalogObjects *object);
 gdouble get_catalogue_object_radius(CatalogObjects *object);
 void force_to_refresh_catalogue_list();
-void free_object(CatalogObjects *object);
+void free_catalogue_object(CatalogObjects *object);
 
 #endif /* SRC_ALGOS_ANNOTATE_H_ */
