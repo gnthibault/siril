@@ -266,11 +266,12 @@ gboolean is_redo_available() {
 
 int undo_save_state(fits *fit, const char *message, ...) {
 	gchar *filename;
-	char histo[FLEN_VALUE] = { 0 };
 	va_list args;
 	va_start(args, message);
 
 	if (single_image_is_loaded()) {
+		char histo[FLEN_VALUE] = { 0 };
+
 		if (message != NULL) {
 			vsnprintf(histo, FLEN_VALUE, message, args);
 		}

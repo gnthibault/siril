@@ -338,13 +338,13 @@ int cosmeticCorrection(fits *fit, deviant_pixel *dev, int size, gboolean is_cfa)
 int cosmetic_image_hook(struct generic_seq_args *args, int o, int i, fits *fit,
 		rectangle *_) {
 	struct cosmetic_data *c_args = (struct cosmetic_data*) args->user;
-	int retval, chan;
+	int chan;
 	/* Count variables, icold and ihot, need to be local in order to be parallelized */
 	long icold, ihot;
 
 	icold = ihot = 0L;
 	for (chan = 0; chan < fit->naxes[2]; chan++) {
-		retval = autoDetect(fit, chan, c_args->sigma, &icold, &ihot,
+		int retval = autoDetect(fit, chan, c_args->sigma, &icold, &ihot,
 				c_args->amount, c_args->is_cfa, c_args->multithread);
 		if (retval)
 			return retval;

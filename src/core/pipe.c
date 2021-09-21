@@ -360,7 +360,6 @@ void *read_pipe(void *p) {
 
 			retval = select(pipe_fd_r+1, &rfds, NULL, NULL, NULL);
 			if (retval == 1) {
-				char *command;
 				int len = read(pipe_fd_r, buf+bufstart, PIPE_MSG_SZ-1-bufstart);
 				if (len == -1 || len == 0)
 					retval = -1;
@@ -382,6 +381,8 @@ void *read_pipe(void *p) {
 						 * cut them, enqueue them and prepare next buffer for
 						 * incomplete commands */
 						char backup_char;
+						char *command;
+
 						for (i = 0; i < len && buf[i] != '\0'; i++) {
 							if (buf[i] == '\n') {
 								backup_char = buf[i + 1];

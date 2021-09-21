@@ -422,7 +422,6 @@ int get_max_memory_in_MB() {
 #ifdef _WIN32
 /* stolen from gimp which in turn stole it from glib 2.35 */
 gchar* get_special_folder(int csidl) {
-	wchar_t path[MAX_PATH + 1];
 	HRESULT hr;
 	LPITEMIDLIST pidl = NULL;
 	BOOL b;
@@ -430,6 +429,8 @@ gchar* get_special_folder(int csidl) {
 
 	hr = SHGetSpecialFolderLocation(NULL, csidl, &pidl);
 	if (hr == S_OK) {
+		wchar_t path[MAX_PATH + 1];
+
 		b = SHGetPathFromIDListW(pidl, path);
 		if (b)
 			retval = g_utf16_to_utf8(path, -1, NULL, NULL, NULL);

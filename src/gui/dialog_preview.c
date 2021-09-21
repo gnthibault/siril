@@ -65,7 +65,6 @@ static gboolean end_update_preview_cb(gpointer p) {
 
 	stop_processing_thread();
 
-	int bytes;
 	const char *bytes_str;
 	char *size_str = NULL;
 	char *name_str = NULL;
@@ -87,7 +86,7 @@ static gboolean end_update_preview_cb(gpointer p) {
 
 	/* try to read file size */
 	if (args->pixbuf && (bytes_str = gdk_pixbuf_get_option(args->pixbuf, "tEXt::Thumb::Size")) != NULL) {
-		bytes = g_ascii_strtoll(bytes_str, NULL, 10);
+		int bytes = g_ascii_strtoll(bytes_str, NULL, 10);
 		size_str = g_format_size(bytes);
 	} else {
 		if (type == G_FILE_TYPE_REGULAR) {

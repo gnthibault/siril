@@ -393,7 +393,6 @@ static gboolean on_command_key_press_event(GtkWidget *widget, GdkEventKey *event
 
 int processcommand(const char *line) {
 	int wordnb = 0;
-	gchar *myline;
 	GError *error = NULL;
 
 	if (line[0] == '\0' || line[0] == '\n')
@@ -435,7 +434,7 @@ int processcommand(const char *line) {
 		/* Switch to console tab */
 		control_window_switch_to_tab(OUTPUT_LOGS);
 
-		myline = strdup(line);
+		gchar *myline = strdup(line);
 		int len = strlen(line);
 		parse_line(myline, len, &wordnb);
 		if (execute_command(wordnb)) {
