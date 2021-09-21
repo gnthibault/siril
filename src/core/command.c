@@ -1839,7 +1839,7 @@ int process_seq_cosme(int nb) {
 	if (!g_str_has_suffix(word[2], ".lst")) {
 		filename = g_strdup_printf("%s.lst", word[2]);
 	} else {
-		filename = g_strdup(word[1]);
+		filename = g_strdup(word[2]);
 	}
 
 	GFile *file = g_file_new_for_path(filename);
