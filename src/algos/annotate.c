@@ -31,8 +31,10 @@
 
 #include "annotate.h"
 
+#define USER_CATALOGUE "user-catalogue.txt"
+
 static GSList *siril_catalogue_list = NULL;
-static gboolean show_catalog(const gchar *catalog);
+static gboolean show_catalog(int catalog);
 
 static const gchar *cat[] = {
 		"messier.txt",
@@ -50,12 +52,12 @@ struct _CatalogObjects {
 	gdouble radius;
 	gchar *name;
 	gchar *alias;
-	const gchar *catalogue;
+	gint catalogue;
 };
 
 static CatalogObjects* new_catalog_object(const gchar *code, gdouble ra,
 		gdouble dec, gdouble radius, const gchar *name, const gchar *alias,
-		const gchar *catalogue) {
+		gint catalogue) {
 	CatalogObjects *object = g_new(CatalogObjects, 1);
 
 	object->code = g_strdup(code);
@@ -96,13 +98,13 @@ static gint object_compare(gconstpointer *a, gconstpointer *b) {
 	}
 }
 
-static GSList *load_catalog(const gchar *catalogue) {
+static GSList *load_catalog(const gchar *filename, gint cat_index) {
 	GFile *file;
 	gchar *line;
 	GSList *list = NULL;
 	GError *error = NULL;
 
-	file = g_file_new_build_filename(siril_get_system_data_dir(), "catalogue", catalogue, NULL);
+	file = g_file_new_for_path(filename);
 	GInputStream *input_stream = (GInputStream *)g_file_read(file, NULL, &error);
 
 	if (input_stream == NULL) {
@@ -141,7 +143,7 @@ static GSList *load_catalog(const gchar *catalogue) {
 			}
 		}
 
-		CatalogObjects *object = new_catalog_object(code, ra, dec, radius, name, alias, catalogue);
+		CatalogObjects *object = new_catalog_object(code, ra, dec, radius, name, alias, cat_index);
 
 		list = g_slist_prepend(list, (gpointer) object);
 
@@ -157,9 +159,19 @@ static GSList *load_catalog(const gchar *catalogue) {
 }
 
 static void load_all_catalogues() {
-	for (int i = 0; i < G_N_ELEMENTS(cat); i++) {
-		siril_catalogue_list = g_slist_concat(siril_catalogue_list, load_catalog(cat[i]));
+	int cat_size = G_N_ELEMENTS(cat);
+
+	for (int i = 0; i < cat_size; i++) {
+		gchar *filename = g_build_filename(siril_get_system_data_dir(), "catalogue", cat[i], NULL);
+		siril_catalogue_list = g_slist_concat(siril_catalogue_list, load_catalog(filename, i));
+
+		g_free(filename);
 	}
+	/* load user catalogue */
+	gchar *filename = g_build_filename(siril_get_config_dir(), PACKAGE, "catalogue", USER_CATALOGUE, NULL);
+	siril_catalogue_list = g_slist_concat(siril_catalogue_list, load_catalog(filename, cat_size));
+
+	g_free(filename);
 }
 
 static GSList *get_siril_catalogue_list() {
@@ -238,6 +250,46 @@ static gchar* replace_str(const gchar *s, const gchar *old, const gchar *new) {
 	return result;
 }
 
+static void write_in_user_catalogue(CatalogObjects *object) {
+	GError *error = NULL;
+	GFile *file;
+	GOutputStream *output_stream;
+	gchar *root;
+
+	/* First we test if root directory already exists */
+	root = g_build_filename(siril_get_config_dir(), PACKAGE, "catalogue", NULL);
+
+	if (!g_file_test(root, G_FILE_TEST_EXISTS)) {
+		if (g_mkdir_with_parents(root, 0755) < 0) {
+			siril_log_color_message(_("Cannot create output folder: %s\n"), "red", root);
+			g_free(root);
+			return;
+		}
+	}
+
+	/* we write in the catalogue */
+	file = g_file_new_build_filename(root, USER_CATALOGUE, NULL);
+	g_free(root);
+
+	output_stream = (GOutputStream *)g_file_append_to(file, G_FILE_CREATE_NONE, NULL, &error);
+	if (output_stream == NULL) {
+		if (error != NULL) {
+			g_warning("%s\n", error->message);
+			g_clear_error(&error);
+		}
+		g_object_unref(file);
+		return;
+	}
+	gchar sign = object->dec < 0 ? '-' : '+';
+	gchar *output_line = g_strdup_printf("%s;%lf;%c;%lf;;;;\n", object->code, object->ra / 15.0, sign, fabs(object->dec));
+
+	g_output_stream_write_all(output_stream, output_line, strlen(output_line), NULL, NULL, NULL);
+
+	g_free(output_line);
+	g_object_unref(output_stream);
+	g_object_unref(file);
+}
+
 GSList *find_objects(fits *fit) {
 	if (!has_wcs(fit)) return NULL;
 	GSList *targets = NULL;
@@ -248,9 +300,9 @@ GSList *find_objects(fits *fit) {
 
 	for (GSList *l = list; l; l = l->next) {
 		CatalogObjects *cur = (CatalogObjects *)l->data;
-		if (cur->catalogue && !show_catalog(cur->catalogue)) continue;
+		if (!show_catalog(cur->catalogue)) continue;
 
-		/* Search for objects in the circle of radius defined by the image */
+		/* Search for objects in the image */
 		if (is_inside(fit, cur->ra, cur->dec)) {
 			if (!g_slist_find_custom(targets, cur, (GCompareFunc) object_compare)) {
 				CatalogObjects *new_object = new_catalog_object(cur->code, cur->ra, cur->dec, cur->radius, cur->name, cur->alias, cur->catalogue);
@@ -266,14 +318,17 @@ GSList *find_objects(fits *fit) {
 }
 
 void add_object_in_catalogue(gchar *code, SirilWorldCS *wcs) {
+	int cat_size = G_N_ELEMENTS(cat);
+
 	if (!is_catalogue_loaded())
 		load_all_catalogues();
 
 	CatalogObjects *new_object = new_catalog_object(code,
 			siril_world_cs_get_alpha(wcs), siril_world_cs_get_delta(wcs), 0,
-			NULL, NULL, NULL);
-	/* We need to add it at the end of the list, if not duplicates test could reject it */
+			NULL, NULL, cat_size);
+
 	siril_catalogue_list = g_slist_append(siril_catalogue_list, new_object);
+	write_in_user_catalogue(new_object);
 }
 
 gchar *get_catalogue_object_code(CatalogObjects *object) {
@@ -328,15 +383,6 @@ void force_to_refresh_catalogue_list() {
 	}
 }
 
-/*** UI callbacks **/
-
-static gboolean show_catalog(const gchar *catalog) {
-	gchar *name = remove_ext_from_filename(catalog);
-	gchar *widget = g_strdup_printf("check_button_%s", name);
-	gboolean show = gtk_toggle_button_get_active(GTK_TOGGLE_BUTTON(lookup_widget(widget)));
-
-	g_free(name);
-	g_free(widget);
-
-	return show;
+static gboolean show_catalog(int catalog) {
+	return com.pref.catalog[catalog];
 }

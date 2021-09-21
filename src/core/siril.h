@@ -596,7 +596,7 @@ struct pref_struct {
 	libraw raw_set;			// the libraw settings
 	struct debayer_config debayer;	// debayer settings
 	phot phot_set;          // photometry settings
-	gboolean catalog[6]; // Yet 6 catalogs
+	gboolean catalog[7]; // Yet 6 catalogs and 1 user catalog
 	int position_compass; // compass position
 	int wcs_formalism; // formalism used in FITS header
 
