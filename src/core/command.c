@@ -1806,6 +1806,13 @@ int process_cosme(int nb) {
 	} else {
 		filename = g_strdup(word[1]);
 	}
+
+	if (!g_file_test(filename, G_FILE_TEST_EXISTS)) {
+		siril_log_color_message(_("File [%s] does not exist.\n"), "red", filename);
+		g_free(filename);
+		return 1;
+	}
+
 	GFile *file = g_file_new_for_path(filename);
 
 	int is_cfa = (word[0][5] == '_') ? 1 : 0;
@@ -1840,6 +1847,13 @@ int process_seq_cosme(int nb) {
 		filename = g_strdup_printf("%s.lst", word[2]);
 	} else {
 		filename = g_strdup(word[2]);
+	}
+
+	if (!g_file_test(filename, G_FILE_TEST_EXISTS)) {
+		siril_log_color_message(_("File [%s] does not exist.\n"), "red", filename);
+		free_sequence(seq, TRUE);
+		g_free(filename);
+		return 1;
 	}
 
 	GFile *file = g_file_new_for_path(filename);
