@@ -565,10 +565,11 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 	gboolean inside = clamp2image(&zoomed);
 
 	static const gchar *label_density[] = { "labeldensity_red", "labeldensity_green", "labeldensity_blue", "labeldensity_rgb"};
-	static const gchar *label_wcs[] = { "labelwcs_red", "labelwcs_green", "labelwcs_blue", "labelwcs_rgb" };
+	static const gchar *label_wcs[] = { "labelwcs_red", "labelwcs_green", "labelwcs_blue" };
+
+	gtk_label_set_text(GTK_LABEL(lookup_widget(label_density[com.cvport])), "");
 
 	if (com.cvport < RGB_VPORT) {
-		gtk_label_set_text(GTK_LABEL(lookup_widget(label_density[com.cvport])), "");
 		gtk_label_set_text(GTK_LABEL(lookup_widget(label_wcs[com.cvport])), "");
 
 		if (inside) {
@@ -622,6 +623,25 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 			if (buffer[0] != '\0') {
 				gtk_label_set_text(GTK_LABEL(lookup_widget(label_density[com.cvport])), buffer);
 			}
+		}
+	} else {
+		static gchar buffer[256] = { 0 };
+
+		if (inside) {
+			if (gfit.type == DATA_USHORT) {
+				g_sprintf(buffer, "R=%u/G=%u/B=%u",
+										gfit.pdata[RLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x],
+										gfit.pdata[BLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x],
+										gfit.pdata[GLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x]
+										);
+			} else if (gfit.type == DATA_FLOAT) {
+				g_sprintf(buffer, "R=%.4lf/G=%.4lf/B=%4lf",
+										gfit.fpdata[RLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x],
+										gfit.fpdata[BLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x],
+										gfit.fpdata[GLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x]
+										);
+			}
+			gtk_label_set_text(GTK_LABEL(lookup_widget(label_density[com.cvport])), buffer);
 		}
 	}
 
