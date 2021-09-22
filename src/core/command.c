@@ -256,7 +256,10 @@ int process_savepnm(int nb){
 
 int process_imoper(int nb){
 	fits fit = { 0 };
-	if (!single_image_is_loaded()) return 1;
+	if (!single_image_is_loaded()) {
+		PRINT_NOT_FOR_SEQUENCE;
+		return 1;
+	}
 	if (readfits(word[1], &fit, NULL, !com.pref.force_to_16bit)) return -1;
 
 	image_operator oper;
@@ -350,7 +353,7 @@ int process_fmul(int nb){
 
 int process_entropy(int nb){
 	rectangle area;
-	float e;
+	float e = 0.f;
 
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
@@ -359,10 +362,12 @@ int process_entropy(int nb){
 
 	if (com.selection.w > 0 && com.selection.h > 0) {
 		memcpy(&area, &com.selection, sizeof(rectangle));
-		e = entropy(&gfit, com.cvport, &area, NULL);
+		for (int c = 0; c < gfit.naxes[2]; c++)
+			e += entropy(&gfit, c, &area, NULL);
 	}
 	else {
-		e = entropy(&gfit, com.cvport, NULL, NULL);
+		for (int c = 0; c < gfit.naxes[2]; c++)
+			e += entropy(&gfit, c, NULL, NULL);
 	}
 	siril_log_message(_("Entropy: %.3f\n"), e);
 	return 0;
@@ -374,7 +379,7 @@ int process_gauss(int nb){
 		return 1;
 	}
 
-	unsharp(&(gfit), g_ascii_strtod(word[1], NULL), 0.0, TRUE);
+	unsharp(&gfit, g_ascii_strtod(word[1], NULL), 0.0, TRUE);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
 	redraw_previews();
@@ -404,8 +409,6 @@ int process_rl(int nb) {
 		return 1;
 	}
 
-	if (!com.script)
-		control_window_switch_to_tab(OUTPUT_LOGS);
 	sigma = g_ascii_strtod(word[1], NULL);
 	corner = g_ascii_strtod(word[2], NULL);
 	iter = g_ascii_strtoull(word[3], NULL, 10);
@@ -687,13 +690,16 @@ int process_clahe(int nb) {
 	double clip_limit;
 	int size;
 
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
 
-	if (!com.script)
-		control_window_switch_to_tab(OUTPUT_LOGS);
 	clip_limit = g_ascii_strtod(word[1], NULL);
 
 	if (clip_limit <= 0.0) {
@@ -705,11 +711,6 @@ int process_clahe(int nb) {
 
 	if (size <= 0.0) {
 		siril_log_message(_("Tile size must be > 0.\n"));
-		return 1;
-	}
-
-	if (get_thread_run()) {
-		PRINT_ANOTHER_THREAD_RUNNING;
 		return 1;
 	}
 
@@ -1411,10 +1412,6 @@ int process_bgnoise(int nb){
 	if (!(single_image_is_loaded() || sequence_is_loaded())) return 1;
 
 	struct noise_data *args = malloc(sizeof(struct noise_data));
-
-	if (!com.script) {
-		control_window_switch_to_tab(OUTPUT_LOGS);
-	}
 
 	args->fit = &gfit;
 	args->verbose = TRUE;
@@ -2898,8 +2895,6 @@ int process_convertraw(int nb) {
 	siril_log_color_message(_("Conversion: processing %d RAW files...\n"), "green", count);
 
 	set_cursor_waiting(TRUE);
-	if (!com.script)
-		control_window_switch_to_tab(OUTPUT_LOGS);
 
 	struct _convert_data *args = malloc(sizeof(struct _convert_data));
 	args->start = idx;
@@ -2993,8 +2988,6 @@ int process_link(int nb) {
 	g_free(str);
 
 	set_cursor_waiting(TRUE);
-	if (!com.script)
-		control_window_switch_to_tab(OUTPUT_LOGS);
 
 	if (!com.wd) {
 		siril_log_message(_("Link: no working directory set.\n"));
@@ -3105,8 +3098,6 @@ int process_convert(int nb) {
 	g_free(str);
 
 	set_cursor_waiting(TRUE);
-	if (!com.script)
-		control_window_switch_to_tab(OUTPUT_LOGS);
 
 	if (!com.wd) {
 		siril_log_message(_("Convert: no working directory set.\n"));
@@ -3156,9 +3147,6 @@ int process_register(int nb) {
 	method->type = REGTYPE_DEEPSKY;
 
 	reg_args = calloc(1, sizeof(struct registration_args));
-
-	if (!com.script)
-		control_window_switch_to_tab(OUTPUT_LOGS);
 
 	/* filling the arguments for registration */
 	reg_args->func = method->method_ptr;
@@ -3604,8 +3592,7 @@ int process_stackall(int nb) {
 			goto failure;
 	}
 	set_cursor_waiting(TRUE);
-	if (!com.headless)
-		control_window_switch_to_tab(OUTPUT_LOGS);
+
 	gettimeofday(&arg->t_start, NULL);
 
 	start_in_new_thread(stackall_worker, arg);
@@ -3724,8 +3711,6 @@ int process_stackone(int nb) {
 	}
 	set_cursor_waiting(TRUE);
 	gettimeofday(&arg->t_start, NULL);
-	if (!com.headless)
-		control_window_switch_to_tab(OUTPUT_LOGS);
 
 	start_in_new_thread(stackone_worker, arg);
 	return 0;
@@ -3976,8 +3961,6 @@ int process_set_mem(int nb){
 }
 
 int process_help(int nb){
-	control_window_switch_to_tab(OUTPUT_LOGS);
-
 	command *current = commands;
 	siril_log_message(_("********* LIST OF AVAILABLE COMMANDS *********\n"));
 	while (current->process) {
@@ -3996,7 +3979,10 @@ int process_exit(int nb){
 int process_extract(int nb) {
 	int Nbr_Plan, maxplan, mins;
 	
-	if (!single_image_is_loaded()) return 1;
+	if (!single_image_is_loaded()) {
+		PRINT_NOT_FOR_SEQUENCE;
+		return 1;
+	}
 
 	Nbr_Plan = g_ascii_strtoull(word[1], NULL, 10);
 
