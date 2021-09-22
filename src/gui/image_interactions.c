@@ -629,16 +629,16 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 
 		if (inside) {
 			if (gfit.type == DATA_USHORT) {
-				g_sprintf(buffer, "R=%u/G=%u/B=%u",
-										gfit.pdata[RLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x],
-										gfit.pdata[BLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x],
-										gfit.pdata[GLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x]
+				g_sprintf(buffer, "R=%.1lf%%/G=%.1lf%%/B=%.1lf%%",
+										gfit.pdata[RLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x] / USHRT_MAX_DOUBLE * 100.0,
+										gfit.pdata[BLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x] / USHRT_MAX_DOUBLE * 100.0,
+										gfit.pdata[GLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x] / USHRT_MAX_DOUBLE * 100.0
 										);
 			} else if (gfit.type == DATA_FLOAT) {
-				g_sprintf(buffer, "R=%.4lf/G=%.4lf/B=%4lf",
-										gfit.fpdata[RLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x],
-										gfit.fpdata[BLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x],
-										gfit.fpdata[GLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x]
+				g_sprintf(buffer, "R=%.1lf%%/G=%.1lf%%/B=%.1lf%%",
+										gfit.fpdata[RLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x] * 100.0,
+										gfit.fpdata[BLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x] * 100.0,
+										gfit.fpdata[GLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x] * 100.0
 										);
 			}
 			gtk_label_set_text(GTK_LABEL(lookup_widget(label_density[com.cvport])), buffer);
