@@ -20,14 +20,15 @@ typedef enum {
 	TYCHO2,
 	NOMAD,
 	GAIA,
+	GAIAEDR3,
 	PPMXL,
 	BRIGHT_STARS,
 	APASS
 } online_catalog;
 
 enum {
-	WCS_FORMALISM_1,
-	WCS_FORMALISM_2
+	WCS_FORMALISM_2,
+	WCS_FORMALISM_1
 };
 
 struct astrometry_data {

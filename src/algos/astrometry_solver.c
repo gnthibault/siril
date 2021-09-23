@@ -66,6 +66,7 @@
 #include "astrometry_solver.h"
 
 #define DOWNSAMPLE_FACTOR 0.25
+#define CONV_TOLERANCE 1E-8
 
 enum {
 	COLUMN_RESOLVER,		// string
@@ -370,6 +371,17 @@ static gchar *get_catalog_url(SirilWorldCS *center, double mag_limit, double dfo
 		url = g_string_append(url, "&Gmag=<");
 		url = g_string_append(url, mag);
 		break;
+	case GAIAEDR3:
+		url = g_string_append(url, "I/350/gaiaedr3&-out.meta=-h-u-D&-out.add=_r");
+		url = g_string_append(url, "&-out=%20RAJ2000%20DEJ2000%20Gmag%20BPmag");
+		url = g_string_append(url, "&-out.max=200000");
+		url = g_string_append(url, "&-c=");
+		url = g_string_append(url, coordinates);
+		url = g_string_append(url, "&-c.rm=");
+		url = g_string_append(url, fov);
+		url = g_string_append(url, "&Gmag=<");
+		url = g_string_append(url, mag);
+		break;
 	case PPMXL:
 		url = g_string_append(url, "I/317&-out.meta=-h-u-D&-out.add=_r&-sort=_r");
 		url = g_string_append(url, "&-out=%20RAJ2000%20DEJ2000%20Jmag%20Hmag");
@@ -539,7 +551,7 @@ static online_catalog get_online_catalog(double fov, double m) {
 		} else if (fov > 180.0) {
 			ret = NOMAD;
 		} else if (fov < 30.0){
-			ret = GAIA;
+			ret = GAIAEDR3;
 		} else {
 			ret = PPMXL;
 		}
@@ -1112,6 +1124,8 @@ static int read_catalog(GInputStream *stream, psf_star **cstars, int type) {
 		return read_NOMAD_catalog(stream, cstars);
 	case GAIA:
 		return read_GAIA_catalog(stream, cstars);
+	case GAIAEDR3:
+		return read_GAIA_catalog(stream, cstars);
 	case PPMXL:
 		return read_PPMXL_catalog(stream, cstars);
 	case BRIGHT_STARS:
@@ -1541,7 +1555,7 @@ gpointer match_catalog(gpointer p) {
 	int n_fit = 0, n_cat = 0;
 	Homography H = { 0 };
 	int nobj = AT_MATCH_CATALOG_NBRIGHT;
-	int nbtrials = 0;
+	int max_trials = 0;
 	GFile *catalog;
 	GInputStream *input_stream;
 	s_star star_list_A, star_list_B;
@@ -1569,8 +1583,7 @@ gpointer match_catalog(gpointer p) {
 		siril_add_idle(end_plate_solver, args);
 		return GINT_TO_POINTER(1);
 	}
-	if (fabs(args->xoffset) > 0.0 || fabs(args->yoffset) > 0.0 ) nbtrials = 5; //retry to converge if solve is done at an offset from the center
-
+	if (fabs(args->xoffset) > 0.0 || fabs(args->yoffset) > 0.0 ) max_trials = 20; //retry to converge if solve is done at an offset from the center
 
 	cstars = new_fitted_stars(MAX_STARS);
 	if (cstars == NULL) {
@@ -1624,6 +1637,7 @@ gpointer match_catalog(gpointer p) {
 		attempt++;
 	}
 	if (!args->ret) {
+		double conv = DBL_MAX;
 		image_solved *solution = malloc(sizeof(image_solved));
 
 		memcpy(&solution->H, &H, sizeof(Homography));
@@ -1644,9 +1658,11 @@ gpointer match_catalog(gpointer p) {
 			int num_matched = H.pair_matched;
 			int trial = 0;
 
-			while ((trial < nbtrials) && (!args->ret)){
+			while ((conv > CONV_TOLERANCE) && (trial < max_trials) && (!args->ret)){
 				double rainit = siril_world_cs_get_alpha(args->cat_center);
 				double decinit = siril_world_cs_get_delta(args->cat_center);
+				double orig_ra0 = ra0;
+				double orig_dec0 = dec0;
 
 				deproject_starlist(num_matched, &star_list_B, rainit, decinit, 1);
 				siril_debug_print("Deprojecting from: alpha: %s, delta: %s\n",
@@ -1674,6 +1690,9 @@ gpointer match_catalog(gpointer p) {
 				trans = H_to_linear_TRANS(H);
 				memcpy(&solution->H, &H, sizeof(Homography));
 				apply_match(solution->px_cat_center, solution->crpix, trans, &ra0, &dec0);
+
+				conv = fabs((dec0 - orig_dec0) / orig_dec0) + fabs((ra0 - orig_ra0) / orig_ra0);
+
 				trial += 1;
 			} 
 			solution->pixel_size = args->pixel_size;
@@ -1685,7 +1704,13 @@ gpointer match_catalog(gpointer p) {
 			solution->focal = RADCONV * solution->pixel_size / resolution;
 
 			solution->image_center = siril_world_cs_new_from_a_d(ra0, dec0);
-			siril_debug_print("Converged to: alpha: %0.8f, delta: %0.8f\n", ra0, dec0);
+			if (max_trials == 0) {
+				siril_debug_print("Converged to: alpha: %0.8f, delta: %0.8f\n", ra0, dec0);
+			} else if (trial == max_trials) {
+				siril_debug_print("No convergence found: alpha: %0.8f, delta: %0.8f\n", ra0, dec0);
+			} else {
+				siril_debug_print("Converged to: alpha: %0.8f, delta: %0.8f at iteration #%d\n", ra0, dec0, trial);
+			}
 
 			double scalefactor = (args->downsample) ? 1.0 / DOWNSAMPLE_FACTOR : 1.0;
 			if (args->downsample) {
