@@ -13207,7 +13207,9 @@ WARNING: Do not apply dark optimization on master-dark if master-bias has not be
                                     <property name="visible">True</property>
                                     <property name="can-focus">True</property>
                                     <property name="receives-default">False</property>
-                                    <property name="tooltip-text" translatable="yes">This option equalizes the mean intensity of RGB layers in a CFA flat image.</property>
+                                    <property name="tooltip-markup" translatable="yes">This option equalizes the mean intensity of RGB layers in a CFA flat image.
+
+&lt;b&gt;WARNING&lt;/b&gt;: This option won't work with XTRANS sensor and therefore should not be used.</property>
                                     <property name="halign">start</property>
                                     <property name="draw-indicator">True</property>
                                     <signal name="toggled" handler="on_checkbutton_equalize_cfa_toggled" swapped="no"/>
