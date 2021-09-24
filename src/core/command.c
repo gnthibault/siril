@@ -211,7 +211,6 @@ int process_savejpg(int nb){
 
 #ifdef HAVE_LIBPNG
 int process_savepng(int nb){
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
@@ -230,12 +229,12 @@ int process_savepng(int nb){
 
 #ifdef HAVE_LIBTIFF
 int process_savetif(int nb){
-	uint16_t bitspersample = 16;
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
+
+	uint16_t bitspersample = 16;
 
 	if (strcasecmp(word[0], "savetif8") == 0)
 		bitspersample = 8;
@@ -261,11 +260,12 @@ int process_savepnm(int nb){
 }
 
 int process_imoper(int nb){
-	fits fit = { 0 };
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
+	fits fit = { 0 };
+
 	if (readfits(word[1], &fit, NULL, !com.pref.force_to_16bit)) return -1;
 
 	image_operator oper;
@@ -301,12 +301,12 @@ int process_imoper(int nb){
 }
 
 int process_addmax(int nb){
-	fits fit = { 0 };
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
+
+	fits fit = { 0 };
 
 	if (readfits(word[1], &fit, NULL, gfit.type == DATA_FLOAT))
 		return -1;
@@ -321,13 +321,14 @@ int process_addmax(int nb){
 
 int process_fdiv(int nb){
 	// combines an image division and a scalar multiplication.
-	fits fit = { 0 };
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
 
+	fits fit = { 0 };
 	float norm = g_ascii_strtod(word[2], NULL);
+
 	if (readfits(word[1], &fit, NULL, !com.pref.force_to_16bit)) return -1;
 	siril_fdiv(&gfit, &fit, norm, TRUE);
 
@@ -358,13 +359,13 @@ int process_fmul(int nb){
 }
 
 int process_entropy(int nb){
-	rectangle area;
-	float e = 0.f;
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
+
+	rectangle area;
+	float e = 0.f;
 
 	if (com.selection.w > 0 && com.selection.h > 0) {
 		memcpy(&area, &com.selection, sizeof(rectangle));
@@ -407,13 +408,13 @@ int process_grey_flat(int nb) {
 }
 
 int process_rl(int nb) {
-	double sigma, corner;
-	int iter;
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
+
+	double sigma, corner;
+	int iter;
 
 	sigma = g_ascii_strtod(word[1], NULL);
 	corner = g_ascii_strtod(word[2], NULL);
@@ -541,29 +542,26 @@ int process_cd(int nb) {
 }
 
 int process_wrecons(int nb) {
-	int i;
-	float coef[7];
-	char *File_Name_Transform[3] = { "r_rawdata.wave", "g_rawdata.wave",
-			"b_rawdata.wave" }, *dir[3];
-	const char *tmpdir;
-	int nb_chan;
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
 
-	nb_chan = gfit.naxes[2];
+	float coef[7];
+	char *File_Name_Transform[3] = { "r_rawdata.wave", "g_rawdata.wave",
+			"b_rawdata.wave" }, *dir[3];
+
+	int nb_chan = gfit.naxes[2];
 
 	g_assert(nb_chan == 1 || nb_chan == 3);
 
-	tmpdir = g_get_tmp_dir();
+	const char *tmpdir = g_get_tmp_dir();
 
-	for (i = 0; i < nb - 1; ++i) {
+	for (int i = 0; i < nb - 1; ++i) {
 		coef[i] = g_ascii_strtod(word[i + 1], NULL);
 	}
 
-	for (i = 0; i < nb_chan; i++) {
+	for (int i = 0; i < nb_chan; i++) {
 		dir[i] = g_build_filename(tmpdir, File_Name_Transform[i], NULL);
 		if (gfit.type == DATA_USHORT) {
 			wavelet_reconstruct_file(dir[i], coef, gfit.pdata[i]);
@@ -581,17 +579,17 @@ int process_wrecons(int nb) {
 }
 
 int process_wavelet(int nb) {
-	char *File_Name_Transform[3] = { "r_rawdata.wave", "g_rawdata.wave",
-			"b_rawdata.wave" }, *dir[3];
-	const char* tmpdir;
-	int Type_Transform, Nbr_Plan, maxplan, mins, chan, nb_chan;
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
 
-	tmpdir = g_get_tmp_dir();
+	char *File_Name_Transform[3] = { "r_rawdata.wave", "g_rawdata.wave",
+			"b_rawdata.wave" }, *dir[3];
+
+	int Type_Transform, Nbr_Plan, maxplan, mins, chan, nb_chan;
+
+	const char* tmpdir = g_get_tmp_dir();
 
 	Nbr_Plan = g_ascii_strtoull(word[1], NULL, 10);
 	Type_Transform = g_ascii_strtoull(word[2], NULL, 10);
@@ -693,9 +691,6 @@ int process_asinh(int nb) {
 }
 
 int process_clahe(int nb) {
-	double clip_limit;
-	int size;
-
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
 		return 1;
@@ -706,14 +701,14 @@ int process_clahe(int nb) {
 		return 1;
 	}
 
-	clip_limit = g_ascii_strtod(word[1], NULL);
+	double clip_limit = g_ascii_strtod(word[1], NULL);
 
 	if (clip_limit <= 0.0) {
 		siril_log_message(_("Clip limit must be > 0.\n"));
 		return 1;
 	}
 
-	size = g_ascii_strtoull(word[2], NULL, 10);
+	int size = g_ascii_strtoull(word[2], NULL, 10);
 
 	if (size <= 0.0) {
 		siril_log_message(_("Tile size must be > 0.\n"));
@@ -1095,26 +1090,22 @@ int process_rgradient(int nb) {
 		siril_log_message(_("The coordinates cannot be greater than the size of the image. "
 				"Please change their values and retry.\n"));
 	} else {
-
 		set_cursor_waiting(TRUE);
-
 		start_in_new_thread(rgradient_filter, args);
 	}
 	return 0;
 }
 
 int process_rotate(int nb) {
-	double degree;
-	int crop = 1;
-	
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
 
 	set_cursor_waiting(TRUE);
+	int crop = 1;
 
-	degree = g_ascii_strtod(word[1], NULL);
+	double degree = g_ascii_strtod(word[1], NULL);
 
 	/* check for options */
 	if (word[2] && (!strcmp(word[2], "-nocrop"))) {
@@ -1430,14 +1421,14 @@ int process_bgnoise(int nb){
 }
 
 int process_histo(int nb){
-	GError *error = NULL;
-	int nlayer = g_ascii_strtoull(word[1], NULL, 10);
-	const gchar* clayer;
-	
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
+
+	GError *error = NULL;
+	int nlayer = g_ascii_strtoull(word[1], NULL, 10);
+	const gchar* clayer;
 
 	if (nlayer>3 || nlayer <0)
 		return 1;
@@ -1500,19 +1491,18 @@ int process_tilt(int nb) {
 }
 
 int process_thresh(int nb){
-	int lo, hi;
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
+
 	int maxlevel = (gfit.orig_bitpix == BYTE_IMG) ? UCHAR_MAX : USHRT_MAX;
-	lo = g_ascii_strtoull(word[1], NULL, 10);
+	int lo = g_ascii_strtoull(word[1], NULL, 10);
 	if (lo < 0 || lo > maxlevel) {
 		siril_log_message(_("replacement value is out of range (0 - %d)\n"), maxlevel);
 		return 1;
 	}
-	hi = g_ascii_strtoull(word[2], NULL, 10);
+	int hi = g_ascii_strtoull(word[2], NULL, 10);
 	if (hi < 0 || hi > maxlevel) {
 		siril_log_message(_("replacement value is out of range (0 - %d)\n"), maxlevel);
 		return 1;
@@ -1530,14 +1520,13 @@ int process_thresh(int nb){
 }
 
 int process_threshlo(int nb){
-	int lo;
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
+
 	int maxlevel = (gfit.orig_bitpix == BYTE_IMG) ? UCHAR_MAX : USHRT_MAX;
-	lo = g_ascii_strtoull(word[1], NULL, 10);
+	int lo = g_ascii_strtoull(word[1], NULL, 10);
 	if (lo < 0 || lo > maxlevel) {
 		siril_log_message(_("replacement value is out of range (0 - %d)\n"), maxlevel);
 		return 1;
@@ -1550,14 +1539,13 @@ int process_threshlo(int nb){
 }
 
 int process_threshhi(int nb){
-	int hi;
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
+
 	int maxlevel = (gfit.orig_bitpix == BYTE_IMG) ? UCHAR_MAX : USHRT_MAX;
-	hi = g_ascii_strtoull(word[1], NULL, 10);
+	int hi = g_ascii_strtoull(word[1], NULL, 10);
 	if (hi < 0 || hi > maxlevel) {
 		siril_log_message(_("replacement value is out of range (0 - %d)\n"), maxlevel);
 		return 1;
@@ -1581,14 +1569,12 @@ int process_neg(int nb) {
 }
 
 int process_nozero(int nb){
-	int level;
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
 
-	level = g_ascii_strtoull(word[1], NULL, 10);
+	int level = g_ascii_strtoull(word[1], NULL, 10);
 	int maxlevel = (gfit.orig_bitpix == BYTE_IMG) ? UCHAR_MAX : USHRT_MAX;
 	if (level < 0 || level > maxlevel) {
 		siril_log_message(_("replacement value is out of range (0 - %d)\n"), maxlevel);
@@ -1601,19 +1587,15 @@ int process_nozero(int nb){
 	return 0;
 }
 
-int process_ddp(int nb){
-	// combines an image division and a scalar multiplication.
-	float coeff, sigma;
-	unsigned level;
-
+int process_ddp(int nb) {
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
 
-	level = g_ascii_strtoull(word[1], NULL, 10);
-	coeff = g_ascii_strtod(word[2], NULL);
-	sigma = g_ascii_strtod(word[3], NULL);
+	unsigned level = g_ascii_strtoull(word[1], NULL, 10);
+	float coeff = g_ascii_strtod(word[2], NULL);
+	float sigma = g_ascii_strtod(word[3], NULL);
 	ddp(&gfit, level, coeff, sigma);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
@@ -1653,16 +1635,14 @@ int process_new(int nb){
 	return 0;
 }
 
-int process_visu(int nb){
-	int low, high;
-	
+int process_visu(int nb) {
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
 
-	low = g_ascii_strtoull(word[1], NULL, 10);
-	high = g_ascii_strtoull(word[2], NULL, 10);
+	int low = g_ascii_strtoull(word[1], NULL, 10);
+	int high = g_ascii_strtoull(word[2], NULL, 10);
 	if ((high > USHRT_MAX) || (low < 0)) {
 		siril_log_message(_("Values must be positive and less than %d.\n"), USHRT_MAX);
 		return 1;
@@ -1672,13 +1652,13 @@ int process_visu(int nb){
 }
 
 int process_fill2(int nb){
-	int level = g_ascii_strtoull(word[1], NULL, 10);
-	rectangle area;
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
+
+	int level = g_ascii_strtoull(word[1], NULL, 10);
+	rectangle area;
 
 	if ((!com.selection.h) || (!com.selection.w)) {
 		if (nb == 6) {
@@ -1724,10 +1704,6 @@ int process_findstar(int nb){
 }
 
 int process_findhot(int nb){
-	GError *error = NULL;
-	long icold, ihot;
-	gchar type;
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
@@ -1737,7 +1713,11 @@ int process_findhot(int nb){
 		siril_log_message(_("find_hot must be applied on an one-channel master-dark frame"));
 		return 1;
 	}
+	GError *error = NULL;
+	long icold, ihot;
+	gchar type;
 	double sig[2];
+
 	sig[0] = g_ascii_strtod(word[2], NULL);
 	sig[1] = g_ascii_strtod(word[3], NULL);
 
@@ -1796,13 +1776,13 @@ int process_fix_xtrans(int nb) {
 }
 
 int process_cosme(int nb) {
-	gchar *filename;
-	int retval = 0;
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
+
+	gchar *filename;
+	int retval = 0;
 
 	if (!g_str_has_suffix(word[1], ".lst")) {
 		filename = g_strdup_printf("%s.lst", word[1]);
@@ -1835,8 +1815,6 @@ int process_cosme(int nb) {
 }
 
 int process_seq_cosme(int nb) {
-	gchar *filename;
-
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
 		return 1;
@@ -1845,6 +1823,8 @@ int process_seq_cosme(int nb) {
 	sequence *seq = load_sequence(word[1], NULL);
 	if (!seq)
 		return 1;
+
+	gchar *filename;
 
 	if (!g_str_has_suffix(word[2], ".lst")) {
 		filename = g_strdup_printf("%s.lst", word[2]);
@@ -1928,12 +1908,12 @@ int process_fmedian(int nb){
  * was done to be consistent with IRIS
  */
 int process_cdg(int nb) {
-	float x_avg, y_avg;
-
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
+
+	float x_avg, y_avg;
 
 	if (!FindCentre(&gfit, &x_avg, &y_avg)) {
 		siril_log_message(_("Center of gravity coordinates are (%.3lf, %.3lf)\n"), x_avg, y_avg);
@@ -1974,13 +1954,12 @@ int process_close(int nb) {
 }
 
 int process_fill(int nb){
-	int level;
-	rectangle area;
-	
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
+
+	rectangle area;
 
 	if ((!com.selection.h) || (!com.selection.w)) {
 		if (nb == 6) {
@@ -2000,7 +1979,7 @@ int process_fill(int nb){
 	} else {
 		memcpy(&area, &com.selection, sizeof(rectangle));
 	}
-	level = g_ascii_strtoull(word[1], NULL, 10);
+	int level = g_ascii_strtoull(word[1], NULL, 10);
 	int retval = fill(&gfit, level, &area);
 	if (retval) {
 		siril_log_message(_("Wrong parameters.\n"));
@@ -2011,14 +1990,12 @@ int process_fill(int nb){
 }
 
 int process_offset(int nb){
-	int level;
-	
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
 
-	level = g_ascii_strtod(word[1], NULL);
+	int level = g_ascii_strtod(word[1], NULL);
 	off(&gfit, level);
 	adjust_cutoff_from_updated_gfit();
 	redraw(com.cvport, REMAP_ALL);
@@ -2058,11 +2035,6 @@ int process_scnr(int nb){
 int process_fft(int nb){
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
-		return 1;
-	}
-
-	if (sequence_is_loaded()) {
-		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
 	}
 
@@ -2113,16 +2085,15 @@ int process_fixbanding(int nb) {
 
 
 int process_subsky(int nb) {
-	gboolean is_sequence;
-	sequence *seq = NULL;
-	int degree = 0;
-
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
 		return 1;
 	}
 
-	is_sequence = (word[0][2] == 'q');
+	sequence *seq = NULL;
+	int degree = 0;
+
+	gboolean is_sequence = (word[0][2] == 'q');
 
 	if (is_sequence) {
 		seq = load_sequence(word[1], NULL);
@@ -2187,16 +2158,15 @@ int process_subsky(int nb) {
 
 
 int process_findcosme(int nb) {
-	gboolean is_sequence;
-	sequence *seq = NULL;
-	int i = 0;
-
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
 		return 1;
 	}
 
-	is_sequence = (word[0][0] == 's');
+	sequence *seq = NULL;
+	int i = 0;
+
+	gboolean is_sequence = (word[0][0] == 's');
 
 	if (is_sequence) {
 		seq = load_sequence(word[1], NULL);
@@ -2305,6 +2275,11 @@ int process_unselect(int nb){
 }
 
 int process_split(int nb){
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
 	if (!single_image_is_loaded()) {
 		PRINT_NOT_FOR_SEQUENCE;
 		return 1;
@@ -2312,11 +2287,6 @@ int process_split(int nb){
 
 	if (!isrgb(&gfit)) {
 		siril_log_message(_("Siril cannot split layers. Make sure your image is in RGB mode.\n"));
-		return 1;
-	}
-
-	if (get_thread_run()) {
-		PRINT_ANOTHER_THREAD_RUNNING;
 		return 1;
 	}
 
@@ -2812,6 +2782,11 @@ int process_seq_stat(int nb) {
 }
 
 int process_convertraw(int nb) {
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
 	GDir *dir;
 	GError *error = NULL;
 	const gchar *file;
@@ -2820,11 +2795,6 @@ int process_convertraw(int nb) {
 	gchar *destroot = g_strdup(word[1]);
 	sequence_type output = SEQ_REGULAR;
 	gboolean debayer = FALSE;
-
-	if (get_thread_run()) {
-		PRINT_ANOTHER_THREAD_RUNNING;
-		return 1;
-	}
 
 	if (!com.wd) {
 		siril_log_message(_("Conversion: no working directory set.\n"));
@@ -2922,17 +2892,17 @@ int process_convertraw(int nb) {
 }
 
 int process_link(int nb) {
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
 	GDir *dir;
 	GError *error = NULL;
 	const gchar *file;
 	GList *list = NULL;
 	int idx = 1;
 	gchar *destroot = g_strdup(word[1]);
-
-	if (get_thread_run()) {
-		PRINT_ANOTHER_THREAD_RUNNING;
-		return 1;
-	}
 
 	for (int i = 2; i < nb; i++) {
 		char *current = word[i], *value;
@@ -3019,6 +2989,12 @@ int process_link(int nb) {
 }
 
 int process_convert(int nb) {
+	if (get_thread_run()) {
+		PRINT_ANOTHER_THREAD_RUNNING;
+		return 1;
+	}
+
+
 	GDir *dir;
 	GError *error = NULL;
 	const gchar *file;
@@ -3028,11 +3004,6 @@ int process_convert(int nb) {
 	gboolean make_link = TRUE;
 	sequence_type output = SEQ_REGULAR;
 	gchar *destroot = g_strdup(word[1]);
-
-	if (get_thread_run()) {
-		PRINT_ANOTHER_THREAD_RUNNING;
-		return 1;
-	}
 
 	for (int i = 2; i < nb; i++) {
 		char *current = word[i], *value;
@@ -3132,15 +3103,15 @@ int process_convert(int nb) {
 }
 
 int process_register(int nb) {
-	struct registration_args *reg_args;
-	struct registration_method *method;
-	char *msg;
-	int i;
-
 	if (get_thread_run()) {
 		PRINT_ANOTHER_THREAD_RUNNING;
 		return 1;
 	}
+
+	struct registration_args *reg_args;
+	struct registration_method *method;
+	char *msg;
+
 	sequence *seq = load_sequence(word[1], NULL);
 	if (!seq)
 		return 1;
@@ -3169,7 +3140,7 @@ int process_register(int nb) {
 	reg_args->layer = (reg_args->seq->nb_layers == 3) ? 1 : 0;
 
 	/* check for options */
-	for (i = 2; i < nb; i++) {
+	for (int i = 2; i < nb; i++) {
 		if (word[i]) {
 			if (!strcmp(word[i], "-drizzle")) {
 				reg_args->x2upscale = TRUE;

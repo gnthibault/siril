@@ -113,6 +113,19 @@ struct log_message {
 	const char* color;
 };
 
+static gboolean scroll_to_end(gpointer data) {
+	GtkTextIter iter;
+	GtkTextView *text = (GtkTextView *) data;
+	GtkTextBuffer *tbuf = tbuf = gtk_text_view_get_buffer(text);
+
+	gtk_text_buffer_get_end_iter(tbuf, &iter);
+	GtkTextMark *insert_mark = gtk_text_buffer_get_insert(tbuf);
+	gtk_text_buffer_place_cursor(tbuf, &iter);
+	gtk_text_view_scroll_to_mark(text, insert_mark, 0.0, TRUE, 0.0, 1.0);
+
+	return FALSE;
+}
+
 // The main thread internal function that does the printing.
 static gboolean idle_messaging(gpointer p) {
 	static GtkTextBuffer *tbuf = NULL;
@@ -143,11 +156,10 @@ static gboolean idle_messaging(gpointer p) {
 		gtk_text_buffer_insert_with_tags_by_name(tbuf, &iter, log->message,
 				strlen(log->message), log->color, NULL);
 
-	/* scroll to end */
-	gtk_text_buffer_get_end_iter(tbuf, &iter);
-	GtkTextMark *insert_mark = gtk_text_buffer_get_insert(tbuf);
-	gtk_text_buffer_place_cursor(tbuf, &iter);
-	gtk_text_view_scroll_to_mark(text, insert_mark, 0.0, TRUE, 0.0, 1.0);
+	/* scroll to the end with a timeout
+	 * just to be sure that everything is displayed
+	 */
+	g_timeout_add(50, scroll_to_end, (gpointer) text);
 
 	free(log->timestamp);
 	free(log->message);

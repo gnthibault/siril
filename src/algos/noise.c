@@ -100,7 +100,6 @@ void evaluate_noise_in_image() {
 	}
 
 	set_cursor_waiting(TRUE);
-	control_window_switch_to_tab(OUTPUT_LOGS);
 
 	struct noise_data *args = malloc(sizeof(struct noise_data));
 	args->fit = &gfit;
