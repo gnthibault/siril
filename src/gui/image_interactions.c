@@ -629,13 +629,13 @@ gboolean on_drawingarea_motion_notify_event(GtkWidget *widget,
 
 		if (inside) {
 			if (gfit.type == DATA_USHORT) {
-				g_sprintf(buffer, "R=%.1lf%%/G=%.1lf%%/B=%.1lf%%",
+				g_sprintf(buffer, "R=%.3lf%%/G=%.3lf%%/B=%.3lf%%",
 										gfit.pdata[RLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x] / USHRT_MAX_DOUBLE * 100.0,
 										gfit.pdata[BLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x] / USHRT_MAX_DOUBLE * 100.0,
 										gfit.pdata[GLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x] / USHRT_MAX_DOUBLE * 100.0
 										);
 			} else if (gfit.type == DATA_FLOAT) {
-				g_sprintf(buffer, "R=%.1lf%%/G=%.1lf%%/B=%.1lf%%",
+				g_sprintf(buffer, "R=%.3lf%%/G=%.3lf%%/B=%.3lf%%",
 										gfit.fpdata[RLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x] * 100.0,
 										gfit.fpdata[BLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x] * 100.0,
 										gfit.fpdata[GLAYER][gfit.rx * (gfit.ry - zoomed.y - 1)  + zoomed.x] * 100.0
